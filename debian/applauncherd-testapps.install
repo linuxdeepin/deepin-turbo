@@ -1,0 +1,16 @@
+usr/bin/fala_ft_hello
+usr/bin/fala_ft_hello1
+usr/bin/fala_ft_hello2
+usr/bin/fala_ft_hello.launch
+usr/bin/fala_ft_hello1.launch
+usr/bin/fala_ft_hello2.launch
+usr/bin/qhelloworld
+usr/bin/fala_ft_creds1
+usr/bin/fala_ft_creds1.launch
+usr/bin/fala_ft_creds2
+usr/bin/fala_ft_creds2.launch
+usr/bin/fala_testapp
+usr/share/dbus-1/services/com.nokia.fala_testapp.service
+usr/bin/fala_ft_themetest.launch
+usr/bin/fala_ft_themetest
+usr/share/themes/base/meegotouch/fala_ft_themetest/*

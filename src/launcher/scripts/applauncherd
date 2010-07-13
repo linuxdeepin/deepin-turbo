@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Forces resolving symbols of libraries to which applauncherd.bin is
+# linked to.
+
+# commented out because of broken libamjpeg library
+# export LD_BIND_NOW=1
+
+# Use 50 chars long dummy parameter to reserve place for application
+# name and parameters so that we get some space to modify them
+# afterwards. If the length of the application name with parameters is
+# longer than space available, only the params that fully fit will be
+# shown in the output of top and ps commands.
+exec /usr/bin/applauncherd.bin "                                                  "
+

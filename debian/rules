@@ -1,0 +1,99 @@
+#!/usr/bin/make -f
+
+#include /usr/share/cdbs/1/rules/debhelper.mk
+#include /usr/share/cdbs/1/class/cmake.mk
+
+# architecture we're building for
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+
+configure: configure-stamp
+configure-stamp: 
+	dh_testdir
+
+ifeq ($(DEB_HOST_ARCH), arm)
+	# Configure Applauncherd to be build with tests
+	# TODO: remove DISABLE_VERIFICATION=1 when works
+	BUILD_TESTS=1 ./configure
+else ifeq ($(DEB_HOST_ARCH), armel)
+	# Configure Applauncherd to be build with tests
+	# TODO: remove DISABLE_VERIFICATION=1 when works
+	BUILD_TESTS=1  ./configure
+else
+	# Configure Applauncherd to be build with tests and without checking invoker credentials
+	BUILD_TESTS=1  ./configure
+endif
+
+	touch configure-stamp
+
+build: build-stamp
+build-stamp: configure-stamp
+	dh_testdir
+	make
+	touch build-stamp
+    
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	rm -f CMakeCache.txt
+	dh_clean
+    
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+	DESTDIR=debian/tmp make install
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs 
+	dh_installdocs
+	dh_install --sourcedir=debian/tmp -v 
+#	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf	
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+#	dh_installman
+	dh_link
+	dh_strip -p applauncherd-launcher --dbg-package=applauncherd-launcher-dbg
+	dh_strip -p applauncherd-invoker --dbg-package=applauncherd-invoker-dbg
+	dh_strip -p applauncherd-testapps --dbg-package=applauncherd-testapps-dbg
+	dh_compress
+	dh_fixperms
+#	dh_perl
+#	dh_python
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb 
+# TODO: CLEAN THIS UP!
+ifeq ($(DEB_HOST_ARCH), arm)
+	aegis-deb-add -control debian/applauncherd-launcher/DEBIAN/control .. debian/applauncherd-launcher.aegis=_aegis
+	aegis-deb-add -control debian/applauncherd-invoker/DEBIAN/control .. debian/applauncherd-invoker.aegis=_aegis
+	aegis-deb-add -control debian/applauncherd-testapps/DEBIAN/control .. debian/applauncherd-testapps.aegis=_aegis
+else ifeq ($(DEB_HOST_ARCH), armel)
+	aegis-deb-add -control debian/applauncherd-launcher/DEBIAN/control .. debian/applauncherd-launcher.aegis=_aegis
+	aegis-deb-add -control debian/applauncherd-invoker/DEBIAN/control .. debian/applauncherd-invoker.aegis=_aegis
+	aegis-deb-add -control debian/applauncherd-testapps/DEBIAN/control .. debian/applauncherd-testapps.aegis=_aegis
+endif
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure
+

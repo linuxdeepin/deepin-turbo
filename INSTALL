@@ -1,0 +1,37 @@
+BUILD & INSTALL
+===============
+
+Applauncherd uses the CMake build system.
+
+Configure
+---------
+
+* Configure applauncherd only:
+
+  ./configure
+
+* Configure applauncherd + tests:
+
+  BUILD_TESTS=1 ./configure
+
+* Configure applauncherd with security check for invoker disabled:
+
+  DISABLE_VERIFICATION=1 ./configure
+
+* If you are building the .deb package, check debian/rules for the configuration used
+
+Build
+-----
+
+make
+
+Build Doxygen -documentation if Doxygen was found
+-------------------------------------------------
+
+make doc
+
+Install
+-------
+
+make install
+

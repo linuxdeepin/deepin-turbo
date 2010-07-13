@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-bug-tests" domain="Application framework"> 
+
+    <set name="applauncherd-bug-tests" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="no-aegis-test" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="120" level="System" insignificant="true" >
+          <step expected_result="0">`pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_007_no_aegis_Bug170905</step>
+      </case>
+
+      <case name="invoker-creds" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">`pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_008_invoker_creds</step>
+      </case>
+
+      <case name="launch-multi-app-cont" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">`pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_009_launch_multiple_apps_cont</step>
+      </case>
+
+      <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">`pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_006_creds</step>
+      </case>
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <!--get>
+      </get-->
+    </set>
+
+    <set name="Theme-tests" description="Test that global and application specific theming work with launched apps" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="app-specific" type="Functional" description="Application specific theming tests" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">/usr/share/applauncherd-testscripts/tc_theming.rb --name test_application_specific_theming</step>
+      </case>
+
+      <case name="global-theming" type="Functional" description="Tests that global theming changes affect launched applications" timeout="120" level="System" insignificant="true">
+        <step expected_result="0">/usr/share/applauncherd-testscripts/tc_theming.rb --name test_global_theming</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <!--get>
+      </get-->
+    </set>
+  </suite>
+</testdefinition>
+
+

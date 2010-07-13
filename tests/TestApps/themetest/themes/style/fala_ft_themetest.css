@@ -1,0 +1,55 @@
+#themedlabel.Landscape {
+    preferred-size: 300 79;
+    minimum-size: 128 79;
+    maximum-size: 300 79;
+
+    text-color: $COLOR_INVERTED_FOREGROUND;
+    background-color: #D4F5D0;
+    font: $FONT_XLARGE;
+    text-margin-left: 20px;
+	margin-left: $MARGIN_DOUBLE;
+	margin-top:$MARGIN_DOUBLE;
+}
+
+#themedlabel.Portrait {
+    preferred-size: 300 93;
+    minimum-size: 105 93;
+    maximum-size: 300 93;
+
+    text-color: $COLOR_INVERTED_FOREGROUND;
+    background-color: #D4F5D0;
+    font: $FONT_XLARGE;
+    text-margin-left: 20px;
+
+	margin-left: $MARGIN_DOUBLE;
+	margin-top:$MARGIN_DOUBLE;
+
+}
+
+#themedlabelwithgraphics.Landscape {
+    preferred-size: 300 79;
+    minimum-size: 128 79;
+    maximum-size: 300 79;
+
+    text-color: $COLOR_INVERTED_FOREGROUND;
+    background-image: "baa";
+    font: $FONT_XLARGE;
+    text-margin-left: 20px;
+	margin-left: $MARGIN_DOUBLE;
+	margin-top:$MARGIN_DOUBLE;
+}
+
+#themedlabelwithgraphics.Portrait {
+    preferred-size: 300 93;
+    minimum-size: 105 93;
+    maximum-size: 300 93;
+
+    text-color: $COLOR_INVERTED_FOREGROUND;
+    background-image: "baa";
+    font: $FONT_XLARGE;
+    text-margin-left: 20px;
+
+	margin-left: $MARGIN_DOUBLE;
+	margin-top:$MARGIN_DOUBLE;
+
+}

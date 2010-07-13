@@ -1,0 +1,8 @@
+<aegis>
+
+  <request>
+        <credential name="applauncherd-launcher::access"/>
+    	<for path="/usr/bin/invoker" id="client"/>
+  </request>
+
+</aegis>

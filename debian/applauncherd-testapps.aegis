@@ -1,0 +1,16 @@
+<aegis>
+    <request>
+	<credential name="tcb" />
+	<credential name="drm" />
+	<credential name="Telephony" />
+	<credential name="CAP::setuid" />
+	<credential name="CAP::setgid" />
+	<credential name="CAP::setfcap" />
+        <for path="/usr/bin/fala_ft_creds1.launch" />
+    </request>
+
+    <request>
+        <credential name="Cellular" />
+        <for path="/usr/bin/fala_ft_creds2.launch" />
+    </request>
+</aegis>

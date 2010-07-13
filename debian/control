@@ -1,0 +1,127 @@
+Source: applauncherd
+Section: admin
+Priority: important
+Maintainer: Jussi Lind <jussi.lind@nokia.com>
+Build-Depends: cmake (>= 2.6.0), debhelper (>= 7), libqt4-dev (>= 4.5.0), libmeegotouch-dev, libcreds2-dev [arm armel], aegis-builder (>= 1.4) [arm armel]
+Standards-Version: 3.8.0
+
+Package: applauncherd
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-invoker (= ${Source-Version})
+Description: Meta package for applauncherd and invoker
+ Launcher daemon and invoker to speed up launches. 
+ Special boosters for MeeGo Touch and Qt.
+
+Package: applauncherd-dbg
+Architecture: any
+Depends: applauncherd-invoker-dbg, applauncherd-launcher-dbg
+Description: Meta package for applauncherd and invoker debug symbols
+
+Package: applauncherd-invoker
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-launcher (= ${Source-Version}), libcreds2 [arm armel]
+Description: Invoker part of applauncherd
+ Invoker part of applauncherd.
+
+Package: applauncherd-invoker-dbg
+Section: debug
+Architecture: any
+Depends: applauncherd-invoker (= ${Source-Version})
+Description: Invoker debug package
+ Debug symbols for invoker
+ 
+Package: applauncherd-launcher
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libcreds2 [arm armel]
+Description: Launcher part of applauncherd
+ Launcher part of applauncherd.
+
+Package: applauncherd-launcher-dbg
+Section: debug
+Architecture: any
+Depends: applauncherd-launcher (= ${Source-Version})
+Description: Launcher debug package
+ Debug symbols for launcher
+
+Package: applauncherd-dev
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, pkg-config
+Description: Development files for applications using applauncherd
+ Development files for applications using applauncherd.
+ 
+Package: applauncherd-tests
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmeegotouchcore0, libmeegotouchviews0, libmeegotouchextensions0, libmeegotouchsettings0, testrunner, applauncherd, ci-testing, libcreds[arm armel]
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: applauncherd unit tests
+ Unit testing binaries and shellscripts for testing applauncherd. 
+
+Package: applauncherd-testscripts
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner, applauncherd, ci-testing, matti, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40) 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: applauncherd testscripts
+ Testscripts for testing applauncherd
+
+Package: applauncherd-testapps
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd, libmeegotouchcore0, libmeegotouchviews0, libmeegotouchextensions0, libmeegotouchsettings0, libcreds2 [arm armel], libcreds2-tools [arm armel] 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: applaunched testapps 
+ Test applications for testing  applauncherd.
+
+Package: applauncherd-testapps-dbg
+Section: debug
+Architecture: any
+Depends: applauncherd-testapps
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: debug symbols for applauncherd testapps 
+
+Package: applauncherd-functional-tests
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: applauncherd functional tests
+ Functional tests for testing applauncherd.
+
+Package: applauncherd-art-tests
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: applauncherd art tests
+ Art tests for testing applauncherd.
+
+Package: applauncherd-bug-tests
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: applauncherd bug tests
+ Tests related to bugs for testing applauncherd.
+
+Package: applauncherd-performance-tests
+Section: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, acceptance, validation
+Description: applauncherd performance tests
+ Performance testing binaries and shellscripts for testing applauncherd. 
+
+Package: applauncherd-doc
+Section: doc
+Architecture: all
+Description: Instructions for application developers
+

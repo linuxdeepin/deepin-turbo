@@ -1,0 +1,20 @@
+<aegis>
+   
+    <request>
+        <credential name="CAP::setgid"/>
+        <credential name="CAP::setuid"/>
+        <credential name="CAP::setfcap"/>
+        <credential name="CAP::sys_nice"/>
+        <credential name="drm"/>
+        <credential name="Cellular"/>
+        <credential name="ReadUserData"/>
+        <credential name="ReadWriteUserData"/>
+        <for path="/usr/bin/applauncherd.bin"/>
+    </request>
+
+  <provide>
+    <credential name="access" />
+  </provide>
+
+</aegis>
+

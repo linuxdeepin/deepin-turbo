@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-tests" domain="Application framework"> 
+
+    <set name="launcher-tests" description="Basic launcher unit tests" feature="AF Basic Launcher daemon support" requirement="300168" >   
+      <pre_steps>
+        <step>export DISPLAY=:0</step>
+        <step>source /tmp/session_bus_address.user</step>
+        <!-- step>other pre steps</step -->
+      </pre_steps>
+
+      <case name="Daemon" type="Functional" description="Unit tests for Daemon class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_daemon</step>
+      </case>
+
+      <case name="Connection" type="Functional" description="Unit tests for Connection class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_connection</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <!--get>
+      </get-->
+    </set>
+
+    <set name="mbooster-tests" description="MBooster unit tests" feature="AF MBooster for Launcher daemon" requirement="300195" >   
+      <pre_steps>
+        <step>export DISPLAY=:0</step>
+        <step>source /tmp/session_bus_address.user</step>
+        <!-- step>other pre steps</step -->
+      </pre_steps>
+
+
+      <case name="MBooster" type="Functional" description="Unit tests for MBooster class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_mbooster</step>
+      </case>
+
+
+      <case name="Booster" type="Functional" description="Unit tests for Booster class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_booster</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <!--get>
+      </get-->
+    </set>
+
+    <set name="qtbooster-tests" description="QtBooster unit tests" feature="AF Launcher daemon support for Plain Qt applications" requirement="421032" >   
+      <pre_steps>
+        <step>export DISPLAY=:0</step>
+        <step>source /tmp/session_bus_address.user</step>
+        <!-- step>other pre steps</step -->
+      </pre_steps>
+
+      <case name="QtBooster" type="Functional" description="Unit tests for QtBooster class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_qtbooster</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <!--get>
+      </get-->
+    </set>
+
+  </suite>
+</testdefinition>
+
+

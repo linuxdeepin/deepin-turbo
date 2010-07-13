@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-performance-tests" domain="Application framework"> 
+
+    <set name="applauncherd-performance-tests" description="applauncherd performance tests for Meego touch applications" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="launcher1" type="Performance" description="Measure launcher performance" timeout="240" level="System">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-perf-mbooster.py test_001 &gt; /tmp/launcher_perf.txt</step>
+      </case>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <get>
+          <file>/tmp/launcher_perf.txt</file>
+	  <file>/tmp/testapp.log</file>
+      </get>
+    </set>
+
+  </suite>
+</testdefinition>
+
+

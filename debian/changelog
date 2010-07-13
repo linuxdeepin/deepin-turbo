@@ -1,0 +1,120 @@
+applauncherd (0.7.0-2) stable; urgency=low
+
+  * Fixes: NB#176326 -  Conndlgs launched using Applauncherd respawns until respawn limit
+	
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Tue, 07 Jul 2010 12:21:29 +0300
+
+applauncherd (0.7.0-1) stable; urgency=low
+
+  * Invoker waits for launched process to terminate when run with --wait-term
+  * Dbg packages added: applauncherd-dbg, applauncherd-invoker-dbg, applauncherd-launcher-dbg and applauncherd-testapps-dbg	
+  * Fixes: NB#177439, invoker starts reloading cache too soon
+  * Implemented: SWP#DUI-3384
+	
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Tue, 07 Jul 2010 10:10:29 +0300
+
+applauncherd (0.6.0-1) stable; urgency=low
+
+  * applauncherd-art-tests and applauncherd-bug-tests added
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 24 Jun 2010 19:26:17 +0300
+
+applauncherd (0.5.0-3) stable; urgency=low
+
+  * Fixes: NB#174460, applauncherd-functional-tests package fails very frequently in ART
+  * Coverity tool fixes
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 14 Jun 2010 19:26:20 +0300
+
+applauncherd (0.5.0-2) stable; urgency=low
+
+  * delay is initialized to DEFAULT_DELAY
+  * Refactored test application for performance tests
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 07 Jun 2010 12:39:54 +0300
+
+applauncherd (0.5.0-1) stable; urgency=low
+
+  * Platform security feature improved
+  * mcomponentcache enabled
+  * disable LD_BIND_NOW environment variable
+  * added delay parameter to invoker, invoker debug logging disabled by default, code refactoring
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Fri, 04 Jun 2010 12:18:59 +0300
+
+applauncherd (0.4.1-1) stable; urgency=low
+
+  * applauncherd-dev install meegotouch-boostable.prf for qmake
+  * Socket permissions set to 777
+  * Documentation updates
+  * Aegis tests updated / fixed
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Thu, 27 May 2010 14:34:47 +0300
+
+applauncherd (0.4.0-1) stable; urgency=low
+
+  * Platform security stuff added: confine for the forked process + verification for the invoker (disabled for now)
+  * Applauncherd package divided into applauncherd-launcher and applauncherd-invoker
+  * Fixes: NB#170267, applauncherd-functional-tests package error
+  * applauncherd-dev installs meegotouch-boostable.pc that shows correct linker flags for applications
+  * Documentation updates
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Thu, 20 May 2010 15:38:42 +0300
+
+applauncherd (0.3.1-1) stable; urgency=low
+
+  * Workaround: NB#168188, populating cache disabled for not allocating graphics memory
+
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Mon, 17 May 2010 14:51:25 +0300
+
+applauncherd (0.3.0-1) stable; urgency=low
+
+  * Added the feature and requirements fields inside tests.xml files
+  * Updated functional and unit tests according the MBooster change
+  * Code refactoring 
+  * Implemented: SWP#DUI-2964
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Tue, 05 May 2010 12:16:40 +0300
+
+applauncherd (0.2.0-5) stable; urgency=low
+
+  * Naming changes: libdui => libmeegotouch
+  * Unit tests are updated
+  * Implemented: SWP#DUI-2483
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 27 Apr 2010 16:16:40 +0300
+
+applauncherd (0.2.0-4) stable; urgency=low
+
+  * applifed-performance-tests is trying to overwrite the file ./usr/bin/waitforwindow, which was provided by applauncherd-performance-tests 
+  * Fixes: NB#161251
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Tue, 06 Apr 2010 13:59:16 +0300
+
+applauncherd (0.2.0-3) stable; urgency=low
+
+  * Instructions for developers added
+  * Process nice parameter passed from invoker to launcher
+  * Unit tests are updated
+  * Implemented: SWP#DUI-2127, SWP#DUI-2152
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Fri, 11 Mar 2010 13:13:02 +0200
+
+applauncherd (0.2.0-2) stable; urgency=low
+
+  * Naming changes: launcher => applauncherd, applaucherd => applauncherd.bin
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Mon, 08 Mar 2010 13:13:02 +0200
+
+applauncherd (0.2.0-1) stable; urgency=low
+
+  * First released version: basic launcher functionality with basic test set
+  * Implemented: SWP#DUI-2270, SWP#DUI-2128
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Fri, 05 Mar 2010 11:16:03 +0200
+
+launcher (0.1.0-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Fri, 12 Feb 2010 16:00:08 +0200
