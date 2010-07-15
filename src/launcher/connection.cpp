@@ -39,7 +39,8 @@ Connection::Connection(const string socketId) :
         m_fileName(""),
         m_argc(0),
         m_argv(NULL),
-        m_priority(0)
+        m_priority(0),
+        m_sendPid(false)
 {
     m_io[0] = -1;
     m_io[1] = -1;
@@ -211,6 +212,14 @@ const char * Connection::recvStr()
     return str;
 }
 
+bool Connection::sendPid(pid_t pid)
+{
+    sendMsg(INVOKER_MSG_PID);
+    sendMsg(pid);
+
+    return true;
+}
+
 int Connection::receiveMagic()
 {
     uint32_t magic = 0;
@@ -228,6 +237,8 @@ int Connection::receiveMagic()
             return -1;
         }
     }
+    m_sendPid  = magic & INVOKER_MSG_MAGIC_OPTION_WAIT;
+
     return magic & INVOKER_MSG_MAGIC_OPTION_MASK;
 }
 
@@ -454,6 +465,10 @@ bool Connection::receiveActions()
             break;
         case INVOKER_MSG_END:
             sendMsg(INVOKER_MSG_ACK);
+
+            if (m_sendPid)
+                sendPid(getpid());
+
             return true;
         default:
             Logger::logError("receiving invalid action (%08x)\n", action);

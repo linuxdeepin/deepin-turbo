@@ -58,6 +58,74 @@ enum APP_TYPE { M_APP, QT_APP, UNKNOWN_APP };
 // Environment
 extern char ** environ;
 
+// pid of invoked process
+static pid_t invoked_pid = -1;
+
+
+static void sig_forwarder(int sig)
+{
+    if (invoked_pid >= 0)
+    {
+        if (kill(invoked_pid, sig) != 0)
+        {
+            die(1, "Can't send signal to application: %s \n", strerror(errno));
+        }
+    }
+}
+
+static void sigs_set(struct sigaction *sig)
+{
+    sigaction(SIGABRT,   sig, NULL);
+    sigaction(SIGALRM,   sig, NULL);
+    sigaction(SIGBUS,    sig, NULL);
+    sigaction(SIGCHLD,   sig, NULL);
+    sigaction(SIGCONT,   sig, NULL);
+    sigaction(SIGHUP,    sig, NULL);
+    sigaction(SIGINT,    sig, NULL);
+    sigaction(SIGIO,     sig, NULL);
+    sigaction(SIGIOT,    sig, NULL);
+    sigaction(SIGPIPE,   sig, NULL);
+    sigaction(SIGPROF,   sig, NULL);
+    sigaction(SIGPWR,    sig, NULL);
+    sigaction(SIGQUIT,   sig, NULL);
+    sigaction(SIGSEGV,   sig, NULL);
+    sigaction(SIGSYS,    sig, NULL);
+    sigaction(SIGTERM,   sig, NULL);
+    sigaction(SIGTRAP,   sig, NULL);
+    sigaction(SIGTSTP,   sig, NULL);
+    sigaction(SIGTTIN,   sig, NULL);
+    sigaction(SIGTTOU,   sig, NULL);
+    sigaction(SIGUSR1,   sig, NULL);
+    sigaction(SIGUSR2,   sig, NULL);
+    sigaction(SIGVTALRM, sig, NULL);
+    sigaction(SIGWINCH,  sig, NULL);
+    sigaction(SIGXCPU,   sig, NULL);
+    sigaction(SIGXFSZ,   sig, NULL);
+}
+
+static void sigs_init(void)
+{
+    struct sigaction sig;
+
+    memset(&sig, 0, sizeof(sig));
+    sig.sa_flags = SA_RESTART;
+    sig.sa_handler = sig_forwarder;
+
+    sigs_set(&sig);
+}
+
+static void sigs_restore(void)
+{
+    struct sigaction sig;
+
+    memset(&sig, 0, sizeof(sig));
+    sig.sa_flags = SA_RESTART;
+    sig.sa_handler = SIG_DFL;
+
+    sigs_set(&sig);
+}
+
+
 /*
  * Show a list of credentials that the client has
  */
@@ -138,6 +206,21 @@ static int invoker_init(enum APP_TYPE app_type)
     }
 
     return fd;
+}
+
+static uint32_t invoker_recv_pid(int fd)
+{
+  uint32_t action, pid;
+
+  /* Receive action. */
+  invoke_recv_msg(fd, &action);
+
+  if (action != INVOKER_MSG_PID)
+      die(1, "receiving bad pid (%08x)\n", action);
+
+  /* Receive pid. */
+  invoke_recv_msg(fd, &pid);
+  return pid;
 }
 
 static bool invoker_send_magic(int fd, int options)
@@ -247,7 +330,7 @@ static bool invoker_send_io(int fd)
     invoke_send_msg(fd, INVOKER_MSG_IO);
     if (sendmsg(fd, &msg, 0) < 0)
     {
-        warning("sendmsg failed in invoker_send_io: %s /n", strerror(errno));
+        warning("sendmsg failed in invoker_send_io: %s \n", strerror(errno));
         return  false;
     }
 
@@ -336,8 +419,17 @@ static void invoke(int prog_argc, char **prog_argv, char *prog_name,
         // Wait for launched process to exit
         if (wait_term)
         {
+            invoked_pid = invoker_recv_pid(fd);
+            debug("Booster's pid is %d \n ", invoked_pid);
+
+            // forward signals to invoked process
+            sigs_init();
+
             char dummy_buf = 0;
             recv(fd, (void *)&dummy_buf, 0, MSG_WAITALL);
+
+            // restore default signal handlers
+            sigs_restore();
         }
 
         close(fd);
@@ -389,6 +481,7 @@ int main(int argc, char *argv[])
 
         case 'w':
             wait_term = true;
+            magic_options = INVOKER_MSG_MAGIC_OPTION_WAIT;
             break;
 
         case 't':

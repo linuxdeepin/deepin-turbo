@@ -5,7 +5,7 @@
   <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
   <suite name="applauncherd-bug-tests" domain="Application framework"> 
 
-    <set name="applauncherd-bug-tests" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
+    <set name="applauncherd-creds-tests" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
@@ -54,6 +54,21 @@
 
       <!--get>
       </get-->
+    </set>
+
+    <set name="applauncherd-bug-tests" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="invoker-wait-term" type="Functional" description="Test that the launched application is killed when killing invoker that is waiting for app to terminate" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">`pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_010</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
     </set>
   </suite>
 </testdefinition>

@@ -40,6 +40,7 @@ import commands
 import time
 import sys
 import unittest
+import re
 
 LAUNCHER_BINARY='/usr/bin/applauncherd'
 DEV_NULL = file("/dev/null","w")
@@ -110,15 +111,15 @@ class launcher_tests (unittest.TestCase):
         else:
             return None
     
-    def kill_process(self, appname=None, apppid=None):
+    def kill_process(self, appname=None, apppid=None, signum=9):
         if apppid and appname: 
             return None
         else:
 	    if apppid: 
-		st, op = commands.getstatusoutput("kill -9 %s" % str(apppid)) 
+		st, op = commands.getstatusoutput("kill -%s %s" % (str(signum), str(apppid)))
 	    if appname: 
 		temp = basename(appname)[:14]
-		st, op = commands.getstatusoutput("pkill -9 %s" % temp)
+		st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
 	        os.wait()
 
     def process_state(self, processid):
@@ -154,7 +155,8 @@ class launcher_tests (unittest.TestCase):
 
         self.kill_process(path)
 
-        return op.split("\n"), pid
+        # The first line from creds-get is rubbish (at the moment at least)
+        return op.split("\n")[1:], pid
 
     #Testcases
     def test_001_launcher_exist(self):
@@ -273,19 +275,27 @@ class launcher_tests (unittest.TestCase):
         op1, pid1 = self.get_creds('/usr/bin/fala_ft_creds1')
         op2, pid2 = self.get_creds('/usr/bin/fala_ft_creds2')
 
+        # filter out some unnecessary tokens
+        def filterfunc(x):
+            pattern = "^(SRC|AID)::"
+            return re.match(pattern, x) == None
+
+        op1 = filter(filterfunc, op1)
+        op2 = filter(filterfunc, op2)
+
         debug("fala_ft_creds1 has %s" % ', '.join(op1))
         debug("fala_ft_creds2 has %s" % ', '.join(op2))
 
         # required common caps
-        caps = ['UID::user', 'GID::users', 'SRC::com.nokia.maemo',
+        caps = ['UID::user', 'GID::users',
                 'applauncherd-testapps::applauncherd-testapps']
 
         # required caps for fala_ft_creds1
-        cap1 = ['Retrieving credentials for pid: %s' %pid1, 'tcb', 'drm', 'Telephony', 'CAP::setuid', 'CAP::setgid',
+        cap1 = ['tcb', 'drm', 'Telephony', 'CAP::setuid', 'CAP::setgid',
                 'CAP::setfcap'] + caps
 
         # required caps for fala_ft_creds2
-        cap2 = ['Retrieving credentials for pid: %s' %pid2, 'Cellular'] + caps
+        cap2 = ['Cellular'] + caps
 
         # check that all required creds are there
         for cap in cap1:
@@ -365,7 +375,43 @@ class launcher_tests (unittest.TestCase):
         pid_list = process_id.split()
         self.assert_(len(pid_list) == len(LAUNCHABLE_APPS), "All Applications were not launched using launcher")
         self.kill_process(PREFERED_APP)
- 
+
+    def test_010(self):
+        """
+        NB#179266
+
+        When calling invoker with --wait-term and killing invoker,
+        the launched application should die too.
+        """
+
+        invoker = '/usr/bin/invoker'
+        app_path = '/usr/bin/fala_ft_hello.launch'
+
+        # Launch the app with invoker
+        p = subprocess.Popen(('%s --type=m --wait-term %s' % (invoker, app_path)).split(),
+                             shell = False,
+                             stdout = DEV_NULL, stderr = DEV_NULL)
+
+        # Retrieve their pids
+        invoker_pid = self.wait_for_app('invoker')
+        app_pid = self.wait_for_app('fala_ft_hello')
+
+        # Make sure that both apps started
+        self.assert_(invoker_pid != None, "invoker not executed?")
+        self.assert_(app_pid != None, "%s not launched by invoker?" % app_path)
+
+        # Send SIGTERM to invoker, the launched app should die
+        self.kill_process(None, invoker_pid, 15)
+        
+        time.sleep(2)
+
+        # This should be None
+        app_pid2 = self.get_pid('fala_ft_hello')
+
+        if (app_pid2 != None):
+            self.kill_process(None, app_pid2)
+            self.assert_(False, "%s was not killed" % app_path)
+
 
 # main
 if __name__ == '__main__':

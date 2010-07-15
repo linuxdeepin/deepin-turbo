@@ -124,6 +124,9 @@ private:
     //! Receive priority
     bool receivePriority();
 
+    //! Send process pid
+    bool sendPid(pid_t pid);
+
     //! Send message to a socket. This is a virtual to help unit testing.
     virtual bool sendMsg(uint32_t msg);
 
@@ -146,6 +149,7 @@ private:
     const char **  m_argv;
     int      m_io[3];
     uint32_t m_priority;
+    bool     m_sendPid;
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
     static const char * m_credsStr;
