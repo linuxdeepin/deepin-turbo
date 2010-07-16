@@ -141,6 +141,8 @@ private:
     //! Pool of sockets mapped to id's
     static PoolType socketPool;
 
+    bool     m_sendPid;
+
     //! Socket fd
     int      m_fd;
     int      m_curSocket;
@@ -149,7 +151,6 @@ private:
     const char **  m_argv;
     int      m_io[3];
     uint32_t m_priority;
-    bool     m_sendPid;
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
     static const char * m_credsStr;

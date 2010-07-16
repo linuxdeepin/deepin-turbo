@@ -34,13 +34,13 @@
 PoolType Connection::socketPool;
 
 Connection::Connection(const string socketId) :
+        m_sendPid(false),
         m_fd(-1),
         m_curSocket(findSocket(socketId)),
         m_fileName(""),
         m_argc(0),
         m_argv(NULL),
-        m_priority(0),
-        m_sendPid(false)
+        m_priority(0)
 {
     m_io[0] = -1;
     m_io[1] = -1;

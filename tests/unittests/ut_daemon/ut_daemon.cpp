@@ -57,17 +57,14 @@ void Ut_Daemon::testParseArgs()
     argv[0] = strdup("app");
     argv[1] = strdup("--daemon");
     argv[2] = strdup("--quiet");
-    argv[3] = strdup("--test");
 
     QVERIFY2(m_subject->m_daemon == false, "Failure");
     QVERIFY2(m_subject->m_quiet == false, "Failure");
-    QVERIFY2(m_subject->m_testMode == false, "Failure");
 
     m_subject->parseArgs(vector<string>(argv, argv + argc));
 
     QVERIFY2(m_subject->m_daemon == true, "Failure");
     QVERIFY2(m_subject->m_quiet == true, "Failure");
-    QVERIFY2(m_subject->m_testMode == true, "Failure");
 
     delete argv[0];
     delete argv[1];
