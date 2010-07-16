@@ -34,13 +34,13 @@
 PoolType Connection::socketPool;
 
 Connection::Connection(const string socketId) :
-        m_sendPid(false),
         m_fd(-1),
         m_curSocket(findSocket(socketId)),
         m_fileName(""),
         m_argc(0),
         m_argv(NULL),
-        m_priority(0)
+        m_priority(0),
+        m_sendPid(false)
 {
     m_io[0] = -1;
     m_io[1] = -1;
@@ -496,7 +496,7 @@ bool Connection::receiveApplicationData(AppData & rApp)
         rApp.setPriority(m_priority);
         rApp.setArgc(m_argc);
         rApp.setArgv(m_argv);
-        rApp.setIODescriptors(vector<int>(m_io, m_io + sizeof(m_io)));
+        rApp.setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
     }
     else
     {

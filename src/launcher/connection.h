@@ -42,6 +42,7 @@ typedef map<string, int> PoolType;
     #include <sys/creds.h>
 #endif
 
+#define IO_DESCRIPTOR_COUNT 3
 
 /*!
  * \class Connection.
@@ -141,16 +142,15 @@ private:
     //! Pool of sockets mapped to id's
     static PoolType socketPool;
 
-    bool     m_sendPid;
-
     //! Socket fd
     int      m_fd;
     int      m_curSocket;
     string   m_fileName;
     uint32_t m_argc;
     const char **  m_argv;
-    int      m_io[3];
+    int      m_io[IO_DESCRIPTOR_COUNT];
     uint32_t m_priority;
+    bool     m_sendPid;
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
     static const char * m_credsStr;
