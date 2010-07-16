@@ -233,6 +233,7 @@ class launcher_tests (unittest.TestCase):
         """
         To test that more than one applications are launched by the launcher 
         """
+        pidlist = []
         for app in LAUNCHABLE_APPS: 
             #launch application with launcher
             #check if the application is running
@@ -241,8 +242,10 @@ class launcher_tests (unittest.TestCase):
             process_handle = self.run_app_with_launcher(app)
             time.sleep(5)
             process_id = self.get_pid(app)
+            pidlist.append(process_id)
             self.assert_(not (process_id == None), "All Applications were not launched using launcher")
-        self.kill_process(PREFERED_APP)
+        for pid in pidlist:
+            self.kill_process(apppid=pid)
        
     
     def test_005_one_instance(self):
@@ -374,7 +377,8 @@ class launcher_tests (unittest.TestCase):
         process_id = self.get_pid('fala_ft_hello')
         pid_list = process_id.split()
         self.assert_(len(pid_list) == len(LAUNCHABLE_APPS), "All Applications were not launched using launcher")
-        self.kill_process(PREFERED_APP)
+        for pid in pid_list:
+            self.kill_process(apppid=pid)
 
     def test_010(self):
         """
