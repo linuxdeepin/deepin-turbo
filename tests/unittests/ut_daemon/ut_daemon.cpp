@@ -51,7 +51,7 @@ void Ut_Daemon::testInitialArguments()
 
 void Ut_Daemon::testParseArgs()
 {
-    int argc = 4;
+    int argc = 3;
     char **argv = new char * [argc];
 
     argv[0] = strdup("app");
@@ -69,7 +69,6 @@ void Ut_Daemon::testParseArgs()
     delete argv[0];
     delete argv[1];
     delete argv[2];
-    delete argv[3];
     delete [] argv;
 }
 
