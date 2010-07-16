@@ -100,9 +100,6 @@ private:
     //! Don't use console for output
     void consoleQuiet();
 
-    //! Test mode flag
-    bool m_testMode;
-
     //! Daemonize flag
     bool m_daemon;
 

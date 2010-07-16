@@ -42,7 +42,6 @@ Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
 
 Daemon::Daemon(int & argc, char * argv[]) :
-    m_testMode(false),
     m_daemon(false),
     m_quiet(false)
 {
@@ -386,10 +385,6 @@ void Daemon::parseArgs(const ArgVect & args)
         else if  ((*i) ==  "--quiet")
         {
             m_quiet = true;
-        }
-        else if ((*i) == "--test")
-        {
-            m_testMode = true;
         }
     }
 }
