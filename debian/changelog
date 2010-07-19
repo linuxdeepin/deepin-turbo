@@ -1,3 +1,11 @@
+applauncherd (0.8.0) stable; urgency=low
+
+  * Fixes: NB#179266 -  terminating invoker --wait-term leaves launched process running
+  * a bug fixed in io descriptor count, previous rearrangement taken back
+  * test mode removed from ut_daemon, rearranged member variables in connection
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 19 Jul 2010 12:17:36 +0300
+
 applauncherd (0.7.0-2) stable; urgency=low
 
   * Fixes: NB#176326 -  Conndlgs launched using Applauncherd respawns until respawn limit
