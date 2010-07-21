@@ -327,7 +327,8 @@ class launcher_tests (unittest.TestCase):
         creds, pid = self.get_creds('/usr/bin/fala_ft_hello')
         debug("fala_ft_hello has %s" % ', '.join(creds))
 
-        req_creds = ['UID::nobody', 'GID::nogroup']
+        # Credentials should be dropped, but uid/gid retained
+        req_creds = ['UID::user', 'GID::users']
 
         creds.sort()
         req_creds.sort()
