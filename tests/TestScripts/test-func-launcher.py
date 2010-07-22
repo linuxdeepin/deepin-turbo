@@ -47,6 +47,8 @@ DEV_NULL = file("/dev/null","w")
 LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin/fala_ft_hello2']
 PREFERED_APP = '/usr/bin/fala_ft_hello'
 
+using_scratchbox = False
+
 def debug(*msg):
     """
     Debug function
@@ -417,6 +419,43 @@ class launcher_tests (unittest.TestCase):
             self.kill_process(None, app_pid2)
             self.assert_(False, "%s was not killed" % app_path)
 
+    def test_011(self):
+        # stop/kill applauncherd if it's running
+        if using_scratchbox:
+            commands.getstatusoutput("pkill applauncherd")
+        else:
+            commands.getstatusoutput("initctl stop xsession/applauncherd")
+
+        files = ['/tmp/applauncherd.lock', '/tmp/qtlnchr', '/tmp/mlnchr']
+
+        for f in files:
+            os.remove(f)
+
+        # start applauncherd daemonized
+        subprocess.Popen(["applauncherd.bin", "--daemon"],
+                         shell=False, 
+                         stdout=DEV_NULL, stderr=DEV_NULL)
+
+        time.sleep(2)
+
+        # count should be 2 (pgrep -f returns the shell in which it is run ...)
+        st, op = commands.getstatusoutput('pgrep -f "applauncherd.bin --daemon"')
+        count = len(op.split("\n"))
+
+        commands.getstatusoutput('pkill -f "applauncherd.bin --daemon"')
+
+        for f in files:
+            os.remove(f)
+
+        # start applauncherd again
+        if using_scratchbox:
+            subprocess.Popen("applauncherd",
+                             shell=False, 
+                             stdout=DEV_NULL, stderr=DEV_NULL)
+        else:
+            commands.getstatusoutput("initctl start xsession/applauncherd")            
+
+        self.assert_(count == 2, "applauncherd was not daemonized")
 
 # main
 if __name__ == '__main__':
@@ -424,6 +463,7 @@ if __name__ == '__main__':
     # the tools/bin directory
     if os.getenv('_SBOX_DIR') != None:
         os.environ['PATH'] = os.getenv('PATH') + ":" + os.getenv('_SBOX_DIR') + '/tools/bin'
+        using_scratchbox = True
 
     check_prerequisites()
     start_launcher_daemon()
