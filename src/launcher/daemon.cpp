@@ -352,33 +352,11 @@ void Daemon::daemonize()
     }
 }
 
-void Daemon::usage() const
-{
-    std::cout << "Usage: "<< PROG_NAME << " [options]\n"
-              << "\n"
-              << "Options:\n"
-              << "  --daemon            Fork and go into the background.\n"
-              //<< "  --pidfile FILE      Specify a different pid file (default " << LAUNCHER_PIDFILE << " ).\n"
-              //<< "  --send-app-died     Send application died signal.\n"
-              << "  --quiet             Do not print anything.\n"
-              << "  --help              Print this help message.\n"
-              << "\n"
-              << "Use the invoker to start a <shared object> from the launcher.\n"
-              << "Where <shared object> is a binary including a 'main' symbol.\n"
-              << "Note that the binary needs to be linked with -shared or -pie.\n";
-
-    exit(EXIT_SUCCESS);
-}
-
 void Daemon::parseArgs(const ArgVect & args)
 {
     for (ArgVect::const_iterator i(args.begin()); i != args.end(); i++)
     {
-        if ((*i) == "--help")
-        {
-            usage();
-        }
-        else if ((*i) == "--daemon")
+        if ((*i) == "--daemon")
         {
             m_daemon = true;
         }

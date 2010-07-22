@@ -91,9 +91,6 @@ private:
     //! Fork to a daemon
     void daemonize();
 
-    //! Print usage
-    void usage() const;
-
     //! Forks and initializes a new Booster
     bool forkBooster(char type, int pipefd[2]);
 
