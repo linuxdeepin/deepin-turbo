@@ -42,6 +42,8 @@ import sys
 import unittest
 import re
 
+from subprocess import Popen
+
 LAUNCHER_BINARY='/usr/bin/applauncherd'
 DEV_NULL = file("/dev/null","w")
 LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin/fala_ft_hello2']
@@ -419,7 +421,12 @@ class launcher_tests (unittest.TestCase):
             self.kill_process(None, app_pid2)
             self.assert_(False, "%s was not killed" % app_path)
 
+
     def test_011(self):
+        """
+        Test that the --daemon parameter works for applauncherd
+        """
+
         # function to remove some temporaries
         def rem():
             files = ['/tmp/applauncherd.lock', '/tmp/qtlnchr', '/tmp/mlnchr']
@@ -482,6 +489,39 @@ class launcher_tests (unittest.TestCase):
                              stdout=DEV_NULL, stderr=DEV_NULL)
         else:
             commands.getstatusoutput("initctl start xsession/applauncherd")
+
+
+    def test_012(self):
+        """
+        Test the --delay parameter of the invoker.
+        """
+
+        # launch an app with invoker --delay n
+        print "launching fala_ft_hello ..."
+        p = Popen(['/usr/bin/invoker', '--delay', '10', '--type=m',
+                   '/usr/bin/fala_ft_hello.launch'],
+                  shell=False, 
+                  stdout=DEV_NULL, stderr=DEV_NULL)
+
+        # wait a little
+        print "waiting ..."
+        time.sleep(5)
+
+        success = True
+
+        if p.poll() == None:
+            print "NOT DEAD"
+        else:
+            print "DEAD"
+            success = False
+
+        print "waiting for invoker to terminate ..."
+        p.wait()
+
+        print "terminating fala_ft_hello ..."
+        Popen(['pkill', 'fala_ft_hello']).wait()
+
+        self.assert_(success, "invoker terminated before delay elapsed")
 
 # main
 if __name__ == '__main__':
