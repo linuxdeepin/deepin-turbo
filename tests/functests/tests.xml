@@ -39,6 +39,14 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_012</step>
       </case>
 
+      <case name="applauncherd-usage" type="Functional" description="Test that invokers --delay parameter works" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_013_applauncherd_usage</step>
+      </case>
+
+      <case name="search-app" type="Functional" description="Test that invokers --delay parameter works" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_014_search_path</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

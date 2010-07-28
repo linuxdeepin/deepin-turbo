@@ -523,6 +523,22 @@ class launcher_tests (unittest.TestCase):
 
         self.assert_(success, "invoker terminated before delay elapsed")
 
+    def test_013_applauncherd_usage(self):
+        """
+        Test applauncherd.bin help
+        """
+        st, op = commands.getstatusoutput("applauncherd.bin --help")
+        self.assert_(st == 0, "Usage not printed")
+        str = op.split('\n')
+        self.assert_(str[0] == 'Usage: applauncherd [options]', "usage not printed properly")
+
+    def test_014_search_path(self):
+        """
+        Test invoker search application path
+        """
+        st = os.system("invoker --type=m fala_ft_hello.launch")
+        self.assert_(st == 0, "Application not found ")
+
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
