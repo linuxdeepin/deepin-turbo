@@ -61,7 +61,7 @@ class TC_Theming < Test::Unit::TestCase
             system(cmd)
         }
 
-        sleep(5)
+        sleep(15)
     end
 
     def get_theme()
