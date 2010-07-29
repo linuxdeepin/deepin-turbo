@@ -244,6 +244,9 @@ bool Daemon::forkBooster(char type, int pipefd[2])
         // Don't care about fate of parent applauncherd process any more
         prctl(PR_SET_PDEATHSIG, 0);
 
+        // Set dumpable flag
+        prctl(PR_SET_DUMPABLE, 1);
+        
         // Run the current Booster
         booster->run();
 
