@@ -1,0 +1,4 @@
+These files are for packaging applauncherd for MeeGo. In order to generate
+the RPM .spec file you need to have the spectacle package installed,
+and then run "specify ./meegotouch-applauncherd.yaml". Remember to update
+meegotouch-applauncherd.changes before you submit a package.
