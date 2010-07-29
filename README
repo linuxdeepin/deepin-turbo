@@ -16,7 +16,10 @@ Each application type (currently Qt and MeeGo Touch) has its own booster process
 
 Booster processes do some initializations that cannot be shared among other processes and therefore have to be done after the fork. This allows, for instance, instantiating a MeeGo Touch application before knowing the name of the application. Then the booster process waits for a connection from the invoker with the information about which application should be launched. 
 
-With MeeGo Touch booster it's possible to fetch certain objects from a cache. This will significantly reduce the startup time of an application. Please refer to the MeeGo Touch documentation for instructions on MComponentCache and how to enable it in your application.
+With MeeGo Touch booster it's possible to fetch certain objects from a cache. This will significantly reduce the startup time of an application. 
+
+Note: Please refer to the MeeGo Touch documentation for instructions on MComponentCache and how to enable it in your application. This README file describes only the idea behind the launcher and the
+basic usage, it's not the "official" user documentation.
 
 
 Using applauncherd
@@ -94,7 +97,7 @@ To improve linking and load times of shared object libraries the size of dynamic
 
 Rename appication binary to <application_name>.launch and replace the original binary by a wrapper script that executes invoker with correct application type and the name of the application binary as a parameter. 
 
-Use --type=m parameter for MeeGo Touch applications and --type=qt for plain Qt applications and everything else. Launch script example for typical application:
+Use --type=m parameter for MeeGo Touch applications and --type=qt for plain Qt applications and everything else. Here is a launch script example for a typical application:
 
   #!/bin/sh
   echo "/usr/bin/invoker --type=m" $0.launch $@
@@ -103,12 +106,17 @@ Use --type=m parameter for MeeGo Touch applications and --type=qt for plain Qt a
 If you are using D-Bus to launch your application, then this can be done straightly in the .service-file without any wrapper scripts:
 
   [D-BUS Service]
-  Name=com.nokia.launchable_app
-  Exec=/usr/bin/invoker --type=m /usr/bin/launchable_app.launch
+  Name=com.nokia.<application_name>
+  Exec=/usr/bin/invoker --delay <seconds> --type=m /usr/bin/<application_name>.launch
+  
+  Note: when launching through D-Bus, it is important to add enough delay to invoker so that it won't
+  exit before the launched application gets its D-Bus service registered. Otherwise D-Bus daemon may
+  think that the application just died. Another option is to use --wait-term which makes invoker
+  wait until the launched application exits.
 
-3. STARTING Applaucherd
+3. STARTING Applauncherd
 
-Applauncherd is started by UpStart during the boot time, but it can be also started manually in scratchbox or on the device by the /usr/bin/applauncherd -script
+Applauncherd is started by UpStart during the boot time, but it can be also started manually in scratchbox or on the device by the /usr/bin/applauncherd script.
 
 4. PLATFORM SECURITY (Aegis)
 
@@ -116,11 +124,9 @@ Altough the connection between invoker and launcher is protected by Aegis, Appli
 
 5. PACKAGING
 
-Add dependency to applauncherd package to "Depends" section of your applications debian/control file.
+Applications using the launcher must depend on applauncherd package.
 
-
-Current known issues
-==============================
+6. CURRENT KNOWN ISSUES
 
   Forking and MComponentCache
   ---------------------------
@@ -129,8 +135,18 @@ Current known issues
   before trying to fetch components from the cache. This is just due to the
   fact that X11 connections get messed up after fork(). 
 
-Questions and Bug Reports
-==============================
-TBD
+  Issues with scripts, D-Bus, and process monitoring
+  --------------------------------------------------
+  
+  By default, invoker processes terminate before or right after booster processes have called main().
+  This may confuse shell scripts and process monitoring in D-Bus daemon and Upstart, for instance. To
+  help solving these issues invoker accepts parameters:
+  
+  --delay 10 invoker waits for 10 seconds before terminating 
+  --wait-term invoker will not terminate until the launched application process terminates.
+
+7. FURTHER READING
+
+MeeGo Touch documentation for fast application startup.
 
 
