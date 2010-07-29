@@ -1,0 +1,33 @@
+Name: meegotouch-applauncherd
+Summary: Application launcher for fast startup
+Version: 0.9.0
+Release: 1
+Group: System/Daemons
+License: LGPLv2+
+URL: http://meego.gitorious.com/meegotouch/meegotouch-applauncherd
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Description: |
+    Application invoker and launcher daemon that speed up
+    application startup time.
+PkgConfigBR:
+    - QtCore
+    - meegotouch
+PkgBR:
+    - cmake
+Builder: make
+SubPackages:
+    - Name: devel
+      Group: Development/Tools
+      Summary: Development files for launchable applications
+      Description: |
+         Development files for creating applications that can be launched 
+         using meegotouch-applauncherd.
+      Files:
+        - "%{_libdir}/pkgconfig/meegotouch-boostable.pc"
+        - "%doc %{_docdir}/applauncherd/README"
+        - "%{_datadir}/qt4/mkspecs/features/meegotouch-boostable.prf"
+Files:
+    - "%{_bindir}/invoker"
+    - "%{_bindir}/applauncherd.bin"
+    - "%{_bindir}/applauncherd"
