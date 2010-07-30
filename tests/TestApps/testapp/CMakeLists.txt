@@ -4,7 +4,7 @@ link_libraries(${MEEGOTOUCH_LIBRARIES})
 
 # Use the compiler and linker flags given in meegotouch-boostable.pc
 # in the source tree.
-execute_process(COMMAND "/bin/env" 
+execute_process(COMMAND "env" 
                          "PKG_CONFIG_PATH=${CMAKE_SOURCE_DIR}/data/pkgconfig" 
                          "/usr/bin/pkg-config" 
                          "--cflags" 
@@ -12,7 +12,7 @@ execute_process(COMMAND "/bin/env"
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
                 OUTPUT_VARIABLE booster_cflags 
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND "/bin/env" 
+execute_process(COMMAND "env" 
                         "PKG_CONFIG_PATH=${CMAKE_SOURCE_DIR}/data/pkgconfig" 
                         "/usr/bin/pkg-config" "--libs" 
                         "meegotouch-boostable" 
