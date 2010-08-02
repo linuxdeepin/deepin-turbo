@@ -12,15 +12,13 @@ configure-stamp:
 
 ifeq ($(DEB_HOST_ARCH), arm)
 	# Configure Applauncherd to be build with tests
-	# TODO: remove DISABLE_VERIFICATION=1 when works
 	BUILD_TESTS=1 ./configure
 else ifeq ($(DEB_HOST_ARCH), armel)
 	# Configure Applauncherd to be build with tests
-	# TODO: remove DISABLE_VERIFICATION=1 when works
 	BUILD_TESTS=1  ./configure
 else
 	# Configure Applauncherd to be build with tests and without checking invoker credentials
-	BUILD_TESTS=1  ./configure
+	BUILD_TESTS=1 DISABLE_VERIFICATION=1 ./configure
 endif
 
 	touch configure-stamp
@@ -83,7 +81,8 @@ binary-arch: build install
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb 
-# TODO: CLEAN THIS UP!
+
+# This enables Aegis for arm and armel
 ifeq ($(DEB_HOST_ARCH), arm)
 	aegis-deb-add -control debian/applauncherd-launcher/DEBIAN/control .. debian/applauncherd-launcher.aegis=_aegis
 	aegis-deb-add -control debian/applauncherd-invoker/DEBIAN/control .. debian/applauncherd-invoker.aegis=_aegis
