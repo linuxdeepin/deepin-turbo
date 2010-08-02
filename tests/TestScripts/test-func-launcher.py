@@ -87,7 +87,7 @@ def check_prerequisites():
               "You probably want to source /tmp/session_bus_address.user")
 
     for app in LAUNCHABLE_APPS: 
-        assert(len(basename(app)) <= 14, "For app: %s, base name !<= 14" % app)
+        assert(len(basename(app)) < 15, "For app: %s, base name !<= 14" % app)
 
 class launcher_tests (unittest.TestCase):
     def setUp(self):

@@ -11,39 +11,39 @@
       </pre_steps>
 
 
-      <case name="launcher-exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="120" level="System" insignificant="false">
+      <case name="launcher-exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_001_launcher_exist</step>
       </case>
 
-      <case name="launchable-app-exist" type="Functional" description="test_launchable_application_exists " timeout="120" level="System" insignificant="false">
+      <case name="launchable-app-exist" type="Functional" description="test_launchable_application_exists " timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_002_applications_exist</step>
       </case>
 
-      <case name="zombie-state" type="Functional" description="To test that process exits after the application is killed" timeout="120" level="System" insignificant="false">
+      <case name="zombie-state" type="Functional" description="To test that process exits after the application is killed" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_003_zombie_state</step>
       </case>
 
-      <case name="launch-multi-app" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="120" level="System" insignificant="false">
+      <case name="launch-multi-app" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user;  DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_004_launch_multiple_apps</step>
       </case>
 
-      <case name="one-instance" type="Functional" description="To test that only one instance of a application exist" timeout="120" level="System" insignificant="false">
+      <case name="one-instance" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_005_one_instance</step>
       </case>
 
-      <case name="daemonized" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="120" level="System" insignificant="true">
+      <case name="daemonized" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_011</step>
       </case>
 
-      <case name="invoker-delay" type="Functional" description="Test that invokers --delay parameter works" timeout="120" level="System" insignificant="true">
+      <case name="invoker-delay" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_012</step>
       </case>
 
-      <case name="applauncherd-usage" type="Functional" description="Test that invokers --delay parameter works" timeout="120" level="System" insignificant="true">
+      <case name="applauncherd-usage" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_013_applauncherd_usage</step>
       </case>
 
-      <case name="search-app" type="Functional" description="Test that invokers --delay parameter works" timeout="120" level="System" insignificant="true">
+      <case name="search-app" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_014_search_path</step>
       </case>
 
@@ -62,7 +62,7 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="120" level="System" insignificant="true">
+      <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_006_creds</step>
       </case>
       
@@ -76,7 +76,7 @@
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
-      <case name="Prestart-launched" type="Functional" description="To test that prestarted application is launched" timeout="120" level="System">
+      <case name="Prestart-launched" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb --name test_launch_prestarted_app</step>
       </case>
 
