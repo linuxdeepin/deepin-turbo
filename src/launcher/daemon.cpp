@@ -95,7 +95,7 @@ Daemon * Daemon::instance()
 Daemon::~Daemon()
 {}
 
-bool Daemon::lock(void)
+bool Daemon::lock()
 {
     struct flock fl;
 
@@ -113,7 +113,7 @@ bool Daemon::lock(void)
     return true;
 }
 
-void Daemon::unlock(void)
+void Daemon::unlock()
 {
     if (m_lockFd != -1)
     {

@@ -71,10 +71,10 @@ public:
     void reapZombies();
 
     //! Lock file to prevent launch of second instance
-    static bool lock(void);
+    static bool lock();
 
     //! Unlock file (lock is not needed in boosters)
-    static void unlock(void);
+    static void unlock();
 
 private:
 

@@ -71,7 +71,7 @@ void Logger::openLog(const char * progName)
             // Remove the oldest log file
             m_logFile.setFileName(oldLogFileName);
             m_logFile.remove();
-            // Copy latest log file to applifed.log.old
+            // Copy latest log file to .log.old
             m_logFile.setFileName(logFileName);
             m_logFile.rename(oldLogFileName);
             // Open current log file
