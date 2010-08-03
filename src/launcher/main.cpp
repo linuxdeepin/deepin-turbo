@@ -26,7 +26,7 @@
 #include <fcntl.h>
 #include <sys/file.h>
 
-//! Signal handler to reap zombies
+//! Signal handler to reap zombie processes
 void reapZombies(int)
 {
     if (Daemon::instance())
