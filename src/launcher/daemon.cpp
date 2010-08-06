@@ -240,6 +240,7 @@ bool Daemon::forkBooster(char type, int pipefd[2])
         }
 
         close(pipefd[1]);
+        Connection::closeAllSockets();
 
         // Don't care about fate of parent applauncherd process any more
         prctl(PR_SET_PDEATHSIG, 0);

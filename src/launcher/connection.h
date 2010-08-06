@@ -80,6 +80,9 @@ public:
      */
     static void initSocket(const string socketId);
 
+    //! \brief Close all open sockets.
+    static void closeAllSockets();
+
 private:
 
     /*! \brief Receive actions.

@@ -66,6 +66,20 @@ Connection::Connection(const string socketId) :
 Connection::~Connection()
 {}
 
+void Connection::closeAllSockets()
+{
+    PoolType::iterator it;
+
+    for (it = socketPool.begin(); it != socketPool.end(); ++it)
+    {
+        if (it->second > 0)
+        {
+            int res = close(it->second);
+            it->second = -1;
+        }
+    }
+}
+
 int Connection::findSocket(const string socketId)
 {
     PoolType::iterator it(socketPool.find(socketId));
