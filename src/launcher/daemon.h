@@ -92,7 +92,7 @@ private:
     void daemonize();
 
     //! Forks and initializes a new Booster
-    bool forkBooster(char type, int pipefd[2]);
+    bool forkBooster(char type);
 
     //! Don't use console for output
     void consoleQuiet();
@@ -106,6 +106,9 @@ private:
     //! Vector of current child PID's
     typedef vector<pid_t> PidVect;
     PidVect m_children;
+
+    // Pipe used to tell the parent that a new booster is needed
+    int m_pipefd[2];
 
     int    m_initialArgc;
     char** m_initialArgv;
