@@ -577,21 +577,14 @@ class launcher_tests (unittest.TestCase):
         str = op.split('\n')
         self.assert_(str[0] == 'Usage: applauncherd [options]', "usage not printed properly")
 
-    def test_014_search_path(self):
-        """
-        Test invoker search application path
-        """
-        st = os.system("invoker --type=m fala_ft_hello.launch")
-        self.assert_(st == 0, "Application not found ")
-
-    def test_015_fd_booster_m(self):
+    def test_014_fd_booster_m(self):
         """
         File descriptor test for booster-m
         """
         count = self.get_file_descriptor("booster-m","m")
         self.assert_(count != 0, "None of the file descriptors were changed")
 
-    def test_016_fd_booster_q(self):
+    def test_015_fd_booster_q(self):
         """
         File descriptor test for booster-q
         """
