@@ -321,7 +321,7 @@ class launcher_tests (unittest.TestCase):
         debug("PID of first %s" % process_id)
 
         process_handle1 = self.run_app_with_launcher(PREFERED_APP)
-        sleep(2)
+        time.sleep(2)
         process_id = self.wait_for_app(PREFERED_APP)
         debug("PID of 2nd %s" % process_id)
 
