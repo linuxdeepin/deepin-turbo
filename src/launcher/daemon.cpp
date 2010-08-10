@@ -51,8 +51,7 @@ Daemon::Daemon(int & argc, char * argv[]) :
     }
     else
     {
-        std::cerr << "Daemon already created!" << std::endl;
-        exit(EXIT_FAILURE);
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon already created!\n");
     }
 
     // Parse arguments
@@ -65,6 +64,11 @@ Daemon::Daemon(int & argc, char * argv[]) :
     // Store arguments list
     m_initialArgv = argv;
     m_initialArgc = argc;
+
+    if (pipe(m_pipefd) == -1)
+    {
+        Logger::logErrorAndDie(EXIT_FAILURE, "Creating a pipe failed!!!\n");
+    }
 
     // Daemonize if desired
     if (m_daemon)
@@ -132,22 +136,14 @@ void Daemon::run()
     Connection::initSocket(MBooster::socketName());
     Connection::initSocket(QtBooster::socketName());
 
-    // Pipe used to tell the parent that a new
-    // booster is needed
-    int pipefd[2];
-    if (pipe(pipefd) == -1)
-    {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Creating a pipe failed!!!\n");
-    }
-
-    forkBooster(MBooster::type(), pipefd);
-    forkBooster(QtBooster::type(),  pipefd);
+    forkBooster(MBooster::type());
+    forkBooster(QtBooster::type());
 
     while (true)
     {
         // Wait for something appearing in the pipe
         char msg;
-        ssize_t count = read(pipefd[0], reinterpret_cast<void *>(&msg), 1);
+        ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
         if (count)
         {
             // Guarantee some time for the just launched application to
@@ -156,7 +152,7 @@ void Daemon::run()
             sleep(2);
 
             // Fork a new booster of the given type
-            forkBooster(msg, pipefd);
+            forkBooster(msg);
         }
         else
         {
@@ -165,7 +161,7 @@ void Daemon::run()
     }
 }
 
-bool Daemon::forkBooster(char type, int pipefd[2])
+bool Daemon::forkBooster(char type)
 {
     // Fork a new process
     pid_t newPid = fork();
@@ -182,7 +178,7 @@ bool Daemon::forkBooster(char type, int pipefd[2])
         prctl(PR_SET_PDEATHSIG, SIGHUP);
 
         // Close unused read end
-        close(pipefd[0]);
+        close(m_pipefd[0]);
 
         // close lock file, it's not needed in the booster
         Daemon::unlock();
@@ -234,12 +230,13 @@ bool Daemon::forkBooster(char type, int pipefd[2])
         // Signal the parent process that it can create a new
         // waiting booster process and close write end
         const char msg = booster->boosterType();
-        ssize_t ret = write(pipefd[1], reinterpret_cast<const void *>(&msg), 1);
+        ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
         if (ret == -1) {
             Logger::logError("Can't send signal to launcher process' \n");
         }
 
-        close(pipefd[1]);
+        // close sockets and pipe
+        close(m_pipefd[1]);
         Connection::closeAllSockets();
 
         // Don't care about fate of parent applauncherd process any more
