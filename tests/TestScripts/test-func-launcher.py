@@ -162,6 +162,51 @@ class launcher_tests (unittest.TestCase):
         # The first line from creds-get is rubbish (at the moment at least)
         return op.split("\n")[1:], pid
 
+    def get_file_descriptor(self, booster, type):
+        """
+        To test that file descriptors are closed before calling application main
+        """
+        #get fd of booster before launching application
+        pid = commands.getoutput("pgrep %s" %booster)
+        fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
+        fd_info = fd_info.split('\n')
+        init = {}
+        final = {}
+      
+        for fd in fd_info:
+            if "->" in fd:
+                init[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
+        print init
+       
+        #launch application using booster
+        st = os.system('invoker --type=%s /usr/bin/fala_ft_hello.launch' %type)
+        time.sleep(2)
+        
+        #get fd of booster after launching the application
+        if st == 0:
+            fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
+            fd_info = fd_info.split('\n')
+            for fd in fd_info:
+                if "->" in fd:
+                    final[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
+        print final
+        pid = commands.getoutput('pgrep fala_ft_hello')    
+
+        mykeys = init.keys()
+        count = 0
+  
+        for key in mykeys:
+            try:
+                if init[key] != final[key]:
+                    count = count + 1
+            except KeyError:
+                print "some key in init is not in final" 
+        time.sleep(2)
+        print "The number of changed file descriptors %d" %count
+        self.kill_process(apppid=pid) 
+        return count
+    
+
     #Testcases
     def test_001_launcher_exist(self):
         """
@@ -538,6 +583,20 @@ class launcher_tests (unittest.TestCase):
         """
         st = os.system("invoker --type=m fala_ft_hello.launch")
         self.assert_(st == 0, "Application not found ")
+
+    def test_015_fd_booster_m(self):
+        """
+        File descriptor test for booster-m
+        """
+        count = self.get_file_descriptor("booster-m","m")
+        self.assert_(count != 0, "None of the file descriptors were changed")
+
+    def test_016_fd_booster_q(self):
+        """
+        File descriptor test for booster-q
+        """
+        count = self.get_file_descriptor("booster-q","qt")
+        self.assert_(count != 0, "None of the file descriptors were changed")
 
 # main
 if __name__ == '__main__':
