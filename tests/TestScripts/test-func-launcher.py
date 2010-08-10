@@ -124,7 +124,11 @@ class launcher_tests (unittest.TestCase):
 	    if appname: 
 		temp = basename(appname)[:14]
 		st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
-	        os.wait()
+
+                try:
+                    os.wait()
+                except:
+                    pass
 
     def process_state(self, processid):
         st, op = commands.getstatusoutput('cat /proc/%s/stat' %processid)
