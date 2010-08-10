@@ -317,14 +317,17 @@ class launcher_tests (unittest.TestCase):
         #y = commands.getstatusoutput(pgrep appname)
         #len(y[-1].split(' ')) == 1
         process_handle = self.run_app_with_launcher(PREFERED_APP)
-        process_id = self.get_pid(PREFERED_APP)
+        process_id = self.wait_for_app(PREFERED_APP)
         debug("PID of first %s" % process_id)
+
         process_handle1 = self.run_app_with_launcher(PREFERED_APP)
-        time.sleep(2)
-        process_id = self.get_pid(PREFERED_APP)
+        sleep(2)
+        process_id = self.wait_for_app(PREFERED_APP)
         debug("PID of 2nd %s" % process_id)
-        self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
+
         self.kill_process(PREFERED_APP)
+
+        self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
 
 
     def test_006_creds(self):
