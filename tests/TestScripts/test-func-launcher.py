@@ -286,20 +286,24 @@ class launcher_tests (unittest.TestCase):
         """
         To test that more than one applications are launched by the launcher 
         """
+
+        def kill_launched(pids):
+            for pid in pids:
+                self.kill_process(apppid = pid)
+
         pidlist = []
-        for app in LAUNCHABLE_APPS: 
-            #launch application with launcher
-            #check if the application is running
-            #check if p.pid is same as pgrep appname
-            #in a global dictionary, append the pid
-            process_handle = self.run_app_with_launcher(app)
-            time.sleep(5)
-            process_id = self.get_pid(app)
-            pidlist.append(process_id)
-            self.assert_(not (process_id == None), "All Applications were not launched using launcher")
-        for pid in pidlist:
-            self.kill_process(apppid=pid)
-       
+
+        for app in LAUNCHABLE_APPS:
+            p = self.run_app_with_launcher(app)
+            pid = self.wait_for_app(app, timeout = 10, sleep = 1)
+
+            if pid == None:
+                kill_launched(pidlist)
+                self.fail("%s was not launched using applauncherd")
+
+            pidlist.append(pid)
+
+        kill_launched(pidlist)
     
     def test_005_one_instance(self):
         """
