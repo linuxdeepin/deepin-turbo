@@ -2,7 +2,6 @@
     <request>
 	<credential name="tcb" />
 	<credential name="drm" />
-	<credential name="Telephony" />
 	<credential name="CAP::setuid" />
 	<credential name="CAP::setgid" />
 	<credential name="CAP::setfcap" />

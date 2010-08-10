@@ -298,7 +298,7 @@ class launcher_tests (unittest.TestCase):
                 'applauncherd-testapps::applauncherd-testapps']
 
         # required caps for fala_ft_creds1
-        cap1 = ['tcb', 'drm', 'Telephony', 'CAP::setuid', 'CAP::setgid',
+        cap1 = ['tcb', 'drm', 'CAP::setuid', 'CAP::setgid',
                 'CAP::setfcap'] + caps
 
         # required caps for fala_ft_creds2
