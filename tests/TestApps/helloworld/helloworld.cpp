@@ -32,9 +32,7 @@
 #include <mcomponentcache.h>
 #endif
 
-M_EXPORT int main(int, char**);
-
-int main(int argc, char ** argv)
+M_EXPORT int main(int argc, char ** argv)
 {
 #ifdef HAVE_MCOMPONENTCACHE
     MApplication *app = MComponentCache::mApplication(argc, argv);
@@ -57,6 +55,15 @@ int main(int argc, char ** argv)
     linearPolicy->addItem(new MSlider);
 
     window->show();
+
+    char *foobar = "foo!";
+    for (int i = 0; i < argc; ++i)
+    {
+        if (QString(argv[i]) == "-segfault")
+        {
+            foobar[3] = 'z';
+        }
+    }
 
     // Explicitly state where to appear, just to be sure :-)
     mainPage->appear(window);
