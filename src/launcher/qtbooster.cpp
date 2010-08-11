@@ -20,6 +20,7 @@
 #include "qtbooster.h"
 
 const string QtBooster::m_socketId = "/tmp/qtlnchr";
+int QtBooster::m_ProcessID = 0;
 
 QtBooster::QtBooster()
 {
@@ -47,4 +48,14 @@ char QtBooster::type()
 bool QtBooster::preload()
 {
     return true;
+}
+
+void QtBooster::setProcessId(int pid)
+{
+    m_ProcessID = pid;
+}
+
+int QtBooster::ProcessId()
+{
+    return m_ProcessID;
 }

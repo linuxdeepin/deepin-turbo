@@ -40,6 +40,7 @@
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
+const int Daemon::m_boosterSleepTime = 2;
 
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
@@ -146,13 +147,13 @@ void Daemon::run()
         ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
         if (count)
         {
-            // Guarantee some time for the just launched application to
-            // start up before forking new booster. Not doing this would
-            // slow down the start-up significantly on single core CPUs.
-            sleep(2);
-
             // Fork a new booster of the given type
-            forkBooster(msg);
+
+            // 2nd param guarantees some time for the just launched application
+            // to start up before forking new booster. Not doing this would
+            // slow down the start-up significantly on single core CPUs.
+
+            forkBooster(msg, m_boosterSleepTime);
         }
         else
         {
@@ -161,7 +162,7 @@ void Daemon::run()
     }
 }
 
-bool Daemon::forkBooster(char type)
+bool Daemon::forkBooster(char type, int sleepTime)
 {
     // Fork a new process
     pid_t newPid = fork();
@@ -187,6 +188,11 @@ bool Daemon::forkBooster(char type)
         {
             Logger::logError("Setting session id\n");
         }
+
+        // Guarantee some time for the just launched application to
+        // start up before forking new booster if needed.
+        if (sleepTime)
+            sleep(sleepTime);
 
         Logger::logNotice("Running a new Booster of %c type...", type);
 
@@ -256,6 +262,14 @@ bool Daemon::forkBooster(char type)
     {
         // Store the pid so that we can reap it later
         m_children.push_back(newPid);
+        if (MBooster::type() == type)
+        {
+            MBooster::setProcessId(newPid);
+        }
+        else if (QtBooster::type() == type)
+        {
+            QtBooster::setProcessId(newPid);
+        }
     }
 
     return true;
@@ -266,9 +280,20 @@ void Daemon::reapZombies()
     PidVect::iterator i(m_children.begin());
     while (i != m_children.end())
     {
-        if (waitpid(*i, NULL, WNOHANG))
+        pid_t pid = waitpid(*i, NULL, WNOHANG);
+        if (pid)
         {
             i = m_children.erase(i);
+
+            // Check if pid belongs to boosters, restart dead booster if needed
+            if (pid == MBooster::ProcessId())
+            {
+                forkBooster(MBooster::type(), m_boosterSleepTime);
+            }
+            else if (pid == QtBooster::ProcessId())
+            {
+                forkBooster(QtBooster::type(), m_boosterSleepTime);
+            }
         }
         else
         {

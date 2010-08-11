@@ -59,6 +59,16 @@ public:
      */
     static char type();
 
+    /*!
+     * \brief Keep booster pid, should be reset before booster run application's main() function
+     */
+    static void setProcessId(int pid);
+
+    /*!
+     * \brief Return booster pid
+     */
+    static int  ProcessId();
+
 protected:
 
     //! \reimp
@@ -73,6 +83,8 @@ private:
     MBooster & operator= (const MBooster & r);
 
     static const string m_socketId;
+
+    static int m_ProcessID;
 
 #ifdef UNIT_TEST
     friend class Ut_MBooster;

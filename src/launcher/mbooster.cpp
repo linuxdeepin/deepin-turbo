@@ -18,12 +18,14 @@
 ****************************************************************************/
 
 #include "mbooster.h"
+#include "logger.h"
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
 #endif
 
 const string MBooster::m_socketId  = "/tmp/mlnchr";
+int MBooster::m_ProcessID = 0;
 
 MBooster::MBooster()
 {
@@ -54,4 +56,15 @@ const string & MBooster::socketName()
 char MBooster::type()
 {
     return 'm';
+}
+
+void MBooster::setProcessId(int pid)
+{
+    m_ProcessID = pid;
+}
+
+
+int MBooster::ProcessId()
+{
+    return m_ProcessID;
 }

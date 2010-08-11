@@ -92,7 +92,7 @@ private:
     void daemonize();
 
     //! Forks and initializes a new Booster
-    bool forkBooster(char type);
+    bool forkBooster(char type, int sleepTime = 0);
 
     //! Don't use console for output
     void consoleQuiet();
@@ -116,6 +116,8 @@ private:
     static Daemon * m_instance;
 
     static int m_lockFd;
+
+    static const int m_boosterSleepTime;
 
 #ifdef UNIT_TEST
     friend class Ut_Daemon;

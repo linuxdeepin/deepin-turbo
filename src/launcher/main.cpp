@@ -30,7 +30,9 @@
 void reapZombies(int)
 {
     if (Daemon::instance())
+    {
         Daemon::instance()->reapZombies();
+    }
 }
 
 //! Signal handler to kill booster
