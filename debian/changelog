@@ -1,8 +1,12 @@
-applauncherd (0.10.0) unstable; urgency=low
+applauncherd (0.10.0) stable; urgency=low
 
   * debian/rules: DISABLE_VERIFICATION=1 added to other than arm and armel builds
+  * MeeGo packaging files added
+  * Fixed core dumping issues
+  * Close unused sockets in booster
+  * Fixes for test cases
 
- -- Jussi Lind <jussi.lind@nokia.com>  Mon, 02 Aug 2010 11:45:08 +0300
+ -- Oskari Timperi <ext-oskari.timperi@nokia.com>  Wed, 11 Aug 2010 14:53:34 +0300
 
 applauncherd (0.9.0) stable; urgency=low
 
