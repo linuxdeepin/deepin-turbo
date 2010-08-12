@@ -387,7 +387,7 @@ static unsigned int get_delay(char *delay_arg)
     return delay;
 }
 
-static void invoke(int prog_argc, char **prog_argv, char *prog_name,
+static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                    enum APP_TYPE app_type, int magic_options, bool wait_term)
 {
     if (prog_name && prog_argv)
@@ -536,7 +536,7 @@ int main(int argc, char *argv[])
     }
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term);
 
     // Sleep for delay before exiting
     if (delay)
@@ -546,5 +546,5 @@ int main(int argc, char *argv[])
         sleep(delay);
     }
 
-    return 0;
+    return ret_val;
 }

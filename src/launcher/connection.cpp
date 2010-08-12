@@ -519,3 +519,8 @@ bool Connection::receiveApplicationData(AppData & rApp)
 
     return true;
 }
+
+bool Connection::reportAppExitStatus()
+{
+    return m_sendPid;
+}

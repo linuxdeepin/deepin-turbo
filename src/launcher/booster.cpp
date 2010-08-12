@@ -55,13 +55,13 @@ bool Booster::readCommand()
     // Accept a new invocation.
     if (conn.acceptConn())
     {
-        if (conn.receiveApplicationData(m_app))
-        {
-            return true;
-        }
+        bool res = conn.receiveApplicationData(m_app);
 
-        // Close connection
-        conn.closeConn();
+        if (!conn.reportAppExitStatus())
+        {
+            conn.closeConn();
+        }
+        return true;
     }
 
     return false;

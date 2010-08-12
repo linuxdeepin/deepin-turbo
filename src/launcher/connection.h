@@ -75,6 +75,10 @@ public:
     //! \brief Receive application data to rApp.
     bool receiveApplicationData(AppData & rApp);
 
+
+    //! \brief Return true if invoker wait for process exit status
+    bool reportAppExitStatus();
+
     /*! \brief Initialize a file socket.
      * \param socketId Path to the socket file
      */
