@@ -105,8 +105,6 @@ class launcher_tests (unittest.TestCase):
                 stdout=DEV_NULL, stderr=DEV_NULL)
         return p
 
-    #get_pid = lambda appname: commands.getstatusoutput("pgrep %s" % appname)[-1]
-    
     def get_pid(self, appname):
         temp = basename(appname)[:14]
         st, op = commands.getstatusoutput("pgrep %s" % temp)
@@ -601,6 +599,38 @@ class launcher_tests (unittest.TestCase):
         """
         count = self.get_file_descriptor("booster-q","qt")
         self.assert_(count != 0, "None of the file descriptors were changed")
+
+    def test_016_restart_booster(self):
+        """
+        Test that booster is restarted if it is killed 
+        """
+        #get the pids of boosters and make sure they are running
+        qpid = self.get_pid('booster-q')
+        print "Pid of booster-q before killing :%s" %qpid
+        self.assert_(qpid != None, "No booster process running")
+
+        mpid = self.get_pid('booster-m')
+        print "Pid of booster-m before killing :%s" %mpid
+        self.assert_(mpid != None, "No booster process running")
+
+        #Kill the booster processes
+        self.kill_process(apppid=qpid)
+        self.kill_process(apppid=mpid)
+        
+        #wait for the boosters to be restarted
+        time.sleep(6)
+
+        #check that the new boosters are started
+        qpid_new = self.get_pid('booster-q')
+        print "Pid of booster-q after killing :%s" %qpid_new
+        self.assert_(qpid_new != None, "No booster process running")
+        self.assert_(qpid_new != qpid, "booster process was not killed")
+
+        mpid_new = self.get_pid('booster-m')
+        print "Pid of booster-m after killing :%s" %mpid_new
+        self.assert_(mpid_new != None, "No booster process running")
+        self.assert_(mpid_new != mpid, "booster process was not killed")
+
 
 # main
 if __name__ == '__main__':

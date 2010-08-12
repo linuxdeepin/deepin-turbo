@@ -71,7 +71,7 @@
       </environments>
     </set>
     
-    <set name="file-descriptor" description="Launcher functional tests" feature="Closing File Descriptors" requirement="300168">
+    <set name="Booster-tests" description="Launcher functional tests" feature="Closing File Descriptors" requirement="300168">
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
@@ -84,6 +84,9 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_015_fd_booster_q</step>
       </case>
 
+      <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="120" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_016_restart_booster</step>
+      </case>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
