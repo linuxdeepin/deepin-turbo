@@ -39,7 +39,7 @@ graphics:
   * verify that (1) and (2) are equal
 """
 
-require 'matti'
+require 'tdriver'
 require 'date'
 require 'test/unit'
 include MattiVerify
@@ -70,7 +70,7 @@ class TC_Theming < Test::Unit::TestCase
 
     def setup
         system('mcetool --set-tklock-mode=unlocked')
-        @sut = MATTI.sut(:Id => ARGV[0] || 'sut_qt_maemo') 
+        @sut = TDriver.sut(:Id => ARGV[0] || 'sut_qt_maemo') 
     end
 
     def test_global_theming

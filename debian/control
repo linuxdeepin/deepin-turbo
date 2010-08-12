@@ -61,7 +61,7 @@ Description: applauncherd unit tests
 Package: applauncherd-testscripts
 Section: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner, applauncherd, ci-testing, matti, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40) 
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner, applauncherd, ci-testing, testability-driver, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40), rdoc
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: applauncherd testscripts
