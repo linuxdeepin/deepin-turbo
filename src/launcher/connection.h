@@ -77,7 +77,10 @@ public:
 
 
     //! \brief Return true if invoker wait for process exit status
-    bool reportAppExitStatus();
+    bool isReportAppExitStatusNeeded();
+
+    //! \brief Send application exit status to invoker
+    void reportAppExitStatus(int status);
 
     /*! \brief Initialize a file socket.
      * \param socketId Path to the socket file

@@ -26,6 +26,7 @@
 using std::string;
 
 #include "appdata.h"
+class Connection;
 
 /*!
  *  \class Booster
@@ -123,9 +124,11 @@ private:
 
 
     void  complainAndExit();
-    void  launchProcess();
+    int   launchProcess();
     void* loadMain();
+
     AppData m_app;
+    Connection* m_conn;
 
     int m_argvArraySize;
     int m_oldPriority;

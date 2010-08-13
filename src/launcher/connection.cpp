@@ -74,7 +74,7 @@ void Connection::closeAllSockets()
     {
         if (it->second > 0)
         {
-            int res = close(it->second);
+            close(it->second);
             it->second = -1;
         }
     }
@@ -520,7 +520,13 @@ bool Connection::receiveApplicationData(AppData & rApp)
     return true;
 }
 
-bool Connection::reportAppExitStatus()
+bool Connection::isReportAppExitStatusNeeded()
 {
     return m_sendPid;
 }
+
+void Connection::reportAppExitStatus(int status)
+{
+    //todo: send status to invoker
+}
+

@@ -34,13 +34,20 @@
 #endif
 
 Booster::Booster() :
+    m_conn(NULL),
     m_argvArraySize(0),
     m_oldPriority(0),
     m_oldPriorityOk(false)
 {}
 
 Booster::~Booster()
-{}
+{
+    if (m_conn != NULL)
+    {
+        delete m_conn;
+        m_conn = NULL;
+    }
+}
 
 bool Booster::preload()
 {
@@ -50,20 +57,24 @@ bool Booster::preload()
 bool Booster::readCommand()
 {
     // Setup the conversation channel with the invoker.
-    Connection conn(socketId());
+    m_conn = new Connection(socketId());
 
     // Accept a new invocation.
-    if (conn.acceptConn())
+    if (m_conn->acceptConn())
     {
-        bool res = conn.receiveApplicationData(m_app);
-
-        if (!conn.reportAppExitStatus())
+        bool res = m_conn->receiveApplicationData(m_app);
+        if(!res)
         {
-            conn.closeConn();
+            m_conn->closeConn();
+            return false;
+        }
+
+        if (!m_conn->isReportAppExitStatusNeeded())
+        {
+            m_conn->closeConn();
         }
         return true;
     }
-
     return false;
 }
 
@@ -72,7 +83,15 @@ void Booster::run()
     if (!m_app.fileName().empty())
     {
         Logger::logInfo("invoking '%s' ", m_app.fileName().c_str());
-        launchProcess();
+        int ret_val = launchProcess();
+
+        if (m_conn->isReportAppExitStatusNeeded())
+        {
+            m_conn->reportAppExitStatus(ret_val);
+            m_conn->closeConn();
+            Connection::closeAllSockets();
+        }
+
     }
     else
     {
@@ -141,20 +160,20 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
     setenv("_", newProcessName, true);
 }
 
-void Booster::launchProcess()
+int Booster::launchProcess()
 {
     // Possibly restore process priority
     errno = 0;
     const int cur_prio = getpriority(PRIO_PROCESS, 0);
     if (!errno && cur_prio < m_app.priority())
-      setpriority(PRIO_PROCESS, 0, m_app.priority());
+        setpriority(PRIO_PROCESS, 0, m_app.priority());
 
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
     for (unsigned int i = 0; i < m_app.ioDescriptors().size(); i++)
-      if (m_app.ioDescriptors()[i] > 0)
-        dup2(m_app.ioDescriptors()[i], i);
+        if (m_app.ioDescriptors()[i] > 0)
+            dup2(m_app.ioDescriptors()[i], i);
 
     Logger::logNotice("launching process: '%s' ", m_app.fileName().c_str());
 
@@ -165,7 +184,7 @@ void Booster::launchProcess()
     const int retVal = m_app.entry()(m_app.argc(), const_cast<char **>(m_app.argv()));
     m_app.deleteArgv();
     dlclose(handle);
-    exit(retVal);
+    return retVal;
 }
 
 void* Booster::loadMain()
