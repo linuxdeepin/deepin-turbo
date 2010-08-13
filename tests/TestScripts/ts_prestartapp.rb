@@ -21,7 +21,7 @@
 #  * Objectives: Test that a prestarted application can be 
 #    launched as well    
 
-require 'matti'
+require 'tdriver'
 require 'date'
 require 'test/unit'
 include MattiVerify
@@ -37,7 +37,7 @@ class TC_PRESTARTLAUNCHTESTS < Test::Unit::TestCase
     # method called before any test case
     def setup
         system "mcetool --set-tklock-mode=unlocked"
-        @sut = MATTI.sut(:Id=>ARGV[0] || 'sut_qt_maemo')    
+        @sut = TDriver.sut(:Id=>ARGV[0] || 'sut_qt_maemo')    
     end
     
     # method called after any test case for cleanup purposes
