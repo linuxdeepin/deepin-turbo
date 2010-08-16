@@ -80,7 +80,7 @@ public:
     bool isReportAppExitStatusNeeded();
 
     //! \brief Send application exit status to invoker
-    void reportAppExitStatus(int status);
+    bool sendAppExitStatus(int status);
 
     /*! \brief Initialize a file socket.
      * \param socketId Path to the socket file

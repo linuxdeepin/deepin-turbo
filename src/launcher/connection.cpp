@@ -234,6 +234,14 @@ bool Connection::sendPid(pid_t pid)
     return true;
 }
 
+bool Connection::sendAppExitStatus(int status)
+{
+    sendMsg(INVOKER_MSG_EXIT);
+    sendMsg(status);
+
+    return true;
+}
+
 int Connection::receiveMagic()
 {
     uint32_t magic = 0;
@@ -523,10 +531,5 @@ bool Connection::receiveApplicationData(AppData & rApp)
 bool Connection::isReportAppExitStatusNeeded()
 {
     return m_sendPid;
-}
-
-void Connection::reportAppExitStatus(int status)
-{
-    //todo: send status to invoker
 }
 

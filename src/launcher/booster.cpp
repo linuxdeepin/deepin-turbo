@@ -87,7 +87,7 @@ void Booster::run()
 
         if (m_conn->isReportAppExitStatusNeeded())
         {
-            m_conn->reportAppExitStatus(ret_val);
+            m_conn->sendAppExitStatus(ret_val);
             m_conn->closeConn();
             Connection::closeAllSockets();
         }

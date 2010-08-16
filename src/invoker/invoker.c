@@ -223,6 +223,22 @@ static uint32_t invoker_recv_pid(int fd)
   return pid;
 }
 
+static uint32_t invoker_recv_exit(int fd)
+{
+  uint32_t action, status;
+
+  /* Receive action. */
+  invoke_recv_msg(fd, &action);
+
+  if (action != INVOKER_MSG_EXIT)
+      die(1, "receiving bad exit status (%08x)\n", action);
+
+  /* Receive pid. */
+  invoke_recv_msg(fd, &status);
+  return status;
+}
+
+
 static bool invoker_send_magic(int fd, int options)
 {
     // Send magic.
@@ -390,6 +406,8 @@ static unsigned int get_delay(char *delay_arg)
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                    enum APP_TYPE app_type, int magic_options, bool wait_term)
 {
+    int status = 0;
+
     if (prog_name && prog_argv)
     {
         errno = 0;
@@ -425,8 +443,8 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             // forward signals to invoked process
             sigs_init();
 
-            char dummy_buf = 0;
-            recv(fd, (void *)&dummy_buf, 0, MSG_WAITALL);
+            // wait for exit status from invoked application
+            status = invoker_recv_exit(fd);
 
             // restore default signal handlers
             sigs_restore();
@@ -434,6 +452,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
 
         close(fd);
     }
+    return status;
 }
 
 int main(int argc, char *argv[])
