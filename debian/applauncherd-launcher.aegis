@@ -1,4 +1,7 @@
 <aegis>
+    <provide>
+        <credential name="access"/>
+    </provide>
    
     <request>
         <credential name="CAP::setgid"/>
@@ -12,10 +15,5 @@
         <credential name="ReadWriteUserData"/>
         <for path="/usr/bin/applauncherd.bin"/>
     </request>
-
-  <provide>
-    <credential name="access" />
-  </provide>
-
 </aegis>
 
