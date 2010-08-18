@@ -168,6 +168,17 @@ int Booster::launchProcess()
     if (!errno && cur_prio < m_app.priority())
         setpriority(PRIO_PROCESS, 0, m_app.priority());
 
+    // Possible set user ID and group ID of calling process
+    uid_t uid = getuid();
+    gid_t gid = getgid();
+
+    if (uid != m_app.userId())
+        setuid(m_app.userId());
+
+    if (gid != m_app.groupId())
+        setgid(m_app.groupId());
+
+
     // Load the application and find out the address of main()
     void* handle = loadMain();
 

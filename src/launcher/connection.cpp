@@ -310,6 +310,16 @@ bool Connection::receivePriority()
     return true;
 }
 
+bool Connection::receiveIDs()
+{
+    recvMsg(&m_uid);
+    recvMsg(&m_gid);
+
+    sendMsg(INVOKER_MSG_ACK);
+
+    return true;
+}
+
 bool Connection::receiveArgs()
 {
     // Get argc
@@ -485,6 +495,9 @@ bool Connection::receiveActions()
         case INVOKER_MSG_IO:
             receiveIO();
             break;
+        case INVOKER_MSG_IDS:
+            receiveIDs();
+            break;
         case INVOKER_MSG_END:
             sendMsg(INVOKER_MSG_ACK);
 
@@ -519,6 +532,7 @@ bool Connection::receiveApplicationData(AppData & rApp)
         rApp.setArgc(m_argc);
         rApp.setArgv(m_argv);
         rApp.setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
+        rApp.setIDs(m_uid, m_gid);
     }
     else
     {
