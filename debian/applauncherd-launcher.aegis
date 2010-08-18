@@ -4,11 +4,7 @@
     </provide>
    
     <request>
-        <credential name="CAP::setgid"/>
-        <credential name="CAP::setuid"/>
-        <credential name="CAP::setfcap"/>
-        <credential name="CAP::setpcap"/>
-        <credential name="CAP::sys_nice"/>
+        <credential match="CAP::*"/>
         <credential name="drm"/>
         <credential name="Cellular"/>
         <credential name="ReadUserData"/>
