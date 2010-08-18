@@ -631,6 +631,21 @@ class launcher_tests (unittest.TestCase):
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
 
+    def test_017_invoker_exit_status(self):
+        """
+        To test that invoker returns the same exit status as the application
+        """
+        #Run application without invoker and get the exit status
+        st, op = commands.getstatusoutput('/usr/bin/fala_status.launch')
+        app_st_wo_inv = os.WEXITSTATUS(st)
+    
+        #Run application with invoker and get the exit status
+        st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status.launch')
+        app_st_w_inv = os.WEXITSTATUS(st)
+
+        self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status")
+
+
 
 # main
 if __name__ == '__main__':

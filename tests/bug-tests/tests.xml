@@ -65,6 +65,11 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_010</step>
       </case>
 
+      <case name="invoker-status" type="Functional" description="To test that invoker returns the same exit status as the application" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_017_invoker_exit_status</step>
+      </case>
+
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
