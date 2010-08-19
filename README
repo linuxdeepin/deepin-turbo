@@ -29,15 +29,42 @@ Using applauncherd
 
 Binaries intended to be run with applauncherd should be compiled with -fPIC option to produce position independent code. In order to produce a position independent executable, -pie option and -rdynamic options can be used in linking. This allows the result to be executed traditionally and with the launcher.
 
-To improve linking and load times of shared object libraries the size of dynamic export table it is encouraged to hide the unnecessary symbols from the resulting binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags in compilation as well. 
+To improve linking and load times of shared object libraries the size of dynamic export table it is encouraged to hide the unnecessary symbols from the resulting binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags in compilation as well.
+
+  Using QMake
+  -------------------------
+
+  If you are using QMake, making your application boostable is just a
+  matter of installing libmeegotouch-dev package and adding the following
+  line to your .pro file:
+
+    CONFIG += meegotouch-boostable
+
+  The meegotouch-boostable configuration option includes the meegotouch
+  option (so you don't have to specify it explicitly) and ultimately
+  uses pkg-config to get the correct flags.
+
+  Using QMake with pkg-config
+  -------------------------
+  
+  If you want to use pkg-config directly for some reason, you can do it
+  by adding the following lines to your .pro file:
+
+    QMAKE_CXXFLAGS += `pkg-config --cflags meegotouch-boostable`
+    QMAKE_LFLAGS += `pkg-config --libs meegotouch-boostable`
+
+  Note that you still have to install the libmeegotouch-dev package.
 
   Manual settings for QMake
   -------------------------
-  
-  If you are using QMake, you can define following variables in .pro file:
+
+  As a last resort, you can define following variables in .pro file:
 
     QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
     QMAKE_LFLAGS += -pie -rdynamic
+
+  Note that you have to update the flags manually if there are any changes in
+  the required flags.
 
   Manual settings for CMake
   -------------------------
@@ -55,13 +82,9 @@ To improve linking and load times of shared object libraries the size of dynamic
 
     pkg-config --cflags --libs meegotouch-boostable
 
-  And with qmake: 
-  
-    CONFIG += meegotouch-boostable
-
   CMake also has a pkg-config support.
 
-  When using these, your application must build-depend on applauncherd-dev.
+  When using these, your application must build-depend on libmeegotouch-dev.
 
   Symbol visibility
   -----------------
