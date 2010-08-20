@@ -233,6 +233,9 @@ bool Daemon::forkBooster(char type, int sleepTime)
         // Give to the process an application specific name
         booster->renameProcess(m_initialArgc, m_initialArgv);
 
+        pid_t pid = booster->invokersPid();
+        //Logger::logError("Daemon: invokers pid: %d \n", pid);
+
         // Signal the parent process that it can create a new
         // waiting booster process and close write end
         const char msg = booster->boosterType();
@@ -241,9 +244,8 @@ bool Daemon::forkBooster(char type, int sleepTime)
             Logger::logError("Can't send signal to launcher process' \n");
         }
 
-        // close sockets and pipe
+        // close pipe
         close(m_pipefd[1]);
-        Connection::closeAllSockets();
 
         // Don't care about fate of parent applauncherd process any more
         prctl(PR_SET_PDEATHSIG, 0);
@@ -280,10 +282,18 @@ void Daemon::reapZombies()
     PidVect::iterator i(m_children.begin());
     while (i != m_children.end())
     {
-        pid_t pid = waitpid(*i, NULL, WNOHANG);
+        int status;
+        pid_t pid = waitpid(*i, &status, WNOHANG);
         if (pid)
         {
             i = m_children.erase(i);
+            Logger::logError("terminated process pid is %d", pid);
+
+            if (WIFSIGNALED(status))
+            {
+                // todo: send signal to corresponding invoker form here
+                Logger::logError("booster (pid=%d) terminated due to signal=%d\n", pid, WTERMSIG(status));
+            }
 
             // Check if pid belongs to boosters, restart dead booster if needed
             if (pid == MBooster::ProcessId())

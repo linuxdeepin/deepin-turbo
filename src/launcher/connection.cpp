@@ -21,7 +21,8 @@
 #include "logger.h"
 
 #include <sys/socket.h>
-#include <sys/stat.h> // For chmod
+#include <sys/un.h>       /* for getsockopt */
+#include <sys/stat.h>     /* for chmod */
 #include <cstring>
 #include <cstdlib>
 #include <cerrno>
@@ -48,7 +49,7 @@ Connection::Connection(const string socketId) :
 
     if (m_curSocket == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "socket isn't initialized\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Connection: socket isn't initialized\n");
     }
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
@@ -57,7 +58,7 @@ Connection::Connection(const string socketId) :
 
     if (m_credsType == CREDS_BAD)
     {
-        Logger::logError("credentials %s conversion failed \n", m_credsStr);
+        Logger::logError("Connection: credentials %s conversion failed \n", m_credsStr);
     }
 
 #endif
@@ -95,7 +96,7 @@ void Connection::initSocket(const string socketId)
 
         int sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
         if (sockfd < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "opening invoker socket\n");
+            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: opening invoker socket\n");
 
         unlink(socketId.c_str());
 
@@ -106,10 +107,10 @@ void Connection::initSocket(const string socketId)
         sun.sa_data[maxLen] = '\0';
 
         if (bind(sockfd, &sun, sizeof(sun)) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "binding to invoker socket\n");
+            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: binding to invoker socket\n");
 
         if (listen(sockfd, 10) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "listening to invoker socket\n");
+            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: listening to invoker socket\n");
 
         chmod(socketId.c_str(), S_IRUSR | S_IWUSR | S_IXUSR |
                                 S_IRGRP | S_IWGRP | S_IXGRP |
@@ -125,7 +126,7 @@ bool Connection::acceptConn()
 
     if (m_fd < 0)
     {
-        Logger::logError("accepting connections (%s)\n", strerror(errno));
+        Logger::logError("Connection: accepting connections (%s)\n", strerror(errno));
         return false;
     }
 
@@ -139,7 +140,7 @@ bool Connection::acceptConn()
 
     if (!allow)
     {
-        Logger::logError("invoker doesn't have enough credentials to call launcher \n");
+        Logger::logError("Connection: invoker doesn't have enough credentials to call launcher \n");
 
         sendMsg(INVOKER_MSG_BAD_CREDS);
         closeConn();
@@ -172,7 +173,7 @@ bool Connection::recvMsg(uint32_t *msg)
     int len = sizeof(buf);
     ssize_t  ret = read(m_fd, &buf, len);
     if (ret < len) {
-        Logger::logError("can't read data from connecton in %s", __FUNCTION__);
+        Logger::logError("Connection: can't read data from connecton in %s", __FUNCTION__);
         *msg = 0;
     } else {
         Logger::logInfo("%s: %08x", __FUNCTION__, *msg);
@@ -202,14 +203,14 @@ const char * Connection::recvStr()
     bool res = recvMsg(&size);
     if (!res || size == 0 || size > STR_LEN_MAX)
     {
-        Logger::logError("string receiving failed in %s, string length is %d", __FUNCTION__, size);
+        Logger::logError("Connection: string receiving failed in %s, string length is %d", __FUNCTION__, size);
         return NULL;
     }
 
     char * str = new char[size];
     if (!str)
     {
-        Logger::logError("mallocing in %s", __FUNCTION__);
+        Logger::logError("Connection: mallocing in %s", __FUNCTION__);
         return NULL;
     }
 
@@ -217,7 +218,7 @@ const char * Connection::recvStr()
     uint32_t ret = read(m_fd, str, size);
     if (ret < size)
     {
-        Logger::logError("getting string, got %u of %u bytes", ret, size);
+        Logger::logError("Connection: getting string, got %u of %u bytes", ret, size);
         delete [] str;
         return NULL;
     }
@@ -255,7 +256,7 @@ int Connection::receiveMagic()
             sendMsg(INVOKER_MSG_ACK);
         else
         {
-            Logger::logError("receiving bad magic version (%08x)\n", magic);
+            Logger::logError("Connection: receiving bad magic version (%08x)\n", magic);
             return -1;
         }
     }
@@ -272,14 +273,14 @@ string Connection::receiveAppName()
     recvMsg(&msg);
     if (msg != INVOKER_MSG_NAME)
     {
-        Logger::logError("receiving invalid action (%08x)", msg);
+        Logger::logError("Connection: receiving invalid action (%08x)", msg);
         return string();
     }
 
     const char* name = recvStr();
     if (!name)
     {
-        Logger::logError("receiving application name");
+        Logger::logError("Connection: receiving application name");
         return string();
     }
     sendMsg(INVOKER_MSG_ACK);
@@ -331,7 +332,7 @@ bool Connection::receiveArgs()
         m_argv = new const char * [m_argc];
         if (!m_argv)
         {
-            Logger::logError("reserving memory for argv");
+            Logger::logError("Connection: reserving memory for argv");
             return false;
         }
 
@@ -341,14 +342,14 @@ bool Connection::receiveArgs()
             m_argv[i] = recvStr();
             if (!m_argv[i])
             {
-                Logger::logError("receiving argv[%i]", i);
+                Logger::logError("Connection: receiving argv[%i]", i);
                 return false;
             }
         }
     }
     else
     {
-        Logger::logError("invalid number of parameters %d", m_argc);
+        Logger::logError("Connection: invalid number of parameters %d", m_argc);
         return false;
     }
     
@@ -385,7 +386,7 @@ bool Connection::receiveEnv()
             const char * var = recvStr();
             if (var == NULL)
             {
-                Logger::logError("receiving environ[%i]", i);
+                Logger::logError("Connection: receiving environ[%i]", i);
                 return false;
             }
 
@@ -404,13 +405,13 @@ bool Connection::receiveEnv()
             {
                 delete [] var;
                 var = NULL;
-                Logger::logWarning("invalid environment data");
+                Logger::logWarning("Connection: invalid environment data");
             }
         }
     }
     else
     {
-        Logger::logError("invalid environment variable count %d", n_vars);
+        Logger::logError("Connection: invalid environment variable count %d", n_vars);
         return false;
     }
 
@@ -444,13 +445,13 @@ bool Connection::receiveIO()
 
     if (recvmsg(m_fd, &msg, 0) < 0)
     {
-        Logger::logWarning("recvmsg failed in invoked_get_io: %s", strerror(errno));
+        Logger::logWarning("Connection: recvmsg failed in invoked_get_io: %s", strerror(errno));
         return false;
     }
 
     if (msg.msg_flags)
     {
-        Logger::logWarning("unexpected msg flags in invoked_get_io");
+        Logger::logWarning("Connection: unexpected msg flags in invoked_get_io");
         return false;
     }
 
@@ -458,7 +459,7 @@ bool Connection::receiveIO()
     if (cmsg == NULL || cmsg->cmsg_len != CMSG_LEN(sizeof(m_io)) ||
         cmsg->cmsg_level != SOL_SOCKET || cmsg->cmsg_type != SCM_RIGHTS)
     {
-        Logger::logWarning("invalid cmsg in invoked_get_io");
+        Logger::logWarning("Connection: invalid cmsg in invoked_get_io");
         return false;
     }
 
@@ -506,7 +507,7 @@ bool Connection::receiveActions()
 
             return true;
         default:
-            Logger::logError("receiving invalid action (%08x)\n", action);
+            Logger::logError("Connection: receiving invalid action (%08x)\n", action);
             return false;
         }
     }
@@ -545,5 +546,19 @@ bool Connection::receiveApplicationData(AppData & rApp)
 bool Connection::isReportAppExitStatusNeeded()
 {
     return m_sendPid;
+}
+
+pid_t Connection::peersPid()
+{
+    struct ucred cr;
+
+    socklen_t len = sizeof(struct ucred);
+    if (getsockopt(m_fd, SOL_SOCKET, SO_PEERCRED, &cr, &len) < 0)
+    {
+        Logger::logError("Connection: can't get peer's pid: %s\n", strerror(errno));
+        return 0;
+    }
+    return cr.pid;
+
 }
 

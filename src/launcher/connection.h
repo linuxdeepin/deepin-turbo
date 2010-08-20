@@ -75,7 +75,6 @@ public:
     //! \brief Receive application data to rApp.
     bool receiveApplicationData(AppData & rApp);
 
-
     //! \brief Return true if invoker wait for process exit status
     bool isReportAppExitStatusNeeded();
 
@@ -89,6 +88,10 @@ public:
 
     //! \brief Close all open sockets.
     static void closeAllSockets();
+
+    //! \brief Get pid of the process on the other end of socket connection
+    pid_t peersPid();
+
 
 private:
 

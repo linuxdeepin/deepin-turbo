@@ -82,6 +82,12 @@ void Booster::run()
 {
     if (!m_app.fileName().empty())
     {
+        //check if can close sockets here
+        if (!m_conn->isReportAppExitStatusNeeded())
+        {
+            Connection::closeAllSockets();
+        }
+
         Logger::logInfo("invoking '%s' ", m_app.fileName().c_str());
         int ret_val = launchProcess();
 
@@ -248,4 +254,16 @@ bool Booster::popPriority()
     }
 
     return false;
+}
+
+pid_t Booster::invokersPid()
+{
+    if (m_conn->isReportAppExitStatusNeeded())
+    {
+        return m_conn->peersPid();
+    }
+    else
+    {
+        return 0;
+    }
 }
