@@ -69,6 +69,10 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_017_invoker_exit_status</step>
       </case>
 
+      <case name="gid-uid" type="Functional" description="To Test that the set gid and uid is passed from invoker process to launcher" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_018_invoker_gid_uid</step>
+      </case>
+
 
       <environments>
           <scratchbox>true</scratchbox>

@@ -22,6 +22,7 @@
 #include <MApplicationWindow>
 #include <MExport>
 #include <QTimer>
+#include <iostream>
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
@@ -33,6 +34,11 @@ M_EXPORT int main(int argc, char ** argv)
     MApplication *app = MComponentCache::mApplication(argc, argv);
 #endif
     QTimer::singleShot(5, app, SLOT(quit()));
+    int usr_id = getuid();
+    int grp_id = getgid();
+
+    std::cerr << "uid=" << usr_id <<"\n";
+    std::cerr << "gid=" << grp_id <<"\n";
     app->exec();
     return 29;
     
