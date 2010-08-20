@@ -52,7 +52,7 @@ Daemon::Daemon(int & argc, char * argv[]) :
     }
     else
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon already created!\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Daemon already created!\n");
     }
 
     // Parse arguments
@@ -68,7 +68,7 @@ Daemon::Daemon(int & argc, char * argv[]) :
 
     if (pipe(m_pipefd) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Creating a pipe failed!!!\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe failed!!!\n");
     }
 
     // Daemonize if desired
@@ -85,11 +85,11 @@ void Daemon::consoleQuiet()
     close(2);
 
     if (open("/dev/null", O_RDONLY) < 0)
-        Logger::logErrorAndDie(EXIT_FAILURE, "opening /dev/null readonly");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: opening /dev/null readonly");
 
     int fd = open("/dev/null", O_WRONLY);
     if ((fd == -1) || (dup(fd) < 0))
-        Logger::logErrorAndDie(EXIT_FAILURE, "opening /dev/null writeonly");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: opening /dev/null writeonly");
 }
 
 Daemon * Daemon::instance()
@@ -157,7 +157,7 @@ void Daemon::run()
         }
         else
         {
-            Logger::logWarning("Nothing read from the pipe\n");
+            Logger::logWarning("Daemon: Nothing read from the pipe\n");
         }
     }
 }
@@ -168,7 +168,7 @@ bool Daemon::forkBooster(char type, int sleepTime)
     pid_t newPid = fork();
 
     if (newPid == -1)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Forking while invoking");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Forking while invoking");
 
     if (newPid == 0) /* Child process */
     {
@@ -186,7 +186,7 @@ bool Daemon::forkBooster(char type, int sleepTime)
 
         if (setsid() < 0)
         {
-            Logger::logError("Setting session id\n");
+            Logger::logError("Daemon: Setting session id\n");
         }
 
         // Guarantee some time for the just launched application to
@@ -194,7 +194,7 @@ bool Daemon::forkBooster(char type, int sleepTime)
         if (sleepTime)
             sleep(sleepTime);
 
-        Logger::logNotice("Running a new Booster of %c type...", type);
+        Logger::logNotice("Daemon: Running a new Booster of %c type...", type);
 
         // Create a new booster and initialize it
         Booster * booster = NULL;
@@ -208,7 +208,7 @@ bool Daemon::forkBooster(char type, int sleepTime)
         }
         else
         {
-            Logger::logErrorAndDie(EXIT_FAILURE, "Unknown booster type \n");
+            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type \n");
         }
 
         // Drop priority (nice = 10)
@@ -227,7 +227,7 @@ bool Daemon::forkBooster(char type, int sleepTime)
         booster->popPriority();
 
         // Wait and read commands from the invoker
-        Logger::logNotice("Wait for message from invoker");
+        Logger::logNotice("Daemon: Wait for message from invoker");
         booster->readCommand();
 
         // Give to the process an application specific name
@@ -241,7 +241,7 @@ bool Daemon::forkBooster(char type, int sleepTime)
         const char msg = booster->boosterType();
         ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
         if (ret == -1) {
-            Logger::logError("Can't send signal to launcher process' \n");
+            Logger::logError("Daemon: Can't send signal to launcher process' \n");
         }
 
         // close pipe
@@ -287,12 +287,12 @@ void Daemon::reapZombies()
         if (pid)
         {
             i = m_children.erase(i);
-            Logger::logError("terminated process pid is %d", pid);
+            Logger::logError("Daemon: terminated process pid is %d", pid);
 
             if (WIFSIGNALED(status))
             {
                 // todo: send signal to corresponding invoker form here
-                Logger::logError("booster (pid=%d) terminated due to signal=%d\n", pid, WTERMSIG(status));
+                Logger::logError("Daemon: booster (pid=%d) terminated due to signal=%d\n", pid, WTERMSIG(status));
             }
 
             // Check if pid belongs to boosters, restart dead booster if needed
@@ -321,7 +321,7 @@ void Daemon::daemonize()
     pid = fork();
     if (pid < 0)
     {
-        Logger::logError("Unable to fork daemon, code %d (%s)", errno, strerror(errno));
+        Logger::logError("Daemon: Unable to fork daemon, code %d (%s)", errno, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
@@ -335,7 +335,7 @@ void Daemon::daemonize()
     pid = fork();
     if (pid < 0)
     {
-        Logger::logError("Unable to fork daemon, code %d (%s)", errno, strerror(errno));
+        Logger::logError("Daemon: Unable to fork daemon, code %d (%s)", errno, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
@@ -354,14 +354,14 @@ void Daemon::daemonize()
     sid = setsid();
     if (sid < 0)
     {
-        Logger::logError("Unable to create a new session, code %d (%s)", errno, strerror(errno));
+        Logger::logError("Daemon: Unable to create a new session, code %d (%s)", errno, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
     // Change the current working directory
     if ((chdir("/")) < 0)
     {
-        Logger::logError("Unable to change directory to %s, code %d (%s)", "/", errno, strerror(errno));
+        Logger::logError("Daemon: Unable to change directory to %s, code %d (%s)", "/", errno, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
