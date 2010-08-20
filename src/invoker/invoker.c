@@ -231,8 +231,14 @@ static uint32_t invoker_recv_exit(int fd)
   invoke_recv_msg(fd, &action);
 
   if (action != INVOKER_MSG_EXIT)
-      die(1, "receiving bad exit status (%08x)\n", action);
+  {
+      // probably boosted application process was killed somehow
+      // let's get applauncherd process some time to cope with this situation
+      sleep(1);
 
+      // if nothing happend, just exit with error message
+      die(1, "receiving bad exit status (%08x)\n", action);
+  }
   /* Receive pid. */
   invoke_recv_msg(fd, &status);
   return status;
