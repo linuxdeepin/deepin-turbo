@@ -147,6 +147,20 @@ void Daemon::run()
         ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
         if (count)
         {
+
+            // read pid of peer invoker
+            pid_t invoker_pid;
+            count = read(m_pipefd[0], reinterpret_cast<void *>(&invoker_pid), sizeof(pid_t));
+
+            if (count < sizeof(pid_t))
+            {
+                Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+            }
+            else
+            {
+                Logger::logError("Daemon: invokers pid:  \n", invoker_pid);
+            }
+
             // Fork a new booster of the given type
 
             // 2nd param guarantees some time for the just launched application
@@ -233,15 +247,19 @@ bool Daemon::forkBooster(char type, int sleepTime)
         // Give to the process an application specific name
         booster->renameProcess(m_initialArgc, m_initialArgv);
 
-        pid_t pid = booster->invokersPid();
-        //Logger::logError("Daemon: invokers pid: %d \n", pid);
-
         // Signal the parent process that it can create a new
         // waiting booster process and close write end
         const char msg = booster->boosterType();
         ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
         if (ret == -1) {
             Logger::logError("Daemon: Can't send signal to launcher process' \n");
+        }
+
+        // Send to the parent process pid of invoker for tracking
+        pid_t pid = booster->invokersPid();
+        ret = write(m_pipefd[1], reinterpret_cast<const void *>(&pid), sizeof(pid_t));
+        if (ret == -1) {
+            Logger::logError("Daemon: Can't send invoker's pid to launcher process' \n");
         }
 
         // close pipe
