@@ -231,8 +231,14 @@ static uint32_t invoker_recv_exit(int fd)
   invoke_recv_msg(fd, &action);
 
   if (action != INVOKER_MSG_EXIT)
-      die(1, "receiving bad exit status (%08x)\n", action);
+  {
+      // probably boosted application process was killed somehow
+      // let's get applauncherd process some time to cope with this situation
+      sleep(1);
 
+      // if nothing happend, just exit with error message
+      die(1, "receiving bad exit status (%08x)\n", action);
+  }
   /* Receive pid. */
   invoke_recv_msg(fd, &status);
   return status;
@@ -290,6 +296,18 @@ static bool invoker_send_prio(int fd, int prio)
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_PRIO);
     invoke_send_msg(fd, prio);
+
+    invoke_recv_ack(fd);
+
+    return true;
+}
+
+static bool invoker_send_ids(int fd, int uid, int gid)
+{
+    // Send action.
+    invoke_send_msg(fd, INVOKER_MSG_IDS);
+    invoke_send_msg(fd, uid);
+    invoke_send_msg(fd, gid);
 
     invoke_recv_ack(fd);
 
@@ -418,6 +436,9 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             prog_prio = 0;
         }
 
+        int uid = getuid();
+        int gid = getgid();
+
         int fd = invoker_init(app_type);
 
         invoker_send_magic(fd, magic_options);
@@ -425,6 +446,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         invoker_send_exec(fd, prog_name);
         invoker_send_args(fd, prog_argc, prog_argv);
         invoker_send_prio(fd, prog_prio);
+        invoker_send_ids(fd, uid, gid);
         invoker_send_io(fd);
         invoker_send_env(fd);
         invoker_send_end(fd);

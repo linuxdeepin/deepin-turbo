@@ -89,6 +89,15 @@ public:
     //! Set I/O descriptors
     void setIODescriptors(const vector<int> & ioDescriptors);
 
+    //! Set user ID and group ID of calling process
+    void setIDs(uid_t userId, gid_t groupId);
+
+    //! Get user ID of calling process
+    uid_t userId() const;
+
+    //! Get group ID of calling process
+    gid_t groupId() const;
+
     //! Frees the memory reserved for argv
     void deleteArgv();
 
@@ -105,6 +114,9 @@ private:
     int         m_prio;
     entry_t     m_entry;
     vector<int> m_ioDescriptors;
+    gid_t       m_gid;
+    uid_t       m_uid;
+
 };
 
 #endif // APPDATA_H

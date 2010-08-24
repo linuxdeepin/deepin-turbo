@@ -75,7 +75,6 @@ public:
     //! \brief Receive application data to rApp.
     bool receiveApplicationData(AppData & rApp);
 
-
     //! \brief Return true if invoker wait for process exit status
     bool isReportAppExitStatusNeeded();
 
@@ -89,6 +88,10 @@ public:
 
     //! \brief Close all open sockets.
     static void closeAllSockets();
+
+    //! \brief Get pid of the process on the other end of socket connection
+    pid_t peersPid();
+
 
 private:
 
@@ -132,6 +135,9 @@ private:
     //! Receive I/O descriptors
     bool receiveIO();
 
+    //! Receive userId and GroupId
+    bool receiveIDs();
+
     //! Receive priority
     bool receivePriority();
 
@@ -161,6 +167,8 @@ private:
     int      m_io[IO_DESCRIPTOR_COUNT];
     uint32_t m_priority;
     bool     m_sendPid;
+    gid_t    m_gid;
+    uid_t    m_uid;
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
     static const char * m_credsStr;

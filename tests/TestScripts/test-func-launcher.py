@@ -631,6 +631,78 @@ class launcher_tests (unittest.TestCase):
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
 
+    def test_017_invoker_exit_status(self):
+        """
+        To test that invoker returns the same exit status as the application
+        """
+        #Run application without invoker and get the exit status
+        st, op = commands.getstatusoutput('/usr/bin/fala_status.launch')
+        app_st_wo_inv = os.WEXITSTATUS(st)
+    
+        #Run application with invoker and get the exit status
+        st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status.launch')
+        app_st_w_inv = os.WEXITSTATUS(st)
+
+        self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status")
+
+    def test_018_invoker_gid_uid(self):
+        """
+        To Test that the set gid and uid is passed from invoker process to launcher
+        """
+        #get the id in user mode 
+        print ("In User Mode \n")
+        st, op =  commands.getstatusoutput('su user -c ' "id")
+        usr_id1 = op.split(' ')[0].split('(')[0]
+        grp_id1 = op.split(' ')[1].split('(')[0]
+        print("System %s \nSyetem %s" %(usr_id1, grp_id1))
+
+        #get id by running the application using invoker in user mode
+        app = "invoker --type=m /usr/bin/fala_status.launch" 
+        st, op = commands.getstatusoutput('su user -c "%s"' %app );
+        usr_id = op.split('\n')[1]
+        grp_id = op.split('\n')[2]
+        print("Invoker %s \nInvoker %s" %(usr_id, grp_id))
+        
+        #get id by running the application without invoker in user mode
+        app = "/usr/bin/fala_status.launch"
+        st, op = commands.getstatusoutput('su user -c "%s"' %app );
+        usr_id2 = op.split('\n')[3]
+        grp_id2 = op.split('\n')[4]
+        print("Application %s \nApplication %s" %(usr_id2, grp_id2))
+
+        self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
+        self.assert_(grp_id == grp_id1, "The correct GID is not passed by invoker")
+
+        self.assert_(usr_id == usr_id2, "The correct UID is not passed by invoker")
+        self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
+
+        #get the id in root mode 
+        print ("In Root Mode \n")
+        st, op =  commands.getstatusoutput("id")
+        usr_id1 = op.split(' ')[0].split('(')[0]
+        grp_id1 = op.split(' ')[1].split('(')[0]
+        print("System %s \nSyetem %s" %(usr_id1, grp_id1))
+
+        #get id by running the application using invoker in root mode
+        app = "invoker --type=m /usr/bin/fala_status.launch" 
+        st, op = commands.getstatusoutput("%s" %app );
+        usr_id = op.split('\n')[1]
+        grp_id = op.split('\n')[2]
+        print("Invoker %s \nInvoker %s" %(usr_id, grp_id))
+        
+        #get id by running the application without invoker in root mode
+        app = "/usr/bin/fala_status.launch"
+        st, op = commands.getstatusoutput("%s" %app );
+        usr_id2 = op.split('\n')[3]
+        grp_id2 = op.split('\n')[4]
+        print("Application %s \nApplication %s" %(usr_id2, grp_id2))
+
+        self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
+        self.assert_(grp_id == grp_id1, "The correct GID is not passed by invoker")
+
+        self.assert_(usr_id == usr_id2, "The correct UID is not passed by invoker")
+        self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
+       
 
 # main
 if __name__ == '__main__':

@@ -27,7 +27,9 @@ AppData::AppData() :
     m_fileName(""),
     m_prio(0),
     m_entry(NULL),
-    m_ioDescriptors()
+    m_ioDescriptors(),
+    m_gid(0),
+    m_uid(0)
 {}
 
 void AppData::setOptions(int newOptions)
@@ -108,6 +110,22 @@ const vector<int> & AppData::ioDescriptors() const
 void AppData::setIODescriptors(const vector<int> & newIODescriptors)
 {
     m_ioDescriptors = newIODescriptors;
+}
+
+void AppData::setIDs(uid_t userId, gid_t groupId)
+{
+    m_uid = userId;
+    m_gid = groupId;
+}
+
+uid_t AppData::userId() const
+{
+    return m_uid;
+}
+
+gid_t AppData::groupId() const
+{
+    return m_gid;
 }
 
 void AppData::deleteArgv()

@@ -1,3 +1,19 @@
+applauncherd (0.10.3) stable; urgency=low
+
+  * Changes: pass and set gid and uid from invoker process to launcher
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Fri, 20 Aug 2010 11:16:01 +0300
+
+applauncherd (0.10.2) stable; urgency=low
+
+  * Changes: close connection with invoker if --wait-term param is not used
+  * Changes: Replaced references to Matti with TDriver
+  * Changes: sending application exit status to invoker stubs, code refactoring
+  * Changes: return application's exit status to invoker
+  * Changes: Changed the order of provide and request in applauncherd-launcher.aegis
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 17 Aug 2010 15:41:40 +0300
+
 applauncherd (0.10.1) stable; urgency=low
 
   * Fixes: NB#184761 -  Application launched with applauncher does not generate core dumps
@@ -35,7 +51,7 @@ applauncherd (0.8.0) stable; urgency=low
 applauncherd (0.7.0-2) stable; urgency=low
 
   * Fixes: NB#176326 -  Conndlgs launched using Applauncherd respawns until respawn limit
-	
+
  -- Antti Kervinen <antti.kervinen@nokia.com>  Tue, 07 Jul 2010 12:21:29 +0300
 
 applauncherd (0.7.0-1) stable; urgency=low
@@ -44,7 +60,7 @@ applauncherd (0.7.0-1) stable; urgency=low
   * Dbg packages added: applauncherd-dbg, applauncherd-invoker-dbg, applauncherd-launcher-dbg and applauncherd-testapps-dbg	
   * Fixes: NB#177439, invoker starts reloading cache too soon
   * Implemented: SWP#DUI-3384
-	
+
  -- Antti Kervinen <antti.kervinen@nokia.com>  Tue, 07 Jul 2010 10:10:29 +0300
 
 applauncherd (0.6.0-1) stable; urgency=low

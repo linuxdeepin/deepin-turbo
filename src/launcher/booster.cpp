@@ -82,6 +82,12 @@ void Booster::run()
 {
     if (!m_app.fileName().empty())
     {
+        //check if can close sockets here
+        if (!m_conn->isReportAppExitStatusNeeded())
+        {
+            Connection::closeAllSockets();
+        }
+
         Logger::logInfo("invoking '%s' ", m_app.fileName().c_str());
         int ret_val = launchProcess();
 
@@ -168,6 +174,17 @@ int Booster::launchProcess()
     if (!errno && cur_prio < m_app.priority())
         setpriority(PRIO_PROCESS, 0, m_app.priority());
 
+    // Possible set user ID and group ID of calling process
+    uid_t uid = getuid();
+    gid_t gid = getgid();
+
+    if (uid != m_app.userId())
+        setuid(m_app.userId());
+
+    if (gid != m_app.groupId())
+        setgid(m_app.groupId());
+
+
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
@@ -245,4 +262,16 @@ bool Booster::popPriority()
     }
 
     return false;
+}
+
+pid_t Booster::invokersPid()
+{
+    if (m_conn->isReportAppExitStatusNeeded())
+    {
+        return m_conn->peersPid();
+    }
+    else
+    {
+        return 0;
+    }
 }

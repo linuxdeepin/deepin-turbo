@@ -104,6 +104,9 @@ public:
     //! Restore the old priority stored by the previous successful setPriority().
     bool popPriority();
 
+    //! Get invoker's pid
+    pid_t invokersPid();
+
 protected:
 
     /*!

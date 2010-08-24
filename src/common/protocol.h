@@ -33,6 +33,7 @@ const uint32_t INVOKER_MSG_EXEC               = 0xe8ec0000;
 const uint32_t INVOKER_MSG_ARGS               = 0xa4650000;
 const uint32_t INVOKER_MSG_ENV                = 0xe5710000;
 const uint32_t INVOKER_MSG_PRIO               = 0xa1ce0000;
+const uint32_t INVOKER_MSG_IDS                = 0xb2df4000;
 const uint32_t INVOKER_MSG_IO                 = 0x10fd0000;
 const uint32_t INVOKER_MSG_END                = 0xdead0000;
 const uint32_t INVOKER_MSG_PID                = 0x1d1d0000;
