@@ -171,9 +171,17 @@ int Booster::launchProcess()
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
+    // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_app.ioDescriptors().size(); i++)
         if (m_app.ioDescriptors()[i] > 0)
             dup2(m_app.ioDescriptors()[i], i);
+
+    // Set PWD
+    const char * pwd = getenv("PWD");
+    if (pwd)
+    {
+        chdir(pwd);
+    }
 
     Logger::logNotice("launching process: '%s' ", m_app.fileName().c_str());
 
