@@ -147,12 +147,11 @@ void Daemon::run()
         ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
         if (count)
         {
-
             // read pid of peer invoker
             pid_t invoker_pid;
             count = read(m_pipefd[0], reinterpret_cast<void *>(&invoker_pid), sizeof(pid_t));
 
-            if (count < sizeof(pid_t))
+            if (count < static_cast<ssize_t>(sizeof(pid_t)))
             {
                 Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
             }

@@ -394,7 +394,7 @@ static void usage(int status)
            "  -w, --wait-term         Wait for launched process to terminate.\n"
            "  -h, --help              Print this help message.\n\n"
            "Example: %s --type=m /usr/bin/helloworld \n",
-           PROG_NAME, DEFAULT_DELAY, PROG_NAME);
+           PROG_NAME_INVOKER, DEFAULT_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
 }
@@ -487,7 +487,7 @@ int main(int argc, char *argv[])
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
 
-    if (!strstr(argv[0], PROG_NAME) )
+    if (!strstr(argv[0], PROG_NAME_INVOKER) )
     {
         // Called with a different name, old way of using invoker
         die(1,
