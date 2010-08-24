@@ -1,3 +1,10 @@
+applauncherd (0.10.4) unstable; urgency=low
+
+  * Changes: Handle PWD correctly
+  * Changes: PROG_NAME separated into PROG_NAME_INVOKER and PROG_NAME_LAUNCHER
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Tue, 24 Aug 2010 18:04:39 +0300
+
 applauncherd (0.10.3) stable; urgency=low
 
   * Changes: pass and set gid and uid from invoker process to launcher
