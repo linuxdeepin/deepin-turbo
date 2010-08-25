@@ -90,7 +90,7 @@ public:
     static void closeAllSockets();
 
     //! \brief Get pid of the process on the other end of socket connection
-    pid_t peersPid();
+    pid_t peerPid();
 
 
 private:

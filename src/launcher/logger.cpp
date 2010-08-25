@@ -27,7 +27,7 @@
 
 namespace {
     const QString logDirectory("/var/log");
-    const QString logFileName(logDirectory + QDir::separator() + PROG_NAME + ".log");
+    const QString logFileName(logDirectory + QDir::separator() + PROG_NAME_LAUNCHER + ".log");
     const QString oldLogFileName(logFileName + ".old");
     const QString dateFormat("yyyy-MM-dd hh:mm:ss.zzz");
 }

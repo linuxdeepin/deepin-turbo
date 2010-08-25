@@ -61,6 +61,7 @@ extern char ** environ;
 // pid of invoked process
 static pid_t invoked_pid = -1;
 
+static void sigs_restore(void);
 
 static void sig_forwarder(int sig)
 {
@@ -68,8 +69,10 @@ static void sig_forwarder(int sig)
     {
         if (kill(invoked_pid, sig) != 0)
         {
-            die(1, "Can't send signal to application: %s \n", strerror(errno));
+            report(report_error, "Can't send signal to application: %s \n", strerror(errno));
         }
+        sigs_restore();
+        raise(sig);
     }
 }
 
@@ -394,7 +397,7 @@ static void usage(int status)
            "  -w, --wait-term         Wait for launched process to terminate.\n"
            "  -h, --help              Print this help message.\n\n"
            "Example: %s --type=m /usr/bin/helloworld \n",
-           PROG_NAME, DEFAULT_DELAY, PROG_NAME);
+           PROG_NAME_INVOKER, DEFAULT_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
 }
@@ -487,7 +490,7 @@ int main(int argc, char *argv[])
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
 
-    if (!strstr(argv[0], PROG_NAME) )
+    if (!strstr(argv[0], PROG_NAME_INVOKER) )
     {
         // Called with a different name, old way of using invoker
         die(1,

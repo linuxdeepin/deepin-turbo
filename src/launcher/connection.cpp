@@ -548,7 +548,7 @@ bool Connection::isReportAppExitStatusNeeded()
     return m_sendPid;
 }
 
-pid_t Connection::peersPid()
+pid_t Connection::peerPid()
 {
     struct ucred cr;
 

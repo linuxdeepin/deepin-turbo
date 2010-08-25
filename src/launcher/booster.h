@@ -105,7 +105,7 @@ public:
     bool popPriority();
 
     //! Get invoker's pid
-    pid_t invokersPid();
+    pid_t invokerPid();
 
 protected:
 

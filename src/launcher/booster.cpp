@@ -174,23 +174,29 @@ int Booster::launchProcess()
     if (!errno && cur_prio < m_app.priority())
         setpriority(PRIO_PROCESS, 0, m_app.priority());
 
-    // Possible set user ID and group ID of calling process
-    uid_t uid = getuid();
-    gid_t gid = getgid();
+    // Set user ID and group ID of calling process if differing
+    // from the ones we got from invoker
 
-    if (uid != m_app.userId())
+    if (getuid() != m_app.userId())
         setuid(m_app.userId());
 
-    if (gid != m_app.groupId())
+    if (getgid() != m_app.groupId())
         setgid(m_app.groupId());
-
 
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
+    // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_app.ioDescriptors().size(); i++)
         if (m_app.ioDescriptors()[i] > 0)
             dup2(m_app.ioDescriptors()[i], i);
+
+    // Set PWD
+    const char * pwd = getenv("PWD");
+    if (pwd)
+    {
+        chdir(pwd);
+    }
 
     Logger::logNotice("launching process: '%s' ", m_app.fileName().c_str());
 
@@ -256,11 +262,11 @@ bool Booster::popPriority()
     return false;
 }
 
-pid_t Booster::invokersPid()
+pid_t Booster::invokerPid()
 {
     if (m_conn->isReportAppExitStatusNeeded())
     {
-        return m_conn->peersPid();
+        return m_conn->peerPid();
     }
     else
     {

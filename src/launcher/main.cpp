@@ -48,7 +48,7 @@ void exitLauncher(int)
 
 void usage()
 {
-    std::cout << "Usage: "<< PROG_NAME << " [options]\n"
+    std::cout << "Usage: "<< PROG_NAME_LAUNCHER << " [options]\n"
               << "\n"
               << "Options:\n"
               << "  --daemon            Fork and go into the background.\n"
@@ -77,8 +77,8 @@ int main(int argc, char * argv[])
     }
 
     // Open the log
-    Logger::openLog(PROG_NAME);
-    Logger::logNotice("%s starting..", PROG_NAME);
+    Logger::openLog(PROG_NAME_LAUNCHER);
+    Logger::logNotice("%s starting..", PROG_NAME_LAUNCHER);
 
     // Check that an instance of launcher is not already running
     if(!Daemon::lock())

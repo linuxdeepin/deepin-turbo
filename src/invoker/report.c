@@ -35,7 +35,7 @@ void report_set_output(enum report_output new_output)
         closelog();
 
     if (new_output == report_syslog)
-        openlog(PROG_NAME, LOG_PID, LOG_DAEMON);
+        openlog(PROG_NAME_INVOKER, LOG_PID, LOG_DAEMON);
 
     output = new_output;
 }
@@ -72,7 +72,7 @@ static void vreport(enum report_type type, char *msg, va_list arg)
     vsnprintf(str, sizeof(str), msg, arg);
 
     if (output == report_console)
-        printf("%s: %s%s", PROG_NAME, str_type, str);
+        printf("%s: %s%s", PROG_NAME_INVOKER, str_type, str);
     else if (output == report_syslog)
         syslog(log_type, "%s%s", str_type, str);
 }

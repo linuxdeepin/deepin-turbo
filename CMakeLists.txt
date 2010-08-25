@@ -41,8 +41,9 @@ if ($ENV{DISABLE_VERIFICATION})
     add_definitions(-DDISABLE_VERIFICATION)
 endif ($ENV{DISABLE_VERIFICATION})
 
-# Set the program name define. Must be at this level due to unit tests.
-add_definitions(-DPROG_NAME="applauncherd")
+# Set the program name defines. Must be at this level due to unit tests.
+add_definitions(-DPROG_NAME_INVOKER="invoker")
+add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
 
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set
 if ($ENV{BUILD_COVERAGE})
