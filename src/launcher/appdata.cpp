@@ -19,6 +19,10 @@
 
 #include "appdata.h"
 
+#ifdef HAVE_CREDS
+    #include <sys/creds.h>
+#endif
+
 AppData::AppData() :
     m_options(0),
     m_argc(0),
@@ -30,6 +34,9 @@ AppData::AppData() :
     m_ioDescriptors(),
     m_gid(0),
     m_uid(0)
+#if defined (HAVE_CREDS)
+  , m_peerCreds(NULL)
+#endif
 {}
 
 void AppData::setOptions(int newOptions)
@@ -143,7 +150,28 @@ void AppData::deleteArgv()
     }
 }
 
+#if defined (HAVE_CREDS)
+void AppData::setPeerCreds(creds_t peerCreds)
+{
+    m_peerCreds = peerCreds;
+}
+
+creds_t AppData::peerCreds() const
+{
+    return m_peerCreds;
+}
+
+void AppData::deletePeerCreds()
+{
+    creds_free(m_peerCreds);
+    m_peerCreds = NULL;
+}
+#endif // defined (HAVE_CREDS)
+
 AppData::~AppData()
 {
     deleteArgv();
+#if defined (HAVE_CREDS)
+    deletePeerCreds();
+#endif
 }

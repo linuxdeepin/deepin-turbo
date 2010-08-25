@@ -60,7 +60,7 @@ bool Booster::readCommand()
     m_conn = new Connection(socketId());
 
     // Accept a new invocation.
-    if (m_conn->acceptConn())
+    if (m_conn->acceptConn(m_app))
     {
         bool res = m_conn->receiveApplicationData(m_app);
         if(!res)
@@ -214,7 +214,14 @@ void* Booster::loadMain()
 {
 #ifdef HAVE_CREDS
     // Set application's platform security credentials
-    creds_confine(m_app.fileName().c_str());
+    int err = creds_confine2(m_app.fileName().c_str(), credp_str2flags("set", NULL), m_app.peerCreds());
+    m_app.deletePeerCreds();
+
+    if (err < 0)
+    {
+	// Credential setup has failed, abort.
+	Logger::logErrorAndDie(EXIT_FAILURE, "Failed to setup credentials for launching application: %d\n", err);
+    }
 #endif
 
     // Load the application as a library
