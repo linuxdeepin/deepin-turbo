@@ -157,7 +157,7 @@ void Daemon::run()
             }
             else
             {
-                Logger::logError("Daemon: invoker's pid: %d \n", invoker_pid);
+                Logger::logInfo("Daemon: invoker's pid: %d \n", invoker_pid);
             }
 
             if (invoker_pid != 0)
