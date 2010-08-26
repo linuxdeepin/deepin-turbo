@@ -182,7 +182,8 @@ static int invoker_init(enum APP_TYPE app_type)
     fd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (fd < 0)
     {
-        die(1, "Failed to open invoker socket.\n");
+        warning("Failed to open invoker socket.\n");
+        return -1;
     }
 
     sun.sun_family = AF_UNIX;  //AF_FILE;
@@ -205,7 +206,8 @@ static int invoker_init(enum APP_TYPE app_type)
 
     if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
     {
-        die(1, "Failed to initiate connect on the socket.\n");
+        warning("Failed to initiate connect on the socket.\n");
+        return -1;
     }
 
     return fd;
@@ -444,38 +446,52 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
 
         int fd = invoker_init(app_type);
 
-        invoker_send_magic(fd, magic_options);
-        invoker_send_name(fd, prog_argv[0]);
-        invoker_send_exec(fd, prog_name);
-        invoker_send_args(fd, prog_argc, prog_argv);
-        invoker_send_prio(fd, prog_prio);
-        invoker_send_ids(fd, uid, gid);
-        invoker_send_io(fd);
-        invoker_send_env(fd);
-        invoker_send_end(fd);
-
-        if (prog_name)
+        if (fd == -1)
         {
-            free(prog_name);
-        }
+            // connection with launcher is broken, try to launch application via execve
+            warning("Connection with launcher is broken\n");
 
-        // Wait for launched process to exit
-        if (wait_term)
+            execve(prog_name, prog_argv, environ);
+            perror("execve");   /* execve() only returns on error */
+            exit(EXIT_FAILURE);
+
+        }
+        else
         {
-            invoked_pid = invoker_recv_pid(fd);
-            debug("Booster's pid is %d \n ", invoked_pid);
+            // connection with launcher process is established
+            invoker_send_magic(fd, magic_options);
+            invoker_send_name(fd, prog_argv[0]);
+            invoker_send_exec(fd, prog_name);
+            invoker_send_args(fd, prog_argc, prog_argv);
+            invoker_send_prio(fd, prog_prio);
+            invoker_send_ids(fd, uid, gid);
+            invoker_send_io(fd);
+            invoker_send_env(fd);
+            invoker_send_end(fd);
 
-            // forward signals to invoked process
-            sigs_init();
+            if (prog_name)
+            {
+                free(prog_name);
+            }
 
-            // wait for exit status from invoked application
-            status = invoker_recv_exit(fd);
+            // Wait for launched process to exit
+            if (wait_term)
+            {
+                invoked_pid = invoker_recv_pid(fd);
+                debug("Booster's pid is %d \n ", invoked_pid);
 
-            // restore default signal handlers
-            sigs_restore();
+                // forward signals to invoked process
+                sigs_init();
+
+                // wait for exit status from invoked application
+                status = invoker_recv_exit(fd);
+
+                // restore default signal handlers
+                sigs_restore();
+            }
+
+            close(fd);
         }
-
-        close(fd);
     }
     return status;
 }
