@@ -449,12 +449,27 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         if (fd == -1)
         {
             // connection with launcher is broken, try to launch application via execve
-            warning("Connection with launcher is broken\n");
+            warning("Connection with launcher is broken \n");
+
+            if(!wait_term)
+            {
+                // Fork a new process
+                pid_t newPid = fork();
+
+                if (newPid == -1)
+                {
+                    report(report_error, "Invoker failed to fork");
+                    exit(EXIT_FAILURE);
+                }
+                if (newPid != 0) /* parent process */
+                {
+                    return;
+                }
+            }
 
             execve(prog_name, prog_argv, environ);
             perror("execve");   /* execve() only returns on error */
             exit(EXIT_FAILURE);
-
         }
         else
         {
