@@ -7,4 +7,6 @@ install(FILES
 install(PROGRAMS
   ts_prestartapp.rb
   tc_theming.rb
+  fala_sf.py
+  fala_sf.sh
   DESTINATION /usr/share/applauncherd-testscripts)
