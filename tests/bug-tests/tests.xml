@@ -73,6 +73,9 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_018_invoker_gid_uid</step>
       </case>
 
+      <case name="signal-forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="120" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_019_signal_forwarding</step>
+      </case>
 
       <environments>
           <scratchbox>true</scratchbox>

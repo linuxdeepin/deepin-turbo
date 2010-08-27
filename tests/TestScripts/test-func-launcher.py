@@ -704,6 +704,15 @@ class launcher_tests (unittest.TestCase):
         self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
        
 
+    def test_019_signal_forwarding(self):
+        """
+        To test that invoker is killed by the same signal as the application
+        """
+
+        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/fala_sf.py")
+        print ("The Invoker killed by : %s" %op)
+    
+        self.assert_(op == 'Segmentation fault (core dumped)', "The invoker was not killed by the same signal")
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
