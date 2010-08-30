@@ -449,7 +449,8 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         if (fd == -1)
         {
             // connection with launcher is broken, try to launch application via execve
-            warning("Connection with launcher is broken \n");
+            warning("Connection with launcher process is broken \n");
+            warning("Try to start application as a binary executable without launcher...  \n");
 
             if(!wait_term)
             {
@@ -463,7 +464,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                 }
                 if (newPid != 0) /* parent process */
                 {
-                    return;
+                    return 0;
                 }
             }
 

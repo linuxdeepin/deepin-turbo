@@ -163,7 +163,7 @@ void Daemon::run()
             if (invoker_pid != 0)
             {
                 // store booster - invoker pids pair
-                pid_t booster_pid;
+                pid_t booster_pid = 0;
                 if (MBooster::type() == msg)
                 {
                     booster_pid = MBooster::processId();
