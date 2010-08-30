@@ -19,7 +19,7 @@
 
 #include "qtbooster.h"
 
-const string QtBooster::m_socketId = "/tmp/qtlnchr";
+const string QtBooster::m_socketId = "/tmp/boostq";
 int QtBooster::m_ProcessID = 0;
 
 QtBooster::QtBooster()

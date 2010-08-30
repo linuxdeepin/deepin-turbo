@@ -17,54 +17,54 @@
 **
 ****************************************************************************/
 
-#include "mbooster.h"
+#include "wrtbooster.h"
 #include "logger.h"
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
 #endif
 
-const string MBooster::m_socketId  = "/tmp/boostm";
-int MBooster::m_ProcessID = 0;
+const string WRTBooster::m_socketId  = "/tmp/boostw";
+int WRTBooster::m_ProcessID = 0;
 
-MBooster::MBooster()
+WRTBooster::WRTBooster()
 {
 }
 
-MBooster::~MBooster()
+WRTBooster::~WRTBooster()
 {
 }
 
-const string & MBooster::socketId() const
+const string & WRTBooster::socketId() const
 {
     return m_socketId;
 }
 
-bool MBooster::preload()
+bool WRTBooster::preload()
 {
 #ifdef HAVE_MCOMPONENTCACHE
-    MComponentCache::populateForMApplication();
+    MComponentCache::populateForWRTApplication();
 #endif
     return true;
 }
 
-const string & MBooster::socketName()
+const string & WRTBooster::socketName()
 {
     return m_socketId;
 }
 
-char MBooster::type()
+char WRTBooster::type()
 {
-    return 'm';
+    return 'w';
 }
 
-void MBooster::setProcessId(int pid)
+void WRTBooster::setProcessId(int pid)
 {
     m_ProcessID = pid;
 }
 
 
-int MBooster::ProcessId()
+int WRTBooster::ProcessId()
 {
     return m_ProcessID;
 }

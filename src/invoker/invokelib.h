@@ -31,7 +31,8 @@ char *invoke_recv_str(int fd);
 
 /* FIXME: Should be '/var/run/'. */
 //#define INVOKER_SOCK	"/tmp/."PACKAGE
-#define INVOKER_M_SOCK    "/tmp/mlnchr"
-#define INVOKER_QT_SOCK	    "/tmp/qtlnchr"
+#define INVOKER_M_SOCK     "/tmp/boostm"
+#define INVOKER_QT_SOCK    "/tmp/boostq"
+#define INVOKER_WRT_SOCK   "/tmp/boostw"
 
 #endif

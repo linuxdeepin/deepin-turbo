@@ -23,6 +23,7 @@
 #include "booster.h"
 #include "mbooster.h"
 #include "qtbooster.h"
+#include "wrtbooster.h"
 
 #include <cstdlib>
 #include <cerrno>
@@ -136,9 +137,11 @@ void Daemon::run()
     // create sockets for each of the boosters
     Connection::initSocket(MBooster::socketName());
     Connection::initSocket(QtBooster::socketName());
+    Connection::initSocket(WRTBooster::socketName());
 
     forkBooster(MBooster::type());
     forkBooster(QtBooster::type());
+    forkBooster(WRTBooster::type());
 
     while (true)
     {
@@ -219,6 +222,10 @@ bool Daemon::forkBooster(char type, int sleepTime)
         {
             booster = new QtBooster();
         }
+        else if (WRTBooster::type() == type)
+        {
+            booster = new WRTBooster();
+        }
         else
         {
             Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type \n");
@@ -289,6 +296,10 @@ bool Daemon::forkBooster(char type, int sleepTime)
         {
             QtBooster::setProcessId(newPid);
         }
+        else if (WRTBooster::type() == type)
+        {
+            WRTBooster::setProcessId(newPid);
+        }
     }
 
     return true;
@@ -320,6 +331,10 @@ void Daemon::reapZombies()
             else if (pid == QtBooster::ProcessId())
             {
                 forkBooster(QtBooster::type(), m_boosterSleepTime);
+            }
+            else if (pid == WRTBooster::ProcessId())
+            {
+                forkBooster(WRTBooster::type(), m_boosterSleepTime);
             }
         }
         else
