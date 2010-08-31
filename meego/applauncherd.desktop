@@ -1,0 +1,4 @@
+[Desktop Entry]
+Exec=/usr/bin/applauncherd
+X-Moblin-Priority=High
+OnlyShowIn=X-MEEGO-HS;
