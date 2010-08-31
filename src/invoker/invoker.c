@@ -244,7 +244,7 @@ static uint32_t invoker_recv_exit(int fd)
       // if nothing happend, just exit with error message
       die(1, "receiving bad exit status (%08x)\n", action);
   }
-  /* Receive pid. */
+  /* Receive exit status */
   invoke_recv_msg(fd, &status);
   return status;
 }
