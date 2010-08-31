@@ -1,6 +1,6 @@
 <aegis>
 
-  <request>
+  <request policy="add">
         <credential name="applauncherd-launcher::access"/>
     	<for path="/usr/bin/invoker" id="client"/>
   </request>

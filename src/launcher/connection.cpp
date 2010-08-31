@@ -120,7 +120,7 @@ void Connection::initSocket(const string socketId)
     }
 }
 
-bool Connection::acceptConn()
+bool Connection::acceptConn(AppData & rApp)
 {
     m_fd = accept(m_curSocket, NULL, NULL);
 
@@ -130,13 +130,15 @@ bool Connection::acceptConn()
         return false;
     }
 
-#if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
+#if defined (HAVE_CREDS)
 
     creds_t ccreds = creds_getpeer(m_fd);
 
-    int allow = creds_have_p(ccreds, m_credsType, m_credsValue);
+    // Fetched peer creds will be free'd with rApp.deletePeerCreds
+    rApp.setPeerCreds(ccreds);
 
-    creds_free(ccreds);
+#if ! defined (DISABLE_VERIFICATION)
+    int allow = creds_have_p(ccreds, m_credsType, m_credsValue);
 
     if (!allow)
     {
@@ -146,8 +148,9 @@ bool Connection::acceptConn()
         closeConn();
         return false;
     }
+#endif // ! defined (DISABLE_VERIFICATION)
 
-#endif
+#endif // defined (HAVE_CREDS)
 
     return true;
 }

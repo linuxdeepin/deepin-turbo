@@ -65,9 +65,12 @@ public:
 
     /*! \brief Accept connection.
      * Accept a socket connection from the invoker.
+     * Stores security credentials of the connected
+     * peer to rApp, if security is enabled. The credentials
+     * in rApp must be released by the caller.
      * \return true on success.
      */
-    bool acceptConn();
+    bool acceptConn(AppData & rApp);
 
     //! \brief Close the socket connection.
     void closeConn();
@@ -170,7 +173,7 @@ private:
     gid_t    m_gid;
     uid_t    m_uid;
 
-#if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
+#if defined (HAVE_CREDS)
     static const char * m_credsStr;
     creds_value_t m_credsValue;
     creds_type_t  m_credsType;

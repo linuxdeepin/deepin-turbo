@@ -20,6 +20,10 @@
 #ifndef APPDATA_H
 #define APPDATA_H
 
+#ifdef HAVE_CREDS
+    #include <sys/creds.h>
+#endif
+
 #include <string>
 
 using std::string;
@@ -101,6 +105,17 @@ public:
     //! Frees the memory reserved for argv
     void deleteArgv();
 
+#if defined (HAVE_CREDS)
+    //! Store security credentials
+    void setPeerCreds(creds_t peerCreds);
+
+    //! Get the stored credentials
+    creds_t peerCreds() const;
+    
+    //! Free the memory reserved for credentials
+    void deletePeerCreds();
+#endif
+
 private:
 
     AppData(const AppData & r);
@@ -116,6 +131,10 @@ private:
     vector<int> m_ioDescriptors;
     gid_t       m_gid;
     uid_t       m_uid;
+
+#if defined (HAVE_CREDS)
+    creds_t     m_peerCreds;
+#endif
 
 };
 
