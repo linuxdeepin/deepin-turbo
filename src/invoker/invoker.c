@@ -447,9 +447,6 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             prog_prio = 0;
         }
 
-        int uid = getuid();
-        int gid = getgid();
-
         int fd = invoker_init(app_type);
 
         if (fd == -1)
@@ -486,7 +483,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             invoker_send_exec(fd, prog_name);
             invoker_send_args(fd, prog_argc, prog_argv);
             invoker_send_prio(fd, prog_prio);
-            invoker_send_ids(fd, uid, gid);
+            invoker_send_ids(fd, getuid(), getgid());
             invoker_send_io(fd);
             invoker_send_env(fd);
             invoker_send_end(fd);
@@ -618,6 +615,7 @@ int main(int argc, char *argv[])
     {
         die(1, "Application's type is unknown. \n");
     }
+
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
     int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term);
