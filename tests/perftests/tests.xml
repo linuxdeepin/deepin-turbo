@@ -24,7 +24,7 @@
 
       <get>
           <file>/tmp/launcher_perf.txt</file>
-	  <file>/tmp/testapp.log</file>
+          <file>/tmp/launcher_perf_new.txt</file>
       </get>
     </set>
 
