@@ -104,6 +104,9 @@ private:
     //! Don't use console for output
     void consoleQuiet();
 
+    //! Preload libs and resolve symbols
+    void preload();
+
     //! Daemonize flag
     bool m_daemon;
 

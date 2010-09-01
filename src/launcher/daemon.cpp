@@ -25,6 +25,8 @@
 #include "qtbooster.h"
 #include "wrtbooster.h"
 #include "boosterfactory.h"
+#include "preload.h"
+
 
 #include <cstdlib>
 #include <cerrno>
@@ -39,6 +41,7 @@
 
 #include <fcntl.h>
 #include <iostream>
+#include <dlfcn.h>
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
@@ -129,11 +132,27 @@ void Daemon::unlock()
     }
 }
 
+void Daemon::preload()
+{
+    vector<string> vLibs(libs, libs + sizeof(libs) / sizeof(char *));
+    for (size_t i = 0; i < vLibs.size(); i++)
+    {
+        void* handle = dlopen(vLibs[i].c_str(), RTLD_NOW | RTLD_GLOBAL);
+        if (!handle)
+        {
+            Logger::logError("Daemon: Can't load %s library\n", vLibs[i].c_str());
+        }
+    }
+}
+
 void Daemon::run()
 {
     // Make sure that LD_BIND_NOW does not prevent dynamic linker to
     // use lazy binding in later dlopen() calls.
     unsetenv("LD_BIND_NOW");
+
+    // load and resolve all undefined symbols for each dynamic library from the list 
+    preload();
 
     // Create sockets for each of the boosters
     Connection::initSocket(MBooster::socketName());
