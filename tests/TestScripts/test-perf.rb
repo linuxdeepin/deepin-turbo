@@ -38,8 +38,13 @@ class TC_PerformanceTests < Test::Unit::TestCase
             puts "Inside SB, Do Nothing to unlock"
         else
 	    system "mcetool --set-tklock-mode=unlocked"
+            # restart duihome so that qttasserver notices it
+            verify { 
+                system("/sbin/initctl restart xsession/duihome")
+            }
+            sleep (5)
         end
-        @sut = TDriver.sut(:Id=>ARGV[0] || 'sut_qt_maemo')
+        @sut = TDriver.sut(:Id=> 'sut_qt_maemo')
     end
 
     # method called after any test case for cleanup purposes
@@ -58,6 +63,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
         #Open the Application from the application grid
         @meegoHome = @sut.application(:name => 'duihome')
         @meegoHome.MButton(:name => "ToggleLauncherButton").tap
+        sleep(2)
         if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
             icon = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName)
             totalPages = @meegoHome.children(:type => 'LauncherPage').length
@@ -104,6 +110,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       #Run Application with invoker
       for i in 1..COUNT
           open_Apps("fala_wl")
+          print "Now Launching fala_wl %d times\n" %i
           sleep (5)
           read_file
           wL.push(measure_time)
@@ -112,6 +119,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       #Run Application without invoker
       for i in 1..COUNT
           open_Apps("fala_wol")
+          print "Now Launching fala_wol %d times\n" %i
           sleep (5)
           read_file
           woL.push(measure_time)
