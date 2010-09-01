@@ -25,6 +25,8 @@
 #include "qtbooster.h"
 #include "wrtbooster.h"
 #include "boosterfactory.h"
+#include "preload.h"
+
 
 #include <cstdlib>
 #include <cerrno>
@@ -39,6 +41,7 @@
 
 #include <fcntl.h>
 #include <iostream>
+#include <dlfcn.h>
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
