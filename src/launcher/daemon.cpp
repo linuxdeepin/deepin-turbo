@@ -135,7 +135,7 @@ void Daemon::unlock()
 void Daemon::preload()
 {
     vector<string> vLibs(libs, libs + sizeof(libs) / sizeof(char *));
-    for (int i = 0; i < vLibs.size(); i++)
+    for (size_t i = 0; i < vLibs.size(); i++)
     {
         void* handle = dlopen(vLibs[i].c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (!handle)
