@@ -9,4 +9,5 @@ install(PROGRAMS
   tc_theming.rb
   fala_sf.py
   fala_sf.sh
+  test-perf.rb
   DESTINATION /usr/share/applauncherd-testscripts)

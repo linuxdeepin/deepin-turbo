@@ -5,3 +5,4 @@ usr/share/applauncherd-testscripts/test-perf-mbooster.py
 usr/share/applauncherd-testscripts/tc_theming.rb
 usr/share/applauncherd-testscripts/fala_sf.sh
 usr/share/applauncherd-testscripts/fala_sf.py
+usr/share/applauncherd-testscripts/test-perf.rb
