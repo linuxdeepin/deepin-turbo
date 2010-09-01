@@ -10,19 +10,24 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="no-aegis-test" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="120" level="System" insignificant="true" >
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_007_no_aegis_Bug170905</step>
-      </case>
-
-      <case name="invoker-creds" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="120" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_008_invoker_creds</step>
-      </case>
-
-      <case name="launch-multi-app-cont" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="120" level="System" insignificant="true">
+      <case name="launch-multi-app-cont" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_009_launch_multiple_apps_cont</step>
       </case>
 
-      <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="120" level="System" insignificant="true">
+      <case name="launch-without-applauncherd" type="Functional" description="Test invoker can launch applications even when applauncherd is not running" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_020_launch_wo_applauncherd</step>
+      </case>
+
+      <case name="no-aegis-test" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="360" level="System" insignificant="true" >
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_007_no_aegis_Bug170905</step>
+      </case>
+
+      <case name="invoker-creds" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_008_invoker_creds</step>
+      </case>
+
+
+      <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_006_creds</step>
       </case>
       <environments>
@@ -39,11 +44,11 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="app-specific" type="Functional" description="Application specific theming tests" timeout="120" level="System" insignificant="true">
+      <case name="app-specific" type="Functional" description="Application specific theming tests" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_application_specific_theming</step>
       </case>
 
-      <case name="global-theming" type="Functional" description="Tests that global theming changes affect launched applications" timeout="120" level="System" insignificant="true">
+      <case name="global-theming" type="Functional" description="Tests that global theming changes affect launched applications" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_global_theming</step>
       </case>
 
@@ -61,18 +66,21 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="invoker-wait-term" type="Functional" description="Test that the launched application is killed when killing invoker that is waiting for app to terminate" timeout="120" level="System" insignificant="true">
+      <case name="invoker-wait-term" type="Functional" description="Test that the launched application is killed when killing invoker that is waiting for app to terminate" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_010</step>
       </case>
 
-      <case name="invoker-status" type="Functional" description="To test that invoker returns the same exit status as the application" timeout="120" level="System" insignificant="true">
+      <case name="invoker-status" type="Functional" description="To test that invoker returns the same exit status as the application" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_017_invoker_exit_status</step>
       </case>
 
-      <case name="gid-uid" type="Functional" description="To Test that the set gid and uid is passed from invoker process to launcher" timeout="120" level="System" insignificant="true">
+      <case name="gid-uid" type="Functional" description="To Test that the set gid and uid is passed from invoker process to launcher" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_018_invoker_gid_uid</step>
       </case>
 
+      <case name="signal-forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_019_signal_forwarding</step>
+      </case>
 
       <environments>
           <scratchbox>true</scratchbox>
@@ -85,15 +93,15 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="fd-booster-m" type="Functional" description="File descriptor test for booster-m" timeout="120" level="System" insignificant="false">
+      <case name="fd-booster-m" type="Functional" description="File descriptor test for booster-m" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_014_fd_booster_m</step>
       </case>
 
-      <case name="fd-booster-q" type="Functional" description="File descriptor test for booster-q" timeout="120" level="System" insignificant="false">
+      <case name="fd-booster-q" type="Functional" description="File descriptor test for booster-q" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_015_fd_booster_q</step>
       </case>
 
-      <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="120" level="System" insignificant="false">
+      <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_016_restart_booster</step>
       </case>
       <environments>

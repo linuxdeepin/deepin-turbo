@@ -181,7 +181,22 @@ void Daemon::run()
             }
             else
             {
-                Logger::logError("Daemon: invokers pid:  \n", invoker_pid);
+                Logger::logInfo("Daemon: invoker's pid: %d \n", invoker_pid);
+            }
+
+            if (invoker_pid != 0)
+            {
+                // store booster - invoker pids pair
+                pid_t booster_pid = 0;
+                if (MBooster::type() == msg)
+                {
+                    booster_pid = MBooster::processId();
+                }
+                else if (QtBooster::type() == msg)
+                {
+                    booster_pid = QtBooster::processId();
+                }
+                m_kindergarten[booster_pid] = invoker_pid;
             }
 
             // Fork a new booster of the given type
@@ -323,12 +338,25 @@ void Daemon::reapZombies()
         if (pid)
         {
             i = m_children.erase(i);
-            Logger::logError("Daemon: terminated process pid is %d", pid);
 
-            if (WIFSIGNALED(status))
+            PidMap::iterator it = m_kindergarten.find(pid);
+            if (it != m_kindergarten.end())
             {
-                // todo: send signal to corresponding invoker form here
-                Logger::logError("Daemon: booster (pid=%d) terminated due to signal=%d\n", pid, WTERMSIG(status));
+                Logger::logInfo("Daemon: terminated process is in the kendergarten");
+
+                if (WIFSIGNALED(status))
+                {
+                    int signal = WTERMSIG(status);
+                    pid_t invoker_pid = (*it).second;
+                    Logger::logInfo("Daemon: booster (pid=%d) terminated due to signal=%d\n", pid, signal);
+                    Logger::logInfo("Daemon: kill invoker process %d by signal %d \n", invoker_pid, signal);
+                    if (kill(invoker_pid, signal) != 0)
+                    {
+                        Logger::logError("Daemon: failed to send signal to invoker: %s \n", strerror(errno));
+                    }
+                }
+                // remove dead booster
+                m_kindergarten.erase(it);
             }
 
             // Check if pid belongs to boosters, restart dead booster if needed
