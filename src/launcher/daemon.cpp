@@ -24,6 +24,7 @@
 #include "mbooster.h"
 #include "qtbooster.h"
 #include "wrtbooster.h"
+#include "boosterfactory.h"
 
 #include <cstdlib>
 #include <cerrno>
@@ -134,11 +135,12 @@ void Daemon::run()
     // use lazy binding in later dlopen() calls.
     unsetenv("LD_BIND_NOW");
 
-    // create sockets for each of the boosters
+    // Create sockets for each of the boosters
     Connection::initSocket(MBooster::socketName());
     Connection::initSocket(QtBooster::socketName());
     Connection::initSocket(WRTBooster::socketName());
 
+    // Fork each booster for the first time
     forkBooster(MBooster::type());
     forkBooster(QtBooster::type());
     forkBooster(WRTBooster::type());
@@ -213,59 +215,14 @@ bool Daemon::forkBooster(char type, int sleepTime)
         Logger::logNotice("Daemon: Running a new Booster of %c type...", type);
 
         // Create a new booster and initialize it
-        Booster * booster = NULL;
-        if (MBooster::type() == type)
+        Booster * booster = BoosterFactory::create(type);
+        if (booster)
         {
-            booster = new MBooster();
-        }
-        else if (QtBooster::type() == type)
-        {
-            booster = new QtBooster();
-        }
-        else if (WRTBooster::type() == type)
-        {
-            booster = new WRTBooster();
+            initializeBooster(booster);
         }
         else
         {
             Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type \n");
-        }
-
-        // Drop priority (nice = 10)
-        booster->pushPriority(10);
-
-        // Preload stuff
-        booster->preload();
-
-        // Clean-up all the env variables
-        clearenv();
-
-        // Rename launcher process to booster
-        booster->renameProcess(m_initialArgc, m_initialArgv);
-
-        // Restore priority
-        booster->popPriority();
-
-        // Wait and read commands from the invoker
-        Logger::logNotice("Daemon: Wait for message from invoker");
-        booster->readCommand();
-
-        // Give to the process an application specific name
-        booster->renameProcess(m_initialArgc, m_initialArgv);
-
-        // Signal the parent process that it can create a new
-        // waiting booster process and close write end
-        const char msg = booster->boosterType();
-        ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
-        if (ret == -1) {
-            Logger::logError("Daemon: Can't send signal to launcher process' \n");
-        }
-
-        // Send to the parent process pid of invoker for tracking
-        pid_t pid = booster->invokersPid();
-        ret = write(m_pipefd[1], reinterpret_cast<const void *>(&pid), sizeof(pid_t));
-        if (ret == -1) {
-            Logger::logError("Daemon: Can't send invoker's pid to launcher process' \n");
         }
 
         // close pipe
@@ -288,21 +245,53 @@ bool Daemon::forkBooster(char type, int sleepTime)
     {
         // Store the pid so that we can reap it later
         m_children.push_back(newPid);
-        if (MBooster::type() == type)
-        {
-            MBooster::setProcessId(newPid);
-        }
-        else if (QtBooster::type() == type)
-        {
-            QtBooster::setProcessId(newPid);
-        }
-        else if (WRTBooster::type() == type)
-        {
-            WRTBooster::setProcessId(newPid);
-        }
+
+        // Set current process ID globally to the given booster type
+        // so that we now which booster to restart if on exits
+        BoosterFactory::setProcessIdToBooster(type, newPid);
     }
 
     return true;
+}
+
+void Daemon::initializeBooster(Booster * booster)
+{
+    // Drop priority (nice = 10)
+    booster->pushPriority(10);
+
+    // Preload stuff
+    booster->preload();
+
+    // Clean-up all the env variables
+    clearenv();
+
+    // Rename launcher process to booster
+    booster->renameProcess(m_initialArgc, m_initialArgv);
+
+    // Restore priority
+    booster->popPriority();
+
+    // Wait and read commands from the invoker
+    Logger::logNotice("Daemon: Wait for message from invoker");
+    booster->readCommand();
+
+    // Give to the process an application specific name
+    booster->renameProcess(m_initialArgc, m_initialArgv);
+
+    // Signal the parent process that it can create a new
+    // waiting booster process and close write end
+    const char msg = booster->boosterType();
+    ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
+    if (ret == -1) {
+        Logger::logError("Daemon: Can't send signal to launcher process' \n");
+    }
+
+    // Send to the parent process pid of invoker for tracking
+    pid_t pid = booster->invokersPid();
+    ret = write(m_pipefd[1], reinterpret_cast<const void *>(&pid), sizeof(pid_t));
+    if (ret == -1) {
+        Logger::logError("Daemon: Can't send invoker's pid to launcher process' \n");
+    }
 }
 
 void Daemon::reapZombies()
@@ -324,17 +313,10 @@ void Daemon::reapZombies()
             }
 
             // Check if pid belongs to boosters, restart dead booster if needed
-            if (pid == MBooster::ProcessId())
+            char type = BoosterFactory::getBoosterTypeForPid(pid);
+            if (type != 0)
             {
-                forkBooster(MBooster::type(), m_boosterSleepTime);
-            }
-            else if (pid == QtBooster::ProcessId())
-            {
-                forkBooster(QtBooster::type(), m_boosterSleepTime);
-            }
-            else if (pid == WRTBooster::ProcessId())
-            {
-                forkBooster(WRTBooster::type(), m_boosterSleepTime);
+                forkBooster(type, m_boosterSleepTime);
             }
         }
         else

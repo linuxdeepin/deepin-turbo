@@ -63,8 +63,7 @@ void WRTBooster::setProcessId(int pid)
     m_ProcessID = pid;
 }
 
-
-int WRTBooster::ProcessId()
+int WRTBooster::processId()
 {
     return m_ProcessID;
 }

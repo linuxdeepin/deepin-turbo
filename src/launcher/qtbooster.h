@@ -59,7 +59,7 @@ public:
     /*!
      * \brief Return booster pid
      */
-    static int  ProcessId();
+    static int processId();
 
 
     //! \reimp

@@ -18,7 +18,7 @@ else (EXISTS ${M_COMPONENT_CACHE})
 endif (EXISTS ${M_COMPONENT_CACHE})
 
 # Set sources
-set(SRC appdata.cpp booster.cpp connection.cpp daemon.cpp mbooster.cpp logger.cpp main.cpp qtbooster.cpp wrtbooster.cpp)
+set(SRC appdata.cpp booster.cpp boosterfactory.cpp connection.cpp daemon.cpp mbooster.cpp logger.cpp main.cpp qtbooster.cpp wrtbooster.cpp)
 
 # Find libdl
 find_library(LIBDL NAMES dl)

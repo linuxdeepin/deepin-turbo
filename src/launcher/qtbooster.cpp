@@ -55,7 +55,7 @@ void QtBooster::setProcessId(int pid)
     m_ProcessID = pid;
 }
 
-int QtBooster::ProcessId()
+int QtBooster::processId()
 {
     return m_ProcessID;
 }

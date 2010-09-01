@@ -27,6 +27,8 @@
 using std::vector;
 using std::string;
 
+class Booster;
+
 /*!
  * \class Daemon.
  * \brief Daemon wraps up the daemonizing functionality.
@@ -93,6 +95,9 @@ private:
 
     //! Forks and initializes a new Booster
     bool forkBooster(char type, int sleepTime = 0);
+
+    //! Initializes the given booster
+    void initializeBooster(Booster * booster);
 
     //! Don't use console for output
     void consoleQuiet();
