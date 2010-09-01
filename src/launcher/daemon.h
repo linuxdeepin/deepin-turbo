@@ -22,10 +22,12 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <sys/types.h>
 
 using std::vector;
 using std::string;
+using std::map;
 
 class Booster;
 
@@ -111,6 +113,10 @@ private:
     //! Vector of current child PID's
     typedef vector<pid_t> PidVect;
     PidVect m_children;
+
+    //! storage of booster-invoker pid pairs
+    typedef map<pid_t, pid_t> PidMap;
+    PidMap  m_kindergarten;
 
     // Pipe used to tell the parent that a new booster is needed
     int m_pipefd[2];

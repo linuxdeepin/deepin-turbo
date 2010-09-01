@@ -1,9 +1,30 @@
-applauncherd (0.10.4) unstable; urgency=low
+applauncherd (0.12.1) stable; urgency=low
 
+  * Changes: Launcher uses creds_confine2 to reset credentials during transmogrification
+  * Fixes: NB#187583 -  Update application launcher to use creds_confine2() for credential setup
+  * Fixes: NB#187780 -  Booster robustness improvement: launch applications even without applauncherd
+
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Mon, 30 Aug 2010 15:03:59 +0300
+
+applauncherd (0.11.0) stable; urgency=low
+
+  * Changes: Signal-forwarding tests added
+  * Changes: Test for invoker can launch applications even without applauncherd
+  * Changes: "Deprecated" applauncherd-dev and made it depend on libmeegotouch-dev
+  * Changes: wait-term parameter support for applications started without launcher
+  * Changes: invoker can launch applications even without applauncherd
+  * Changes: remove CAP::kill from invoker's aegis file
+  * Changes: Updates to meego packaging files. Submitted to devel:ux:handset.
+  * Changes: signals forwarding update
+  * Changes: daemon error messages refactoring
+  * Changes: added Connection::peersPid() method
   * Changes: Handle PWD correctly
+  * Changes: pass pid of invoker from booster to launcher
   * Changes: PROG_NAME separated into PROG_NAME_INVOKER and PROG_NAME_LAUNCHER
+  * Changes: invoker's receiving of booster process exit code refactoring
+  * Fixes: NB#187780 -  Booster robustness improvement: launch applications even without applauncherd
 
- -- Jussi Lind <jussi.lind@nokia.com>  Tue, 24 Aug 2010 18:04:39 +0300
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 30 Aug 2010 11:38:32 +0300
 
 applauncherd (0.10.3) stable; urgency=low
 

@@ -704,6 +704,36 @@ class launcher_tests (unittest.TestCase):
         self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
        
 
+    def test_019_signal_forwarding(self):
+        """
+        To test that invoker is killed by the same signal as the application
+        """
+
+        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/fala_sf.py")
+        print ("The Invoker killed by : %s" %op)
+    
+        self.assert_(op == 'Segmentation fault (core dumped)', "The invoker was not killed by the same signal")
+
+    def test_020_launch_wo_applauncherd(self):
+        """
+        To Test that invoker can launch applications even when the applauncherd is not running
+        """
+
+        #Stop applauncherd
+        os.system("initctl stop xsession/applauncherd")
+        time.sleep(1)
+        #Try to launch an application using invoker
+        os.system('invoker --type=m /usr/bin/fala_ft_hello.launch &') 
+        time.sleep(3)
+        process_id1 = self.get_pid('fala_ft_hello')
+
+        self.assert_(process_id1 != None , "application not launcherd running")
+        time.sleep(1)
+        self.kill_process(PREFERED_APP)
+        os.system("initctl start xsession/applauncherd")
+
+        
+    
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include

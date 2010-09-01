@@ -120,7 +120,7 @@ void Connection::initSocket(const string socketId)
     }
 }
 
-bool Connection::acceptConn()
+bool Connection::acceptConn(AppData & rApp)
 {
     m_fd = accept(m_curSocket, NULL, NULL);
 
@@ -130,15 +130,19 @@ bool Connection::acceptConn()
         return false;
     }
 
-#if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
+#if defined (HAVE_CREDS)
 
+    // Get credentials of assumed invoker
     creds_t ccreds = creds_getpeer(m_fd);
 
-    int allow = creds_have_p(ccreds, m_credsType, m_credsValue);
+    // Fetched peer creds will be free'd with rApp.deletePeerCreds
+    rApp.setPeerCreds(ccreds);
 
-    creds_free(ccreds);
+#if ! defined (DISABLE_VERIFICATION)
 
-    if (!allow)
+    // This code checks if the assumed invoker has got enough
+    // rights to communicate with us
+    if (!creds_have_p(ccreds, m_credsType, m_credsValue))
     {
         Logger::logError("Connection: invoker doesn't have enough credentials to call launcher \n");
 
@@ -147,7 +151,9 @@ bool Connection::acceptConn()
         return false;
     }
 
-#endif
+#endif // ! defined (DISABLE_VERIFICATION)
+
+#endif // defined (HAVE_CREDS)
 
     return true;
 }
@@ -548,7 +554,7 @@ bool Connection::isReportAppExitStatusNeeded()
     return m_sendPid;
 }
 
-pid_t Connection::peersPid()
+pid_t Connection::peerPid()
 {
     struct ucred cr;
 

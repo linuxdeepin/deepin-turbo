@@ -61,7 +61,6 @@ public:
      */
     static int processId();
 
-
     //! \reimp
     virtual bool preload();
 

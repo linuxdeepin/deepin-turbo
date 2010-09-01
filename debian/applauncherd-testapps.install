@@ -10,7 +10,14 @@ usr/bin/fala_ft_creds1.launch
 usr/bin/fala_ft_creds2
 usr/bin/fala_ft_creds2.launch
 usr/bin/fala_testapp
+usr/bin/fala_wl
+usr/bin/fala_wl.launch
+usr/bin/fala_wol
 usr/share/dbus-1/services/com.nokia.fala_testapp.service
+usr/share/dbus-1/services/com.nokia.fala_wl.service
+usr/share/dbus-1/services/com.nokia.fala_wol.service
 usr/bin/fala_ft_themetest.launch
 usr/bin/fala_ft_themetest
 usr/share/themes/base/meegotouch/fala_ft_themetest/*
+usr/share/applications/fala_wl.desktop
+usr/share/applications/fala_wol.desktop

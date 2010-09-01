@@ -28,4 +28,8 @@ add_executable(fala_testapp ${SRC})
 
 # Install
 install(PROGRAMS fala_testapp DESTINATION /usr/bin/)
-install(FILES com.nokia.fala_testapp.service DESTINATION /usr/share/dbus-1/services)
+install(PROGRAMS fala_testapp DESTINATION /usr/bin RENAME fala_wl.launch)
+install(PROGRAMS fala_testapp DESTINATION /usr/bin RENAME fala_wol)
+install(FILES com.nokia.fala_testapp.service com.nokia.fala_wl.service com.nokia.fala_wol.service DESTINATION /usr/share/dbus-1/services)
+install(FILES fala_wl.desktop fala_wol.desktop DESTINATION /usr/share/applications/)
+

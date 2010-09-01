@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo
+echo "**********************************************************"
+echo
+echo "NOTE: This package is deprecated. Instead of this package,"
+echo "      use the libmeegotouch-dev package."
+echo
+echo "**********************************************************"
+echo
