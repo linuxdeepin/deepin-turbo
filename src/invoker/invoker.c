@@ -50,8 +50,9 @@
 static const int DEFAULT_DELAY = 0;
 
 // Enumeration of possible application types:
-// M_APP: MeeGo Touch application
-// QT_APP: Qt/generic application
+// M_APP   : MeeGo Touch application
+// QT_APP  : Qt/generic application
+// WRT_APP : Web runtime application
 //
 enum APP_TYPE { M_APP, QT_APP, WRT_APP, UNKNOWN_APP };
 
@@ -396,14 +397,14 @@ static void usage(int status)
            "TYPE chooses the type of booster used. Qt-booster may be used to launch anything.\n"
            "Possible values for TYPE: \n"
            "  m                   Launch a MeeGo Touch application.\n"
-           "  qt                  Launch a Qt application.\n\n"
+           "  qt                  Launch a Qt application.\n"
            "  wrt                 Launch a web runtime application.\n\n"
            "Options:\n"
-           "  -c, --creds             Print Aegis security credentials (if enabled).\n"
-           "  -d, --delay SECS        After invoking sleep for SECS seconds (default %d).\n"
-           "  -w, --wait-term         Wait for launched process to terminate.\n"
-           "  -h, --help              Print this help message.\n\n"
-           "Example: %s --type=m /usr/bin/helloworld \n",
+           "  -c, --creds         Print Aegis security credentials (if enabled).\n"
+           "  -d, --delay SECS    After invoking sleep for SECS seconds (default %d).\n"
+           "  -w, --wait-term     Wait for launched process to terminate.\n"
+           "  -h, --help          Print this help message.\n\n"
+           "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, DEFAULT_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
