@@ -43,7 +43,7 @@ const string & WRTBooster::socketId() const
 bool WRTBooster::preload()
 {
 #ifdef HAVE_MCOMPONENTCACHE
-//    MComponentCache::populateForWRTApplication();
+    MComponentCache::populateForWRTApplication();
 #endif
     return true;
 }
