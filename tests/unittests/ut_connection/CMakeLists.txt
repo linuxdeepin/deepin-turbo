@@ -16,7 +16,7 @@ qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 set(QT_USE_QTTEST TRUE)
 
 # Set include paths
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}  ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
 link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${MEEGOTOUCH_LIBRARIES})
 
 # Enable Qt (may not be needed, because already defined on higher level)

@@ -19,6 +19,22 @@ if (${QTVERSION} VERSION_LESS 4.6.0)
     message(FATAL_ERROR "You need Qt4.6, found ${QTVERSION}.")
 endif (${QTVERSION} VERSION_LESS 4.6.0)
 
+# Find libmeegotouch for MBooster, WRTBooster and the test programs
+include(FindPkgConfig) 
+pkg_check_modules(MEEGOTOUCH meegotouch>=0.20 REQUIRED)
+include_directories(${MEEGOTOUCH_INCLUDE_DIRS})
+
+# Check if it's possible to compile MBooster with MComponentCache. If so,
+# HAVE_MCOMPONENTCACHE is set.
+message(STATUS "checking for mcomponentcache.h")
+find_file(M_COMPONENT_CACHE NAMES mcomponentcache.h PATHS ${MEEGOTOUCH_INCLUDE_DIRS})
+if (EXISTS ${M_COMPONENT_CACHE})
+  message(STATUS "  found")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MCOMPONENTCACHE")
+else (EXISTS ${M_COMPONENT_CACHE})
+  message(STATUS "  not found")
+endif (EXISTS ${M_COMPONENT_CACHE})
+
 # Find creds.h (and libcreds if the header is found)
 message(STATUS "checking for creds.h")
 find_file(CREDS_H NAMES creds.h PATHS /usr/include/sys)
@@ -51,7 +67,6 @@ if ($ENV{BUILD_COVERAGE})
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
         set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} -ftest-coverage -fprofile-arcs")
 endif ($ENV{BUILD_COVERAGE})
-
 
 # Sub build: applauncherd
 add_subdirectory(src)
