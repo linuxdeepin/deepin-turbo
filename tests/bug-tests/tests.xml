@@ -93,15 +93,15 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="fd-booster-m" type="Functional" description="File descriptor test for booster-m" timeout="360" level="System" insignificant="false">
+      <case name="fd-booster-m" type="Functional" description="File descriptor test for booster-m" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_014_fd_booster_m</step>
       </case>
 
-      <case name="fd-booster-q" type="Functional" description="File descriptor test for booster-q" timeout="360" level="System" insignificant="false">
+      <case name="fd-booster-q" type="Functional" description="File descriptor test for booster-q" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_015_fd_booster_q</step>
       </case>
 
-      <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="false">
+      <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_016_restart_booster</step>
       </case>
       <environments>
