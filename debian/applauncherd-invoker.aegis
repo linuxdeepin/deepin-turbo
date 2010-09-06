@@ -1,6 +1,6 @@
 <aegis>
 
-  <request policy="add">
+  <request policy="add not-inheritable">
         <credential name="applauncherd-launcher::access"/>
     	<for path="/usr/bin/invoker" id="client"/>
   </request>
