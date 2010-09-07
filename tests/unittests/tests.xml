@@ -6,11 +6,6 @@
   <suite name="applauncherd-tests" domain="Application framework"> 
 
     <set name="launcher-tests" description="Basic launcher unit tests" feature="AF Basic Launcher daemon support" requirement="300168" >   
-      <pre_steps>
-        <step>export DISPLAY=:0</step>
-        <step>source /tmp/session_bus_address.user</step>
-        <!-- step>other pre steps</step -->
-      </pre_steps>
 
       <case name="Daemon" type="Functional" description="Unit tests for Daemon class" level="Component" timeout="20">
           <step expected_result="0">/usr/share/applauncherd-tests/ut_daemon</step>
@@ -29,41 +24,22 @@
       </get-->
     </set>
 
-    <set name="mbooster-tests" description="MBooster unit tests" feature="AF MBooster for Launcher daemon" requirement="300195" >   
-      <pre_steps>
-        <step>export DISPLAY=:0</step>
-        <step>source /tmp/session_bus_address.user</step>
-        <!-- step>other pre steps</step -->
-      </pre_steps>
-
-
-      <case name="MBooster" type="Functional" description="Unit tests for MBooster class" level="Component" timeout="20">
-          <step expected_result="0">/usr/share/applauncherd-tests/ut_mbooster</step>
-      </case>
-
+    <set name="booster-tests" description="Booster unit tests" feature="AF MBooster for Launcher daemon" requirement="300195" >   
 
       <case name="Booster" type="Functional" description="Unit tests for Booster class" level="Component" timeout="20">
           <step expected_result="0">/usr/share/applauncherd-tests/ut_booster</step>
       </case>
 
-      <environments>
-          <scratchbox>true</scratchbox>
-          <hardware>true</hardware>    
-      </environments>
-
-      <!--get>
-      </get-->
-    </set>
-
-    <set name="qtbooster-tests" description="QtBooster unit tests" feature="AF Launcher daemon support for Plain Qt applications" requirement="421032" >   
-      <pre_steps>
-        <step>export DISPLAY=:0</step>
-        <step>source /tmp/session_bus_address.user</step>
-        <!-- step>other pre steps</step -->
-      </pre_steps>
+      <case name="MBooster" type="Functional" description="Unit tests for MBooster class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_mbooster</step>
+      </case>
 
       <case name="QtBooster" type="Functional" description="Unit tests for QtBooster class" level="Component" timeout="20">
           <step expected_result="0">/usr/share/applauncherd-tests/ut_qtbooster</step>
+      </case>
+
+      <case name="WRTBooster" type="Functional" description="Unit tests for WRTBooster class" level="Component" timeout="20">
+          <step expected_result="0">source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_wrtbooster</step>
       </case>
 
       <environments>
