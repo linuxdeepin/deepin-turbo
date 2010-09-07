@@ -38,7 +38,7 @@ public:
     static Booster * create(char type);
 
     /*! Set current process ID globally to the given booster type
-     *  so that we now which booster to restart if on exits.
+     *  so that we know which booster to restart if on exits.
      */
     static void setProcessIdToBooster(char type, pid_t pid);
 

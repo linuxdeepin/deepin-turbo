@@ -88,7 +88,7 @@ void Booster::run()
             Connection::closeAllSockets();
         }
 
-        Logger::logInfo("invoking '%s' ", m_app.fileName().c_str());
+        Logger::logInfo("Booster: invoking '%s' ", m_app.fileName().c_str());
         int ret_val = launchProcess();
 
         if (m_conn->isReportAppExitStatusNeeded())
@@ -101,7 +101,7 @@ void Booster::run()
     }
     else
     {
-        Logger::logError("nothing to invoke\n");
+        Logger::logError("Booster: nothing to invoke\n");
     }
 }
 
@@ -130,7 +130,7 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
     }
 
     const char* newProcessName = m_app.appName().c_str();
-    Logger::logNotice("set new name for process: %s", newProcessName);
+    Logger::logNotice("Booster: set new name for process: %s", newProcessName);
     
     // This code copies all the new arguments to the space reserved
     // in the old argv array. If an argument won't fit then the algorithm
@@ -161,7 +161,7 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
 
     // Set the process name using prctl, killall and top use it
     if ( prctl(PR_SET_NAME, basename(newProcessName)) == -1 )
-        Logger::logError("on set new process name: %s ", strerror(errno));
+        Logger::logError("Booster: on set new process name: %s ", strerror(errno));
 
     setenv("_", newProcessName, true);
 }
@@ -198,7 +198,7 @@ int Booster::launchProcess()
         chdir(pwd);
     }
 
-    Logger::logNotice("launching process: '%s' ", m_app.fileName().c_str());
+    Logger::logNotice("Booster: launching process: '%s' ", m_app.fileName().c_str());
 
     // Close logger
     Logger::closeLog();
@@ -220,7 +220,7 @@ void* Booster::loadMain()
     if (err < 0)
     {
         // Credential setup has failed, abort.
-        Logger::logErrorAndDie(EXIT_FAILURE, "Failed to setup credentials for launching application: %d\n", err);
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Failed to setup credentials for launching application: %d\n", err);
     }
 #endif
 
@@ -228,7 +228,7 @@ void* Booster::loadMain()
     void * module = dlopen(m_app.fileName().c_str(), RTLD_LAZY | RTLD_GLOBAL);
 
     if (!module)
-        Logger::logErrorAndDie(EXIT_FAILURE, "loading invoked application: '%s'\n", dlerror());
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: loading invoked application: '%s'\n", dlerror());
 
     // Find out the address for symbol "main".
     dlerror();
@@ -236,7 +236,7 @@ void* Booster::loadMain()
 
     const char * error_s = dlerror();
     if (error_s != NULL)
-        Logger::logErrorAndDie(EXIT_FAILURE, "loading symbol 'main': '%s'\n", error_s);
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: loading symbol 'main': '%s'\n", error_s);
 
     return module;
 }

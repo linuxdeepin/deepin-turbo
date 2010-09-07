@@ -42,7 +42,7 @@ graphics:
 require 'tdriver'
 require 'date'
 require 'test/unit'
-include MattiVerify
+include TDriverVerify
 
 SCREENSHOT_DIR = '/home/user/MyDocs'
 
