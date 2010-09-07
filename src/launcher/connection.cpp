@@ -194,7 +194,7 @@ bool Connection::sendStr(const char * str)
     uint32_t size = strlen(str) + 1;
     sendMsg(size);
 
-    Logger::logInfo("%s: '%s'", __FUNCTION__, str);
+    Logger::logInfo("Connection: %s: '%s'", __FUNCTION__, str);
 
     // Send the string.
     return write(m_fd, str, size) != -1;
@@ -404,7 +404,7 @@ bool Connection::receiveEnv()
             {
                 if (putenv_wrapper(const_cast<char *>(var)) != 0)
                 {
-                    Logger::logWarning("putenv failed");
+                    Logger::logWarning("Connection: putenv failed");
                 }
             }
             else
@@ -476,7 +476,7 @@ bool Connection::receiveIO()
 
 bool Connection::receiveActions()
 {
-    Logger::logInfo("enter: %s", __FUNCTION__);
+    Logger::logInfo("Connection: enter: %s", __FUNCTION__);
 
     while (1)
     {
