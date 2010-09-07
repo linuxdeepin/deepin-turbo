@@ -42,6 +42,8 @@ private Q_SLOTS:
     void cleanupTestCase();
     void testSocketName();
     void testType();
+    void testSetProcessId();
+    void testPreload();
 
 private:
     std::tr1::shared_ptr<MBooster> m_subject;

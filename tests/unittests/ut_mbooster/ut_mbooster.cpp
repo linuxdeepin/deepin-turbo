@@ -20,6 +20,10 @@
 #include "ut_mbooster.h"
 #include "mbooster.h"
 
+#ifdef HAVE_MCOMPONENTCACHE
+#include <MComponentCache>
+#endif
+
 Ut_MBooster::Ut_MBooster() :
     m_subject(new MBooster)
 {}
@@ -35,14 +39,35 @@ void Ut_MBooster::cleanupTestCase()
 
 void Ut_MBooster::testSocketName()
 {
-    QVERIFY2(MBooster::socketName() == MBooster::m_socketId, "Failure");
-    QVERIFY2(m_subject->socketId() == MBooster::m_socketId, "Failure");
+    QVERIFY(MBooster::socketName() == MBooster::m_socketId);
+    QVERIFY(m_subject->socketId() == MBooster::m_socketId);
 }
 
 void Ut_MBooster::testType()
 {
-    QVERIFY2(MBooster::type() == 'm', "Failure");
-    QVERIFY2(m_subject->boosterType() == 'm', "Failure");
+    QVERIFY(MBooster::type() == 'm');
+    QVERIFY(m_subject->boosterType() == 'm');
+}
+
+void Ut_MBooster::testSetProcessId()
+{
+    MBooster::setProcessId(123);
+    QVERIFY(MBooster::processId() == 123);
+}
+
+void Ut_MBooster::testPreload()
+{
+#ifdef HAVE_MCOMPONENTCACHE
+
+    m_subject->preload();
+
+    const char * argv[] = {"foo"};
+    int argc = 1;
+
+    QVERIFY(MComponentCache::mApplication(argc, const_cast<char **>(argv)));
+    QVERIFY(MComponentCache::mApplicationWindow());
+
+#endif
 }
 
 QTEST_APPLESS_MAIN(Ut_MBooster);
