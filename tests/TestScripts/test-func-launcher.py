@@ -136,7 +136,24 @@ class launcher_tests (unittest.TestCase):
             debug(op)
             return None
 
-    def get_creds(self, path):
+    def get_creds(self, path = None, pid = None):
+        """
+        Tries to retrieve credentials for a running application
+        using either the pid or path. Credentials are returned
+        as a string list.
+        """
+
+        if path != None:
+            pid = self.get_pid(path)
+
+        self.assert_(pid != None, 'Invalid PID')
+
+        st, op = commands.getstatusoutput("/usr/bin/creds-get -p %s" % pid)
+
+        return op.split("\n")[1:], pid
+
+
+    def launch_and_get_creds(self, path):
         """
         Tries to launch an application and if successful, returns the
         credentials the application has as a list. 
@@ -148,21 +165,25 @@ class launcher_tests (unittest.TestCase):
         # sleep for a moment to allow applauncherd to start the process
         time.sleep(5)
 
-        # with luck, the process should have correct name by now
-        pid = self.get_pid(path)
+        creds, pid = self.get_creds(path = path)
 
-        debug("%s has PID %s" % (basename(path), pid,))
+        # # with luck, the process should have correct name by now
+        # pid = self.get_pid(path)
 
-        self.assert_(pid != None, "Couldn't launch %s" % basename(path))
+        # debug("%s has PID %s" % (basename(path), pid,))
 
-        # get the status and output (needs creds-get from libcreds2-tools
-        # package)
-        st, op = commands.getstatusoutput("/usr/bin/creds-get -p %s" % pid)
+        # self.assert_(pid != None, "Couldn't launch %s" % basename(path))
+
+        # # get the status and output (needs creds-get from libcreds2-tools
+        # # package)
+        # st, op = commands.getstatusoutput("/usr/bin/creds-get -p %s" % pid)
 
         self.kill_process(path)
 
-        # The first line from creds-get is rubbish (at the moment at least)
-        return op.split("\n")[1:], pid
+        # # The first line from creds-get is rubbish (at the moment at least)
+        # return op.split("\n")[1:], pid
+
+        return creds, pid
 
     def get_file_descriptor(self, booster, type):
         """
@@ -333,8 +354,8 @@ class launcher_tests (unittest.TestCase):
         Test that the fala_ft_creds* applications have the correct
         credentials set (check aegis file included in the debian package)
         """
-        op1, pid1 = self.get_creds('/usr/bin/fala_ft_creds1')
-        op2, pid2 = self.get_creds('/usr/bin/fala_ft_creds2')
+        op1, pid1 = self.launch_and_get_creds('/usr/bin/fala_ft_creds1')
+        op2, pid2 = self.launch_and_get_creds('/usr/bin/fala_ft_creds2')
 
         # filter out some unnecessary tokens
         def filterfunc(x):
@@ -382,7 +403,7 @@ class launcher_tests (unittest.TestCase):
         get any funny credentials.
         """
 
-        creds, pid = self.get_creds('/usr/bin/fala_ft_hello')
+        creds, pid = self.launch_and_get_creds('/usr/bin/fala_ft_hello')
         debug("fala_ft_hello has %s" % ', '.join(creds))
 
         # Credentials should be dropped, but uid/gid retained
@@ -731,9 +752,8 @@ class launcher_tests (unittest.TestCase):
         time.sleep(1)
         self.kill_process(PREFERED_APP)
         os.system("initctl start xsession/applauncherd")
-
         
-    
+        
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
