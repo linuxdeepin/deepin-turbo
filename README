@@ -12,7 +12,7 @@ environment variables. Finally, it finds the main function in the application bi
 
 Aegis platform security is used to protect the socket connection between invoker and launcher. Currently this works only on the target device. It is automatically disabled by the build scripts when compiling on x86. 
 
-Each application type (currently Qt and MeeGo Touch) has its own booster process. When booster launches the application by calling the "main()" function, applauncherd will create new booster process of that type. Qt booster can be used for all kinds of applicationts.
+Each application type (currently Qt and MeeGo Touch) has its own booster process. When booster launches the application by calling the "main()" function, applauncherd will create new booster process of that type. This document focuses on using MeeGo Touch booster, but other boosters briefly introduced in Section 7.
 
 Booster processes do some initializations that cannot be shared among other processes and therefore have to be done after the fork. This allows, for instance, instantiating a MeeGo Touch application before knowing the name of the application. Then the booster process waits for a connection from the invoker with the information about which application should be launched. 
 
@@ -166,9 +166,37 @@ Applications using the launcher must depend on applauncherd package.
   help solving these issues invoker accepts parameters:
   
   --delay 10 invoker waits for 10 seconds before terminating 
-  --wait-term invoker will not terminate until the launched application process terminates.
 
-7. FURTHER READING
+  --wait-term invoker will not terminate until the launched
+    application process terminates. Invoker will return the same
+    return value as the application did, or it will be terminated by
+    the same signal as the launched application. Signals received by
+    the invoker process will be forwarded to the launched application.
+
+  Crashes after application's main()
+  ----------------------------------
+
+  If an application is launched with invoker, there may be some
+  destructors of MeeGo Touch classes executed after application's
+  main(). This can cause crashes, if the application has installed a
+  custom debug message handler and not uninstalled it before exit.
+
+7. OTHER BOOSTERS
+
+Warning: behavior of these boosters is subject to change.
+
+Qt booster is a no-operation booster. It can be used by calling
+invoker --type=qt. Qt booster requires only the M_EXPORT source
+modification. Any MeeGo Touch boostable application can be launched
+with this booster type as well, but it will result in a slower start
+up because of empty cache.
+
+Wrt booster, used with invoker --type=wrt, populates MComponentCache
+with MApplication and MApplicationWindow, just like the MeeGo Touch
+booster. However, in this case MApplication uses a graphics system
+which suits better for rendering web content.
+
+8. FURTHER READING
 
 MeeGo Touch documentation for fast application startup.
 
