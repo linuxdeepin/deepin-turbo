@@ -504,7 +504,7 @@ class launcher_tests (unittest.TestCase):
 
         # function to remove some temporaries
         def rem():
-            files = ['/tmp/applauncherd.lock', '/tmp/qtlnchr', '/tmp/mlnchr']
+            files = ['/tmp/applauncherd.lock', '/tmp/boost*']
 
             for f in files:
                 print "removing %s" % f
