@@ -9,8 +9,9 @@ set(SRC appdata.cpp booster.cpp boosterfactory.cpp connection.cpp daemon.cpp mbo
 # Find libdl
 find_library(LIBDL NAMES dl)
 
-# Set libraries to be linked
-link_libraries(${QT_LIBRARIES} ${MEEGOTOUCH_LIBRARIES} ${LIBDL})
+# Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
+# but dlopen():ed and listed in src/launcher/preload.h instead. 
+link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL})
 
 # Set executable
 add_executable(applauncherd.bin ${SRC})
