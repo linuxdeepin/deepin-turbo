@@ -34,7 +34,7 @@ Authors:   ext-nimika.1.keshri@nokia.com
            ext-oskari.timperi@nokia.com
 """
 
-import os
+import os, os.path, glob
 import subprocess
 import commands
 import time
@@ -148,10 +148,19 @@ class launcher_tests (unittest.TestCase):
 
         self.assert_(pid != None, 'Invalid PID')
 
-        st, op = commands.getstatusoutput("/usr/bin/creds-get -p %s" % pid)
+        handle = Popen(['/usr/bin/creds-get', '-p', str(pid)],
+                       stdout = subprocess.PIPE)
 
-        return op.split("\n")[1:], pid
+        op = handle.communicate()[0].strip()
+        handle.wait()
 
+        self.assert_(handle.returncode == 0, "There was no such PID!")
+
+        debug("creds-get gave >>>>>\n%s\n<<<<<" % op)
+
+        creds = op.split("\n")[1:]
+
+        return creds
 
     def launch_and_get_creds(self, path):
         """
@@ -165,25 +174,18 @@ class launcher_tests (unittest.TestCase):
         # sleep for a moment to allow applauncherd to start the process
         time.sleep(5)
 
-        creds, pid = self.get_creds(path = path)
+        # with luck, the process should have correct name by now
+        pid = self.get_pid(path)
 
-        # # with luck, the process should have correct name by now
-        # pid = self.get_pid(path)
+        debug("%s has PID %s" % (basename(path), pid,))
 
-        # debug("%s has PID %s" % (basename(path), pid,))
+        self.assert_(pid != None, "Couldn't launch %s" % basename(path))
 
-        # self.assert_(pid != None, "Couldn't launch %s" % basename(path))
-
-        # # get the status and output (needs creds-get from libcreds2-tools
-        # # package)
-        # st, op = commands.getstatusoutput("/usr/bin/creds-get -p %s" % pid)
+        creds = self.get_creds(pid = pid)
 
         self.kill_process(path)
 
-        # # The first line from creds-get is rubbish (at the moment at least)
-        # return op.split("\n")[1:], pid
-
-        return creds, pid
+        return creds
 
     def get_file_descriptor(self, booster, type):
         """
@@ -354,48 +356,34 @@ class launcher_tests (unittest.TestCase):
         Test that the fala_ft_creds* applications have the correct
         credentials set (check aegis file included in the debian package)
         """
-        op1, pid1 = self.launch_and_get_creds('/usr/bin/fala_ft_creds1')
-        op2, pid2 = self.launch_and_get_creds('/usr/bin/fala_ft_creds2')
+        creds1 = self.launch_and_get_creds('/usr/bin/fala_ft_creds1')
+        creds2 = self.launch_and_get_creds('/usr/bin/fala_ft_creds2')
 
         # filter out some unnecessary tokens
         def filterfunc(x):
             pattern = "^(SRC|AID)::"
             return re.match(pattern, x) == None
 
-        op1 = filter(filterfunc, op1)
-        op2 = filter(filterfunc, op2)
+        creds1 = filter(filterfunc, creds1)
+        creds2 = filter(filterfunc, creds2)
 
-        debug("fala_ft_creds1 has %s" % ', '.join(op1))
-        debug("fala_ft_creds2 has %s" % ', '.join(op2))
-
-        # required common caps
-        caps = ['UID::user', 'GID::users',
-                'applauncherd-testapps::applauncherd-testapps']
+        debug("fala_ft_creds1 has %s" % ', '.join(creds1))
+        debug("fala_ft_creds2 has %s" % ', '.join(creds2))
 
         # required caps for fala_ft_creds1
         cap1 = ['tcb', 'drm', 'CAP::setuid', 'CAP::setgid',
-                'CAP::setfcap'] + caps
+                'CAP::setfcap']
 
         # required caps for fala_ft_creds2
-        cap2 = ['Cellular'] + caps
+        cap2 = ['Cellular']
 
         # check that all required creds are there
         for cap in cap1:
-            self.assert_(cap in op1, "%s not set for fala_ft_creds1" % cap)
+            self.assert_(cap in creds1, "%s not set for fala_ft_creds1" % cap)
 
         for cap in cap2:
-            self.assert_(cap in op2, "%s not set for fala_ft_creds2" % cap)
+            self.assert_(cap in creds2, "%s not set for fala_ft_creds2" % cap)
 
-        # check that no other creds are set
-        op1.sort()
-        cap1.sort()
-
-        self.assert_(op1 == cap1, "fala_ft_creds1 has non-requested creds!")
-
-        op2.sort()
-        cap2.sort()
-
-        self.assert_(op2 == cap2, "fala_ft_creds2 has non-requested creds!")
 
     def test_007_no_aegis_Bug170905(self):
         """
@@ -403,7 +391,7 @@ class launcher_tests (unittest.TestCase):
         get any funny credentials.
         """
 
-        creds, pid = self.launch_and_get_creds('/usr/bin/fala_ft_hello')
+        creds = self.launch_and_get_creds('/usr/bin/fala_ft_hello')
         debug("fala_ft_hello has %s" % ', '.join(creds))
 
         # Credentials should be dropped, but uid/gid retained
@@ -504,7 +492,7 @@ class launcher_tests (unittest.TestCase):
 
         # function to remove some temporaries
         def rem():
-            files = ['/tmp/applauncherd.lock', '/tmp/boost*']
+            files = ['/tmp/applauncherd.lock'] + glob.glob('/tmp/boost*')
 
             for f in files:
                 print "removing %s" % f
@@ -752,7 +740,6 @@ class launcher_tests (unittest.TestCase):
         time.sleep(1)
         self.kill_process(PREFERED_APP)
         os.system("initctl start xsession/applauncherd")
-        
         
 # main
 if __name__ == '__main__':
