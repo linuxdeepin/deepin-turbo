@@ -45,7 +45,7 @@ Description: Launcher debug package
 
 Package: applauncherd-dev
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmeegotouch-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Development files for applications using applauncherd
  Development files for applications using applauncherd.
  

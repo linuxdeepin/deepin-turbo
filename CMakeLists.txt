@@ -90,9 +90,15 @@ endif (EXISTS ${Doxygen})
 # Install README
 install(FILES README DESTINATION /usr/share/doc/applauncherd)
 
-# Install meegotouch-boostable.pc
+# Install pkg-config and qmake feature files. Note that current packaging policy is such 
+# that applauncherd-dev installs only qt-boostable.pc which is intended for "all" 
+# non-MeeGo Touch applications. meegotouch-boostable.pc is installed by libmeegotouch-dev 
+# so as to make it easier for MeeGo Touch application developers. 
+#
+# TODO: Should meegotouch-boostable.* be removed completely from here since it's already included
+#       in meegotouch-dev ?
 install(FILES data/pkgconfig/meegotouch-boostable.pc DESTINATION /usr/lib/pkgconfig)
-
-# Install the qmake config feature file
 install(FILES data/mkspecs/features/meegotouch-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
+install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
+install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
 
