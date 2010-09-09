@@ -58,6 +58,8 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
 1.1 Build configuration for MeeGo Touch applications
 
   Use these instructions if you are building a MeeGo Touch / WRT application.
+  In this case your application must build-depend on libmeegotouch-dev. It will
+  install the .pc file for pkg-config and the feature file for QMake.
 
   Using QMake
   -----------
@@ -81,8 +83,6 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
     QMAKE_CXXFLAGS += `pkg-config --cflags meegotouch-boostable`
     QMAKE_LFLAGS += `pkg-config --libs meegotouch-boostable`
 
-  Note that you still have to install the libmeegotouch-dev package.
-
   Manual settings for QMake
   -------------------------
 
@@ -94,19 +94,32 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
   Note that you have to update the flags manually if there are any changes in
   the required flags.
 
-  Manual settings for CMake
-  -------------------------
+  Using CMake with pkg-config
+  ---------------------------
 
-  With CMake, you can compile and install your program like this:
+  You can utilize pkg-config in CMake by including FindPkgConfig in CMakeLists.txt:
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden 
-        -fvisibility-inlines-hidden")
-    set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
-    install(PROGRAMS myapplication DESTINATION /usr/bin RENAME
-            myapplication.launch)
+  include(FindPkgConfig) 
+  
+  To obtain the compiler and linker flags, add the following lines:
 
-  CMake also has a pkg-config support, see the CMake online manual for more
-  information.
+  pkg_check_modules(MEEGOTOUCH_BOOSTABLE REQUIRED meegotouch-boostable)
+  add_definitions(${MEEGOTOUCH_BOOSTABLE_CFLAGS})
+  link_libraries(${MEEGOTOUCH_BOOSTABLE_LDFLAGS})
+  
+  In order to install the application binary with a .launch filename extension,
+  use the following line:
+
+  install(PROGRAMS myapplication DESTINATION /usr/bin RENAME myapplication.launch)
+  
+  If you do not want to use pkg-config for some reason, you can manually add the
+  compiler and linker flags like this:
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden 
+      -fvisibility-inlines-hidden")
+  set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
+  
+  Again, this requires you to update the flags if something changes.
 
   Automatic settings with pkg-config (any build system)
   -----------------------------------------------------
@@ -115,14 +128,13 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
 
     pkg-config --cflags --libs meegotouch-boostable
 
-  When using these, your application must build-depend on libmeegotouch-dev,
-  which will install the needed meegotouch-boostable.pc file for pkg-config.
-
 
 1.2 Build configuration for plain Qt / generic applications
 
   Use these instructions if you are building a plain Qt / generic application
-  that is not depending on libmeegotouch.
+  that is not depending on libmeegotouch. In this case, your application
+  must build-depend on applauncherd-dev, not libmeegotouch-dev. It will install
+  the .pc file for pkg-config and the feature file for QMake. 
 
   Using QMake
   -----------
@@ -144,8 +156,6 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
     QMAKE_CXXFLAGS += `pkg-config --cflags qt-boostable`
     QMAKE_LFLAGS += `pkg-config --libs qt-boostable`
 
-  Note that you still have to install the applauncherd-dev package.
-
   Manual settings for QMake
   -------------------------
 
@@ -157,17 +167,33 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
   Note that you have to update the flags manually if there are any changes in
   the required flags.
 
-  Manual settings for CMake
-  -------------------------
+  Using CMake with pkg-config
+  ---------------------------
 
-  With CMake, you can compile and install your program like this:
+  You can utilize pkg-config in CMake by including FindPkgConfig in CMakeLists.txt:
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
-    set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
-    install(PROGRAMS myapplication DESTINATION /usr/bin RENAME myapplication.launch)
+  include(FindPkgConfig) 
+  
+  To obtain the compiler and linker flags, add the following lines:
 
-  CMake also has a pkg-config support, see the CMake online manual for more
-  information.
+  pkg_check_modules(QT_BOOSTABLE REQUIRED qt-boostable)
+  add_definitions(${QT_BOOSTABLE_CFLAGS})
+  link_libraries(${QT_BOOSTABLE_LDFLAGS})
+  
+  In order to install the application binary with a .launch filename extension,
+  use the following line:
+
+  install(PROGRAMS myapplication DESTINATION /usr/bin RENAME myapplication.launch)
+  
+  If you do not want to use pkg-config for some reason, you can manually add the
+  compiler and linker flags like this:
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden 
+      -fvisibility-inlines-hidden")
+  set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
+  
+  Again, this requires you to update the flags if something changes.
+
 
   Automatic settings with pkg-config (any build system)
   -----------------------------------------------------
