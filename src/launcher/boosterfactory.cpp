@@ -82,3 +82,22 @@ char BoosterFactory::getBoosterTypeForPid(pid_t pid)
     }
 }
 
+pid_t BoosterFactory::getBoosterPidForType(char type)
+{
+    if (MBooster::type() == type)
+    {
+        return MBooster::processId();
+    }
+    else if (QtBooster::type() == type)
+    {
+        return QtBooster::processId();
+    }
+    else if (WRTBooster::type() == type)
+    {
+        return WRTBooster::processId();
+    }
+    else
+    {
+        return 0;
+    }
+}

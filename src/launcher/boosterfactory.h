@@ -32,8 +32,8 @@ class BoosterFactory
 {
 public:
     /*! \brief  Creates a new booster.
-     *  \return Pointer to Booster on success, NULL if failed
      *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT.
+     *  \return Pointer to Booster on success, NULL if failed
      */
     static Booster * create(char type);
 
@@ -46,6 +46,13 @@ public:
      *  \return 'q', 'm' or 'w' on success, 0 on failure.
      */
     static char getBoosterTypeForPid(pid_t pid);
+
+    /*! \brief Return the pid of last created booster of particular type
+     *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT
+     *  \return booster pid
+     */
+    static pid_t getBoosterPidForType(char type);
+
 
 private:
     BoosterFactory();
