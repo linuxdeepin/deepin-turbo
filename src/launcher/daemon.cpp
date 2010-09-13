@@ -187,15 +187,7 @@ void Daemon::run()
             if (invoker_pid != 0)
             {
                 // store booster - invoker pids pair
-                pid_t booster_pid = 0;
-                if (MBooster::type() == msg)
-                {
-                    booster_pid = MBooster::processId();
-                }
-                else if (QtBooster::type() == msg)
-                {
-                    booster_pid = QtBooster::processId();
-                }
+                pid_t booster_pid = BoosterFactory::getBoosterPidForType(msg);
                 m_kindergarten[booster_pid] = invoker_pid;
             }
 
