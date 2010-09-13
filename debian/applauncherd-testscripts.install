@@ -7,3 +7,4 @@ usr/share/applauncherd-testscripts/fala_sf.sh
 usr/share/applauncherd-testscripts/fala_sf.py
 usr/share/applauncherd-testscripts/test-perf.rb
 usr/share/applauncherd-testscripts/utils.py
+usr/share/applauncherd-testscripts/test-security.py
