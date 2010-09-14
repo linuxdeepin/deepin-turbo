@@ -95,6 +95,9 @@ private:
     //! Fork to a daemon
     void daemonize();
 
+    //! Fork process that kills boosters if needed
+    bool forkKiller();
+
     //! Forks and initializes a new Booster
     bool forkBooster(char type, int sleepTime = 0);
 
