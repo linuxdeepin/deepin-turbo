@@ -14,8 +14,9 @@ Description: Meta package for applauncherd and invoker
 
 Package: applauncherd-dbg
 Architecture: any
+Section: debug
 Priority: extra
-Depends: applauncherd (= ${binary:Version}), applauncherd-invoker-dbg, applauncherd-launcher-dbg
+Depends: applauncherd (= ${binary:Version}), applauncherd-invoker-dbg, applauncherd-launcher-dbg, ${misc:Depends}
 Description: Meta package for applauncherd and invoker debug symbols
 
 Package: applauncherd-invoker
@@ -26,8 +27,9 @@ Description: Invoker part of applauncherd
 
 Package: applauncherd-invoker-dbg
 Section: debug
+Priority: extra
 Architecture: any
-Depends: applauncherd-invoker (= ${binary:Version})
+Depends: applauncherd-invoker (= ${binary:Version}), ${misc:Depends}
 Description: Invoker debug package
  Debug symbols for invoker
  
@@ -41,7 +43,7 @@ Package: applauncherd-launcher-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: applauncherd-launcher (= ${binary:Version})
+Depends: applauncherd-launcher (= ${binary:Version}), ${misc:Depends}
 Description: Launcher debug package
  Debug symbols for launcher
 
@@ -81,7 +83,8 @@ Description: applaunched testapps
 Package: applauncherd-testapps-dbg
 Section: debug
 Architecture: any
-Depends: applauncherd-testapps(= ${binary:Version}), ${misc:Depends}
+Priority: extra
+Depends: applauncherd-testapps (= ${binary:Version}), ${misc:Depends}
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: debug symbols for applauncherd testapps 
@@ -123,6 +126,7 @@ Description: applauncherd performance tests
  Performance testing binaries and shellscripts for testing applauncherd. 
 
 Package: applauncherd-doc
+Depends: ${misc:Depends}
 Section: doc
 Architecture: all
 Description: Instructions for application developers
