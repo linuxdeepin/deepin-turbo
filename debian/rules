@@ -71,6 +71,7 @@ binary-arch: build install
 	dh_strip -p applauncherd-launcher --dbg-package=applauncherd-launcher-dbg
 	dh_strip -p applauncherd-invoker --dbg-package=applauncherd-invoker-dbg
 	dh_strip -p applauncherd-testapps --dbg-package=applauncherd-testapps-dbg
+	dh_strip -p applauncherd-tests 
 	dh_compress
 	dh_fixperms
 #	dh_perl
