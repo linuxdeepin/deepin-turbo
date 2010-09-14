@@ -2,6 +2,8 @@ install(FILES
   test-perf-mbooster.py
   check_pipes.py
   test-func-launcher.py
+  utils.py
+  test-security.py
   DESTINATION /usr/share/applauncherd-testscripts)
 
 install(PROGRAMS

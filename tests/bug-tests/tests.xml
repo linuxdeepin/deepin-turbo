@@ -19,16 +19,16 @@
       </case>
 
       <case name="no-aegis-test" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="360" level="System" insignificant="true" >
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_007_no_aegis_Bug170905</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_002_no_aegis_Bug170905</step>
       </case>
 
       <case name="invoker-creds" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_008_invoker_creds</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_003_invoker_creds</step>
       </case>
 
 
       <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_006_creds</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_001</step>
       </case>
       <environments>
           <scratchbox>false</scratchbox>
