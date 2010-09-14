@@ -37,11 +37,13 @@ class TC_PRESTARTLAUNCHTESTS < Test::Unit::TestCase
     # method called before any test case
     def setup
         system "mcetool --set-tklock-mode=unlocked"
+        system "initctl stop xsession/applifed"
         @sut = TDriver.sut(:Id=> 'sut_qt_maemo')    
     end
     
     # method called after any test case for cleanup purposes
     def teardown
+        system "initctl start xsession/applifed"
     end
 
     def test_launch_prestarted_app
