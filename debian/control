@@ -7,26 +7,27 @@ Standards-Version: 3.8.0
 
 Package: applauncherd
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-invoker (= ${Source-Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-invoker (= ${binary:Version})
 Description: Meta package for applauncherd and invoker
  Launcher daemon and invoker to speed up launches. 
  Special boosters for MeeGo Touch and Qt.
 
 Package: applauncherd-dbg
 Architecture: any
-Depends: applauncherd-invoker-dbg, applauncherd-launcher-dbg
+Priority: extra
+Depends: applauncherd (= ${binary:Version}), applauncherd-invoker-dbg, applauncherd-launcher-dbg
 Description: Meta package for applauncherd and invoker debug symbols
 
 Package: applauncherd-invoker
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-launcher (= ${Source-Version}), libcreds2 [arm armel]
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-launcher (= ${binary:Version}), libcreds2 [arm armel]
 Description: Invoker part of applauncherd
  Invoker part of applauncherd.
 
 Package: applauncherd-invoker-dbg
 Section: debug
 Architecture: any
-Depends: applauncherd-invoker (= ${Source-Version})
+Depends: applauncherd-invoker (= ${binary:Version})
 Description: Invoker debug package
  Debug symbols for invoker
  
@@ -38,8 +39,9 @@ Description: Launcher part of applauncherd
 
 Package: applauncherd-launcher-dbg
 Section: debug
+Priority: extra
 Architecture: any
-Depends: applauncherd-launcher (= ${Source-Version})
+Depends: applauncherd-launcher (= ${binary:Version})
 Description: Launcher debug package
  Debug symbols for launcher
 
@@ -50,7 +52,7 @@ Description: Development files for applications using applauncherd
  Development files for applications using applauncherd.
  
 Package: applauncherd-tests
-Section: extra
+Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libmeegotouchcore0, libmeegotouchviews0, libmeegotouchextensions0, libmeegotouchsettings0, testrunner, applauncherd, ci-testing, libcreds[arm armel]
 XB-Maemo-CI-Packages: applauncherd
@@ -59,16 +61,16 @@ Description: applauncherd unit tests
  Unit testing binaries and shellscripts for testing applauncherd. 
 
 Package: applauncherd-testscripts
-Section: extra
+Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner, applauncherd, ci-testing, testability-driver, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40), rdoc
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner, applauncherd, ci-testing, testability-driver, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40), rdoc, python, ruby
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: applauncherd testscripts
  Testscripts for testing applauncherd
 
 Package: applauncherd-testapps
-Section: extra
+Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd, libmeegotouchcore0, libmeegotouchviews0, libmeegotouchextensions0, libmeegotouchsettings0, libcreds2 [arm armel], libcreds2-tools [arm armel] 
 XB-Maemo-CI-Packages: applauncherd
@@ -79,13 +81,13 @@ Description: applaunched testapps
 Package: applauncherd-testapps-dbg
 Section: debug
 Architecture: any
-Depends: applauncherd-testapps
+Depends: applauncherd-testapps(= ${binary:Version}), ${misc:Depends}
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: debug symbols for applauncherd testapps 
 
 Package: applauncherd-functional-tests
-Section: extra
+Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
@@ -94,7 +96,7 @@ Description: applauncherd functional tests
  Functional tests for testing applauncherd.
 
 Package: applauncherd-art-tests
-Section: extra
+Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
@@ -103,7 +105,7 @@ Description: applauncherd art tests
  Art tests for testing applauncherd.
 
 Package: applauncherd-bug-tests
-Section: extra
+Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
@@ -112,7 +114,7 @@ Description: applauncherd bug tests
  Tests related to bugs for testing applauncherd.
 
 Package: applauncherd-performance-tests
-Section: extra
+Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
