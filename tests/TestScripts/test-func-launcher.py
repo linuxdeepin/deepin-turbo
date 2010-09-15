@@ -460,11 +460,28 @@ class launcher_tests (unittest.TestCase):
         """
         To test that invoker is killed by the same signal as the application
         """
-
-        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/fala_sf.py")
+        #Test for m-booster
+        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py")
         print ("The Invoker killed by : %s" %op)
     
-        self.assert_(op == 'Segmentation fault (core dumped)', "The invoker was not killed by the same signal")
+        self.assert_(op == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
+        time.sleep(2)
+         
+        #This case is launching the application in user mode
+        #Test for q-booster
+        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
+        print ("The Invoker killed by : %s" %op.split('\n')[3])
+    
+        self.assert_(op.split('\n')[3] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
+        time.sleep(2)
+
+        #Test for w-booster
+        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.py")
+        print ("The Invoker killed by : %s" %op)
+    
+        self.assert_(op == 'User defined signal 1', "The invoker(w-booster) was not killed by the same signal")
+        time.sleep(2)
+
 
     def test_020_launch_wo_applauncherd(self):
         """
