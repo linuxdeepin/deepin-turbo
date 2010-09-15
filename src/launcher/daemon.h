@@ -96,10 +96,10 @@ private:
     void daemonize();
 
     //! Fork process that kills boosters if needed
-    bool forkKiller();
+    void forkKiller();
 
     //! Forks and initializes a new Booster
-    bool forkBooster(char type, int sleepTime = 0);
+    void forkBooster(char type, int sleepTime = 0);
 
     //! Initializes the given booster
     void initializeBooster(Booster * booster);

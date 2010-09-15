@@ -209,7 +209,7 @@ void Daemon::run()
     }
 }
 
-bool Daemon::forkKiller()
+void Daemon::forkKiller()
 {
     pid_t pid = fork();
     if (pid == -1)
@@ -225,7 +225,7 @@ bool Daemon::forkKiller()
     }
 }
 
-bool Daemon::forkBooster(char type, int sleepTime)
+void Daemon::forkBooster(char type, int sleepTime)
 {
     // Fork a new process
     pid_t newPid = fork();
@@ -295,8 +295,6 @@ bool Daemon::forkBooster(char type, int sleepTime)
         // so that we now which booster to restart if on exits
         BoosterFactory::setProcessIdToBooster(type, newPid);
     }
-
-    return true;
 }
 
 void Daemon::initializeBooster(Booster * booster)
