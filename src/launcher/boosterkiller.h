@@ -22,33 +22,42 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QSharedPointer>
+#include <MGConfItem>
 
 class QString;
-class MGConfItem;
 
-class BoosterKiller: public QObject
+/*! \class BoosterKiller
+ *
+ * BoosterKiller kills certain boosters e.g. when themeing or language changes.
+ * Daemon will then restart the boosters.
+ */
+class BoosterKiller : public QObject
 {
     Q_OBJECT
 
  public:
-    /* Add a GConf key and the name of the process that should be
-       killed in case the value associated to the key is changed.
-    */
+
+    //! Add a GConf key to trigger booster process termination
     void addKey(const QString & key);
+
+    //! Add a booster process name to be killed
     void addProcessName(const QString & processName);
 
-    /* Starts the killer. This will initialize qcoreapplication, does
-       not return.
+    /*! Starts the killer. This will initialize a QCoreApplication, does
+     *  not return.
      */
     void start();
 
- private slots:
+ private Q_SLOTS:
+
+    //! Kill all added processes
     void killProcesses();
     
  private:
-    QList<MGConfItem*> gconfItems;
-    QStringList processNames;
-    
+
+    QStringList m_processNames;
+    QList<QSharedPointer<MGConfItem> > m_gConfItems;
 };
 
-#endif
+#endif // BOOSTERKILLER_H
