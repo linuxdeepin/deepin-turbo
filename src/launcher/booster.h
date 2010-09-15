@@ -125,16 +125,26 @@ private:
     //! Disable assignment operator
     Booster & operator= (const Booster & r);
 
+    //! Load the library and jump to main
+    int launchProcess();
 
-    void  complainAndExit();
-    int   launchProcess();
+    //! Helper method: load the library and find out address for "main".
     void* loadMain();
 
+    //! Data structure representing the application to be invoked
     AppData m_app;
+
+    //! Socket connection to invoker
     Connection* m_conn;
 
+    //! Size (length) of the argument vector
     int m_argvArraySize;
+
+    //! Process priority before pushPriority() is called
     int m_oldPriority;
+
+    //! True if m_oldPriority is a valid value so that
+    //! it can be restored later.
     bool m_oldPriorityOk;
 
 #ifdef UNIT_TEST

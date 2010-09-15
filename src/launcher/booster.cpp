@@ -228,15 +228,18 @@ void* Booster::loadMain()
     void * module = dlopen(m_app.fileName().c_str(), RTLD_LAZY | RTLD_GLOBAL);
 
     if (!module)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: loading invoked application: '%s'\n", dlerror());
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading invoked application failed: '%s'\n", dlerror());
 
-    // Find out the address for symbol "main".
+    // Find out the address for symbol "main". dlerror() is first used to clear any old error conditions,
+    // then dlsym() is called, and then dlerror() is checked again. This procedure is documented
+    // in dlsym()'s man page.
+
     dlerror();
     m_app.setEntry(reinterpret_cast<entry_t>(dlsym(module, "main")));
 
     const char * error_s = dlerror();
     if (error_s != NULL)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: loading symbol 'main': '%s'\n", error_s);
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading symbol 'main' failed: '%s'\n", error_s);
 
     return module;
 }
