@@ -1,3 +1,9 @@
+applauncherd (0.13.1) stable; urgency=low
+
+  * Fixes: NB#191847 - First application launched with m-booster after theme change crashes
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 15 Sep 2010 10:21:17 +0300
+
 applauncherd (0.13.0) stable; urgency=low
 
   * New: WRT Booster added
