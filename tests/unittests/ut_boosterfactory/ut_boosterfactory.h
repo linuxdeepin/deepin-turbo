@@ -31,16 +31,13 @@ class Ut_BoosterFactory : public QObject
 {
     Q_OBJECT
 
-public:
-    Ut_BoosterFactory();
-    virtual ~Ut_BoosterFactory();
-
 private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void testCreate();
     void testSetProcessIdToBooster();
     void testGetBoosterTypeForPid();
+    void testGetBoosterPidForType();
 };
 
 #endif // UT_BOOSTERFACTORY_H

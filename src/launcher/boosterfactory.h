@@ -49,10 +49,9 @@ public:
 
     /*! \brief Return the pid of last created booster of particular type
      *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT
-     *  \return booster pid
+     *  \return booster pid, 0 on failure
      */
     static pid_t getBoosterPidForType(char type);
-
 
 private:
     BoosterFactory();

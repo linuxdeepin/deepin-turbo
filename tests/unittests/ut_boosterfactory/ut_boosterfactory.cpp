@@ -24,15 +24,8 @@
 #include "qtbooster.h"
 #include "wrtbooster.h"
 
-Ut_BoosterFactory::Ut_BoosterFactory()
-{}
-
-Ut_BoosterFactory::~Ut_BoosterFactory()
-{}
-
 void Ut_BoosterFactory::initTestCase()
-{
-}
+{}
 
 void Ut_BoosterFactory::cleanupTestCase()
 {}
@@ -96,5 +89,24 @@ void Ut_BoosterFactory::testGetBoosterTypeForPid()
     }
 }
 
-QTEST_APPLESS_MAIN(Ut_BoosterFactory);
+void Ut_BoosterFactory::testGetBoosterPidForType()
+{
+    BoosterFactory::setProcessIdToBooster('q', 145);
+    BoosterFactory::setProcessIdToBooster('m', 245);
+    BoosterFactory::setProcessIdToBooster('w', 345);
 
+    QVERIFY(BoosterFactory::getBoosterPidForType('q') == 145);
+    QVERIFY(BoosterFactory::getBoosterPidForType('m') == 245);
+    QVERIFY(BoosterFactory::getBoosterPidForType('w') == 345);
+
+    for (int i = 0; i < 256; i++)
+    {
+        unsigned char t = static_cast<unsigned char>(i);
+        if (t != 'q' && t != 'm' && t != 'w')
+        {
+            QVERIFY(BoosterFactory::getBoosterPidForType(t) == 0);
+        }
+    }
+}
+
+QTEST_APPLESS_MAIN(Ut_BoosterFactory);
