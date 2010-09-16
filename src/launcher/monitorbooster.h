@@ -88,6 +88,13 @@ class MonitorBooster : public QObject,  public Booster
      */
     static int processId();
 
+    //! Return the artificial process name
+    static const string & temporaryProcessName();
+
+    //! \reimp
+    virtual const string & boosterTemporaryProcessName() const;
+
+
 
 protected:
 
@@ -103,6 +110,10 @@ private Q_SLOTS:
 
     static const string m_socketId;
     static int m_ProcessID;
+
+    //! Process name to be used for booster
+    static const string m_temporaryProcessName;
+
 
     QStringList m_processNames;
     QList<QSharedPointer<MGConfItem> > m_gConfItems;

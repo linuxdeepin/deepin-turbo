@@ -20,15 +20,8 @@
 #include "qtbooster.h"
 
 const string QtBooster::m_socketId = "/tmp/boostq";
+const string QtBooster::m_temporaryProcessName = "booster-q";
 int QtBooster::m_ProcessID = 0;
-
-QtBooster::QtBooster()
-{
-}
-
-QtBooster::~QtBooster()
-{
-}
 
 const string & QtBooster::socketId() const
 {
@@ -38,6 +31,16 @@ const string & QtBooster::socketId() const
 const string & QtBooster::socketName()
 {
     return m_socketId;
+}
+
+const string & QtBooster::temporaryProcessName()
+{
+    return m_temporaryProcessName;
+}
+
+const string & QtBooster::boosterTemporaryProcessName() const
+{
+    return temporaryProcessName();
 }
 
 char QtBooster::type()

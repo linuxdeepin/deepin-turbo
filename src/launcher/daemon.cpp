@@ -208,7 +208,6 @@ void Daemon::run()
     }
 }
 
-
 void Daemon::forkBooster(char type, int sleepTime)
 {
     // Fork a new process

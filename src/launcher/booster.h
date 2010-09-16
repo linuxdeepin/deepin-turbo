@@ -98,6 +98,12 @@ public:
      */
     virtual char boosterType() const = 0;
 
+    /*! Return the process name to be used when booster is not
+     *  yet transformed into a running application (e.g. "booster-m"
+     *  for MBooster)
+     */
+    virtual const string & boosterTemporaryProcessName() const = 0;
+
     //! Set nice value and store the old priority. Return true on success.
     bool pushPriority(int nice);
 

@@ -33,10 +33,6 @@ class Ut_Booster : public QObject
 {
     Q_OBJECT
 
-public:
-    Ut_Booster();
-    virtual ~Ut_Booster();
-
 private Q_SLOTS:
     void initTestCase();
     void testRenameProcess();

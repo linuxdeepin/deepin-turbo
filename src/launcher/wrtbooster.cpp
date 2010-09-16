@@ -25,15 +25,8 @@
 #endif
 
 const string WRTBooster::m_socketId  = "/tmp/boostw";
+const string WRTBooster::m_temporaryProcessName = "booster-w";
 int WRTBooster::m_ProcessID = 0;
-
-WRTBooster::WRTBooster()
-{
-}
-
-WRTBooster::~WRTBooster()
-{
-}
 
 const string & WRTBooster::socketId() const
 {
@@ -51,6 +44,16 @@ bool WRTBooster::preload()
 const string & WRTBooster::socketName()
 {
     return m_socketId;
+}
+
+const string & WRTBooster::temporaryProcessName()
+{
+    return m_temporaryProcessName;
+}
+
+const string & WRTBooster::boosterTemporaryProcessName() const
+{
+    return temporaryProcessName();
 }
 
 char WRTBooster::type()

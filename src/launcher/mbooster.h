@@ -36,10 +36,10 @@ class MBooster : public Booster
 public:
 
     //! \brief Constructor
-    MBooster();
+    MBooster() {};
 
     //! \brief Destructor
-    virtual ~MBooster();
+    virtual ~MBooster() {};
 
     //! \reimp
     virtual bool preload();
@@ -49,6 +49,13 @@ public:
      * \return Path to the socket file.
      */
     static const string & socketName();
+
+    //! Return the process name to be used when booster is not
+    //! yet transformed into a running application
+    static const string & temporaryProcessName();
+
+    //! \reimp
+    virtual const string & boosterTemporaryProcessName() const;
 
     //! \reimp
     virtual char boosterType() const { return type(); }
@@ -85,6 +92,10 @@ private:
     static const string m_socketId;
 
     static int m_ProcessID;
+
+    //! Process name to be used when booster is not
+    //! yet transformed into a running application
+    static const string m_temporaryProcessName;
 
 #ifdef UNIT_TEST
     friend class Ut_MBooster;

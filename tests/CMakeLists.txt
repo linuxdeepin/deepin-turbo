@@ -30,3 +30,6 @@ add_subdirectory(TestApps/themetest)
 
 # Sub build: TestApps
 add_subdirectory(TestApps/fala_status)
+
+# Sub build: TestApps
+add_subdirectory(TestApps/fala_gettime)

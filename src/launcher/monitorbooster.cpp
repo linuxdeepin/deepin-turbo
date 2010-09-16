@@ -22,17 +22,20 @@
 #include <cstdlib>
 
 #include "monitorbooster.h"
+#include "mbooster.h"
+#include "wrtbooster.h"
 
 const string MonitorBooster::m_socketId = "";
 int MonitorBooster::m_ProcessID = 0;
+const string MonitorBooster::m_temporaryProcessName = "booster-monitor";
 
 
 MonitorBooster::MonitorBooster()
 {
     addKey("/meegotouch/theme/name");
     addKey("/meegotouch/i18n/language");
-    addProcessName("booster-m");
-    addProcessName("booster-w");
+    addProcessName(MBooster::temporaryProcessName().c_str());
+    addProcessName(WRTBooster::temporaryProcessName().c_str());
 }
 
 MonitorBooster::~MonitorBooster()
@@ -99,3 +102,12 @@ int MonitorBooster::processId()
     return m_ProcessID;
 }
 
+const string & MonitorBooster::temporaryProcessName()
+{
+    return m_temporaryProcessName;
+}
+
+const string & MonitorBooster::boosterTemporaryProcessName() const
+{
+    return temporaryProcessName();
+}

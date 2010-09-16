@@ -31,16 +31,23 @@ class QtBooster : public Booster
 public:
 
     //! Constructor.
-    QtBooster();
+    QtBooster() {};
 
     //! Destructor.
-    virtual ~QtBooster();
+    virtual ~QtBooster() {};
 
     /*!
      * \brief Return the socket name common to all QtBooster objects.
      * \return Path to the socket file.
      */
     static const string & socketName();
+
+    //! Return the process name to be used when booster is not
+    //! yet transformed into a running application
+    static const string & temporaryProcessName();
+
+    //! \reimp
+    virtual const string & boosterTemporaryProcessName() const;
 
     //! \reimp
     virtual char boosterType() const { return type(); }
@@ -81,6 +88,9 @@ private:
 
     static int m_ProcessID;
 
+    //! Process name to be used when booster is not
+    //! yet transformed into a running application
+    static const string m_temporaryProcessName;
 
 #ifdef UNIT_TEST
     friend class Ut_QtBooster;
