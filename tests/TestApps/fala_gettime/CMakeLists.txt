@@ -1,6 +1,9 @@
 # Set sources
-set(SRC main.cpp)
+set(SRC fala_gettime.cpp)
+
 link_libraries(${MEEGOTOUCH_LIBRARIES})
+
+include(${QT_USE_FILE})
 
 # Use the compiler and linker flags given in meegotouch-boostable.pc
 # in the source tree.
@@ -22,16 +25,8 @@ execute_process(COMMAND "env"
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${booster_cflags}")
 set(CMAKE_EXE_LINKER_FLAGS ${booster_libs})
 
-# Enable Qt-support
-include(${QT_USE_FILE})
-add_executable(fala_testapp ${SRC})
+add_executable(fala_gettime ${SRC})
 
 # Install
-install(PROGRAMS fala_testapp DESTINATION /usr/bin/)
-install(PROGRAMS fala_testapp DESTINATION /usr/bin RENAME fala_wl.launch)
-install(PROGRAMS fala_testapp DESTINATION /usr/bin RENAME fala_wol)
-install(PROGRAMS scripts/fala_wl DESTINATION /usr/bin/)
-install(PROGRAMS scripts/fala_wol.sh DESTINATION /usr/bin/)
-install(FILES com.nokia.fala_testapp.service com.nokia.fala_wl.service com.nokia.fala_wol.service DESTINATION /usr/share/dbus-1/services)
-install(FILES fala_wl.desktop fala_wol.desktop DESTINATION /usr/share/applications/)
+install(PROGRAMS fala_gettime DESTINATION /usr/bin/)
 

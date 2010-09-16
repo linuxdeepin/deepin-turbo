@@ -13,6 +13,8 @@ usr/bin/fala_testapp
 usr/bin/fala_wl
 usr/bin/fala_wl.launch
 usr/bin/fala_wol
+usr/bin/fala_wol.sh
+usr/bin/fala_gettime
 usr/share/dbus-1/services/com.nokia.fala_testapp.service
 usr/share/dbus-1/services/com.nokia.fala_wl.service
 usr/share/dbus-1/services/com.nokia.fala_wol.service

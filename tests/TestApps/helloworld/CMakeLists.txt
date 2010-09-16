@@ -30,7 +30,6 @@ add_executable(helloworld ${SRC})
 # Install
 install(PROGRAMS helloworld DESTINATION /usr/bin RENAME fala_ft_hello.launch)
 install(PROGRAMS scripts/fala_ft_hello DESTINATION /usr/bin/)
-install(PROGRAMS scripts/fala_ft_hello DESTINATION /usr/bin RENAME fala_wl)
 
 # Install symlinks so that /usr/bin/helloworldX launches /usr/bin/helloworldX.launch
 install(SCRIPT scripts/create_links.cmake)

@@ -73,7 +73,6 @@ class TC_PerformanceTests < Test::Unit::TestCase
                 count = count +1 
                 icon.refresh
             end
-            @start_time = Time.now
             @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).tap
             sleep (2)
             @app = @sut.application(:name => appName)
@@ -91,6 +90,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
        #Reading the log file to get the time
        file_name="/tmp/testapp.log"
        last_line = `tail -n 2 #{file_name}`
+       @start_time = `head -n 1 #{file_name}`
        @end_time = last_line.split(" ")[0] 
     end
 
