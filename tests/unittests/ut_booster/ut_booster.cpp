@@ -20,37 +20,40 @@
 #include "ut_booster.h"
 #include "booster.h"
 
-// Booster is an abstract base-class, so let's inherit it
+// Booster is an abstract base-class, so let's inherit it and
+// define methods that are pure virtual
 class MyBooster : public Booster
 {
 public:
     MyBooster();
     char boosterType() const;
     const std::string & socketId() const;
+    const std::string & boosterTemporaryProcessName() const;
 
 private:
     const string m_socketId;
+    const string m_temporaryProcessName;
 };
 
 MyBooster::MyBooster() :
-    m_socketId("/tmp/MyBooster")
+    m_socketId("/tmp/MyBooster"),
+    m_temporaryProcessName("x-booster")
 {}
 
 char MyBooster::boosterType() const
 {
-    return 'm';
+    return 'x';
+}
+
+const std::string & MyBooster::boosterTemporaryProcessName() const
+{
+    return m_temporaryProcessName;
 }
 
 const std::string & MyBooster::socketId() const
 {
     return m_socketId;
 }
-
-Ut_Booster::Ut_Booster()
-{}
-
-Ut_Booster::~Ut_Booster()
-{}
 
 void Ut_Booster::initTestCase()
 {}
@@ -87,7 +90,7 @@ void Ut_Booster::testRenameBoosterProcess()
     m_subject->renameProcess(INIT_ARGS, const_cast<char **>(initialArgv));
 
     // New name and arguments fit and are correct
-    QVERIFY(strcmp(initialArgv[0], "booster-m") == 0);
+    QVERIFY(strcmp(initialArgv[0], m_subject->boosterTemporaryProcessName().c_str()) == 0);
 
     // Define and copy args because it's assumed that they are allocated in the heap
     // (AppData deletes the argv on exit)

@@ -25,15 +25,8 @@
 #endif
 
 const string MBooster::m_socketId  = "/tmp/boostm";
+const string MBooster::m_temporaryProcessName = "booster-m";
 int MBooster::m_ProcessID = 0;
-
-MBooster::MBooster()
-{
-}
-
-MBooster::~MBooster()
-{
-}
 
 const string & MBooster::socketId() const
 {
@@ -51,6 +44,16 @@ bool MBooster::preload()
 const string & MBooster::socketName()
 {
     return m_socketId;
+}
+
+const string & MBooster::temporaryProcessName()
+{
+    return m_temporaryProcessName;
+}
+
+const string & MBooster::boosterTemporaryProcessName() const
+{
+    return temporaryProcessName();
 }
 
 char MBooster::type()

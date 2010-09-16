@@ -122,11 +122,7 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
     {
         // application name isn't known yet, let's give to the process
         // temporary booster name
-
-        string newProcessName("booster-");
-        newProcessName.append(1, boosterType());
-
-        m_app.setAppName(newProcessName);
+        m_app.setAppName(boosterTemporaryProcessName());
     }
 
     const char* newProcessName = m_app.appName().c_str();

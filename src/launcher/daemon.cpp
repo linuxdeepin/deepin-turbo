@@ -219,8 +219,8 @@ void Daemon::forkKiller()
         BoosterKiller bk;
         bk.addKey("/meegotouch/theme/name");
         bk.addKey("/meegotouch/i18n/language");
-        bk.addProcessName("booster-m");
-        bk.addProcessName("booster-w");
+        bk.addProcessName(MBooster::temporaryProcessName().c_str());
+        bk.addProcessName(WRTBooster::temporaryProcessName().c_str());
         bk.start(); // does not return.
     }
 }
