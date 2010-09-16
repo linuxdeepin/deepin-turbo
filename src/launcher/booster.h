@@ -68,7 +68,7 @@ public:
      *
      * \return true on success
      */
-    bool readCommand();
+    virtual bool readCommand();
 
     /*!
      * \brief Initialize and preload stuff

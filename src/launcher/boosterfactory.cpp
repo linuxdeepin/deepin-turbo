@@ -22,6 +22,7 @@
 #include "mbooster.h"
 #include "qtbooster.h"
 #include "wrtbooster.h"
+#include "monitorbooster.h"
 
 BoosterFactory::BoosterFactory()
 {}
@@ -39,6 +40,10 @@ Booster * BoosterFactory::create(char type)
     else if (type == WRTBooster::type())
     {
         return new WRTBooster();
+    }
+    else if (type == MonitorBooster::type())
+    {
+        return new MonitorBooster();
     }
     else
     {
@@ -60,6 +65,10 @@ void BoosterFactory::setProcessIdToBooster(char type, pid_t pid)
     {
         WRTBooster::setProcessId(pid);
     }
+    else if (type == MonitorBooster::type())
+    {
+        MonitorBooster::setProcessId(pid);
+    }
 }
 
 char BoosterFactory::getBoosterTypeForPid(pid_t pid)
@@ -75,6 +84,10 @@ char BoosterFactory::getBoosterTypeForPid(pid_t pid)
     else if (pid == WRTBooster::processId())
     {
         return WRTBooster::type();
+    }
+    else if (pid == MonitorBooster::processId())
+    {
+        return MonitorBooster::type();
     }
     else
     {
@@ -98,6 +111,7 @@ pid_t BoosterFactory::getBoosterPidForType(char type)
     }
     else
     {
+        // not used for MonitorBooster
         return 0;
     }
 }

@@ -17,26 +17,40 @@
 **
 ****************************************************************************/
 
-#ifndef BOOSTERKILLER_H
-#define BOOSTERKILLER_H
+#ifndef MONITORBOOSTER_H
+#define MONITORBOOSTER_H
 
 #include <QObject>
 #include <QStringList>
 #include <QSharedPointer>
 #include <MGConfItem>
+#include "booster.h"
+
 
 class QString;
 
-/*! \class BoosterKiller
+/*! \class MonitorBooster
  *
- * BoosterKiller kills certain boosters e.g. when themeing or language changes.
+ * MonitorBooster kills certain boosters e.g. when themeing or language changes.
  * Daemon will then restart the boosters.
  */
-class BoosterKiller : public QObject
+class MonitorBooster : public QObject,  public Booster
 {
     Q_OBJECT
 
  public:
+
+    //! Constructor.
+    MonitorBooster();
+
+    //! Destructor.
+    virtual ~MonitorBooster();
+
+    /*!
+     * \brief Return the empty strung (not used in MonitorBooster).
+     * \return empty string.
+     */
+    static const string & socketName();
 
     //! Add a GConf key to trigger booster process termination
     void addKey(const QString & key);
@@ -49,15 +63,49 @@ class BoosterKiller : public QObject
      */
     void start();
 
- private Q_SLOTS:
+    /*!
+     * \brief Return a unique character ('k') represtenting the type of MonitorBooster.
+     * \return Type character.
+     */
+    static char type();
+
+    /*!
+     * \brief Override default behaviour, don't wait for commands from invoker.
+     * \return true on success
+     */
+    virtual bool readCommand();
+
+    //! \reimp
+    virtual char boosterType() const { return type(); }
+
+    /*!
+     * \brief Keep booster pid, should be reset before booster run application's main() function
+     */
+    static void setProcessId(int pid);
+
+    /*!
+     * \brief Return booster pid
+     */
+    static int processId();
+
+
+protected:
+
+    //! \reimp
+    virtual const string & socketId() const;
+
+private Q_SLOTS:
 
     //! Kill all added processes
     void killProcesses();
     
  private:
 
+    static const string m_socketId;
+    static int m_ProcessID;
+
     QStringList m_processNames;
     QList<QSharedPointer<MGConfItem> > m_gConfItems;
 };
 
-#endif // BOOSTERKILLER_H
+#endif // MONITORBOOSTER_H

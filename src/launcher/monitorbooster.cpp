@@ -21,9 +21,25 @@
 #include <QObject>
 #include <cstdlib>
 
-#include "boosterkiller.h"
+#include "monitorbooster.h"
 
-void BoosterKiller::addKey(const QString & key)
+const string MonitorBooster::m_socketId = "";
+int MonitorBooster::m_ProcessID = 0;
+
+
+MonitorBooster::MonitorBooster()
+{
+    addKey("/meegotouch/theme/name");
+    addKey("/meegotouch/i18n/language");
+    addProcessName("booster-m");
+    addProcessName("booster-w");
+}
+
+MonitorBooster::~MonitorBooster()
+{
+}
+
+void MonitorBooster::addKey(const QString & key)
 {
     MGConfItem * item = new MGConfItem(key, 0);
     m_gConfItems << QSharedPointer<MGConfItem>(item);
@@ -32,20 +48,54 @@ void BoosterKiller::addKey(const QString & key)
                      this, SLOT(killProcesses()));
 }
 
-void BoosterKiller::addProcessName(const QString & processName)
+void MonitorBooster::addProcessName(const QString & processName)
 {
     m_processNames << processName;
 }
 
-void BoosterKiller::start()
+void MonitorBooster::start()
 {
     int argc = 0;
     QCoreApplication(argc, 0).exec();
 }
 
-void BoosterKiller::killProcesses()
+void MonitorBooster::killProcesses()
 {
     Q_FOREACH(QString processName, m_processNames) {
         system( (QString("pkill ") + processName).toStdString().c_str() );
     }
 }
+
+char MonitorBooster::type()
+{
+    return 'k';
+}
+
+bool MonitorBooster::readCommand()
+{
+    // never return from here
+    start();
+
+    return true;
+}
+
+const string & MonitorBooster::socketName()
+{
+    return m_socketId;
+}
+
+const string & MonitorBooster::socketId() const
+{
+    return m_socketId;
+}
+
+void MonitorBooster::setProcessId(int pid)
+{
+    m_ProcessID = pid;
+}
+
+int MonitorBooster::processId()
+{
+    return m_ProcessID;
+}
+

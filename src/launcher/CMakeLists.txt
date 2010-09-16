@@ -4,8 +4,8 @@ include(${QT_USE_FILE})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common)
 
 # Set sources
-set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterkiller.cpp connection.cpp daemon.cpp mbooster.cpp logger.cpp main.cpp qtbooster.cpp wrtbooster.cpp)
-set(MOC_HDRS boosterkiller.h)
+set(SRC appdata.cpp booster.cpp boosterfactory.cpp monitorbooster.cpp connection.cpp daemon.cpp mbooster.cpp logger.cpp main.cpp qtbooster.cpp wrtbooster.cpp)
+set(MOC_HDRS monitorbooster.h)
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Find libdl

@@ -24,8 +24,8 @@
 #include "mbooster.h"
 #include "qtbooster.h"
 #include "wrtbooster.h"
+#include "monitorbooster.h"
 #include "boosterfactory.h"
-#include "boosterkiller.h"
 #include "preload.h"
 
 
@@ -155,8 +155,6 @@ void Daemon::run()
     // load and resolve all undefined symbols for each dynamic library from the list 
     preload();
 
-    forkKiller();
-
     // Create sockets for each of the boosters
     Connection::initSocket(MBooster::socketName());
     Connection::initSocket(QtBooster::socketName());
@@ -166,6 +164,7 @@ void Daemon::run()
     forkBooster(MBooster::type());
     forkBooster(QtBooster::type());
     forkBooster(WRTBooster::type());
+    forkBooster(MonitorBooster::type());
 
     while (true)
     {
@@ -209,21 +208,6 @@ void Daemon::run()
     }
 }
 
-void Daemon::forkKiller()
-{
-    pid_t pid = fork();
-    if (pid == -1)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Forking killer process failed.");
-    if (pid == 0) { // child
-        // If theme or language changes, reset boosters
-        BoosterKiller bk;
-        bk.addKey("/meegotouch/theme/name");
-        bk.addKey("/meegotouch/i18n/language");
-        bk.addProcessName("booster-m");
-        bk.addProcessName("booster-w");
-        bk.start(); // does not return.
-    }
-}
 
 void Daemon::forkBooster(char type, int sleepTime)
 {
