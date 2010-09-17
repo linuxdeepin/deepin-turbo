@@ -32,8 +32,12 @@ const string MonitorBooster::m_temporaryProcessName = "booster-monitor";
 
 MonitorBooster::MonitorBooster()
 {
-    addKey("/meegotouch/theme/name");
-    addKey("/meegotouch/i18n/language");
+    // Add keys to listen to.
+    addKey(MEEGOTOUCH_THEME_GCONF_KEY);
+    addKey(MEEGOTOUCH_LANGUAGE_GCONF_KEY);
+
+    // Add process names to be killed if the state of
+    // added keys changes.
     addProcessName(MBooster::temporaryProcessName().c_str());
     addProcessName(WRTBooster::temporaryProcessName().c_str());
 }

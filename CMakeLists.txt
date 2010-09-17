@@ -61,6 +61,11 @@ endif ($ENV{DISABLE_VERIFICATION})
 add_definitions(-DPROG_NAME_INVOKER="invoker")
 add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
 
+# Set gconf key definitions. These are used by MonitorBooster to get
+# notifications when language / theme changes.
+add_definitions(-DMEEGOTOUCH_THEME_GCONF_KEY="/meegotouch/theme/name")
+add_definitions(-DMEEGOTOUCH_LANGUAGE_GCONF_KEY="/meegotouch/i18n/language")
+
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set
 if ($ENV{BUILD_COVERAGE})
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
