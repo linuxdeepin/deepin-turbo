@@ -94,8 +94,6 @@ class MonitorBooster : public QObject,  public Booster
     //! \reimp
     virtual const string & boosterTemporaryProcessName() const;
 
-
-
 protected:
 
     //! \reimp
@@ -113,7 +111,6 @@ private Q_SLOTS:
 
     //! Process name to be used for booster
     static const string m_temporaryProcessName;
-
 
     QStringList m_processNames;
     QList<QSharedPointer<MGConfItem> > m_gConfItems;

@@ -174,8 +174,8 @@ void Daemon::run()
         if (count)
         {
             // read pid of peer invoker
-            pid_t invoker_pid;
-            count = read(m_pipefd[0], reinterpret_cast<void *>(&invoker_pid), sizeof(pid_t));
+            pid_t invokerPid;
+            count = read(m_pipefd[0], reinterpret_cast<void *>(&invokerPid), sizeof(pid_t));
 
             if (count < static_cast<ssize_t>(sizeof(pid_t)))
             {
@@ -183,14 +183,13 @@ void Daemon::run()
             }
             else
             {
-                Logger::logInfo("Daemon: invoker's pid: %d \n", invoker_pid);
+                Logger::logInfo("Daemon: invoker's pid: %d \n", invokerPid);
             }
 
-            if (invoker_pid != 0)
+            if (invokerPid != 0)
             {
-                // store booster - invoker pids pair
-                pid_t booster_pid = BoosterFactory::getBoosterPidForType(msg);
-                m_kindergarten[booster_pid] = invoker_pid;
+                // Store booster - invoker pid pair
+                m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
             }
 
             // Fork a new booster of the given type
@@ -322,36 +321,43 @@ void Daemon::initializeBooster(Booster * booster)
 
 void Daemon::reapZombies()
 {
+    // Loop through all child pid's and wait for them with WNOHANG.
     PidVect::iterator i(m_children.begin());
     while (i != m_children.end())
     {
+        // Check if the pid had exited and become a zombie
         int status;
         pid_t pid = waitpid(*i, &status, WNOHANG);
         if (pid)
         {
+            // The pid had exited. Remove it from the pid vector.
             i = m_children.erase(i);
 
-            PidMap::iterator it = m_kindergarten.find(pid);
-            if (it != m_kindergarten.end())
+            // Find out if the exited process has a mapping with an invoker process.
+            // If this is the case, then kill the invoker process with the same signal
+            // that killed the exited process.
+            PidMap::iterator it = m_boosterPidToInvokerPid.find(pid);
+            if (it != m_boosterPidToInvokerPid.end())
             {
-                Logger::logInfo("Daemon: terminated process is in the kendergarten");
+                Logger::logInfo("Daemon: Terminated process had a mapping to an invoker pid");
 
                 if (WIFSIGNALED(status))
                 {
                     int signal = WTERMSIG(status);
-                    pid_t invoker_pid = (*it).second;
-                    Logger::logInfo("Daemon: booster (pid=%d) terminated due to signal=%d\n", pid, signal);
-                    Logger::logInfo("Daemon: kill invoker process %d by signal %d \n", invoker_pid, signal);
-                    if (kill(invoker_pid, signal) != 0)
+                    pid_t invokerPid = (*it).second;
+                    Logger::logInfo("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
+                    Logger::logInfo("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
+                    if (kill(invokerPid, signal) != 0)
                     {
-                        Logger::logError("Daemon: failed to send signal to invoker: %s \n", strerror(errno));
+                        Logger::logError("Daemon: failed to send signal to invoker: %s\n", strerror(errno));
                     }
                 }
-                // remove dead booster
-                m_kindergarten.erase(it);
+
+                // Remove a dead booster
+                m_boosterPidToInvokerPid.erase(it);
             }
 
-            // Check if pid belongs to boosters, restart dead booster if needed
+            // Check if pid belongs to a booster and restart the dead booster if needed
             char type = BoosterFactory::getBoosterTypeForPid(pid);
             if (type != 0)
             {

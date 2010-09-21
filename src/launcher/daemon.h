@@ -120,20 +120,26 @@ private:
     typedef vector<pid_t> PidVect;
     PidVect m_children;
 
-    //! storage of booster-invoker pid pairs
+    //! Storage of booster-invoker pid pairs
     typedef map<pid_t, pid_t> PidMap;
-    PidMap  m_kindergarten;
+    PidMap m_boosterPidToInvokerPid;
 
-    // Pipe used to tell the parent that a new booster is needed
+    //! Pipe used to tell the parent that a new booster is needed
     int m_pipefd[2];
 
-    int    m_initialArgc;
+    //! Argument vector initially given to the launcher process
+    int m_initialArgc;
+
+    //! Argument count initially given to the launcher process
     char** m_initialArgv;
 
+    //! Singleton Daemon instance
     static Daemon * m_instance;
 
+    //! File descriptor of the lock file
     static int m_lockFd;
 
+    //! Time to sleep before forking a new booster
     static const int m_boosterSleepTime;
 
 #ifdef UNIT_TEST
