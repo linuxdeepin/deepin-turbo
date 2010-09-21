@@ -43,9 +43,6 @@ class MonitorBooster : public QObject,  public Booster
     //! Constructor.
     MonitorBooster();
 
-    //! Destructor.
-    virtual ~MonitorBooster();
-
     /*!
      * \brief Return the empty strung (not used in MonitorBooster).
      * \return empty string.

@@ -28,7 +28,6 @@
 #include "boosterfactory.h"
 #include "preload.h"
 
-
 #include <cstdlib>
 #include <cerrno>
 
@@ -102,9 +101,6 @@ Daemon * Daemon::instance()
 {
     return Daemon::m_instance;
 }
-
-Daemon::~Daemon()
-{}
 
 bool Daemon::lock()
 {

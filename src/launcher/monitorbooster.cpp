@@ -42,10 +42,6 @@ MonitorBooster::MonitorBooster()
     addProcessName(WRTBooster::temporaryProcessName().c_str());
 }
 
-MonitorBooster::~MonitorBooster()
-{
-}
-
 void MonitorBooster::addKey(const QString & key)
 {
     MGConfItem * item = new MGConfItem(key, 0);

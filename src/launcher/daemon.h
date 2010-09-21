@@ -57,11 +57,6 @@ public:
     Daemon(int & argc, char * argv[]);
 
     /*!
-     * \brief Destructor
-     */
-    virtual ~Daemon();
-
-    /*!
      * \brief Run main loop and fork Boosters.
      */
     void run();
