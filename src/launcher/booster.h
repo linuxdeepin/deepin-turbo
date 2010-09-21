@@ -70,7 +70,7 @@ public:
      * exits with corresponding exit-code after the execution of
      * main() has finished.
      */
-    void run();
+    virtual void run();
 
     /*!
      * \brief Rename process.
@@ -128,6 +128,12 @@ protected:
      */
     virtual const string & socketId() const = 0;
 
+    //! Sets pipe fd's used to communicate with the parent process
+    void setPipeFd(int pipeFd[2]);
+
+    //! Returns the given pipe fd (0 = read end, 1 = write end)
+    int pipeFd(bool whichEnd) const;
+
 private:
 
     //! Disable copy-constructor
@@ -159,7 +165,7 @@ private:
     bool m_oldPriorityOk;
 
     //! Pipe used to tell the parent that a new booster is needed
-    int m_pipefd[2];
+    int m_pipeFd[2];
 
 #ifdef UNIT_TEST
     friend class Ut_Booster;

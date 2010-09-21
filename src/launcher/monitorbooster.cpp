@@ -55,10 +55,21 @@ void MonitorBooster::addProcessName(const QString & processName)
     m_processNames << processName;
 }
 
-void MonitorBooster::start()
+void MonitorBooster::run()
 {
     int argc = 0;
     QCoreApplication(argc, 0).exec();
+}
+
+void MonitorBooster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
+{
+    setPipeFd(newPipeFd);
+
+    // Clean-up all the env variables
+    clearenv();
+
+    // Rename process to temporary booster process name
+    renameProcess(initialArgc, initialArgv);
 }
 
 void MonitorBooster::killProcesses()
@@ -71,14 +82,6 @@ void MonitorBooster::killProcesses()
 char MonitorBooster::type()
 {
     return 'k';
-}
-
-bool MonitorBooster::readCommand()
-{
-    // never return from here
-    start();
-
-    return true;
 }
 
 const string & MonitorBooster::socketName()

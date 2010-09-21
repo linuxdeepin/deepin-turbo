@@ -34,7 +34,7 @@ class QString;
  * MonitorBooster kills certain boosters e.g. when themeing or language changes.
  * Daemon will then restart the boosters.
  */
-class MonitorBooster : public QObject,  public Booster
+class MonitorBooster : public QObject, public Booster
 {
     Q_OBJECT
 
@@ -56,24 +56,21 @@ class MonitorBooster : public QObject,  public Booster
     void addProcessName(const QString & processName);
 
     /*! Starts the killer. This will initialize a QCoreApplication, does
-     *  not return.
+     *  not return. reimp.
      */
-    void start();
+    virtual void run();
+
+    //! \reimp
+    virtual char boosterType() const { return type(); }
+
+    //! \reimp
+    virtual void initialize(int initialArgc, char ** initialArgv, int pipeFd[2]);
 
     /*!
      * \brief Return a unique character ('k') represtenting the type of MonitorBooster.
      * \return Type character.
      */
     static char type();
-
-    /*!
-     * \brief Override default behaviour, don't wait for commands from invoker.
-     * \return true on success
-     */
-    virtual bool readCommand();
-
-    //! \reimp
-    virtual char boosterType() const { return type(); }
 
     /*!
      * \brief Keep booster pid, should be reset before booster run application's main() function

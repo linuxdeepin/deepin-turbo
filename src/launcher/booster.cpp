@@ -54,10 +54,9 @@ bool Booster::preload()
     return true;
 }
 
-void Booster::initialize(int initialArgc, char ** initialArgv, int pipefd[2])
+void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
 {
-    m_pipefd[0] = pipefd[0];
-    m_pipefd[1] = pipefd[1];
+    setPipeFd(newPipeFd);
 
     // Drop priority (nice = 10)
     pushPriority(10);
@@ -85,20 +84,20 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int pipefd[2])
     // Signal the parent process that it can create a new
     // waiting booster process and close write end
     const char msg = boosterType();
-    ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
+    ssize_t ret = write(pipeFd(1), reinterpret_cast<const void *>(&msg), 1);
     if (ret == -1) {
         Logger::logError("Daemon: Can't send signal to launcher process' \n");
     }
 
     // Send to the parent process pid of invoker for tracking
     pid_t pid = invokersPid();
-    ret = write(m_pipefd[1], reinterpret_cast<const void *>(&pid), sizeof(pid_t));
+    ret = write(pipeFd(1), reinterpret_cast<const void *>(&pid), sizeof(pid_t));
     if (ret == -1) {
         Logger::logError("Daemon: Can't send invoker's pid to launcher process' \n");
     }
 
     // close pipe
-    close(m_pipefd[1]);
+    close(pipeFd(1));
 }
 
 bool Booster::readCommand()
@@ -326,3 +325,15 @@ pid_t Booster::invokersPid()
         return 0;
     }
 }
+
+void Booster::setPipeFd(int newPipeFd[2])
+{
+    m_pipeFd[0] = newPipeFd[0];
+    m_pipeFd[1] = newPipeFd[1];
+}
+
+int Booster::pipeFd(bool whichEnd) const
+{
+    return m_pipeFd[whichEnd];
+}
+

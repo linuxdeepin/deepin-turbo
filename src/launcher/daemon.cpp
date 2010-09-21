@@ -239,29 +239,30 @@ void Daemon::forkBooster(char type, int sleepTime)
 
         Logger::logNotice("Daemon: Running a new Booster of %c type...", type);
 
-        // Create a new booster and initialize it
+        // Create a new booster, initialize and run it
         Booster * booster = BoosterFactory::create(type);
         if (booster)
         {
             booster->initialize(m_initialArgc, m_initialArgv, m_pipefd);
+
+            // Don't care about fate of parent applauncherd process any more
+            prctl(PR_SET_PDEATHSIG, 0);
+
+            // Set dumpable flag
+            prctl(PR_SET_DUMPABLE, 1);
+
+            // Run the current Booster
+            booster->run();
+
+            // Finish
+            delete booster;
+
+            exit(EXIT_SUCCESS);
         }
         else
         {
             Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type \n");
         }
-
-        // Don't care about fate of parent applauncherd process any more
-        prctl(PR_SET_PDEATHSIG, 0);
-
-        // Set dumpable flag
-        prctl(PR_SET_DUMPABLE, 1);
-        
-        // Run the current Booster
-        booster->run();
-
-        // Finish
-        delete booster;
-        exit(EXIT_SUCCESS);
     }
     else /* Parent process */
     {
