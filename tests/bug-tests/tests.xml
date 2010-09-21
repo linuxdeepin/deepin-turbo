@@ -52,6 +52,9 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_global_theming</step>
       </case>
 
+      <case name="booster-killer" type="Functional" description="Tests that booster-m and booster-w are restarted after theme change" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_booster_killer</step>
+      </case>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
