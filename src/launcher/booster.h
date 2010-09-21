@@ -52,6 +52,17 @@ public:
     virtual ~Booster();
 
     /*!
+     * \brief Initializes the booster process.
+     */
+    virtual void initialize(int initialArgc, char ** initialArgv, int pipefd[2]);
+
+    /*!
+     * \brief Preload libraries.
+     * Override in the custom Booster.
+     */
+    virtual bool preload();
+
+    /*!
      * \brief Run the application to be invoked.
      * This method causes the application binary to be loaded
      * using dlopen(). Program execution jumps to the address of
@@ -60,21 +71,6 @@ public:
      * main() has finished.
      */
     void run();
-
-    /*!
-     * \brief Wait for connection from invoker and read the input.
-     * This method accepts a socket connection from the invoker
-     * and reads the data of an application to be launched.
-     *
-     * \return true on success
-     */
-    virtual bool readCommand();
-
-    /*!
-     * \brief Initialize and preload stuff
-     * Override in the custom Booster.
-     */
-    virtual bool preload();
 
     /*!
      * \brief Rename process.
@@ -104,16 +100,25 @@ public:
      */
     virtual const string & boosterTemporaryProcessName() const = 0;
 
+    //! Get invoker's pid
+    pid_t invokersPid();
+
+protected:
+
     //! Set nice value and store the old priority. Return true on success.
     bool pushPriority(int nice);
 
     //! Restore the old priority stored by the previous successful setPriority().
     bool popPriority();
 
-    //! Get invoker's pid
-    pid_t invokersPid();
-
-protected:
+    /*!
+     * \brief Wait for connection from invoker and read the input.
+     * This method accepts a socket connection from the invoker
+     * and reads the data of an application to be launched.
+     *
+     * \return true on success
+     */
+    virtual bool readCommand();
 
     /*!
      * \brief Return the communication socket used by a Booster.
@@ -152,6 +157,9 @@ private:
     //! True if m_oldPriority is a valid value so that
     //! it can be restored later.
     bool m_oldPriorityOk;
+
+    //! Pipe used to tell the parent that a new booster is needed
+    int m_pipefd[2];
 
 #ifdef UNIT_TEST
     friend class Ut_Booster;

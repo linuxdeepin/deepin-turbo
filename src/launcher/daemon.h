@@ -96,9 +96,6 @@ private:
     //! Forks and initializes a new Booster
     void forkBooster(char type, int sleepTime = 0);
 
-    //! Initializes the given booster
-    void initializeBooster(Booster * booster);
-
     //! Don't use console for output
     void consoleQuiet();
 

@@ -66,7 +66,6 @@ void MBooster::setProcessId(int pid)
     m_ProcessID = pid;
 }
 
-
 int MBooster::processId()
 {
     return m_ProcessID;

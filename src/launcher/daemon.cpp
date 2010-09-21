@@ -162,6 +162,7 @@ void Daemon::run()
     forkBooster(WRTBooster::type());
     forkBooster(MonitorBooster::type());
 
+    // Main loop
     while (true)
     {
         // Wait for something appearing in the pipe
@@ -222,9 +223,10 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Close unused read end
         close(m_pipefd[0]);
 
-        // close lock file, it's not needed in the booster
+        // Close lock file, it's not needed in the booster
         Daemon::unlock();
 
+        // Set session id
         if (setsid() < 0)
         {
             Logger::logError("Daemon: Setting session id\n");
@@ -241,15 +243,12 @@ void Daemon::forkBooster(char type, int sleepTime)
         Booster * booster = BoosterFactory::create(type);
         if (booster)
         {
-            initializeBooster(booster);
+            booster->initialize(m_initialArgc, m_initialArgv, m_pipefd);
         }
         else
         {
             Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type \n");
         }
-
-        // close pipe
-        close(m_pipefd[1]);
 
         // Don't care about fate of parent applauncherd process any more
         prctl(PR_SET_PDEATHSIG, 0);
@@ -272,46 +271,6 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Set current process ID globally to the given booster type
         // so that we now which booster to restart if on exits
         BoosterFactory::setProcessIdToBooster(type, newPid);
-    }
-}
-
-void Daemon::initializeBooster(Booster * booster)
-{
-    // Drop priority (nice = 10)
-    booster->pushPriority(10);
-
-    // Preload stuff
-    booster->preload();
-
-    // Clean-up all the env variables
-    clearenv();
-
-    // Rename launcher process to booster
-    booster->renameProcess(m_initialArgc, m_initialArgv);
-
-    // Restore priority
-    booster->popPriority();
-
-    // Wait and read commands from the invoker
-    Logger::logNotice("Daemon: Wait for message from invoker");
-    booster->readCommand();
-
-    // Give to the process an application specific name
-    booster->renameProcess(m_initialArgc, m_initialArgv);
-
-    // Signal the parent process that it can create a new
-    // waiting booster process and close write end
-    const char msg = booster->boosterType();
-    ssize_t ret = write(m_pipefd[1], reinterpret_cast<const void *>(&msg), 1);
-    if (ret == -1) {
-        Logger::logError("Daemon: Can't send signal to launcher process' \n");
-    }
-
-    // Send to the parent process pid of invoker for tracking
-    pid_t pid = booster->invokersPid();
-    ret = write(m_pipefd[1], reinterpret_cast<const void *>(&pid), sizeof(pid_t));
-    if (ret == -1) {
-        Logger::logError("Daemon: Can't send invoker's pid to launcher process' \n");
     }
 }
 

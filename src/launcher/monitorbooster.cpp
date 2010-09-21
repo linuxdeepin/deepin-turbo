@@ -29,7 +29,6 @@ const string MonitorBooster::m_socketId = "";
 int MonitorBooster::m_ProcessID = 0;
 const string MonitorBooster::m_temporaryProcessName = "booster-monitor";
 
-
 MonitorBooster::MonitorBooster()
 {
     // Add keys to listen to.
