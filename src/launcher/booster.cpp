@@ -86,14 +86,14 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
     const char msg = boosterType();
     ssize_t ret = write(pipeFd(1), reinterpret_cast<const void *>(&msg), 1);
     if (ret == -1) {
-        Logger::logError("Daemon: Can't send signal to launcher process' \n");
+        Logger::logError("Booster: Couldn't send type message to launcher process\n");
     }
 
     // Send to the parent process pid of invoker for tracking
     pid_t pid = invokersPid();
     ret = write(pipeFd(1), reinterpret_cast<const void *>(&pid), sizeof(pid_t));
     if (ret == -1) {
-        Logger::logError("Daemon: Can't send invoker's pid to launcher process' \n");
+        Logger::logError("Booster: Couldn't send invoker's pid to launcher process\n");
     }
 
     // close pipe

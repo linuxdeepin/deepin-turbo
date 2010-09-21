@@ -24,6 +24,7 @@
 #include "monitorbooster.h"
 #include "mbooster.h"
 #include "wrtbooster.h"
+#include "logger.h"
 
 const string MonitorBooster::m_socketId = "";
 int MonitorBooster::m_ProcessID = 0;
@@ -34,11 +35,6 @@ MonitorBooster::MonitorBooster()
     // Add keys to listen to.
     addKey(MEEGOTOUCH_THEME_GCONF_KEY);
     addKey(MEEGOTOUCH_LANGUAGE_GCONF_KEY);
-
-    // Add process names to be killed if the state of
-    // added keys changes.
-    addProcessName(MBooster::temporaryProcessName().c_str());
-    addProcessName(WRTBooster::temporaryProcessName().c_str());
 }
 
 void MonitorBooster::addKey(const QString & key)
@@ -47,12 +43,7 @@ void MonitorBooster::addKey(const QString & key)
     m_gConfItems << QSharedPointer<MGConfItem>(item);
 
     QObject::connect(item, SIGNAL(valueChanged()),
-                     this, SLOT(killProcesses()));
-}
-
-void MonitorBooster::addProcessName(const QString & processName)
-{
-    m_processNames << processName;
+                     this, SLOT(notifyKeyChange()));
 }
 
 void MonitorBooster::run()
@@ -72,10 +63,14 @@ void MonitorBooster::initialize(int initialArgc, char ** initialArgv, int newPip
     renameProcess(initialArgc, initialArgv);
 }
 
-void MonitorBooster::killProcesses()
+void MonitorBooster::notifyKeyChange()
 {
-    Q_FOREACH(QString processName, m_processNames) {
-        system( (QString("pkill ") + processName).toStdString().c_str() );
+    // Signal the parent process that it can create a new
+    // waiting booster process and close write end
+    const char msg = boosterType();
+    ssize_t ret = write(pipeFd(1), reinterpret_cast<const void *>(&msg), 1);
+    if (ret == -1) {
+        Logger::logError("MonitorBooster: Couldn't send type message to launcher process\n");
     }
 }
 

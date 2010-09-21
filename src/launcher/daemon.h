@@ -102,6 +102,9 @@ private:
     //! Preload libs and resolve symbols
     void preload();
 
+    //! Kill given pid with SIGKILL
+    void killProcess(pid_t pid) const;
+
     //! Daemonize flag
     bool m_daemon;
 

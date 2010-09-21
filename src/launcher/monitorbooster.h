@@ -21,11 +21,9 @@
 #define MONITORBOOSTER_H
 
 #include <QObject>
-#include <QStringList>
 #include <QSharedPointer>
 #include <MGConfItem>
 #include "booster.h"
-
 
 class QString;
 
@@ -51,9 +49,6 @@ class MonitorBooster : public QObject, public Booster
 
     //! Add a GConf key to trigger booster process termination
     void addKey(const QString & key);
-
-    //! Add a booster process name to be killed
-    void addProcessName(const QString & processName);
 
     /*! Starts the killer. This will initialize a QCoreApplication, does
      *  not return. reimp.
@@ -95,10 +90,10 @@ protected:
 
 private Q_SLOTS:
 
-    //! Kill all added processes
-    void killProcesses();
-    
- private:
+    //! Send message to main process that something has changed
+    void notifyKeyChange();
+
+private:
 
     static const string m_socketId;
     static int m_ProcessID;
@@ -106,7 +101,6 @@ private Q_SLOTS:
     //! Process name to be used for booster
     static const string m_temporaryProcessName;
 
-    QStringList m_processNames;
     QList<QSharedPointer<MGConfItem> > m_gConfItems;
 };
 

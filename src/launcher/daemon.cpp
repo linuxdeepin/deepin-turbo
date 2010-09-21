@@ -165,41 +165,67 @@ void Daemon::run()
     // Main loop
     while (true)
     {
-        // Wait for something appearing in the pipe
+        // Wait for something appearing in the pipe. There should first
+        // appear a character representing the type of a booster and then
+        // pid of the invoker process that communicated with that booster.
         char msg;
         ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
         if (count)
         {
-            // read pid of peer invoker
-            pid_t invokerPid;
-            count = read(m_pipefd[0], reinterpret_cast<void *>(&invokerPid), sizeof(pid_t));
-
-            if (count < static_cast<ssize_t>(sizeof(pid_t)))
+            // Read and store the pid of invoker if the message was not from
+            // a monitor booster it won't send the pid.
+            if (msg != MonitorBooster::type())
             {
-                Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+                // Read pid of peer invoker
+                pid_t invokerPid;
+                count = read(m_pipefd[0], reinterpret_cast<void *>(&invokerPid), sizeof(pid_t));
+
+                if (count < static_cast<ssize_t>(sizeof(pid_t)))
+                {
+                    Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+                }
+                else
+                {
+                    Logger::logInfo("Daemon: invoker's pid: %d \n", invokerPid);
+                }
+
+                if (invokerPid != 0)
+                {
+                    // Store booster - invoker pid pair
+                    m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
+                }
+
+                // Fork a new booster of the given type
+
+                // 2nd param guarantees some time for the just launched application
+                // to start up before forking new booster. Not doing this would
+                // slow down the start-up significantly on single core CPUs.
+
+                forkBooster(msg, m_boosterSleepTime);
             }
+            // It was from a monitor booster, that means that theme / language has
+            // changed so we need to reset (kill) MBooster and WRTBooster.
             else
             {
-                Logger::logInfo("Daemon: invoker's pid: %d \n", invokerPid);
+                // Kill MBooster and WRTBooster
+                killProcess(BoosterFactory::getBoosterPidForType(MBooster::type()));
+                killProcess(BoosterFactory::getBoosterPidForType(WRTBooster::type()));
             }
-
-            if (invokerPid != 0)
-            {
-                // Store booster - invoker pid pair
-                m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
-            }
-
-            // Fork a new booster of the given type
-
-            // 2nd param guarantees some time for the just launched application
-            // to start up before forking new booster. Not doing this would
-            // slow down the start-up significantly on single core CPUs.
-
-            forkBooster(msg, m_boosterSleepTime);
         }
         else
         {
             Logger::logWarning("Daemon: Nothing read from the pipe\n");
+        }
+    }
+}
+
+void Daemon::killProcess(pid_t pid) const
+{
+    if (pid)
+    {
+        if (kill(pid, SIGKILL) != 0)
+        {
+            Logger::logError("Daemon: Failed to kill %d: %s\n", pid, strerror(errno));
         }
     }
 }
@@ -301,11 +327,13 @@ void Daemon::reapZombies()
                 {
                     int signal = WTERMSIG(status);
                     pid_t invokerPid = (*it).second;
+
                     Logger::logInfo("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
                     Logger::logInfo("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
+
                     if (kill(invokerPid, signal) != 0)
                     {
-                        Logger::logError("Daemon: failed to send signal to invoker: %s\n", strerror(errno));
+                        Logger::logError("Daemon: Failed to send signal %d to invoker: %s\n", signal, strerror(errno));
                     }
                 }
 
