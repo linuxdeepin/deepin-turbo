@@ -200,6 +200,7 @@ void Logger::logErrorAndDie(int code, const char * format, ...)
     va_list(ap);
     va_start(ap, format);
     writeLog(LOG_ERR, format, ap);
+    vfprintf(stderr, format, ap);
     va_end(ap);
 
     exit(code);
