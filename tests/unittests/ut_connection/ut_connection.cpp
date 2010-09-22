@@ -23,27 +23,22 @@
 #include <sys/un.h>
 #include <errno.h>
 
-/* redefine some methods for Connection class */
+// Redefine some methods for Connection class
 class MyConnection : public Connection
 {
 public:
     int nextMsg;
     char* nextStr;
 
-    MyConnection(const string socketId);
-    bool acceptConn();
+    MyConnection(const string socketId, bool testMode);
 
 private:
-    bool  recvMsg(uint32_t *msg);
-    const char * recvStr();
-    bool  sendMsg(uint32_t msg);
-    bool  sendStr(const char * str);
+    bool recvMsg(uint32_t *msg);
+    const char* recvStr();
 };
 
-bool MyConnection::acceptConn() { return true; }
-
-MyConnection::MyConnection(const string socketId) : 
-    Connection(socketId), 
+MyConnection::MyConnection(const string socketId, bool testMode) :
+    Connection(socketId, testMode),
     nextMsg(0),
     nextStr(NULL)
 {}
@@ -54,39 +49,25 @@ bool MyConnection::recvMsg(uint32_t *msg)
     return true;
 }
 
-bool MyConnection::sendMsg(uint32_t)
-{ 
-    return true;
-}
-
-bool MyConnection::sendStr(const char *)
-{ 
-    return true;
-}
-
-const char * MyConnection::recvStr()
+const char* MyConnection::recvStr()
 {
     return nextStr;
 }
 
 Ut_Connection::Ut_Connection()
-{
-}
+{}
 
 Ut_Connection::~Ut_Connection()
-{
-}
+{}
 
 void Ut_Connection::initTestCase()
-{
-}
+{}
 
 void Ut_Connection::cleanupTestCase()
-{
-}
+{}
 
 /*
- * Check that socket initialized for provided socket id
+ * Check that socket gets initialized for provided socket id
  */
 void Ut_Connection::testInitConnection()
 {
@@ -106,28 +87,29 @@ void Ut_Connection::testInitConnection()
 }
 
 /* 
- * Check that closeConn() reset socket connection
+ * Test that socket creation / closing works.
  */
-void Ut_Connection::testAcceptConnection()
+void Ut_Connection::testSocket()
 {
-    char* socketName = (char*) "testAccept";
+    const char* socketName = "testAccept";
 
     Connection::initSocket(socketName);
-    MyConnection* conn = new MyConnection(socketName);
+    MyConnection* conn = new MyConnection(socketName, false);
     conn->m_fd = 1000;
 
-    QVERIFY(conn->acceptConn() == true);
     QVERIFY(conn->m_fd > 0);
 
     conn->closeConn();
     QVERIFY(conn->m_fd == -1);
 
-    unlink("testAccept");
+    unlink(socketName);
 }
 
 /* 
  * Check that env variable passed from invoker will 
- * be set in launcher process
+ * be set in launcher process.
+ *
+ * Run in the test mode (no sockets really created).
  */
 void Ut_Connection::testGetEnv()
 {
@@ -135,8 +117,7 @@ void Ut_Connection::testGetEnv()
     QVERIFY(getenv("PATH") != NULL);
 
     const char* socketName = "testGetEnv";
-    Connection::initSocket(socketName);
-    MyConnection* conn = new MyConnection(socketName);
+    MyConnection* conn = new MyConnection(socketName, true);
 
     char* envVar = strdup("MY_TEST_ENV_VAR=3");
 
@@ -147,33 +128,31 @@ void Ut_Connection::testGetEnv()
     QVERIFY(getenv("MY_TEST_ENV_VAR") != NULL);
     QVERIFY(getenv("PATH") != NULL);
 
-    unlink(socketName);
     delete envVar;
 }
 
 /*
  * Check getAppName() function correctness
+ *
+ * Run in the test mode (no sockets really created).
  */
 void Ut_Connection::testGetAppName()
 {
     const char* socketName = "testGetAppName";
+    MyConnection* conn = new MyConnection(socketName, true);
 
-    Connection::initSocket(socketName);
-
-    MyConnection* conn = new MyConnection(socketName);
-
-    // wrong type of message
+    // Wrong type of message
     conn->nextMsg = INVOKER_MSG_EXEC;
     string wrongStr = conn->receiveAppName();
     QVERIFY(wrongStr.empty());
 
-    // empty app name
+    // Empty app name
     conn->nextMsg = INVOKER_MSG_NAME;
     conn->nextStr = NULL;
     string emptyName = conn->receiveAppName();
     QVERIFY(emptyName.empty());
 
-    // real name
+    // Real name
     string realName("looooongApplicationName");
     char* dupName = strdup(realName.c_str());
 
@@ -183,8 +162,6 @@ void Ut_Connection::testGetAppName()
     string resName = conn->receiveAppName();
     QVERIFY(!resName.empty());
     QVERIFY(resName.compare(realName) == 0);
-
-    unlink(socketName);
 }
 
 QTEST_APPLESS_MAIN(Ut_Connection);

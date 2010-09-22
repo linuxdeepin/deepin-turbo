@@ -34,7 +34,8 @@
 
 PoolType Connection::socketPool;
 
-Connection::Connection(const string socketId) :
+Connection::Connection(const string socketId, bool testMode) :
+        m_testMode(testMode),
         m_fd(-1),
         m_curSocket(findSocket(socketId)),
         m_fileName(""),
@@ -47,9 +48,9 @@ Connection::Connection(const string socketId) :
     m_io[1] = -1;
     m_io[2] = -1;
 
-    if (m_curSocket == -1)
+    if (!m_testMode && m_curSocket == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Connection: socket isn't initialized\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Socket isn't initialized!\n");
     }
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
@@ -64,13 +65,9 @@ Connection::Connection(const string socketId) :
 #endif
 }
 
-Connection::~Connection()
-{}
-
 void Connection::closeAllSockets()
 {
     PoolType::iterator it;
-
     for (it = socketPool.begin(); it != socketPool.end(); ++it)
     {
         if (it->second > 0)
@@ -89,71 +86,83 @@ int Connection::findSocket(const string socketId)
 
 void Connection::initSocket(const string socketId)
 {
+    // Initialize a socket at socketId if one already doesn't
+    // exist for that id / path.
     PoolType::iterator it(socketPool.find(socketId));
     if (it == socketPool.end())
     {
-        Logger::logInfo("%s: init socket '%s'", __FUNCTION__, socketId.c_str());
+        Logger::logInfo("Initing socket at '%s'..", socketId.c_str());
 
-        int sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
-        if (sockfd < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: opening invoker socket\n");
+        // Create a new local socket
+        int socketFd = socket(PF_UNIX, SOCK_STREAM, 0);
+        if (socketFd < 0)
+            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Failed to open socket\n");
 
+        // Remove the previous socket file
         unlink(socketId.c_str());
 
+        // Initialize the socket struct
         struct sockaddr sun;
         sun.sa_family = AF_UNIX;
         int maxLen = sizeof(sun.sa_data) - 1;
         strncpy(sun.sa_data, socketId.c_str(), maxLen);
         sun.sa_data[maxLen] = '\0';
 
-        if (bind(sockfd, &sun, sizeof(sun)) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: binding to invoker socket\n");
+        // Bind the socket
+        if (bind(socketFd, &sun, sizeof(sun)) < 0)
+            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Failed to bind to socket (fd=%d)\n", socketFd);
 
-        if (listen(sockfd, 10) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: listening to invoker socket\n");
+        // Listen to the socket
+        if (listen(socketFd, 10) < 0)
+            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Failed to listen to socket (fd=%d)\n", socketFd);
 
+        // Set permissions
         chmod(socketId.c_str(), S_IRUSR | S_IWUSR | S_IXUSR |
                                 S_IRGRP | S_IWGRP | S_IXGRP |
                                 S_IROTH | S_IWOTH | S_IXOTH);
 
-        socketPool[socketId] = sockfd;
+        // Store path <-> file descriptor mapping
+        socketPool[socketId] = socketFd;
     }
 }
 
 bool Connection::acceptConn(AppData & rApp)
 {
-    m_fd = accept(m_curSocket, NULL, NULL);
-
-    if (m_fd < 0)
+    if (!m_testMode)
     {
-        Logger::logError("Connection: accepting connections (%s)\n", strerror(errno));
-        return false;
-    }
+        m_fd = accept(m_curSocket, NULL, NULL);
+
+        if (m_fd < 0)
+        {
+            Logger::logError("Connection: Failed to accept a connection: %s\n", strerror(errno));
+            return false;
+        }
 
 #if defined (HAVE_CREDS)
 
-    // Get credentials of assumed invoker
-    creds_t ccreds = creds_getpeer(m_fd);
+        // Get credentials of assumed invoker
+        creds_t ccreds = creds_getpeer(m_fd);
 
-    // Fetched peer creds will be free'd with rApp.deletePeerCreds
-    rApp.setPeerCreds(ccreds);
+        // Fetched peer creds will be free'd with rApp.deletePeerCreds
+        rApp.setPeerCreds(ccreds);
 
 #if ! defined (DISABLE_VERIFICATION)
 
-    // This code checks if the assumed invoker has got enough
-    // rights to communicate with us
-    if (!creds_have_p(ccreds, m_credsType, m_credsValue))
-    {
-        Logger::logError("Connection: invoker doesn't have enough credentials to call launcher \n");
+        // This code checks if the assumed invoker has got enough
+        // rights to communicate with us
+        if (!creds_have_p(ccreds, m_credsType, m_credsValue))
+        {
+            Logger::logError("Connection: invoker doesn't have enough credentials to call launcher \n");
 
-        sendMsg(INVOKER_MSG_BAD_CREDS);
-        closeConn();
-        return false;
-    }
+            sendMsg(INVOKER_MSG_BAD_CREDS);
+            closeConn();
+            return false;
+        }
 
 #endif // ! defined (DISABLE_VERIFICATION)
 
 #endif // defined (HAVE_CREDS)
+    }
 
     return true;
 }
@@ -162,75 +171,114 @@ void Connection::closeConn()
 {
     if (m_fd != -1)
     {
-        close(m_fd);
+        if (!m_testMode)
+        {
+            close(m_fd);
+        }
+
         m_fd = -1;
     }
 }
 
 bool Connection::sendMsg(uint32_t msg)
 {
-    Logger::logInfo("%s: %08x", __FUNCTION__, msg);
-    return write(m_fd, &msg, sizeof(msg)) != -1;
+    if (!m_testMode)
+    {
+        Logger::logInfo("%s: %08x", __FUNCTION__, msg);
+        return write(m_fd, &msg, sizeof(msg)) != -1;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 bool Connection::recvMsg(uint32_t *msg)
 {
-    uint32_t buf = 0;
-    int len = sizeof(buf);
-    ssize_t  ret = read(m_fd, &buf, len);
-    if (ret < len) {
-        Logger::logError("Connection: can't read data from connecton in %s", __FUNCTION__);
-        *msg = 0;
-    } else {
-        Logger::logInfo("%s: %08x", __FUNCTION__, *msg);
-        *msg = buf;
+    if (!m_testMode)
+    {
+        uint32_t buf = 0;
+        int len = sizeof(buf);
+        ssize_t ret = read(m_fd, &buf, len);
+
+        if (ret < len)
+        {
+            Logger::logError("Connection: can't read data from connecton in %s", __FUNCTION__);
+            *msg = 0;
+        }
+        else
+        {
+            Logger::logInfo("%s: %08x", __FUNCTION__, *msg);
+            *msg = buf;
+        }
+
+        return ret != -1;
     }
-    return ret != -1;
+    else
+    {
+        return true;
+    }
 }
 
 bool Connection::sendStr(const char * str)
 {
-    // Send size.
-    uint32_t size = strlen(str) + 1;
-    sendMsg(size);
+    if (!m_testMode)
+    {
+        // Send size.
+        uint32_t size = strlen(str) + 1;
+        sendMsg(size);
 
-    Logger::logInfo("Connection: %s: '%s'", __FUNCTION__, str);
+        Logger::logInfo("Connection: %s: '%s'", __FUNCTION__, str);
 
-    // Send the string.
-    return write(m_fd, str, size) != -1;
+        // Send the string.
+        return write(m_fd, str, size) != -1;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 const char * Connection::recvStr()
 {
-    // Get the size.
-    uint32_t size = 0;
-    
-    const uint32_t STR_LEN_MAX = 4096;
-    bool res = recvMsg(&size);
-    if (!res || size == 0 || size > STR_LEN_MAX)
+    if (!m_testMode)
     {
-        Logger::logError("Connection: string receiving failed in %s, string length is %d", __FUNCTION__, size);
-        return NULL;
-    }
+        // Get the size.
+        uint32_t size = 0;
 
-    char * str = new char[size];
-    if (!str)
-    {
-        Logger::logError("Connection: mallocing in %s", __FUNCTION__);
-        return NULL;
-    }
+        const uint32_t STR_LEN_MAX = 4096;
+        bool res = recvMsg(&size);
+        if (!res || size == 0 || size > STR_LEN_MAX)
+        {
+            Logger::logError("Connection: string receiving failed in %s, string length is %d", __FUNCTION__, size);
+            return NULL;
+        }
 
-    // Get the string.
-    uint32_t ret = read(m_fd, str, size);
-    if (ret < size)
+        char * str = new char[size];
+        if (!str)
+        {
+            Logger::logError("Connection: mallocing in %s", __FUNCTION__);
+            return NULL;
+        }
+
+        // Get the string.
+        uint32_t ret = read(m_fd, str, size);
+        if (ret < size)
+        {
+            Logger::logError("Connection: getting string, got %u of %u bytes", ret, size);
+            delete [] str;
+            return NULL;
+        }
+
+        str[size - 1] = '\0';
+        Logger::logInfo("%s: '%s'", __FUNCTION__, str);
+
+        return str;
+    }
+    else
     {
-        Logger::logError("Connection: getting string, got %u of %u bytes", ret, size);
-        delete [] str;
         return NULL;
     }
-    str[size - 1] = '\0';
-    Logger::logInfo("%s: '%s'", __FUNCTION__, str);
-    return str;
 }
 
 bool Connection::sendPid(pid_t pid)

@@ -42,7 +42,7 @@ private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void testInitConnection();
-    void testAcceptConnection();
+    void testSocket();
     void testGetEnv();
     void testGetAppName();
 

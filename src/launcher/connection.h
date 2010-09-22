@@ -49,7 +49,8 @@ typedef map<string, int> PoolType;
  * \brief Wrapper class for the connection between invoker and launcher.
  *
  * This class wraps up the UNIX file socket connection between the invoker
- * and the launcher daemon.
+ * and the launcher daemon. The low-level communication code is mostly taken
+ * from the maemo-launcher used in Maemo 5. It might need a re-write.
  */
 class Connection
 {
@@ -57,11 +58,9 @@ public:
 
     /*! \brief Constructor.
      *  \param socketId Path to the UNIX file socket to be used.
+     *  \param testMode Bypass all real socket activity to help unit testing.
      */
-    explicit Connection(const string socketId);
-
-    //! \brief Destructor
-    virtual ~Connection();
+    explicit Connection(const string socketId, bool testMode = false);
 
     /*! \brief Accept connection.
      * Accept a socket connection from the invoker.
@@ -94,7 +93,6 @@ public:
 
     //! \brief Get pid of the process on the other end of socket connection
     pid_t peerPid();
-
 
 private:
 
@@ -155,11 +153,15 @@ private:
 
     //! Send a string. This is a virtual to help unit testing.
     virtual bool sendStr(const char * str);
+
     //! Receive a string. This is a virtual to help unit testing.
     virtual const char * recvStr();
 
     //! Pool of sockets mapped to id's
     static PoolType socketPool;
+
+    //! Run in test mode, if true
+    bool m_testMode;
 
     //! Socket fd
     int      m_fd;
