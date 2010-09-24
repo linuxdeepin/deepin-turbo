@@ -59,11 +59,12 @@ enum APP_TYPE { M_APP, QT_APP, WRT_APP, UNKNOWN_APP };
 // Environment
 extern char ** environ;
 
-// pid of invoked process
+// pid of the invoked process
 static pid_t invoked_pid = -1;
 
 static void sigs_restore(void);
 
+// Forwards Unix signals from invoker to the invoked process
 static void sig_forwarder(int sig)
 {
     if (invoked_pid >= 0)
@@ -77,6 +78,7 @@ static void sig_forwarder(int sig)
     }
 }
 
+// Sets signal actions for Unix signals
 static void sigs_set(struct sigaction *sig)
 {
     sigaction(SIGABRT,   sig, NULL);
@@ -107,6 +109,7 @@ static void sigs_set(struct sigaction *sig)
     sigaction(SIGXFSZ,   sig, NULL);
 }
 
+// Sets up the signal forwarder
 static void sigs_init(void)
 {
     struct sigaction sig;
@@ -118,6 +121,7 @@ static void sigs_init(void)
     sigs_set(&sig);
 }
 
+// Sets up the default signal handler
 static void sigs_restore(void)
 {
     struct sigaction sig;
@@ -129,10 +133,7 @@ static void sigs_restore(void)
     sigs_set(&sig);
 }
 
-
-/*
- * Show a list of credentials that the client has
- */
+// Shows a list of credentials that the client has
 static void show_credentials(void)
 {
 #ifdef HAVE_CREDS
@@ -156,11 +157,11 @@ static void show_credentials(void)
     exit(0);
 }
 
+// Receive ACK
 static bool invoke_recv_ack(int fd)
 {
     uint32_t action;
 
-    // Receive ACK.
     invoke_recv_msg(fd, &action);
 
     if (action == INVOKER_MSG_BAD_CREDS)
@@ -175,6 +176,7 @@ static bool invoke_recv_ack(int fd)
     return true;
 }
 
+// Inits a socket connection for the given application type
 static int invoker_init(enum APP_TYPE app_type)
 {
     int fd;
@@ -218,43 +220,49 @@ static int invoker_init(enum APP_TYPE app_type)
     return fd;
 }
 
+// Receives pid of the invoked process.
+// Invoker doesn't know it, because the launcher daemon
+// is the one who forks.
 static uint32_t invoker_recv_pid(int fd)
 {
   uint32_t action, pid;
 
-  /* Receive action. */
+   // Receive action.
   invoke_recv_msg(fd, &action);
 
   if (action != INVOKER_MSG_PID)
-      die(1, "receiving bad pid (%08x)\n", action);
+      die(1, "Received a bad pid (%08x)\n", action);
 
-  /* Receive pid. */
+  // Receive pid.
   invoke_recv_msg(fd, &pid);
   return pid;
 }
 
+// Receives exit status of the invoked process
 static uint32_t invoker_recv_exit(int fd)
 {
   uint32_t action, status;
 
-  /* Receive action. */
+  // Receive action.
   invoke_recv_msg(fd, &action);
 
   if (action != INVOKER_MSG_EXIT)
   {
-      // probably boosted application process was killed somehow
-      // let's get applauncherd process some time to cope with this situation
+      // Boosted application process was killed somehow.
+      // Let's give applauncherd process some time to cope 
+      // with this situation.
       sleep(1);
 
-      // if nothing happend, just exit with error message
-      die(1, "receiving bad exit status (%08x)\n", action);
+      // If nothing happend, just exit with error message.
+      die(1, "Received bad exit status (%08x)\n", action);
   }
-  /* Receive exit status */
+  
+  // Receive exit status.
   invoke_recv_msg(fd, &status);
   return status;
 }
 
-
+// Sends magic number / protocol version
 static bool invoker_send_magic(int fd, int options)
 {
     // Send magic.
@@ -264,6 +272,7 @@ static bool invoker_send_magic(int fd, int options)
     return true;
 }
 
+// Sends the process name to be invoked.
 static bool invoker_send_name(int fd, char *name)
 {
     // Send action.
@@ -312,6 +321,7 @@ static bool invoker_send_prio(int fd, int prio)
     return true;
 }
 
+// Sends UID and GID
 static bool invoker_send_ids(int fd, int uid, int gid)
 {
     // Send action.
@@ -324,11 +334,12 @@ static bool invoker_send_ids(int fd, int uid, int gid)
     return true;
 }
 
+// Sends the environment variables
 static bool invoker_send_env(int fd)
 {
     int i, n_vars;
 
-    // Count the amount of environment variables.
+    // Count environment variables.
     for (n_vars = 0; environ[n_vars] != NULL; n_vars++) ;
 
     // Send action.
@@ -343,6 +354,7 @@ static bool invoker_send_env(int fd)
     return true;
 }
 
+// Sends I/O descriptors
 static bool invoker_send_io(int fd)
 {
     struct msghdr msg;
@@ -381,6 +393,7 @@ static bool invoker_send_io(int fd)
     return true;
 }
 
+// Sends the END message
 static bool invoker_send_end(int fd)
 {
     // Send action.
@@ -390,6 +403,7 @@ static bool invoker_send_end(int fd)
     return true;
 }
 
+// Prints the usage and exits with given status
 static void usage(int status)
 {
     printf("\nUsage: %s [options] [--type=TYPE]  [file] [args]\n"
@@ -410,9 +424,10 @@ static void usage(int status)
     exit(status);
 }
 
+// Return delay as integer 
 static unsigned int get_delay(char *delay_arg)
 {
-    unsigned int delay;
+    unsigned int delay = DEFAULT_DELAY;
 
     if (delay_arg)
     {
@@ -426,34 +441,35 @@ static unsigned int get_delay(char *delay_arg)
             usage(1);
         }
     }
-    else
-        delay = DEFAULT_DELAY;
-
+    
     return delay;
 }
 
+// Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
-                   enum APP_TYPE app_type, int magic_options, bool wait_term)
+                  enum APP_TYPE app_type, int magic_options, bool wait_term)
 {
     int status = 0;
 
     if (prog_name && prog_argv)
     {
+        // Get process priority
         errno = 0;
         int prog_prio = getpriority(PRIO_PROCESS, 0);
-
         if (errno && prog_prio < 0)
         {
             prog_prio = 0;
         }
 
+        // This is a fallback if connection with the launcher
+        // process is broken       
         int fd = invoker_init(app_type);
-
         if (fd == -1)
         {
-            // connection with launcher is broken, try to launch application via execve
-            warning("Connection with launcher process is broken \n");
-            warning("Try to start application as a binary executable without launcher...  \n");
+            // Connection with launcher is broken, 
+            // try to launch application via execve
+            warning("Connection with launcher process is broken. \n");
+            warning("Trying to start application as a binary executable without launcher...\n");
 
             if(!wait_term)
             {
@@ -477,7 +493,8 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         }
         else
         {
-            // connection with launcher process is established
+            // Connection with launcher process is established,
+            // send the data.
             invoker_send_magic(fd, magic_options);
             invoker_send_name(fd, prog_argv[0]);
             invoker_send_exec(fd, prog_name);
@@ -499,19 +516,20 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                 invoked_pid = invoker_recv_pid(fd);
                 debug("Booster's pid is %d \n ", invoked_pid);
 
-                // forward signals to invoked process
+                // Forward signals to the invoked process
                 sigs_init();
 
-                // wait for exit status from invoked application
+                // Wait for exit status from the invoked application
                 status = invoker_recv_exit(fd);
 
-                // restore default signal handlers
+                // Restore default signal handlers
                 sigs_restore();
             }
 
             close(fd);
         }
     }
+    
     return status;
 }
 
@@ -525,17 +543,18 @@ int main(int argc, char *argv[])
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
 
+    // Called with a different name (old way of using invoker) ?
     if (!strstr(argv[0], PROG_NAME_INVOKER) )
     {
-        // Called with a different name, old way of using invoker
         die(1,
             "Incorrect use of invoker, don't use symlinks. "
             "Run invoker explicitly from e.g. a D-Bus service file instead.\n");
     }
 
-    // stops args parsing as soon as a non-option argument is encountered
+    // Stops parsing args as soon as a non-option argument is encountered
     putenv("POSIXLY_CORRECT=1");
 
+    // Options recognized
     struct option longopts[] = {
         {"help", no_argument, NULL, 'h'},
         {"creds", no_argument, NULL, 'c'},
@@ -545,6 +564,7 @@ int main(int argc, char *argv[])
         {0, 0, 0, 0}
     };
 
+    // Parse options
     int opt;
     while ((opt = getopt_long(argc, argv, "hcwd:t:", longopts, NULL)) != -1)
     {
@@ -586,7 +606,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    // option processing stops as soon as application name is encountered
+    // Option processing stops as soon as application name is encountered
     if (optind < argc)
     {
         prog_name = search_program(argv[optind]);
@@ -606,11 +626,13 @@ int main(int argc, char *argv[])
         prog_argv = &argv[optind];
     }
 
+    // Check if application name isn't defined
     if (!prog_name)
     {
         die(1, "Application's name is unknown.\n");
     }
 
+    // Check if application type is unknown
     if (app_type == UNKNOWN_APP)
     {
         die(1, "Application's type is unknown. \n");
