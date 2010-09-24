@@ -629,13 +629,15 @@ int main(int argc, char *argv[])
     // Check if application name isn't defined
     if (!prog_name)
     {
-        die(1, "Application's name is unknown.\n");
+        report(report_error, "Application's name is not defined.\n");
+        usage(1);
     }
 
     // Check if application type is unknown
     if (app_type == UNKNOWN_APP)
     {
-        die(1, "Application's type is unknown. \n");
+        report(report_error, "Application's type is unknown.\n");
+        usage(1);
     }
 
     // Send commands to the launcher daemon
