@@ -5,9 +5,9 @@ cmake_policy(VERSION 2.6)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-# Set default C++ flags
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -g -Wno-long-long -O2 -Wextra -Wpointer-arith -Wwrite-strings -Wold-style-cast -Woverloaded-virtual -Wundef")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -g -O2")
+# -Wno-psabi suppresses "/usr/include/qt4/QtCore/qstring.h:187: note: the
+# mangling of 'va_list' has changed in GCC 4.4"
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wno-psabi -g -O2")
 
 # By default only QtCore and QtGui modules are enabled
 #set(QT_USE_QTDBUS TRUE)
