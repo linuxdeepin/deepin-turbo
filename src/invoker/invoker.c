@@ -49,6 +49,9 @@
 // Delay before exit
 static const int DEFAULT_DELAY = 0;
 
+static const unsigned int RESPAWN_DELAY = 2;
+static const unsigned int MAX_RESPAWN_DELAY = 10;
+
 // Enumeration of possible application types:
 // M_APP   : MeeGo Touch application
 // QT_APP  : Qt/generic application
@@ -321,6 +324,18 @@ static bool invoker_send_prio(int fd, int prio)
     return true;
 }
 
+// Sends booster respawn delay
+static bool invoker_send_delay(int fd, int delay)
+{
+    // Send action.
+    invoke_send_msg(fd, INVOKER_MSG_DELAY);
+    invoke_send_msg(fd, delay);
+
+    invoke_recv_ack(fd);
+
+    return true;
+}
+
 // Sends UID and GID
 static bool invoker_send_ids(int fd, int uid, int gid)
 {
@@ -416,16 +431,17 @@ static void usage(int status)
            "Options:\n"
            "  -c, --creds         Print Aegis security credentials (if enabled).\n"
            "  -d, --delay SECS    After invoking sleep for SECS seconds (default %d).\n"
+           "  -r, --respawn SECS  After invoking respawn new booster after SECS seconds (default %d, max %d).\n"
            "  -w, --wait-term     Wait for launched process to terminate.\n"
            "  -h, --help          Print this help message.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
-           PROG_NAME_INVOKER, DEFAULT_DELAY, PROG_NAME_INVOKER);
+           PROG_NAME_INVOKER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
 }
 
 // Return delay as integer 
-static unsigned int get_delay(char *delay_arg)
+static unsigned int get_delay(char *delay_arg, char *param_name)
 {
     unsigned int delay = DEFAULT_DELAY;
 
@@ -437,7 +453,7 @@ static unsigned int get_delay(char *delay_arg)
         // Check for various possible errors
         if ((errno == ERANGE && delay == ULONG_MAX) || delay == 0)
         {
-            report(report_error, "Wrong value of delay parameter: %s\n", delay_arg);
+            report(report_error, "Wrong value of %s parameter: %s\n", param_name, delay_arg);
             usage(1);
         }
     }
@@ -479,7 +495,7 @@ void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 
 // "normal" invoke through a socket connection
 int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
-                  int magic_options, bool wait_term)
+                  int magic_options, bool wait_term, unsigned int respawn_delay)
 {
     int status = 0;
 
@@ -498,6 +514,7 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
     invoker_send_exec(fd, prog_name);
     invoker_send_args(fd, prog_argc, prog_argv);
     invoker_send_prio(fd, prog_prio);
+    invoker_send_delay(fd, respawn_delay);
     invoker_send_ids(fd, getuid(), getgid());
     invoker_send_io(fd);
     invoker_send_env(fd);
@@ -529,7 +546,7 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
 
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
-                  enum APP_TYPE app_type, int magic_options, bool wait_term)
+                  enum APP_TYPE app_type, int magic_options, bool wait_term, unsigned int respawn_delay)
 {
     int status = 0;
 
@@ -546,7 +563,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         else
         {
             status = invoke_remote(fd, prog_argc, prog_argv, prog_name,
-                                   magic_options, wait_term);
+                                   magic_options, wait_term, respawn_delay);
             close(fd);
         }
     }
@@ -561,6 +578,7 @@ int main(int argc, char *argv[])
     int           magic_options = 0;
     bool          wait_term     = false;
     unsigned int  delay         = DEFAULT_DELAY;
+    unsigned int  respawn_delay = RESPAWN_DELAY;
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
 
@@ -577,18 +595,19 @@ int main(int argc, char *argv[])
 
     // Options recognized
     struct option longopts[] = {
-        {"help", no_argument, NULL, 'h'},
-        {"creds", no_argument, NULL, 'c'},
-        {"wait-term", no_argument, NULL, 'w'},
-        {"type", required_argument, NULL, 't'},
-        {"delay", required_argument, NULL, 'd'},
+        {"help",      no_argument,       NULL, 'h'},
+        {"creds",     no_argument,       NULL, 'c'},
+        {"wait-term", no_argument,       NULL, 'w'},
+        {"type",      required_argument, NULL, 't'},
+        {"delay",     required_argument, NULL, 'd'},
+        {"respawn",   required_argument, NULL, 'r'},
         {0, 0, 0, 0}
     };
 
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwd:t:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwd:t:r:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -620,7 +639,16 @@ int main(int argc, char *argv[])
             break;
 
         case 'd':
-            delay = get_delay(optarg);
+            delay = get_delay(optarg, "delay");
+            break;
+
+        case 'r':
+            respawn_delay = get_delay(optarg, "respawn delay");
+            if (respawn_delay > MAX_RESPAWN_DELAY)
+            {
+                report(report_error, "Booster respawn delay exceeds max possible time.\n");
+                usage(1);
+            }
             break;
 
         case '?':
@@ -664,7 +692,7 @@ int main(int argc, char *argv[])
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay);
 
     // Sleep for delay before exiting
     if (delay)

@@ -30,6 +30,7 @@ AppData::AppData() :
     m_appName(""),
     m_fileName(""),
     m_prio(0),
+    m_delay(0),
     m_entry(NULL),
     m_ioDescriptors(),
     m_gid(0),
@@ -97,6 +98,16 @@ void AppData::setPriority(int newPriority)
 int AppData::priority() const
 {
     return m_prio;
+}
+
+void AppData::setDelay(int newDelay)
+{
+    m_delay = newDelay;
+}
+
+int AppData::delay()
+{
+    return m_delay;
 }
 
 void AppData::setEntry(entry_t newEntry)

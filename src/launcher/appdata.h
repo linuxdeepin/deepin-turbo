@@ -81,6 +81,12 @@ public:
     //! Return priority
     int priority() const;
 
+    //! Set booster respawn delay
+    void setDelay(int delay);
+
+    //!Return respawn delay
+    int delay();
+
     //! Set entry point for the application
     void setEntry(entry_t entry);
 
@@ -127,6 +133,7 @@ private:
     string      m_appName;
     string      m_fileName;
     int         m_prio;
+    int         m_delay;
     entry_t     m_entry;
     vector<int> m_ioDescriptors;
     gid_t       m_gid;
