@@ -108,13 +108,13 @@ class launcher_tests (unittest.TestCase):
         #check if pgrep appname should be nothing
         #self.kill_process(LAUNCHER_BINARY)
 
-        process_handle = run_app_with_launcher(PREFERED_APP)
+        process_handle = run_app_as_user(PREFERED_APP)
         process_id = wait_for_app(PREFERED_APP, 5)
         print process_id
         kill_process(PREFERED_APP)
         time.sleep(4)
 
-        process_handle = run_app_with_launcher(PREFERED_APP)
+        process_handle = run_app_as_user(PREFERED_APP)
         process_id1 = wait_for_app(PREFERED_APP, 5)
         print process_id1
         kill_process(PREFERED_APP)
@@ -138,7 +138,7 @@ class launcher_tests (unittest.TestCase):
         pidlist = []
 
         for app in LAUNCHABLE_APPS:
-            p = run_app_with_launcher(app)
+            p = run_app_as_user(app)
             pid = wait_for_app(app, timeout = 10, sleep = 1)
 
             if pid == None:
@@ -154,17 +154,17 @@ class launcher_tests (unittest.TestCase):
         To test that only one instance of a application exist 
         """
         #launch application
-        #self.run_app_with_launcher(appname)
+        #self.run_app_as_user(appname)
         #get pid of application
         #launch applicatoin again
         #check pgrep application
         #y = commands.getstatusoutput(pgrep appname)
         #len(y[-1].split(' ')) == 1
-        process_handle = run_app_with_launcher(PREFERED_APP)
+        process_handle = run_app_as_user(PREFERED_APP)
         process_id = wait_for_app(PREFERED_APP)
         debug("PID of first %s" % process_id)
 
-        process_handle1 = run_app_with_launcher(PREFERED_APP)
+        process_handle1 = run_app_as_user(PREFERED_APP)
         time.sleep(2)
         process_id = wait_for_app(PREFERED_APP)
         debug("PID of 2nd %s" % process_id)
@@ -182,7 +182,7 @@ class launcher_tests (unittest.TestCase):
             #check if the application is running
             #check if p.pid is same as pgrep appname
             #in a global dictionary, append the pid
-            process_handle = run_app_with_launcher(app)
+            process_handle = run_app_as_user(app)
         time.sleep(8)
         process_id = get_pid('fala_ft_hello')
         pid_list = process_id.split()
@@ -273,7 +273,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(count == 1, "applauncherd was not daemonized (or too many instances running ..)")
 
         # try to launch an app
-        run_app_with_launcher('/usr/bin/fala_ft_hello')
+        run_app_as_user('/usr/bin/fala_ft_hello')
         time.sleep(2)
 
         pid = wait_for_app('fala_ft_hello')
@@ -485,21 +485,21 @@ class launcher_tests (unittest.TestCase):
 
     def test_020_launch_wo_applauncherd(self):
         """
-        To Test that invoker can launch applications even when the applauncherd is not running
+        To Test that invoker can launch applications even when the
+        applauncherd is not running
         """
 
-        #Stop applauncherd
-        os.system("initctl stop xsession/applauncherd")
-        time.sleep(1)
-        #Try to launch an application using invoker
-        os.system('invoker --type=m /usr/bin/fala_ft_hello.launch &') 
-        time.sleep(3)
-        process_id1 = get_pid('fala_ft_hello')
+        stop_applauncherd()
 
-        self.assert_(process_id1 != None , "application not launcherd running")
-        time.sleep(1)
-        kill_process(PREFERED_APP)
-        os.system("initctl start xsession/applauncherd")
+        handle = run_app_as_user('fala_ft_hello')
+        time.sleep(3)
+        pid1 = get_pid('fala_ft_hello')
+        
+        self.assert_(pid1 != None, "Application wasn't executed")
+
+        kill_process('fala_ft_hello')
+
+        start_applauncherd()
 
 # main
 if __name__ == '__main__':

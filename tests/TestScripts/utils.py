@@ -23,10 +23,60 @@ def error(*msg):
     sys.stderr.write('ERROR %s\n' % (' '.join([str(s) for s in msg]),))
     sys.exit(1)
 
-def run_app_with_launcher(appname):
-    p = subprocess.Popen(appname,
-                         shell=False, 
-                         stdout=DEV_NULL, stderr=DEV_NULL)
+def remove_applauncherd_runtime_files():
+    """
+    Removes files that applauncherd leaves behind after it has been stopped
+    """
+
+    files = ['/tmp/applauncherd.lock']
+    files += glob.glob('/tmp/boost*')
+
+    for f in files:
+        print "removing %s" % f
+
+        try:
+            os.remove(f)
+        except:
+            pass
+
+def start_applauncherd():
+    handle = Popen(['initctl', 'start', 'xsession/applauncherd'],
+                   stdout = DEV_NULL, stderr = DEV_NULL,
+                   shell = False)
+
+    return handle.wait() == 0
+
+def stop_applauncherd():
+    handle = Popen(['initctl', 'stop', 'xsession/applauncherd'],
+                   stdout = DEV_NULL, stderr = DEV_NULL,
+                   shell = False)
+
+    time.sleep(1)
+
+    remove_applauncherd_runtime_files()
+
+    return handle.wait()
+
+def restart_applauncherd():
+    stop_applauncherd()
+    start_applauncherd()
+
+def run_app_as_user(appname):
+    """
+    Runs the specified command as a user.
+    """
+
+    cmd = ['su', '-', 'user', '-c']
+
+    if type(appname) == list:
+        cmd += appname
+    elif type(appname) == str:
+        cmd.append(appname)
+    else:
+        raise TypeError("List or string expected")
+
+    p = subprocess.Popen(cmd, shell = False, 
+                         stdout = DEV_NULL, stderr = DEV_NULL)
     return p
 
 def get_pid(appname):
