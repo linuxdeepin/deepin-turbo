@@ -96,8 +96,21 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
         Logger::logError("Booster: Couldn't send invoker's pid to launcher process\n");
     }
 
+    // Send to the parent process booster respawn delay value
+    int delay = m_app.delay();
+    ret = write(pipeFd(1), reinterpret_cast<const void *>(&delay), sizeof(int));
+    if (ret == -1) {
+        Logger::logError("Booster: Couldn't send respawn delay value to launcher process\n");
+    }
+
     // close pipe
     close(pipeFd(1));
+
+    // Don't care about fate of parent applauncherd process any more
+    prctl(PR_SET_PDEATHSIG, 0);
+
+    // Set dumpable flag
+    prctl(PR_SET_DUMPABLE, 1);
 }
 
 bool Booster::readCommand()

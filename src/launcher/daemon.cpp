@@ -195,13 +195,26 @@ void Daemon::run()
                     m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
                 }
 
+                // Read booster respawn delay
+                int delay;
+                count = read(m_pipefd[0], reinterpret_cast<void *>(&delay), sizeof(int));
+
+                if (count < static_cast<ssize_t>(sizeof(int)))
+                {
+                    Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+                }
+                else
+                {
+                    Logger::logInfo("Daemon: respawn delay: %d \n", delay);
+                }
+
                 // Fork a new booster of the given type
 
                 // 2nd param guarantees some time for the just launched application
                 // to start up before forking new booster. Not doing this would
                 // slow down the start-up significantly on single core CPUs.
 
-                forkBooster(msg, m_boosterSleepTime);
+                forkBooster(msg, delay);
             }
             // It was from a monitor booster, that means that theme / language has
             // changed so we need to reset (kill) MBooster and WRTBooster.
@@ -270,12 +283,6 @@ void Daemon::forkBooster(char type, int sleepTime)
         if (booster)
         {
             booster->initialize(m_initialArgc, m_initialArgv, m_pipefd);
-
-            // Don't care about fate of parent applauncherd process any more
-            prctl(PR_SET_PDEATHSIG, 0);
-
-            // Set dumpable flag
-            prctl(PR_SET_DUMPABLE, 1);
 
             // Run the current Booster
             booster->run();

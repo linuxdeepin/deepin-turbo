@@ -42,6 +42,7 @@ Connection::Connection(const string socketId, bool testMode) :
         m_argc(0),
         m_argv(NULL),
         m_priority(0),
+        m_delay(0),
         m_sendPid(false)
 {
     m_io[0] = -1;
@@ -365,6 +366,14 @@ bool Connection::receivePriority()
     return true;
 }
 
+bool Connection::receiveDelay()
+{
+    recvMsg(&m_delay);
+    sendMsg(INVOKER_MSG_ACK);
+
+    return true;
+}
+
 bool Connection::receiveIDs()
 {
     recvMsg(&m_uid);
@@ -547,6 +556,9 @@ bool Connection::receiveActions()
         case INVOKER_MSG_PRIO:
             receivePriority();
             break;
+        case INVOKER_MSG_DELAY:
+            receiveDelay();
+            break;
         case INVOKER_MSG_IO:
             receiveIO();
             break;
@@ -584,6 +596,7 @@ bool Connection::receiveApplicationData(AppData & rApp)
     {
         rApp.setFileName(m_fileName);
         rApp.setPriority(m_priority);
+        rApp.setDelay(m_delay);
         rApp.setArgc(m_argc);
         rApp.setArgv(m_argv);
         rApp.setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
