@@ -24,6 +24,10 @@
 #include <mcomponentcache.h>
 #endif
 
+#ifdef HAVE_WRT
+#include <wrtcomponentcache.h>
+#endif
+
 const string WRTBooster::m_socketId  = "/tmp/boostw";
 const string WRTBooster::m_temporaryProcessName = "booster-w";
 int WRTBooster::m_ProcessID = 0;
@@ -37,6 +41,10 @@ bool WRTBooster::preload()
 {
 #ifdef HAVE_MCOMPONENTCACHE
     MComponentCache::populateForWRTApplication();
+#endif
+
+#ifdef HAVE_WRT
+    WrtComponentCache::populateCache();
 #endif
     return true;
 }

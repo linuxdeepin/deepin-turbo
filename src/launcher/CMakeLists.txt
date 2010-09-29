@@ -11,9 +11,19 @@ qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 # Find libdl
 find_library(LIBDL NAMES dl)
 
+# Use webruntime if found
+# this is necessary for wrt booster to work efficiently
+pkg_check_modules(WRT webruntime)
+if(WRT_FOUND)
+  add_definitions(-DHAVE_WRT)
+  include_directories(${WRT_INCLUDE_DIRS})
+endif(WRT_FOUND)
+
+
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
-# but dlopen():ed and listed in src/launcher/preload.h instead. 
-link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY})
+# but dlopen():ed and listed in src/launcher/preload.h instead.
+# WRT_LIBRARIES is needed always as it contains the implementation of WRTComponentCache
+link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY} ${WRT_LIBRARIES})
 
 # Set executable
 add_executable(applauncherd.bin ${SRC} ${MOC_SRC})
