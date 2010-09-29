@@ -65,7 +65,7 @@ class SecurityTests(unittest.TestCase):
         req_creds.sort()
 
         self.assert_(creds == req_creds,
-                     "fala_ft_hello has differnt creds set!")
+                     "fala_ft_hello has different creds set!")
 
     def test_003_invoker_creds(self):
         """

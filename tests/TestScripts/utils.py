@@ -173,10 +173,10 @@ def launch_and_get_creds(path):
     """
 
     # try launch the specified application
-    handle = run_app_with_launcher(path)
+    handle = run_app_as_user(path)
 
     # sleep for a moment to allow applauncherd to start the process
-    time.sleep(5)
+    time.sleep(3)
 
     # with luck, the process should have correct name by now
     pid = get_pid(path)
@@ -186,8 +186,6 @@ def launch_and_get_creds(path):
     if pid == None:
         print "couldn't launch %s" % basename(path)
         return None
-
-    #self.assert_(pid != None, "Couldn't launch %s" % basename(path))
 
     creds = get_creds(pid = pid)
 
