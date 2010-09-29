@@ -268,7 +268,9 @@ int Booster::launchProcess()
 void* Booster::loadMain()
 {
 #ifdef HAVE_CREDS
-    // Set application's platform security credentials
+    // Set application's platform security credentials.
+    // creds_confine2() tries first to use application-specific credentials, but if they are missing
+    // from the system, it uses credentials inherited from the invoker.
     int err = creds_confine2(m_app.fileName().c_str(), credp_str2flags("set", NULL), m_app.peerCreds());
     m_app.deletePeerCreds();
 
