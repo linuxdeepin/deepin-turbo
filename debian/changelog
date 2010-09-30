@@ -1,3 +1,19 @@
+applauncherd (0.14.0) stable; urgency=low
+
+  * Use WrtComponentCache
+  * Fixes: NB#194550 - applauncherd should have configurable delay when creating new booster process
+  * Added -Wno-psabi to CXX_FLAGS in order to suppress va_list mangling warnings originating from Qt.
+  * Logger::logErrorAndDie() prints also to stderr in order to help
+    debugging.
+  * MonitorBooster sends a message to Daemon, who kills MBooster and WRTBooster.
+  * New functional test for booster-killer added
+  * Hard-coded GConf key strings moved from monitorbooster.cpp to the top-level CMakeLists.txt
+  * Unit test for getBoosterPidForType() added to ut_boosterfactory
+  * Signal forwarding tests added for q-booster and w-booster
+  * Stopping applifed in the prestart-launcherd test to prevent forced killing of applications
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Thu, 30 Sep 2010 17:20:32 +0300
+
 applauncherd (0.13.1) stable; urgency=low
 
   * Fixes: NB#191847 - First application launched with m-booster after theme change crashes
