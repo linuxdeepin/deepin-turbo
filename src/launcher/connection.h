@@ -78,7 +78,7 @@ public:
     bool receiveApplicationData(AppData & rApp);
 
     //! \brief Return true if invoker wait for process exit status
-    bool isReportAppExitStatusNeeded();
+    bool isReportAppExitStatusNeeded() const;
 
     //! \brief Send application exit status to invoker
     bool sendAppExitStatus(int status);

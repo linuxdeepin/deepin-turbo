@@ -74,8 +74,10 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
     popPriority();
 
     // Wait and read commands from the invoker
-    Logger::logNotice("Daemon: Wait for message from invoker");
-    readCommand();
+    Logger::logNotice("Booster: Wait for message from invoker");
+    if (!readCommand()) {
+        Logger::logError("Booster: Couldn't read command\n");
+    }
 
     // Give the process the real application name now that it
     // has been read from invoker in readCommand().
@@ -84,15 +86,13 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
     // Signal the parent process that it can create a new
     // waiting booster process and close write end
     const char msg = boosterType();
-    ssize_t ret = write(pipeFd(1), reinterpret_cast<const void *>(&msg), 1);
-    if (ret == -1) {
+    if (write(pipeFd(1), reinterpret_cast<const void *>(&msg), 1) == -1) {
         Logger::logError("Booster: Couldn't send type message to launcher process\n");
     }
 
     // Send to the parent process pid of invoker for tracking
     pid_t pid = invokersPid();
-    ret = write(pipeFd(1), reinterpret_cast<const void *>(&pid), sizeof(pid_t));
-    if (ret == -1) {
+    if (write(pipeFd(1), reinterpret_cast<const void *>(&pid), sizeof(pid_t)) == -1) {
         Logger::logError("Booster: Couldn't send invoker's pid to launcher process\n");
     }
 
@@ -121,13 +121,15 @@ bool Booster::readCommand()
     // Accept a new invocation.
     if (m_conn->acceptConn(m_app))
     {
-        bool res = m_conn->receiveApplicationData(m_app);
-        if(!res)
+        // Receive application data from the invoker
+        if(!m_conn->receiveApplicationData(m_app))
         {
             m_conn->closeConn();
             return false;
         }
 
+        // Close the connection if exit status doesn't need
+        // to be sent back to invoker
         if (!m_conn->isReportAppExitStatusNeeded())
         {
             m_conn->closeConn();

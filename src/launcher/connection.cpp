@@ -573,7 +573,7 @@ bool Connection::receiveActions()
 
             return true;
         default:
-            Logger::logError("Connection: receiving invalid action (%08x)\n", action);
+            Logger::logError("Connection: received invalid action (%08x)\n", action);
             return false;
         }
     }
@@ -584,12 +584,18 @@ bool Connection::receiveApplicationData(AppData & rApp)
     // Read magic number
     rApp.setOptions(receiveMagic());
     if (rApp.options() == -1)
+    {
+        Logger::logError("Connection: receiving magic failed\n");
         return false;
+    }
 
     // Read application name
     rApp.setAppName(receiveAppName());
     if (rApp.appName().empty())
+    {
+        Logger::logError("Connection: receiving application name failed\n");
         return false;
+    }
 
     // Read application parameters
     if (receiveActions())
@@ -604,13 +610,14 @@ bool Connection::receiveApplicationData(AppData & rApp)
     }
     else
     {
+        Logger::logError("Connection: receiving application parameters failed\n");
         return false;
     }
 
     return true;
 }
 
-bool Connection::isReportAppExitStatusNeeded()
+bool Connection::isReportAppExitStatusNeeded() const
 {
     return m_sendPid;
 }
