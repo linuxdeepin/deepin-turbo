@@ -9,9 +9,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 # mangling of 'va_list' has changed in GCC 4.4"
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wno-psabi -g -O2")
 
-# By default only QtCore and QtGui modules are enabled
-#set(QT_USE_QTDBUS TRUE)
-
 # Find Qt4
 find_package(Qt4 4.6.0 REQUIRED)
 include(${QT_USE_FILE})
@@ -66,11 +63,14 @@ add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
 add_definitions(-DMEEGOTOUCH_THEME_GCONF_KEY="/meegotouch/theme/name")
 add_definitions(-DMEEGOTOUCH_LANGUAGE_GCONF_KEY="/meegotouch/i18n/language")
 
+# Disable debug logging, only error messages get logged
+add_definitions(-DDEBUG_LOGGING_DISABLED)
+
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set
 if ($ENV{BUILD_COVERAGE})
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
-        set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} -ftest-coverage -fprofile-arcs")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
+    set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} -ftest-coverage -fprofile-arcs")
 endif ($ENV{BUILD_COVERAGE})
 
 # Sub build: applauncherd

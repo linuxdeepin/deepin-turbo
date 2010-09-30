@@ -43,8 +43,7 @@ enum report_type {
 extern void report_set_output(enum report_output new_output);
 extern void report(enum report_type type, char *msg, ...);
 
-//#define _DEBUG
-#ifdef _DEBUG
+#ifndef DEBUG_LOGGING_DISABLED
 #define debug(msg, ...) report(report_debug, msg, ##__VA_ARGS__)
 #else
 #define debug(...)
