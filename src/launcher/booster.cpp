@@ -83,6 +83,22 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
     // has been read from invoker in readCommand().
     renameProcess(initialArgc, initialArgv);
 
+    // Send parent process a message that it can create a new booster,
+    // send pid of invoker, send booster respawn value
+    sendDataToParent();
+
+    // close pipe
+    close(pipeFd(1));
+
+    // Don't care about fate of parent applauncherd process any more
+    prctl(PR_SET_PDEATHSIG, 0);
+
+    // Set dumpable flag
+    prctl(PR_SET_DUMPABLE, 1);
+}
+
+void Booster::sendDataToParent()
+{
     // Signal the parent process that it can create a new
     // waiting booster process and close write end
     const char msg = boosterType();
@@ -101,15 +117,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
     if (write(pipeFd(1), reinterpret_cast<const void *>(&delay), sizeof(int)) == -1) {
         Logger::logError("Booster: Couldn't send respawn delay value to launcher process\n");
     }
-
-    // close pipe
-    close(pipeFd(1));
-
-    // Don't care about fate of parent applauncherd process any more
-    prctl(PR_SET_PDEATHSIG, 0);
-
-    // Set dumpable flag
-    prctl(PR_SET_DUMPABLE, 1);
 }
 
 bool Booster::readCommand()

@@ -142,6 +142,10 @@ private:
     //! Disable assignment operator
     Booster & operator= (const Booster & r);
 
+    //! Send data to the parent process (invokers pid, respwan delay)
+    //! and signal that a new booster can be created.
+    void sendDataToParent();
+
     //! Load the library and jump to main
     int launchProcess();
 
