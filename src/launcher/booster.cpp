@@ -98,8 +98,7 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
 
     // Send to the parent process booster respawn delay value
     int delay = m_app.delay();
-    ret = write(pipeFd(1), reinterpret_cast<const void *>(&delay), sizeof(int));
-    if (ret == -1) {
+    if (write(pipeFd(1), reinterpret_cast<const void *>(&delay), sizeof(int)) == -1) {
         Logger::logError("Booster: Couldn't send respawn delay value to launcher process\n");
     }
 
