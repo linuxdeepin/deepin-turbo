@@ -125,12 +125,12 @@ bool Booster::readCommand()
     m_conn = new Connection(socketId());
 
     // Accept a new invocation.
-    if (m_conn->acceptConn(m_app))
+    if (m_conn->accept(m_app))
     {
         // Receive application data from the invoker
         if(!m_conn->receiveApplicationData(m_app))
         {
-            m_conn->closeConn();
+            m_conn->close();
             return false;
         }
 
@@ -138,7 +138,7 @@ bool Booster::readCommand()
         // to be sent back to invoker
         if (!m_conn->isReportAppExitStatusNeeded())
         {
-            m_conn->closeConn();
+            m_conn->close();
         }
         return true;
     }
@@ -161,10 +161,9 @@ void Booster::run()
         if (m_conn->isReportAppExitStatusNeeded())
         {
             m_conn->sendAppExitStatus(ret_val);
-            m_conn->closeConn();
+            m_conn->close();
             Connection::closeAllSockets();
         }
-
     }
     else
     {

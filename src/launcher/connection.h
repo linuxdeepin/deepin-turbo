@@ -69,10 +69,10 @@ public:
      * in rApp must be released by the caller.
      * \return true on success.
      */
-    bool acceptConn(AppData & rApp);
+    bool accept(AppData & rApp);
 
     //! \brief Close the socket connection.
-    void closeConn();
+    void close();
 
     //! \brief Receive application data to rApp.
     bool receiveApplicationData(AppData & rApp);

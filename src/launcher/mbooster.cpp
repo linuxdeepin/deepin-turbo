@@ -36,6 +36,8 @@ const string & MBooster::socketId() const
 bool MBooster::preload()
 {
 #ifdef HAVE_MCOMPONENTCACHE
+    // Populate the cache (instantiates an MApplicationWindow and
+    // an MApplication)
     MComponentCache::populateForMApplication();
 #endif
     return true;
