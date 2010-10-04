@@ -424,8 +424,8 @@ class launcher_tests (unittest.TestCase):
         #get id by running the application without invoker in user mode
         app = "/usr/bin/fala_status.launch"
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
-        usr_id2 = op.split('\n')[3]
-        grp_id2 = op.split('\n')[4]
+        usr_id2 = op.split('\n')[-2]
+        grp_id2 = op.split('\n')[-1]
         print("Application %s \nApplication %s" %(usr_id2, grp_id2))
 
         self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
@@ -451,8 +451,8 @@ class launcher_tests (unittest.TestCase):
         #get id by running the application without invoker in root mode
         app = "/usr/bin/fala_status.launch"
         st, op = commands.getstatusoutput("%s" %app );
-        usr_id2 = op.split('\n')[3]
-        grp_id2 = op.split('\n')[4]
+        usr_id2 = op.split('\n')[-2]
+        grp_id2 = op.split('\n')[-1]
         print("Application %s \nApplication %s" %(usr_id2, grp_id2))
 
         self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
