@@ -86,7 +86,7 @@ class TC_Theming < Test::Unit::TestCase
 
         system("pkill #{app_name}")
 
-        system(app_name)
+        system("su - user -c #{appname}")
         sleep(5)
 
         #pid = `pgrep -n #{app_name}`
@@ -136,7 +136,7 @@ class TC_Theming < Test::Unit::TestCase
         # start app and take screenshots of the themed widgets
         system("pkill #{app_without_launcher}")
         system("pkill #{app_with_launcher}")
-        system("#{app_without_launcher} &")
+        system("su - user -c #{app_without_launcher} &")
         sleep(5)
 
         app = @sut.application(:name => app_without_launcher)
@@ -147,8 +147,10 @@ class TC_Theming < Test::Unit::TestCase
         close_button = app.MButton( :name => 'CloseButton' )
         close_button.tap
 
+        sleep(5)
+
         # once again using the launcher
-        system("#{app_with_launcher} &")
+        system("su - user -c #{app_with_launcher} &")
         sleep(5)
 
         app = @sut.application(:name => app_with_launcher)
@@ -182,7 +184,7 @@ class TC_Theming < Test::Unit::TestCase
 
         app_name = 'fala_ft_hello'
         system("pkill #{app_name}")
-        system(app_name)
+        system("su - user -c #{app_name}")
         sleep(2)
 
         original_theme = get_theme()
