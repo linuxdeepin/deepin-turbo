@@ -251,8 +251,8 @@ def get_file_descriptor(booster, type):
 def get_groups_for_user():
     # get supplementary groups user belongs to (doesn't return
     # the gid group)
-    p = run_app_as_user(['id', '-Gn'], out = subprocess.PIPE)
-    groups = p.communicate()[0].split()[1:]
+    p = run_app_as_user('id -Gn', out = subprocess.PIPE)
+    groups = p.communicate()[0].split()
     p.wait()
     
     return groups
