@@ -183,10 +183,14 @@ class launcher_tests (unittest.TestCase):
             #check if p.pid is same as pgrep appname
             #in a global dictionary, append the pid
             process_handle = run_app_as_user(app)
+
         time.sleep(8)
+
         process_id = get_pid('fala_ft_hello')
         pid_list = process_id.split()
+
         self.assert_(len(pid_list) == len(LAUNCHABLE_APPS), "All Applications were not launched using launcher")
+
         for pid in pid_list:
             kill_process(apppid=pid)
 
@@ -198,17 +202,19 @@ class launcher_tests (unittest.TestCase):
         the launched application should die too.
         """
 
-        invoker = '/usr/bin/invoker'
         app_path = '/usr/bin/fala_ft_hello.launch'
 
-        # Launch the app with invoker
-        p = subprocess.Popen(('%s --type=m --wait-term %s' % (invoker, app_path)).split(),
-                             shell = False,
-                             stdout = DEV_NULL, stderr = DEV_NULL)
+        # Launch the app with invoker using --wait-term
+        p = run_app_as_user('invoker --type=m --wait-term %s' % app_path)
+
+        time.sleep(2)
 
         # Retrieve their pids
         invoker_pid = wait_for_app('invoker')
         app_pid = wait_for_app('fala_ft_hello')
+
+        print "invoker_pid '%s'" % invoker_pid
+        print "app_pid '%s'" % app_pid
 
         # Make sure that both apps started
         self.assert_(invoker_pid != None, "invoker not executed?")
@@ -216,7 +222,7 @@ class launcher_tests (unittest.TestCase):
 
         # Send SIGTERM to invoker, the launched app should die
         kill_process(None, invoker_pid, 15)
-        
+
         time.sleep(2)
 
         # This should be None

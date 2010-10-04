@@ -58,11 +58,21 @@ class SecurityTests(unittest.TestCase):
 
         self.assert_(creds != None, "error retrieving credentials")
 
-        # Credentials should be dropped, but uid/gid retained
-        req_creds = ['UID::user', 'GID::users']
+        groups = get_groups_for_user()
+
+        print "user belongs to groups: %s" % ', '.join(groups)
+
+        def grouper(x): return 'GRP::' + x
+        groups = map(grouper, groups)
+
+        # Credentials should be dropped, but uid/gid + groups retained
+        req_creds = ['UID::user', 'GID::users'] + groups
 
         creds.sort()
         req_creds.sort()
+
+        print "APP HAS:  " + ', '.join(creds)
+        print "REQUIRED: " + ', '.join(req_creds)
 
         self.assert_(creds == req_creds,
                      "fala_ft_hello has different creds set!")

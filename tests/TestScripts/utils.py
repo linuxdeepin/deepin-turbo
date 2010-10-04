@@ -61,7 +61,7 @@ def restart_applauncherd():
     stop_applauncherd()
     start_applauncherd()
 
-def run_app_as_user(appname):
+def run_app_as_user(appname, out = DEV_NULL, err = DEV_NULL):
     """
     Runs the specified command as a user.
     """
@@ -76,7 +76,7 @@ def run_app_as_user(appname):
         raise TypeError("List or string expected")
 
     p = subprocess.Popen(cmd, shell = False, 
-                         stdout = DEV_NULL, stderr = DEV_NULL)
+                         stdout = out, stderr = err)
     return p
 
 def get_pid(appname):
@@ -86,6 +86,17 @@ def get_pid(appname):
         return op
     else:
         return None
+
+def get_newest_pid(app):
+    p = subprocess.Popen(['pgrep', '-n', app], shell = False,
+                         stdout = subprocess.PIPE, stderr = DEV_NULL)
+
+    op = p.communicate()[0]
+
+    if p.wait() == 0:
+        return op.strip()
+    
+    return None
 
 def wait_for_app(app = None, timeout = 5, sleep = 0.5):
     """
@@ -100,7 +111,7 @@ def wait_for_app(app = None, timeout = 5, sleep = 0.5):
     start = time.time()
 
     while pid == None and time.time() < start + timeout:
-        pid = get_pid(app)
+        pid = get_newest_pid(app)
 
         if pid != None:
             break
@@ -236,3 +247,12 @@ def get_file_descriptor(booster, type):
     print "The number of changed file descriptors %d" %count
     kill_process(apppid=pid) 
     return count
+
+def get_groups_for_user():
+    # get supplementary groups user belongs to (doesn't return
+    # the gid group)
+    p = run_app_as_user(['id', '-Gn'], out = subprocess.PIPE)
+    groups = p.communicate()[0].split()[1:]
+    p.wait()
+    
+    return groups
