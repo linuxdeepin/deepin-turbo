@@ -476,9 +476,9 @@ class launcher_tests (unittest.TestCase):
         #This case is launching the application in user mode
         #Test for q-booster
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
-        print ("The Invoker killed by : %s" %op.split('\n')[3])
+        print ("The Invoker killed by : %s" %op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[3] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
         #Test for w-booster
