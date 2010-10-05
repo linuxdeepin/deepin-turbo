@@ -238,33 +238,16 @@ class launcher_tests (unittest.TestCase):
         Test that the --daemon parameter works for applauncherd
         """
 
-        # function to remove some temporaries
-        def rem():
-            files = ['/tmp/applauncherd.lock'] + glob.glob('/tmp/boost*')
-
-            for f in files:
-                print "removing %s" % f
-
-                try:
-                    os.remove(f)
-                except:
-                    pass
-
-        # stop applauncherd if it's running
-        if not using_scratchbox:
-            commands.getstatusoutput("initctl stop xsession/applauncherd")
+        stop_applauncherd()
 
         # and for the fun of it let's do it again
         commands.getstatusoutput("pkill applauncherd")
 
-        rem()
+        remove_applauncherd_runtime_files()
 
-        # start applauncherd daemonized
-        p = subprocess.Popen(["/usr/bin/applauncherd.bin", "--daemon"],
-                             shell=False, 
-                             stdout=DEV_NULL, stderr=DEV_NULL)
+        p = run_app_as_user('/usr/bin/applauncherd.bin --daemon')
 
-        time.sleep(3)
+        time.sleep(5)
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
         print op
@@ -292,16 +275,9 @@ class launcher_tests (unittest.TestCase):
         # only the daemonized applauncherd should be running now
         commands.getstatusoutput('pkill applauncherd')
 
-        rem()
+        remove_applauncherd_runtime_files()
 
-        # start applauncherd again
-        if using_scratchbox:
-            subprocess.Popen("/usr/bin/applauncherd",
-                             shell=False, 
-                             stdout=DEV_NULL, stderr=DEV_NULL)
-        else:
-            commands.getstatusoutput("initctl start xsession/applauncherd")
-
+        start_applauncherd()
 
     def test_012(self):
         """
