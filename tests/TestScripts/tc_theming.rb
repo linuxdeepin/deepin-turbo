@@ -86,7 +86,7 @@ class TC_Theming < Test::Unit::TestCase
 
         system("pkill #{app_name}")
 
-        system("su - user -c #{appname}")
+        system("su - user -c #{app_name}")
         sleep(5)
 
         #pid = `pgrep -n #{app_name}`
