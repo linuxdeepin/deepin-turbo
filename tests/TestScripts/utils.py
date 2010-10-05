@@ -209,7 +209,7 @@ def get_file_descriptor(booster, type):
     To test that file descriptors are closed before calling application main
     """
     #get fd of booster before launching application
-    pid = commands.getoutput("pgrep %s" %booster)
+    pid = commands.getoutput("pgrep '%s$'" %booster)
     fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
     fd_info = fd_info.split('\n')
     init = {}
