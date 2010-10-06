@@ -7,8 +7,6 @@
         <credential match="CAP::*"/>
         <credential name="drm"/>
         <credential name="Cellular"/>
-        <credential name="ReadUserData"/>
-        <credential name="ReadWriteUserData"/>
         <for path="/usr/bin/applauncherd.bin"/>
     </request>
 </aegis>
