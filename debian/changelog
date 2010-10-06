@@ -1,3 +1,11 @@
+applauncherd (0.14.1) stable; urgency=low
+
+  * Changes: Compilation flag -Wno-psabi remove 
+  * Changes: Logger refactored, #ifdef _DEBUG => #ifndef DEBUG_LOGGING_DISABLED
+  * Changes: acceptConn() => accept(), closeConn() => close(), socket pool is cleared on closeAllSockets()
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 06 Oct 2010 14:07:11 +0300
+
 applauncherd (0.14.0) stable; urgency=low
 
   * Use WrtComponentCache
