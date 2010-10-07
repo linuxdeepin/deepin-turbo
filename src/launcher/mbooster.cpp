@@ -19,6 +19,10 @@
 
 #include "mbooster.h"
 #include "logger.h"
+#include "connection.h"
+
+#include <QtConcurrentRun>
+#include <MApplication>
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
@@ -71,4 +75,42 @@ void MBooster::setProcessId(int pid)
 int MBooster::processId()
 {
     return m_ProcessID;
+}
+
+bool MBooster::readCommand()
+{
+    // Setup the conversation channel with the invoker.
+    m_conn = new Connection(socketId());
+
+    // exit from event loop when invoker is ready to connect
+    connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
+
+    // start another thread to listen connection from invoker
+    QtConcurrent::run(this, &MBooster::accept);
+
+    // run event loop so MApplication and MApplicationWindow objects can receive notifications
+    MApplication::exec();
+
+    // Receive application data from the invoker
+    if(!m_conn->receiveApplicationData(m_app))
+    {
+        m_conn->close();
+        return false;
+    }
+
+    // Close the connection if exit status doesn't need
+    // to be sent back to invoker
+    if (!m_conn->isReportAppExitStatusNeeded())
+    {
+        m_conn->close();
+    }
+    return true;
+}
+
+void MBooster::accept()
+{
+    if (m_conn->accept(m_app))
+    {
+        emit connectionAccepted();
+    }
 }

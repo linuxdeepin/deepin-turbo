@@ -134,6 +134,12 @@ protected:
     //! Returns the given pipe fd (0 = read end, 1 = write end)
     int pipeFd(bool whichEnd) const;
 
+    //! Data structure representing the application to be invoked
+    AppData m_app;
+
+    //! Socket connection to invoker
+    Connection* m_conn;
+
 private:
 
     //! Disable copy-constructor
@@ -152,11 +158,6 @@ private:
     //! Helper method: load the library and find out address for "main".
     void* loadMain();
 
-    //! Data structure representing the application to be invoked
-    AppData m_app;
-
-    //! Socket connection to invoker
-    Connection* m_conn;
 
     //! Size (length) of the argument vector
     int m_argvArraySize;

@@ -4,7 +4,7 @@ set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcher)
 set(SRC ut_boosterfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/mbooster.cpp ${LAUNCHER}/qtbooster.cpp ${LAUNCHER}/monitorbooster.cpp ${LAUNCHER}/wrtbooster.cpp ${LAUNCHER}/boosterfactory.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_boosterfactory.h  ${LAUNCHER}/monitorbooster.h)
+set(MOC_HDRS ut_boosterfactory.h  ${LAUNCHER}/monitorbooster.h ${LAUNCHER}/mbooster.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
