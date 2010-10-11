@@ -289,7 +289,7 @@ void* Booster::loadMain()
 #endif
 
     // Load the application as a library
-    void * module = dlopen(m_app.fileName().c_str(), RTLD_LAZY | RTLD_GLOBAL);
+    void * module = dlopen(m_app.fileName().c_str(), RTLD_LAZY | RTLD_LOCAL);
 
     if (!module)
         Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading invoked application failed: '%s'\n", dlerror());
