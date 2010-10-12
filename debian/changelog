@@ -1,3 +1,11 @@
+applauncherd (0.14.3) stable; urgency=low
+
+  * Changes: use RTLD_LOCAL flag instead of RTLD_GLOBAL in dlopen() to load application binary
+  * Changes: remove -rdynamic linker parameter
+  * Changes: package dependency changed from testrunner -> testrunner-lite
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 12 Oct 2010 11:50:14 +0300
+
 applauncherd (0.14.2) stable; urgency=low
 
   * Fixes: NB#195903 - applauncherd-launcher manifest refers to non-existing tokens ReadUserData/WriteUserData
