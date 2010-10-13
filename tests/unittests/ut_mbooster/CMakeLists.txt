@@ -5,7 +5,7 @@ set(SRC ut_mbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCH
    ${LAUNCHER}/logger.cpp ${LAUNCHER}/mbooster.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_mbooster.h)
+set(MOC_HDRS ut_mbooster.h  ${LAUNCHER}/mbooster.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})

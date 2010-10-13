@@ -42,6 +42,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
             verify { 
                 system("/sbin/initctl restart xsession/duihome")
             }
+            system("initctl stop xsession/sysuid")
             sleep (5)
         end
         @sut = TDriver.sut(:Id=> 'sut_qt_maemo')
@@ -50,6 +51,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     # method called after any test case for cleanup purposes
     def teardown
         puts "exit from teardown"
+        system("initctl start xsession/sysuid")
     end
 
     def open_Apps(appName)

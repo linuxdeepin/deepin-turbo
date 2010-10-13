@@ -99,7 +99,7 @@ void Ut_Connection::testSocket()
 
     QVERIFY(conn->m_fd > 0);
 
-    conn->closeConn();
+    conn->close();
     QVERIFY(conn->m_fd == -1);
 
     unlink(socketName);

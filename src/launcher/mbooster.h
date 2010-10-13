@@ -21,6 +21,8 @@
 #define MBOOSTER_H
 
 #include "booster.h"
+#include <QObject>
+
 
 /*!
     \class MBooster
@@ -31,8 +33,10 @@
     from MComponentCache. This can significantly reduce the startup time of a 
     MeeGo Touch application.
  */
-class MBooster : public Booster
+class MBooster : public QObject, public Booster
 {
+    Q_OBJECT
+
 public:
 
     //! \brief Constructor
@@ -81,6 +85,9 @@ protected:
     //! \reimp
     virtual const string & socketId() const;
 
+    //! \reimp
+    virtual bool readCommand();
+
 private:
 
     //! Disable copy-constructor
@@ -97,9 +104,14 @@ private:
     //! yet transformed into a running application
     static const string m_temporaryProcessName;
 
+    void accept();
+
 #ifdef UNIT_TEST
     friend class Ut_MBooster;
 #endif
+
+signals:
+    void connectionAccepted();
 };
 
 #endif // MBOOSTER_H

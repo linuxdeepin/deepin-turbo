@@ -183,10 +183,14 @@ class launcher_tests (unittest.TestCase):
             #check if p.pid is same as pgrep appname
             #in a global dictionary, append the pid
             process_handle = run_app_as_user(app)
+
         time.sleep(8)
+
         process_id = get_pid('fala_ft_hello')
         pid_list = process_id.split()
+
         self.assert_(len(pid_list) == len(LAUNCHABLE_APPS), "All Applications were not launched using launcher")
+
         for pid in pid_list:
             kill_process(apppid=pid)
 
@@ -198,17 +202,19 @@ class launcher_tests (unittest.TestCase):
         the launched application should die too.
         """
 
-        invoker = '/usr/bin/invoker'
         app_path = '/usr/bin/fala_ft_hello.launch'
 
-        # Launch the app with invoker
-        p = subprocess.Popen(('%s --type=m --wait-term %s' % (invoker, app_path)).split(),
-                             shell = False,
-                             stdout = DEV_NULL, stderr = DEV_NULL)
+        # Launch the app with invoker using --wait-term
+        p = run_app_as_user('invoker --type=m --wait-term %s' % app_path)
+
+        time.sleep(2)
 
         # Retrieve their pids
         invoker_pid = wait_for_app('invoker')
         app_pid = wait_for_app('fala_ft_hello')
+
+        print "invoker_pid '%s'" % invoker_pid
+        print "app_pid '%s'" % app_pid
 
         # Make sure that both apps started
         self.assert_(invoker_pid != None, "invoker not executed?")
@@ -216,7 +222,7 @@ class launcher_tests (unittest.TestCase):
 
         # Send SIGTERM to invoker, the launched app should die
         kill_process(None, invoker_pid, 15)
-        
+
         time.sleep(2)
 
         # This should be None
@@ -232,33 +238,16 @@ class launcher_tests (unittest.TestCase):
         Test that the --daemon parameter works for applauncherd
         """
 
-        # function to remove some temporaries
-        def rem():
-            files = ['/tmp/applauncherd.lock'] + glob.glob('/tmp/boost*')
-
-            for f in files:
-                print "removing %s" % f
-
-                try:
-                    os.remove(f)
-                except:
-                    pass
-
-        # stop applauncherd if it's running
-        if not using_scratchbox:
-            commands.getstatusoutput("initctl stop xsession/applauncherd")
+        stop_applauncherd()
 
         # and for the fun of it let's do it again
         commands.getstatusoutput("pkill applauncherd")
 
-        rem()
+        remove_applauncherd_runtime_files()
 
-        # start applauncherd daemonized
-        p = subprocess.Popen(["/usr/bin/applauncherd.bin", "--daemon"],
-                             shell=False, 
-                             stdout=DEV_NULL, stderr=DEV_NULL)
+        p = run_app_as_user('/usr/bin/applauncherd.bin --daemon')
 
-        time.sleep(3)
+        time.sleep(5)
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
         print op
@@ -286,16 +275,9 @@ class launcher_tests (unittest.TestCase):
         # only the daemonized applauncherd should be running now
         commands.getstatusoutput('pkill applauncherd')
 
-        rem()
+        remove_applauncherd_runtime_files()
 
-        # start applauncherd again
-        if using_scratchbox:
-            subprocess.Popen("/usr/bin/applauncherd",
-                             shell=False, 
-                             stdout=DEV_NULL, stderr=DEV_NULL)
-        else:
-            commands.getstatusoutput("initctl start xsession/applauncherd")
-
+        start_applauncherd()
 
     def test_012(self):
         """
@@ -418,8 +400,8 @@ class launcher_tests (unittest.TestCase):
         #get id by running the application without invoker in user mode
         app = "/usr/bin/fala_status.launch"
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
-        usr_id2 = op.split('\n')[3]
-        grp_id2 = op.split('\n')[4]
+        usr_id2 = op.split('\n')[-2]
+        grp_id2 = op.split('\n')[-1]
         print("Application %s \nApplication %s" %(usr_id2, grp_id2))
 
         self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
@@ -445,8 +427,8 @@ class launcher_tests (unittest.TestCase):
         #get id by running the application without invoker in root mode
         app = "/usr/bin/fala_status.launch"
         st, op = commands.getstatusoutput("%s" %app );
-        usr_id2 = op.split('\n')[3]
-        grp_id2 = op.split('\n')[4]
+        usr_id2 = op.split('\n')[-2]
+        grp_id2 = op.split('\n')[-1]
         print("Application %s \nApplication %s" %(usr_id2, grp_id2))
 
         self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
@@ -470,9 +452,9 @@ class launcher_tests (unittest.TestCase):
         #This case is launching the application in user mode
         #Test for q-booster
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
-        print ("The Invoker killed by : %s" %op.split('\n')[3])
+        print ("The Invoker killed by : %s" %op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[3] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
         #Test for w-booster

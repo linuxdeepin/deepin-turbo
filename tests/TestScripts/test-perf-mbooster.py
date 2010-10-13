@@ -90,6 +90,10 @@ class launcher_perf_tests (unittest.TestCase):
     def run_without_launcher(self, appname):                                                       
         """starts the testapp without the launcher"""               
         os.system ('mcetool --set-tklock-mode=unlocked')
+        #remove this new mce tool command once the bug 195058 is released 
+        os.system ("aegis-exec -a mce::TKLockControl dbus-send --system" +
+                   " --print-reply --dest=com.nokia.mce /com/nokia/mce/request" +
+                   " com.nokia.mce.request.req_tklock_mode_change string:unlocked")
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
         self.start_timer()
@@ -106,6 +110,10 @@ class launcher_perf_tests (unittest.TestCase):
     def run_without_launcher_without_duihome(self, appname):                                                       
         """starts the testapp without launcher and without duihome"""               
         os.system ('mcetool --set-tklock-mode=unlocked')
+        #remove this new mce tool command once the bug 195058 is released 
+        os.system ("aegis-exec -a mce::TKLockControl dbus-send --system" +
+                   " --print-reply --dest=com.nokia.mce /com/nokia/mce/request" +
+                   " com.nokia.mce.request.req_tklock_mode_change string:unlocked")
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
         os.system('pkill -STOP duihome')
@@ -124,6 +132,10 @@ class launcher_perf_tests (unittest.TestCase):
     def run_with_launcher(self, appname):                                                       
         """starts the testapp with launcher and with duihome"""               
         os.system ('mcetool --set-tklock-mode=unlocked')
+        #remove this new mce tool command once the bug 195058 is released 
+        os.system ("aegis-exec -a mce::TKLockControl dbus-send --system" +
+                   " --print-reply --dest=com.nokia.mce /com/nokia/mce/request" +
+                   " com.nokia.mce.request.req_tklock_mode_change string:unlocked")
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
 
@@ -139,6 +151,10 @@ class launcher_perf_tests (unittest.TestCase):
     def run_with_wrt_launcher(self, appname):                                                       
         """starts the testapp with wrt-launcher and with duihome"""               
         os.system ('mcetool --set-tklock-mode=unlocked')
+        #remove this new mce tool command once the bug 195058 is released 
+        os.system ("aegis-exec -a mce::TKLockControl dbus-send --system" +
+                   " --print-reply --dest=com.nokia.mce /com/nokia/mce/request" +
+                   " com.nokia.mce.request.req_tklock_mode_change string:unlocked")
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
 
@@ -154,6 +170,10 @@ class launcher_perf_tests (unittest.TestCase):
     def run_with_launcher_without_duihome(self, appname):                                                       
         """starts the testapp with launcher but without duihome"""               
         os.system ('mcetool --set-tklock-mode=unlocked')
+        #remove this new mce tool command once the bug 195058 is released 
+        os.system ("aegis-exec -a mce::TKLockControl dbus-send --system" +
+                   " --print-reply --dest=com.nokia.mce /com/nokia/mce/request" +
+                   " com.nokia.mce.request.req_tklock_mode_change string:unlocked")
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
         os.system('pkill -STOP duihome')

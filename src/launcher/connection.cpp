@@ -73,10 +73,10 @@ void Connection::closeAllSockets()
     {
         if (it->second > 0)
         {
-            close(it->second);
-            it->second = -1;
+            ::close(it->second);
         }
     }
+    socketPool.clear();
 }
 
 int Connection::findSocket(const string socketId)
@@ -127,11 +127,11 @@ void Connection::initSocket(const string socketId)
     }
 }
 
-bool Connection::acceptConn(AppData & rApp)
+bool Connection::accept(AppData & rApp)
 {
     if (!m_testMode)
     {
-        m_fd = accept(m_curSocket, NULL, NULL);
+        m_fd = ::accept(m_curSocket, NULL, NULL);
 
         if (m_fd < 0)
         {
@@ -156,7 +156,7 @@ bool Connection::acceptConn(AppData & rApp)
             Logger::logError("Connection: invoker doesn't have enough credentials to call launcher \n");
 
             sendMsg(INVOKER_MSG_BAD_CREDS);
-            closeConn();
+            close();
             return false;
         }
 
@@ -168,13 +168,13 @@ bool Connection::acceptConn(AppData & rApp)
     return true;
 }
 
-void Connection::closeConn()
+void Connection::close()
 {
     if (m_fd != -1)
     {
         if (!m_testMode)
         {
-            close(m_fd);
+            ::close(m_fd);
         }
 
         m_fd = -1;

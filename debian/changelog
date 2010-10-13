@@ -1,3 +1,25 @@
+applauncherd (0.14.3) stable; urgency=low
+
+  * Changes: use RTLD_LOCAL flag instead of RTLD_GLOBAL in dlopen() to load application binary
+  * Changes: remove -rdynamic linker parameter
+  * Changes: package dependency changed from testrunner -> testrunner-lite
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 12 Oct 2010 11:50:14 +0300
+
+applauncherd (0.14.2) stable; urgency=low
+
+  * Fixes: NB#195903 - applauncherd-launcher manifest refers to non-existing tokens ReadUserData/WriteUserData
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 06 Oct 2010 15:10:22 +0300
+
+applauncherd (0.14.1) stable; urgency=low
+
+  * Changes: Compilation flag -Wno-psabi remove 
+  * Changes: Logger refactored, #ifdef _DEBUG => #ifndef DEBUG_LOGGING_DISABLED
+  * Changes: acceptConn() => accept(), closeConn() => close(), socket pool is cleared on closeAllSockets()
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 06 Oct 2010 14:07:11 +0300
+
 applauncherd (0.14.0) stable; urgency=low
 
   * Use WrtComponentCache
