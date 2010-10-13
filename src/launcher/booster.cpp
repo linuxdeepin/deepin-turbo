@@ -250,9 +250,13 @@ int Booster::launchProcess()
 
     // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_app.ioDescriptors().size(); i++)
+    {
         if (m_app.ioDescriptors()[i] > 0)
+        {
             dup2(m_app.ioDescriptors()[i], i);
-
+            close(m_app.ioDescriptors()[i]);
+        }
+    }
     // Set PWD
     const char * pwd = getenv("PWD");
     if (pwd)
