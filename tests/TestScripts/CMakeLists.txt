@@ -10,6 +10,9 @@ install(PROGRAMS
   ts_prestartapp.rb
   tc_theming.rb
   test-perf.rb
+  fala_wid
+  fala_xres_wl
+  fala_xres_wol
   DESTINATION /usr/share/applauncherd-testscripts)
 
 add_subdirectory (signal-forward)

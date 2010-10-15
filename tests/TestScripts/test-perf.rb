@@ -26,9 +26,12 @@ include TDriverVerify
 
 
 class TC_PerformanceTests < Test::Unit::TestCase
-    COUNT = 5 
+    COUNT = 3
+    APP_WITH_LAUNCHER = 'fala_wl' 
+    APP_WITHOUT_LAUNCHER = 'fala_wol' 
     @start_time = 0
     @end_time = 0
+    @pos = 0
     
     $path = string = `echo $PATH `
 
@@ -56,30 +59,37 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     def open_Apps(appName)
         #Remove the Log file if it exists
-        if FileTest.exists?("/tmp/testapp.log")
-          system "rm /tmp/testapp.log"
+        if FileTest.exists?("/tmp/app_xresponse.log")
+          system "rm /tmp/app_xresponse.log"
         end
-
-        count = 0
-
+        
         #Open the Application from the application grid
         @meegoHome = @sut.application(:name => 'duihome')
-        @meegoHome.MButton(:name => "ToggleLauncherButton").tap
         sleep(2)
         if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
             icon = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName)
-            totalPages = @meegoHome.children(:type => 'LauncherPage').length
-            while icon.attribute('visibleOnScreen') == 'false' and count < totalPages
-                @meegoHome.PagedViewport(:name => 'LauncherPagedViewport').MWidget(:name => 'glass').gesture(:Left, 1, 800)
+            while icon.attribute('visibleOnScreen') == 'false'
+                @meegoHome.Launcher.MPannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 300)
                 sleep(0.2)
-                count = count +1 
                 icon.refresh
             end
+	    xpos = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('x')
+	    ypos = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('y')
+	    @pos = "#{xpos}x#{ypos}"
+
+            if appName == APP_WITH_LAUNCHER 
+                @winId = `sh /usr/bin/fala_xres_wl #{@pos}`
+                @winId = @winId.split("\n")[0]
+            else
+                system "sh /usr/bin/fala_xres_wol #{@pos}"
+            end 
+ 
             @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).tap
             sleep (2)
             @app = @sut.application(:name => appName)
             sleep (2)
             @app.MEscapeButtonPanel.MButton( :name => 'CloseButton' ).tap
+            system "pkill xresponse"
        else
             #icon does not
             #raise error and exit
@@ -88,18 +98,37 @@ class TC_PerformanceTests < Test::Unit::TestCase
        end
     end
 
-    def read_file
-       #Reading the log file to get the time
-       file_name="/tmp/testapp.log"
-       last_line = `tail -n 2 #{file_name}`
-       @start_time = `head -n 1 #{file_name}`
-       @end_time = last_line.split(" ")[0] 
+    def read_file(appName)
+        #Reading the log file to get the time
+	file_name="/tmp/app_xresponse.log"
+	search_str1 = "Button 1 pressed at #{@pos}"
+	x = check_file('/tmp/app_xresponse.log', search_str1)
+	@start_time = x.split(':')[0].split('ms')[0]
+        
+        if appName == APP_WITH_LAUNCHER 
+            search_str2 = "Got damage event 864x480+0+0 from #{@winId}"
+            y = check_file('/tmp/app_xresponse.log', search_str2)
+            @end_time = y.split(':')[0].split('ms')[0]
+        else
+            search_wId = check_file('/tmp/app_xresponse.log',APP_WITHOUT_LAUNCHER ) 
+            @winId = search_wId.split(" ")[6]
+            search_str2 = "Got damage event 864x480+0+0 from #{@winId}"
+            y = check_file('/tmp/app_xresponse.log', search_str2)
+            @end_time = y.split(':')[0].split('ms')[0]
+        end
+    end
+ 
+    def check_file( file, string )
+	File.open( file ) do |io|
+	io.each {|line| line.chomp! ; 
+		return line if line.include? string}
+	end
+	nil
     end
 
     def measure_time
        #Measuring the Startup Time for applications
-       start_t = "%10.6f" % @start_time.to_f
-       app_t = Float(@end_time) - Float(start_t)
+       app_t = @end_time.to_i - @start_time.to_i
        return app_t
     end
 
@@ -111,22 +140,23 @@ class TC_PerformanceTests < Test::Unit::TestCase
      
       #Run Application with invoker
       for i in 1..COUNT
-          open_Apps("fala_wl")
-          print "Now Launching fala_wl %d times\n" %i
+          print "Now Launching  APP_WITH_LAUNCHER %d times\n" %i
+          open_Apps(APP_WITH_LAUNCHER)
           sleep (5)
-          read_file
+          read_file(APP_WITH_LAUNCHER)
           wL.push(measure_time)
       end
 
+
       #Run Application without invoker
       for i in 1..COUNT
-          open_Apps("fala_wol")
-          print "Now Launching fala_wol %d times\n" %i
+          print "Now Launching APP_WITHOUT_LAUNCHER %d times\n" %i
+          open_Apps(APP_WITHOUT_LAUNCHER)
           sleep (5)
-          read_file
+          read_file(APP_WITHOUT_LAUNCHER)
           woL.push(measure_time)
       end
-
+      print "Startup time in milliseconds\n"
       print "With Launcher \t\t Without Launcher\n"
 
       #Printing the data
@@ -137,6 +167,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       end
       print "\nAverage Values \n"
       print "%.2f \t\t\t %.2f\n\n" %[wLsum/COUNT, woLsum/COUNT]
+
        
     end
 end
