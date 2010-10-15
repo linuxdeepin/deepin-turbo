@@ -28,6 +28,16 @@ using std::string;
 #include "appdata.h"
 class Connection;
 
+#ifdef HAVE_CREDS
+
+    #include <sys/creds.h>
+    #include <QVector>
+    #include <QPair>
+
+    typedef QPair<creds_type_t, creds_value_t> BinCreds;
+
+#endif
+
 /*!
  *  \class Booster
  *  \brief Abstract base class for all boosters (Qt-booster, M-booster and so on..)
@@ -103,6 +113,11 @@ public:
     //! Get invoker's pid
     pid_t invokersPid();
 
+#ifdef HAVE_CREDS
+    //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
+    static void initExtraCreds();
+#endif
+
 protected:
 
     //! Set nice value and store the old priority. Return true on success.
@@ -171,6 +186,18 @@ private:
 
     //! Pipe used to tell the parent that a new booster is needed
     int m_pipeFd[2];
+
+#ifdef HAVE_CREDS
+    //! filter out invoker-specific credentials from boosted application
+    static void filterOutCreds(creds_t creds);
+
+    //! set of credentials to be filtered out of credentials
+    //! inhereted from invoker process
+    static QVector<BinCreds> m_extraCreds;
+
+    //! str array of creds to filter out
+    static const char * const m_strCreds[];
+#endif
 
 #ifdef UNIT_TEST
     friend class Ut_Booster;

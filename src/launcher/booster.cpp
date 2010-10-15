@@ -31,7 +31,17 @@
 
 #ifdef HAVE_CREDS
     #include <sys/creds.h>
+
+    QVector<BinCreds> Booster::m_extraCreds;
+
+    const char * const Booster::m_strCreds[] = {
+        "applauncherd-launcher::access",
+        "SRC::com.nokia.maemo",
+        "AID::com.nokia.maemo.applauncherd-invoker.client",
+        "applauncherd-invoker::applauncherd-invoker"
+    };
 #endif
+
 
 Booster::Booster() :
     m_conn(NULL),
@@ -278,7 +288,11 @@ int Booster::launchProcess()
 
 void* Booster::loadMain()
 {
+
 #ifdef HAVE_CREDS
+    // filter out invoker-specific credentials
+    Booster::filterOutCreds(m_app.peerCreds());
+
     // Set application's platform security credentials.
     // creds_confine2() tries first to use application-specific credentials, but if they are missing
     // from the system, it uses credentials inherited from the invoker.
@@ -362,4 +376,31 @@ int Booster::pipeFd(bool whichEnd) const
 {
     return m_pipeFd[whichEnd];
 }
+
+#ifdef HAVE_CREDS
+
+void Booster::initExtraCreds()
+{
+    for (unsigned int i = 0; i < sizeof(m_strCreds)/sizeof(char*); i++)
+    {
+        creds_value_t value;
+        creds_value_t ret = creds_str2creds(m_strCreds[i], &value);
+
+        if (ret != CREDS_BAD)
+        {
+            BinCreds pair(ret, value);
+            m_extraCreds.append(pair);
+        }
+    }
+}
+
+void Booster::filterOutCreds(creds_t creds)
+{
+    for(int i = 0; i < m_extraCreds.size(); i++)
+    {
+        creds_sub(creds, m_extraCreds[i].first, m_extraCreds[i].second);
+    }
+}
+
+#endif //HAVE_CREDS
 

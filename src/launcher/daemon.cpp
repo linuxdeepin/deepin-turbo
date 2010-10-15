@@ -156,6 +156,11 @@ void Daemon::run()
     Connection::initSocket(QtBooster::socketName());
     Connection::initSocket(WRTBooster::socketName());
 
+    #ifdef HAVE_CREDS
+    // initialize credentials to be filtered out from boosted applications
+    Booster::initExtraCreds();
+    #endif
+
     // Fork each booster for the first time
     forkBooster(MBooster::type());
     forkBooster(QtBooster::type());
