@@ -41,10 +41,13 @@ class TC_PerformanceTests < Test::Unit::TestCase
             puts "Inside SB, Do Nothing to unlock"
         else
 	    system "mcetool --set-tklock-mode=unlocked"
+
             # restart duihome so that qttasserver notices it
-            verify { 
-                system("/sbin/initctl restart xsession/duihome")
-            }
+            # NOTE: Remove the cludge after duihome -> meegotouchhome renaming is complete
+            if not system("/sbin/initctl restart xsession/duihome")
+                system("/sbin/initctl restart xsession/meegotouchhome")
+            end
+
             system("initctl stop xsession/sysuid")
             sleep (5)
         end
@@ -64,7 +67,12 @@ class TC_PerformanceTests < Test::Unit::TestCase
         end
         
         #Open the Application from the application grid
-        @meegoHome = @sut.application(:name => 'duihome')
+        begin
+            @meegoHome = @sut.application(:name => 'duihome')
+        rescue MobyBase::TestObjectNotFoundError
+            @meegoHome = @sut.application(:name => 'meegotouchhome')
+        end
+
         sleep(2)
         if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
             icon = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName)
@@ -78,10 +86,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
 	    @pos = "#{xpos}x#{ypos}"
 
             if appName == APP_WITH_LAUNCHER 
-                @winId = `sh /usr/bin/fala_xres_wl #{@pos}`
+                @winId = `sh /usr/share/applauncherd-testscripts/fala_xres_wl #{@pos}`
                 @winId = @winId.split("\n")[0]
             else
-                system "sh /usr/bin/fala_xres_wol #{@pos}"
+                system "sh /usr/share/applauncherd-testscripts/fala_xres_wol #{@pos}"
             end 
  
             @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).tap

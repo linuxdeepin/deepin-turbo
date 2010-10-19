@@ -117,6 +117,7 @@ class launcher_perf_tests (unittest.TestCase):
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
         os.system('pkill -STOP duihome')
+        os.system('pkill -STOP meegotouchhome')
         self.start_timer()
         p = subprocess.Popen(TESTAPP,
                              shell=False,
@@ -124,6 +125,7 @@ class launcher_perf_tests (unittest.TestCase):
         debug("app", TESTAPP, "started without launcher")                                   
         time.sleep(5)
         os.system('pkill -CONT duihome')
+        os.system('pkill -CONT meegotouchhome')
         self.read_log()
         app_time = self.app_start_time()
         self.kill_process(appname)
@@ -177,11 +179,13 @@ class launcher_perf_tests (unittest.TestCase):
         if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
             os.system('rm %s' %LOG_FILE)                                                        
         os.system('pkill -STOP duihome')
+        os.system('pkill -STOP meegotouchhome')
         self.start_timer()
         os.system('invoker --type=m %s' %TESTAPP)
         debug("app", TESTAPP, "started with launcher")                                   
         time.sleep(5)
         os.system('pkill -CONT duihome')
+        os.system('pkill -CONT meegotouchhome')
         self.read_log()
         app_time = self.app_start_time()
         self.kill_process(appname)

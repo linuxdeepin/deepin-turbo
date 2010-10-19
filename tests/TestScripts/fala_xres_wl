@@ -1,5 +1,5 @@
 #!/bin/sh
-x=`sh /usr/bin/fala_wid`
+x=`sh /usr/share/applauncherd-testscripts/fala_wid`
 xresponse -a 'duihome' -w 0 -id $x -c $1 -u > /tmp/app_xresponse.log&
 echo $x
                                       
