@@ -264,16 +264,12 @@ int Booster::launchProcess()
             close(m_app.ioDescriptors()[i]);
         }
     }
+
     // Set PWD
     const char * pwd = getenv("PWD");
-    if (pwd)
-    {
-        chdir(pwd);
-    }
+    if (pwd) chdir(pwd);
 
     Logger::logNotice("Booster: launching process: '%s' ", m_app.fileName().c_str());
-
-    // Close logger
     Logger::closeLog();
 
     // Jump to main()
