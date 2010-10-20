@@ -31,10 +31,12 @@ class Connection;
 #ifdef HAVE_CREDS
 
     #include <sys/creds.h>
-    #include <QVector>
-    #include <QPair>
+    #include <vector>
+    #include <map>
 
-    typedef QPair<creds_type_t, creds_value_t> BinCreds;
+    // Storage types for "binary"-formatted credentials
+    typedef std::pair<creds_type_t, creds_value_t> BinCredsPair;
+    typedef std::vector<BinCredsPair> CredsList;
 
 #endif
 
@@ -173,7 +175,6 @@ private:
     //! Helper method: load the library and find out address for "main".
     void* loadMain();
 
-
     //! Size (length) of the argument vector
     int m_argvArraySize;
 
@@ -193,7 +194,7 @@ private:
 
     //! set of credentials to be filtered out of credentials
     //! inhereted from invoker process
-    static QVector<BinCreds> m_extraCreds;
+    static CredsList m_extraCreds;
 
     //! str array of creds to filter out
     static const char * const m_strCreds[];

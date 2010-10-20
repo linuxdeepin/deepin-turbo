@@ -32,7 +32,7 @@
 #ifdef HAVE_CREDS
     #include <sys/creds.h>
 
-    QVector<BinCreds> Booster::m_extraCreds;
+    CredsList Booster::m_extraCreds;
 
     const char * const Booster::m_strCreds[] = {
         "applauncherd-launcher::access",
@@ -52,11 +52,8 @@ Booster::Booster() :
 
 Booster::~Booster()
 {
-    if (m_conn != NULL)
-    {
-        delete m_conn;
-        m_conn = NULL;
-    }
+    delete m_conn;
+    m_conn = NULL;
 }
 
 bool Booster::preload()
@@ -381,22 +378,23 @@ int Booster::pipeFd(bool whichEnd) const
 
 void Booster::initExtraCreds()
 {
-    for (unsigned int i = 0; i < sizeof(m_strCreds)/sizeof(char*); i++)
+    // Convert string-formatted credentials into
+    // "binary"-formatted credentials
+
+    unsigned int numCreds = sizeof(m_strCreds) / sizeof(char*);
+    for (unsigned int i = 0; i < numCreds; i++)
     {
         creds_value_t value;
         creds_value_t ret = creds_str2creds(m_strCreds[i], &value);
 
         if (ret != CREDS_BAD)
-        {
-            BinCreds pair(ret, value);
-            m_extraCreds.append(pair);
-        }
+            m_extraCreds.push_back(BinCredsPair(ret, value));
     }
 }
 
 void Booster::filterOutCreds(creds_t creds)
 {
-    for(int i = 0; i < m_extraCreds.size(); i++)
+    for(unsigned int i = 0; i < m_extraCreds.size(); i++)
     {
         creds_sub(creds, m_extraCreds[i].first, m_extraCreds[i].second);
     }
