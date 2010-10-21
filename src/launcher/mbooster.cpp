@@ -23,6 +23,7 @@
 
 #include <QtConcurrentRun>
 #include <MApplication>
+#include <sys/socket.h>
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
@@ -31,6 +32,69 @@
 const string MBooster::m_socketId  = "/tmp/boostm";
 const string MBooster::m_temporaryProcessName = "booster-m";
 int MBooster::m_ProcessID = 0;
+int MBooster::m_sighupFd[2];
+struct sigaction MBooster::m_oldSigAction;
+
+MBooster::MBooster()
+{
+    // Install signals handler e.g. to exit cleanly if launcher dies.
+    // This is a problem because MBooster runs a Qt event loop.
+    setupUnixSignalHandlers();
+
+    // Create socket pair for SIGTERM
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, m_sighupFd))
+    {
+       Logger::logError("Couldn't create HUP socketpair");
+    }
+    else
+    {
+        // Install a socket notifier on the socket
+        m_snHup.reset(new QSocketNotifier(m_sighupFd[1], QSocketNotifier::Read, this));
+        connect(m_snHup.get(), SIGNAL(activated(int)), this, SLOT(handleSigHup()));
+    }
+}
+
+//
+// All this signal handling code is taken from Qt's Best Practices:
+// http://doc.qt.nokia.com/latest/unix-signals.html
+//
+
+void MBooster::hupSignalHandler(int)
+{
+    char a = 1;
+    ::write(m_sighupFd[0], &a, sizeof(a));
+}
+
+void MBooster::handleSigHup()
+{
+    ::exit(EXIT_SUCCESS);
+}
+
+bool MBooster::setupUnixSignalHandlers()
+{
+    struct sigaction hup;
+
+    hup.sa_handler = MBooster::hupSignalHandler;
+    sigemptyset(&hup.sa_mask);
+    hup.sa_flags |= SA_RESTART;
+
+    if (sigaction(SIGHUP, &hup, &m_oldSigAction) > 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool MBooster::restoreUnixSignalHandlers()
+{
+    if (sigaction(SIGHUP, &m_oldSigAction, 0) > 0)
+    {
+        return false;
+    }
+
+    return true;
+}
 
 const string & MBooster::socketId() const
 {
@@ -88,8 +152,11 @@ bool MBooster::readCommand()
     // start another thread to listen connection from invoker
     QtConcurrent::run(this, &MBooster::accept);
 
-    // run event loop so MApplication and MApplicationWindow objects can receive notifications
+    // Run event loop so MApplication and MApplicationWindow objects can receive notifications
     MApplication::exec();
+
+    // Restore signal handlers to previous values
+    restoreUnixSignalHandlers();
 
     // Receive application data from the invoker
     if(!m_conn->receiveApplicationData(m_app))

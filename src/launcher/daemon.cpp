@@ -73,7 +73,7 @@ Daemon::Daemon(int & argc, char * argv[]) :
 
     if (pipe(m_pipefd) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe failed!!!\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe failed!\n");
     }
 
     // Daemonize if desired

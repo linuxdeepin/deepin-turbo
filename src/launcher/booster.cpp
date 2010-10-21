@@ -228,7 +228,7 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
         }
     }
 
-    // Set the process name using prctl, killall and top use it
+    // Set the process name using prctl, 'killall' and 'top' use it
     if ( prctl(PR_SET_NAME, basename(newProcessName)) == -1 )
         Logger::logError("Booster: on set new process name: %s ", strerror(errno));
 

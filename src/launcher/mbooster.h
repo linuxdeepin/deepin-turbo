@@ -22,7 +22,12 @@
 
 #include "booster.h"
 #include <QObject>
+#include <QSocketNotifier>
+#include <tr1/memory>
 
+using std::tr1::shared_ptr;
+
+#include <signal.h>
 
 /*!
     \class MBooster
@@ -40,7 +45,7 @@ class MBooster : public QObject, public Booster
 public:
 
     //! \brief Constructor
-    MBooster() {};
+    MBooster();
 
     //! \brief Destructor
     virtual ~MBooster() {};
@@ -80,6 +85,15 @@ public:
      */
     static int processId();
 
+    //! UNIX signal handler for SIGHUP
+    static void hupSignalHandler(int unused);
+
+    //! Setup UNIX signal handlers
+    static bool setupUnixSignalHandlers();
+
+    //! Restore UNIX signal handlers to previous values
+    static bool restoreUnixSignalHandlers();
+
 protected:
 
     //! \reimp
@@ -106,12 +120,27 @@ private:
 
     void accept();
 
+    //! Socket pair used to get SIGHUP
+    static int m_sighupFd[2];
+
+    //! Socket notifier used for m_sighupFd
+    shared_ptr<QSocketNotifier> m_snHup;
+
+    //! Old sigaction struct
+    static struct sigaction m_oldSigAction;
+
+private slots:
+
+    //! Qt signal handler for SIGHUP.
+    void handleSigHup();
+
+signals:
+
+    void connectionAccepted();
+
 #ifdef UNIT_TEST
     friend class Ut_MBooster;
 #endif
-
-signals:
-    void connectionAccepted();
 };
 
 #endif // MBOOSTER_H
