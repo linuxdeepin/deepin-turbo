@@ -18,6 +18,7 @@
 ****************************************************************************/
 
 #include "appdata.h"
+#include "protocol.h"
 
 #ifdef HAVE_CREDS
     #include <sys/creds.h>
@@ -48,6 +49,16 @@ void AppData::setOptions(int newOptions)
 int AppData::options() const
 {
     return m_options;
+}
+
+bool AppData::dlopenGlobal()
+{
+    return (m_options & INVOKER_MSG_MAGIC_OPTION_DLOPEN_GLOBAL) != 0;
+}
+
+bool AppData::dlopenDeep()
+{
+    return (m_options & INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP) != 0;
 }
 
 void AppData::setArgc(int newArgc)

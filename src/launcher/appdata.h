@@ -51,6 +51,12 @@ public:
     //! Return options
     int options() const;
 
+    //! Return whether or not RTLD_GLOBAL should be used in dlopen
+    bool dlopenGlobal();
+
+    //! Return whether or not RTLD_DEEPBIND should be used in dlopen
+    bool dlopenDeep();
+
     //! Set argument count
     void setArgc(int argc);
 

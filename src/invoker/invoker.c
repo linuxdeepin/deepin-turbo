@@ -433,6 +433,8 @@ static void usage(int status)
            "  -d, --delay SECS    After invoking sleep for SECS seconds (default %d).\n"
            "  -r, --respawn SECS  After invoking respawn new booster after SECS seconds (default %d, max %d).\n"
            "  -w, --wait-term     Wait for launched process to terminate.\n"
+           "  -G, --global-syms   Places symbols in the application binary and its libraries to\n"
+           "                      the global scope. See RTLD_GLOBAL in the dlopen manual page.\n"
            "  -h, --help          Print this help message.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
@@ -598,6 +600,8 @@ int main(int argc, char *argv[])
         {"help",      no_argument,       NULL, 'h'},
         {"creds",     no_argument,       NULL, 'c'},
         {"wait-term", no_argument,       NULL, 'w'},
+        {"global-syms", no_argument,     NULL, 'G'},
+        {"deep-syms", no_argument,       NULL, 'D'},
         {"type",      required_argument, NULL, 't'},
         {"delay",     required_argument, NULL, 'd'},
         {"respawn",   required_argument, NULL, 'r'},
@@ -607,7 +611,7 @@ int main(int argc, char *argv[])
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwd:t:r:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwGDd:t:r:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -621,7 +625,15 @@ int main(int argc, char *argv[])
 
         case 'w':
             wait_term = true;
-            magic_options = INVOKER_MSG_MAGIC_OPTION_WAIT;
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
+            break;
+
+        case 'G':
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_DLOPEN_GLOBAL;
+            break;
+
+        case 'D':
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP;
             break;
 
         case 't':

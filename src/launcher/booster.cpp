@@ -281,7 +281,6 @@ int Booster::launchProcess()
 
 void* Booster::loadMain()
 {
-
 #ifdef HAVE_CREDS
     // filter out invoker-specific credentials
     Booster::filterOutCreds(m_app.peerCreds());
@@ -299,8 +298,22 @@ void* Booster::loadMain()
     }
 #endif
 
+    // Setup flags for dlopen
+
+    int dlopenFlags = RTLD_LAZY;
+
+    if (m_app.dlopenGlobal())
+        dlopenFlags |= RTLD_GLOBAL;
+    else
+        dlopenFlags |= RTLD_LOCAL;
+
+#if (PLATFORM_ID == Linux)
+    if (m_app.dlopenDeep()) 
+        dlopenFlags |= RTLD_DEEPBIND;
+#endif
+
     // Load the application as a library
-    void * module = dlopen(m_app.fileName().c_str(), RTLD_LAZY | RTLD_GLOBAL);
+    void * module = dlopen(m_app.fileName().c_str(), dlopenFlags);
 
     if (!module)
         Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading invoked application failed: '%s'\n", dlerror());
