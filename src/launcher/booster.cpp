@@ -405,7 +405,7 @@ void Booster::filterOutCreds(creds_t creds)
 {
     for(unsigned int i = 0; i < m_extraCreds.size(); i++)
     {
-        creds_sub(creds, m_extraCreds[i].first, m_extraCreds[i].second);
+        creds_sub(creds, m_extraCreds.at(i).first, m_extraCreds.at(i).second);
     }
 }
 
