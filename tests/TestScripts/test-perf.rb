@@ -45,7 +45,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
             # restart duihome so that qttasserver notices it
             # NOTE: Remove the cludge after duihome -> meegotouchhome renaming is complete
             if not system("/sbin/initctl restart xsession/duihome")
-                system("/sbin/initctl restart xsession/meegotouchhome")
+                system("/sbin/initctl restart xsession/mthome")
             end
 
             system("initctl stop xsession/sysuid")
