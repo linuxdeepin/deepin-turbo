@@ -149,29 +149,33 @@ class SecurityTests(unittest.TestCase):
 
         def do_it():
             """
-            A little helper to keep the logic flowing. Does the actual
-            work of getting credentials for invoker and app
+            Returns the credentials for both invoker and application
+            that was launched.
             """
 
             # launch an application, leave invoker running
             print "launching application"
-            invoker = Popen(['invoker', '--type=m', '--wait-term',
-                             'fala_ft_hello.launch'], shell = False,
-                            stdout = DEV_NULL, stderr = DEV_NULL)
+            invoker = run_app_as_user('/usr/bin/invoker --type=m --wait-term ' +
+                                      'fala_ft_hello.launch')
 
-            # get pid of invoker
-            invoker_pid = invoker.pid
-
-            print "invoker pid = %s" % invoker_pid
+            time.sleep(2)
 
             # get credentials
-            invoker_creds = get_creds(pid = invoker_pid)
+            invoker_creds = get_creds(path = 'invoker')
             app_creds = get_creds(path = 'fala_ft_hello')
+
+            # when applauncherd is not running, invoker execs the app
+            # so the credentials for invoker and app are the same
+            if get_pid('invoker') == None and get_pid('fala_ft_hello') != None:
+                invoker_creds = app_creds
 
             self.assert_(invoker_creds != None,
                          "error retrieving creds for invoker")
             self.assert_(app_creds != None,
                          "error retrieving creds for fala_ft_hello")
+
+            invoker_creds = self.filter_creds(invoker_creds)
+            app_creds = self.filter_creds(app_creds)
 
             invoker_creds.sort()
             app_creds.sort()
@@ -186,26 +190,17 @@ class SecurityTests(unittest.TestCase):
         # creds when applauncherd is running
         creds1 = do_it()
 
-        # stop applauncherd
-        Popen(['initctl', 'stop', 'xsession/applauncherd']).wait()
-        time.sleep(2)
-
-        # remove sockets
-        try:
-            for f in glob.glob('/tmp/boost*'):
-                os.remove(f)
-        except Exception as e:
-            print e
+        stop_applauncherd()
 
         # creds when applauncherd *is not* running
         creds2 = do_it()
 
-        # start applauncherd
-        Popen(['initctl', 'start', 'xsession/applauncherd']).wait()
-        time.sleep(2)
+        start_applauncherd()
 
-        # app shouldn't have the same credentials as invoker, when
-        # applauncherd *is* running
+        # App shouldn't have the same credentials as invoker, when
+        # applauncherd *is* running. Invoker has some credentials
+        # to access applauncherd and naturally these shouldn't be
+        # derived to the application
         self.assert_(creds1[0] != creds1[1],
                      'app creds are the same as invoker creds')
 
