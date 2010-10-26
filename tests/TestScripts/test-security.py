@@ -222,44 +222,36 @@ class SecurityTests(unittest.TestCase):
         See NB#183566, NB#187583
         """
 
-        # stop applauncherd
-        Popen(['initctl', 'stop', 'xsession/applauncherd']).wait()
-        time.sleep(2)
-
-        # remove sockets
-        try:
-            for f in glob.glob('/tmp/boost*'):
-                os.remove(f)
-        except Exception as e:
-            print e
-
         def do_it():
             """
             A helper function to launch application and get credentials
             as user and root.
             """
 
-            handle = Popen(['su', '-', 'user', '-c',
-                            '/usr/bin/fala_ft_hello'],
+            handle = Popen(['/usr/bin/fala_ft_hello'],
                            stdout = DEV_NULL, stderr = DEV_NULL)
 
             # give the application some time to launch up
             time.sleep(2)
             
-            user = get_creds('fala_ft_hello')
+            root = get_creds('fala_ft_hello')
             kill_process('fala_ft_hello')
 
-            root = launch_and_get_creds('/usr/bin/fala_ft_hello').sort()
+            user = launch_and_get_creds('/usr/bin/fala_ft_hello')
+
+            user.sort()
+            root.sort()
 
             return (user, root)
+
+
+        stop_applauncherd()
 
         # get creds for a launched application when applauncherd
         # is not running
         creds1 = do_it()
 
-        # start applauncherd
-        Popen(['initctl', 'start', 'xsession/applauncherd']).wait()
-        time.sleep(2)
+        start_applauncherd()
 
         # get creds for the same application when applauncherd
         # is running
