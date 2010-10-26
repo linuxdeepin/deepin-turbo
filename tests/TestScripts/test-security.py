@@ -19,6 +19,36 @@ import unittest
 from utils import *
 
 class SecurityTests(unittest.TestCase):
+    def filter_creds(self, creds):
+        """
+        Filter out some unnecessary cruft from the test point of view
+        """
+
+        def f(x):
+            return (x[:3] != "SRC" and
+                    x[:3] != "AID" and
+                    x != "applauncherd-testapps::applauncherd-testapps")
+
+        return filter(f, creds)
+
+    def user_creds(self, suppl = False):
+        """
+        Returns the user id, group id and optionally supplementary
+        groups as credential tokens.
+        """
+
+        groups = []
+
+        if suppl:
+            groups = get_groups_for_user()
+
+            def f(x):
+                return 'GRP::' + x
+
+            groups = map(f, groups)
+
+        return ['UID::user', 'GID::users'] + groups
+        
     def test_001(self):
         """
         Test that the fala_ft_creds* applications have the correct
@@ -30,22 +60,31 @@ class SecurityTests(unittest.TestCase):
         self.assert_(creds1 != None, "couldn't get credentials")
         self.assert_(creds2 != None, "couldn't get credentials")
 
+        creds1 = self.filter_creds(creds1)
+        creds2 = self.filter_creds(creds2)
+
         debug("fala_ft_creds1 has %s" % ', '.join(creds1))
         debug("fala_ft_creds2 has %s" % ', '.join(creds2))
 
+        # When an application has a manifest, the users supplementary
+        # groups are not by default included in the credential list,
+        # only UID and GID.
+
         # required caps for fala_ft_creds1
         cap1 = ['tcb', 'drm', 'CAP::setuid', 'CAP::setgid',
-                'CAP::setfcap']
+                'CAP::setfcap'] + self.user_creds()
 
         # required caps for fala_ft_creds2
-        cap2 = ['Cellular']
+        cap2 = ['Cellular'] + self.user_creds()
 
-        # check that all required creds are there
-        for cap in cap1:
-            self.assert_(cap in creds1, "%s not set for fala_ft_creds1" % cap)
+        cap1.sort()
+        cap2.sort()
 
-        for cap in cap2:
-            self.assert_(cap in creds2, "%s not set for fala_ft_creds2" % cap)
+        creds1.sort()
+        creds2.sort()
+
+        self.assert_(cap1 == creds1, "fala_ft_creds1 has incorrect credentials")
+        self.assert_(cap2 == creds2, "fala_ft_creds2 has incorrect credentials")
 
     def test_002_no_aegis_Bug170905(self):
         """
@@ -58,15 +97,8 @@ class SecurityTests(unittest.TestCase):
 
         self.assert_(creds != None, "error retrieving credentials")
 
-        groups = get_groups_for_user()
-
-        print "user belongs to groups: %s" % ', '.join(groups)
-
-        def grouper(x): return 'GRP::' + x
-        groups = map(grouper, groups)
-
         # Credentials should be dropped, but uid/gid + groups retained
-        req_creds = ['UID::user', 'GID::users'] + groups
+        req_creds = self.user_creds(True)
 
         creds.sort()
         req_creds.sort()
@@ -75,7 +107,7 @@ class SecurityTests(unittest.TestCase):
         print "REQUIRED: " + ', '.join(req_creds)
 
         self.assert_(creds == req_creds,
-                     "fala_ft_hello has different creds set!")
+                     "fala_ft_hello has incorrect credentials")
 
     def test_003_invoker_creds(self):
         """
