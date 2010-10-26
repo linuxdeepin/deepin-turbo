@@ -68,12 +68,12 @@
       </environments>
     </set>
     
-    <set name="Prestart-launched" description="To test that prestarted application is launched" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+    <!--set name="Prestart-launched" description="To test that prestarted application is launched" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
       <case name="Prestart-launched" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb --name test_launch_prestarted_app</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb name test_launch_prestarted_app</step>
       </case>
 
       <environments>
@@ -81,9 +81,9 @@
           <hardware>true</hardware>    
       </environments>
 
-      <!--get>
-      </get-->
-    </set>
+      <-get>
+      </get>
+    </set-->
   </suite>
 </testdefinition>
 
