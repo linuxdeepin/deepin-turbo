@@ -268,6 +268,29 @@ class SecurityTests(unittest.TestCase):
         self.assert_(creds2[0] != creds2[1],
                      'creds are same when applauncherd is running')
 
+    def test_006(self):
+        """
+        Test that invoker specific credentials are not passed on to
+        the launched application.
+        """
+
+        # credentials that invoker should have, but shouldn't be
+        # passed to the application
+        creds_to_filter = ['applauncherd-launcher::access',
+                           'applauncherd-invoker::applauncherd-invoker']
+
+        # launch an application with and without a manifest
+        creds1 = launch_and_get_creds('/usr/bin/fala_ft_creds1')
+        creds2 = launch_and_get_creds('/usr/bin/fala_ft_hello')
+
+        # see that the above creds are not included
+        for cred in creds_to_filter:
+            self.assert_(cred not in creds1,
+                         '%s was passed to fala_ft_creds1' % cred)
+
+            self.assert_(cred not in creds2,
+                         '%s was passed to fala_ft_hello' % cred)
+        
 
 # main
 if __name__ == '__main__':
