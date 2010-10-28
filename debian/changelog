@@ -1,3 +1,18 @@
+applauncherd (0.14.4) stable; urgency=low
+
+  * Changes: use at() instead of [] operator to read-only access to vector elements
+  * Changes: clean-up preload library list
+  * Fixes: NB#199342 -  Music-suite crashes when started using invoker
+  * Changes: Too exact library versions made more general in preload.h
+  * Changes: Qt-styled Unix signal handling added to MBooster. Fixes the issue where booster-m
+    is not killed when launcher dies.
+  * Changes: Polished the credential filtering stuff in Booster, some comments added
+  * Changes: filter out invoker credentials from boosted applications
+  * Fixes: NB#178610 -  applauncherd/boosters potential optimizations
+  * Fixes: NB#196289 - applauncher.bin adds 3-28 extra file descriptors for nothing
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 28 Oct 2010 13:57:03 +0300
+
 applauncherd (0.14.3) stable; urgency=low
 
   * Changes: use RTLD_LOCAL flag instead of RTLD_GLOBAL in dlopen() to load application binary
