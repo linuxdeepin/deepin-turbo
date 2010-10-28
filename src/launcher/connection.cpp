@@ -307,9 +307,7 @@ int Connection::receiveMagic()
 
     if ((magic & INVOKER_MSG_MASK) == INVOKER_MSG_MAGIC)
     {
-        if ((magic & INVOKER_MSG_MAGIC_VERSION_MASK) == INVOKER_MSG_MAGIC_VERSION)
-            sendMsg(INVOKER_MSG_ACK);
-        else
+        if (!(magic & INVOKER_MSG_MAGIC_VERSION_MASK) == INVOKER_MSG_MAGIC_VERSION)
         {
             Logger::logError("Connection: receiving bad magic version (%08x)\n", magic);
             return -1;
@@ -338,7 +336,6 @@ string Connection::receiveAppName()
         Logger::logError("Connection: receiving application name");
         return string();
     }
-    sendMsg(INVOKER_MSG_ACK);
 
     string appName(name);
     delete [] name;
@@ -351,8 +348,6 @@ bool Connection::receiveExec()
     if (!filename)
         return false;
 
-    sendMsg(INVOKER_MSG_ACK);
-
     m_fileName = filename;
     delete [] filename;
     return true;
@@ -361,16 +356,12 @@ bool Connection::receiveExec()
 bool Connection::receivePriority()
 {
     recvMsg(&m_priority);
-    sendMsg(INVOKER_MSG_ACK);
-
     return true;
 }
 
 bool Connection::receiveDelay()
 {
     recvMsg(&m_delay);
-    sendMsg(INVOKER_MSG_ACK);
-
     return true;
 }
 
@@ -378,9 +369,6 @@ bool Connection::receiveIDs()
 {
     recvMsg(&m_uid);
     recvMsg(&m_gid);
-
-    sendMsg(INVOKER_MSG_ACK);
-
     return true;
 }
 
@@ -415,8 +403,7 @@ bool Connection::receiveArgs()
         Logger::logError("Connection: invalid number of parameters %d", m_argc);
         return false;
     }
-    
-    sendMsg(INVOKER_MSG_ACK);
+
     return true;
 }
 

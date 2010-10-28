@@ -266,37 +266,28 @@ static uint32_t invoker_recv_exit(int fd)
 }
 
 // Sends magic number / protocol version
-static bool invoker_send_magic(int fd, int options)
+static void invoker_send_magic(int fd, int options)
 {
     // Send magic.
     invoke_send_msg(fd, INVOKER_MSG_MAGIC | INVOKER_MSG_MAGIC_VERSION | options);
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
 // Sends the process name to be invoked.
-static bool invoker_send_name(int fd, char *name)
+static void invoker_send_name(int fd, char *name)
 {
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_NAME);
     invoke_send_str(fd, name);
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
-static bool invoker_send_exec(int fd, char *exec)
+static void invoker_send_exec(int fd, char *exec)
 {
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_EXEC);
     invoke_send_str(fd, exec);
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
-static bool invoker_send_args(int fd, int argc, char **argv)
+static void invoker_send_args(int fd, int argc, char **argv)
 {
     int i;
 
@@ -308,49 +299,34 @@ static bool invoker_send_args(int fd, int argc, char **argv)
         debug("param %d %s \n", i, argv[i]);
         invoke_send_str(fd, argv[i]);
     }
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
-static bool invoker_send_prio(int fd, int prio)
+static void invoker_send_prio(int fd, int prio)
 {
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_PRIO);
     invoke_send_msg(fd, prio);
-
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
 // Sends booster respawn delay
-static bool invoker_send_delay(int fd, int delay)
+static void invoker_send_delay(int fd, int delay)
 {
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_DELAY);
     invoke_send_msg(fd, delay);
-
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
 // Sends UID and GID
-static bool invoker_send_ids(int fd, int uid, int gid)
+static void invoker_send_ids(int fd, int uid, int gid)
 {
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_IDS);
     invoke_send_msg(fd, uid);
     invoke_send_msg(fd, gid);
-
-    invoke_recv_ack(fd);
-
-    return true;
 }
 
 // Sends the environment variables
-static bool invoker_send_env(int fd)
+static void invoker_send_env(int fd)
 {
     int i, n_vars;
 
@@ -366,11 +342,11 @@ static bool invoker_send_env(int fd)
         invoke_send_str(fd, environ[i]);
     }
 
-    return true;
+    return;
 }
 
 // Sends I/O descriptors
-static bool invoker_send_io(int fd)
+static void invoker_send_io(int fd)
 {
     struct msghdr msg;
     struct cmsghdr *cmsg = NULL;
@@ -402,20 +378,18 @@ static bool invoker_send_io(int fd)
     if (sendmsg(fd, &msg, 0) < 0)
     {
         warning("sendmsg failed in invoker_send_io: %s \n", strerror(errno));
-        return  false;
     }
 
-    return true;
+    return;
 }
 
 // Sends the END message
-static bool invoker_send_end(int fd)
+static void invoker_send_end(int fd)
 {
     // Send action.
     invoke_send_msg(fd, INVOKER_MSG_END);
     invoke_recv_ack(fd);
 
-    return true;
 }
 
 // Prints the usage and exits with given status
