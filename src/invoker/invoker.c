@@ -406,7 +406,8 @@ static void usage(int status)
            "  -c, --creds         Print Aegis security credentials (if enabled).\n"
            "  -d, --delay SECS    After invoking sleep for SECS seconds (default %d).\n"
            "  -r, --respawn SECS  After invoking respawn new booster after SECS seconds (default %d, max %d).\n"
-           "  -w, --wait-term     Wait for launched process to terminate.\n"
+           "  -w, --wait-term     Wait for launched process to terminate (by default).\n"
+           "  -n, --no-wait       Do not wait for launched process to terminate.\n"
            "  -G, --global-syms   Places symbols in the application binary and its libraries to\n"
            "                      the global scope. See RTLD_GLOBAL in the dlopen manual page.\n"
            "  -h, --help          Print this help message.\n\n"
@@ -552,11 +553,14 @@ int main(int argc, char *argv[])
     enum APP_TYPE app_type      = UNKNOWN_APP;
     int           prog_argc     = 0;
     int           magic_options = 0;
-    bool          wait_term     = false;
+    bool          wait_term     = true;
     unsigned int  delay         = DEFAULT_DELAY;
     unsigned int  respawn_delay = RESPAWN_DELAY;
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
+
+    // wait-term parameter by default
+    magic_options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
 
     // Called with a different name (old way of using invoker) ?
     if (!strstr(argv[0], PROG_NAME_INVOKER) )
@@ -574,6 +578,7 @@ int main(int argc, char *argv[])
         {"help",      no_argument,       NULL, 'h'},
         {"creds",     no_argument,       NULL, 'c'},
         {"wait-term", no_argument,       NULL, 'w'},
+        {"no-wait",   no_argument,       NULL, 'n'},
         {"global-syms", no_argument,     NULL, 'G'},
         {"deep-syms", no_argument,       NULL, 'D'},
         {"type",      required_argument, NULL, 't'},
@@ -585,7 +590,7 @@ int main(int argc, char *argv[])
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwGDd:t:r:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwnGDd:t:r:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -598,8 +603,12 @@ int main(int argc, char *argv[])
             break;
 
         case 'w':
-            wait_term = true;
-            magic_options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
+            // nothing to do, it's by default now
+            break;
+
+        case 'n':
+            wait_term = false;
+            magic_options &= (!INVOKER_MSG_MAGIC_OPTION_WAIT);
             break;
 
         case 'G':
