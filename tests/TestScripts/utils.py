@@ -221,7 +221,7 @@ def get_file_descriptor(booster, type):
     print init
 
     #launch application using booster
-    st = os.system('invoker --type=%s /usr/bin/fala_ft_hello.launch' %type)
+    st = os.system('invoker --type=%s --no-wait /usr/bin/fala_ft_hello.launch' %type)
     time.sleep(2)
 
     #get fd of booster after launching the application

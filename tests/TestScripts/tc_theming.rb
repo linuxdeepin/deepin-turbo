@@ -86,7 +86,7 @@ class TC_Theming < Test::Unit::TestCase
 
         system("pkill #{app_name}")
 
-        system("su - user -c #{app_name}")
+        system("su - user -c #{app_name}&")
         sleep(5)
 
         #pid = `pgrep -n #{app_name}`
@@ -184,7 +184,7 @@ class TC_Theming < Test::Unit::TestCase
 
         app_name = 'fala_ft_hello'
         system("pkill #{app_name}")
-        system("su - user -c #{app_name}")
+        system("su - user -c #{app_name}&")
         sleep(2)
 
         original_theme = get_theme()

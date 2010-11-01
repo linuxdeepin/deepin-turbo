@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "/usr/bin/invoker --type=m" $0.launch $@
-exec /usr/bin/invoker --type=m $0.launch $@
+echo "/usr/bin/invoker --type=m --no-wait" $0.launch $@
+exec /usr/bin/invoker --type=m --no-wait $0.launch $@

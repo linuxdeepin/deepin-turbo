@@ -130,7 +130,7 @@ class launcher_perf_tests (unittest.TestCase):
             os.system('rm %s' %LOG_FILE)                                                        
 
         self.start_timer()
-        os.system('invoker --type=m %s' %TESTAPP)
+        os.system('invoker --type=m --no-wait %s' %TESTAPP)
         debug("app", TESTAPP, "started with launcher")                                   
         time.sleep(5)
         self.read_log()
@@ -145,7 +145,7 @@ class launcher_perf_tests (unittest.TestCase):
             os.system('rm %s' %LOG_FILE)                                                        
 
         self.start_timer()
-        os.system('invoker --type=wrt %s' %TESTAPP)
+        os.system('invoker --type=wrt --no-wait %s' %TESTAPP)
         debug("app", TESTAPP, "started with wrt-launcher")                                   
         time.sleep(5)
         self.read_log()
@@ -161,7 +161,7 @@ class launcher_perf_tests (unittest.TestCase):
         os.system('pkill -STOP duihome')
         os.system('pkill -STOP meegotouchhome')
         self.start_timer()
-        os.system('invoker --type=m %s' %TESTAPP)
+        os.system('invoker --type=m --no-wait %s' %TESTAPP)
         debug("app", TESTAPP, "started with launcher")                                   
         time.sleep(5)
         os.system('pkill -CONT duihome')

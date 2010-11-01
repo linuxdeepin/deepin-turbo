@@ -286,7 +286,7 @@ class launcher_tests (unittest.TestCase):
 
         # launch an app with invoker --delay n
         print "launching fala_ft_hello ..."
-        p = Popen(['/usr/bin/invoker', '--delay', '10', '--type=m',
+        p = Popen(['/usr/bin/invoker', '--delay', '10', '--type=m', '--no-wait',
                    '/usr/bin/fala_ft_hello.launch'],
                   shell=False, 
                   stdout=DEV_NULL, stderr=DEV_NULL)
@@ -391,7 +391,7 @@ class launcher_tests (unittest.TestCase):
         print("System %s \nSyetem %s" %(usr_id1, grp_id1))
 
         #get id by running the application using invoker in user mode
-        app = "invoker --type=m /usr/bin/fala_status.launch" 
+        app = "invoker --type=m --no-wait /usr/bin/fala_status.launch" 
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
@@ -418,7 +418,7 @@ class launcher_tests (unittest.TestCase):
         print("System %s \nSyetem %s" %(usr_id1, grp_id1))
 
         #get id by running the application using invoker in root mode
-        app = "invoker --type=m /usr/bin/fala_status.launch" 
+        app = "invoker --type=m --no-wait /usr/bin/fala_status.launch" 
         st, op = commands.getstatusoutput("%s" %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
