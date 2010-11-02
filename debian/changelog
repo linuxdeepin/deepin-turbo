@@ -1,3 +1,13 @@
+applauncherd (0.14.5) stable; urgency=low
+
+  * Changes: acceptance and validation flags removed for tests package
+  * Changes: Tests fixed as the default --wait-term made them fail
+  * Revert "Changes: Too exact library versions made more general in preload.h"
+  * Changes: no-wait option for invoker is added
+  * Changes: invoker - launcher protocol simplification
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 02 Nov 2010 14:06:55 +0200
+
 applauncherd (0.14.4) stable; urgency=low
 
   * Changes: use at() instead of [] operator to read-only access to vector elements
