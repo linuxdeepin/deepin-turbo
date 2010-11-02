@@ -10,6 +10,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -g -O2 -Wl,--as-needed"
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
+# Find libdl
+find_library(LIBDL NAMES dl)
+
 # Find Qt4
 find_package(Qt4 4.6.0 REQUIRED)
 include(${QT_USE_FILE})
@@ -95,6 +98,9 @@ endif (EXISTS ${Doxygen})
 
 # Install README
 install(FILES README DESTINATION /usr/share/doc/applauncherd)
+
+# Install startup script
+install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
 
 # Install pkg-config and qmake feature files. Note that current packaging policy is such 
 # that applauncherd-dev installs only qt-boostable.pc which is intended for "all" 

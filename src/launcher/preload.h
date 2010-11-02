@@ -20,7 +20,7 @@
 #ifndef PRELOAD_H
 #define PRELOAD_H
 
-const char * const libs[] = { "/usr/lib/libmeegotouchcore.so.0",
+const char * const gLibs[] = {"/usr/lib/libmeegotouchcore.so.0",
                               "/usr/lib/libmeegotouchviews.so.0",
                               "/usr/lib/libmeegotouchsettings.so.0",
                               "/usr/lib/libmeegotouchextensions.so.0",

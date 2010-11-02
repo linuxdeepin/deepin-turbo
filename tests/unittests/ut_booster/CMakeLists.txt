@@ -1,4 +1,4 @@
-set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcher)
+set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 
 # Set sources
 set(SRC ut_booster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp)

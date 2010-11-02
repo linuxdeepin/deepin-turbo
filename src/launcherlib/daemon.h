@@ -99,9 +99,6 @@ private:
     //! Don't use console for output
     void consoleQuiet();
 
-    //! Preload libs and resolve symbols
-    void preload();
-
     //! Kill given pid with SIGKILL
     void killProcess(pid_t pid) const;
 
