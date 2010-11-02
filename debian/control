@@ -58,7 +58,7 @@ Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libmeegotouchcore0, libmeegotouchviews0, libmeegotouchextensions0, libmeegotouchsettings0, testrunner-lite, applauncherd, ci-testing, libcreds[arm armel]
 XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+XB-Maemo-CI-Stage: fast, staging
 Description: applauncherd unit tests
  Unit testing binaries and shellscripts for testing applauncherd. 
 
@@ -66,8 +66,6 @@ Package: applauncherd-testscripts
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner-lite, applauncherd, ci-testing, testability-driver, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40), rdoc, python, ruby, xresponse, x11-utils
-XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: applauncherd testscripts
  Testscripts for testing applauncherd
 
@@ -75,8 +73,6 @@ Package: applauncherd-testapps
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd, libmeegotouchcore0, libmeegotouchviews0, libmeegotouchextensions0, libmeegotouchsettings0, libcreds2 [arm armel], libcreds2-tools [arm armel] 
-XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: applaunched testapps 
  Test applications for testing  applauncherd.
 
@@ -85,8 +81,6 @@ Section: debug
 Architecture: any
 Priority: extra
 Depends: applauncherd-testapps (= ${binary:Version}), ${misc:Depends}
-XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: debug symbols for applauncherd testapps 
 
 Package: applauncherd-functional-tests
@@ -94,7 +88,7 @@ Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+XB-Maemo-CI-Stage: fast, staging
 Description: applauncherd functional tests
  Functional tests for testing applauncherd.
 
@@ -103,7 +97,7 @@ Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+XB-Maemo-CI-Stage:acceptance, validation
 Description: applauncherd art tests
  Art tests for testing applauncherd.
 
@@ -112,7 +106,7 @@ Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+XB-Maemo-CI-Stage: fast, staging
 Description: applauncherd bug tests
  Tests related to bugs for testing applauncherd.
 
@@ -121,7 +115,7 @@ Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
-XB-Maemo-CI-Stage: fast, acceptance, validation
+XB-Maemo-CI-Stage: fast, staging
 Description: applauncherd performance tests
  Performance testing binaries and shellscripts for testing applauncherd. 
 
