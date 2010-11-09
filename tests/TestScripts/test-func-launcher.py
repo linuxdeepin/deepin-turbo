@@ -320,6 +320,13 @@ class launcher_tests (unittest.TestCase):
         str = op.split('\n')
         self.assert_(str[0] == 'Usage: applauncherd [options]', "usage not printed properly")
 
+        # exec invoker --creds (for coverage)
+        run_app_as_user("invoker --creds")
+
+        # exec invoker --help (for coverage)
+        run_app_as_user("invoker --help")
+
+
     def test_014_fd_booster_m(self):
         """
         File descriptor test for booster-m
@@ -482,6 +489,49 @@ class launcher_tests (unittest.TestCase):
         kill_process('fala_ft_hello')
 
         start_applauncherd()
+
+    def test_invoker_search_prog(self):
+        """
+        Test that invoker can find programs from directories listed in
+        PATH environment variable and that it doesn't find something
+        that isn't there.
+        """
+
+        # invoker searches PATH for the executable
+        p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
+        self.assert_(p.wait() == 0, "Couldn't launch fala_ft_hello.launch")
+        kill_process('fala_ft_hello')
+
+        # launch with relative path
+        cwd = os.getcwd()
+        os.chdir('/usr/share')
+
+        p = run_app_as_user('invoker --type=m --no-wait ' + 
+                            "../bin/fala_ft_hello.launch")
+        self.assert_(p.wait() == 0, "Couldnt launch fala_ft_hello.launch" + 
+                    " with relative path")
+        kill_process('fala_ft_hello')
+
+        # find a relative path from PATH and launch from there
+        oldpath = os.environ['PATH']
+        os.environ['PATH'] =  '../bin:' + os.environ['PATH']
+
+        p = run_app_as_user('invoker --type=m --no-wait ' +
+                            "fala_ft_hello.launch")
+        self.assert_(p.wait() == 0, "Couldnt launch fala_ft_hello.launch" +
+                    " with relative path (2)")
+        kill_process('fala_ft_hello')
+        
+        # restore CWD and PATH
+        os.chdir(cwd)
+        os.environ['PATH'] = oldpath
+
+        # and finally, try to launch something that doesn't exist
+        p = run_app_as_user('invoker --type=m --no-wait spam_cake.launch')
+        self.assert_(p.wait() != 0, "Found spam_cake.launch for some reason")
+        kill_process('spam_cake')
+        
+
 
 # main
 if __name__ == '__main__':
