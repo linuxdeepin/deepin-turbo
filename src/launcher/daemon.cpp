@@ -295,7 +295,8 @@ void Daemon::forkBooster(char type, int sleepTime)
             // Finish
             delete booster;
 
-            exit(EXIT_SUCCESS);
+            // avoid situation when destructors for static objects may be run incorrectly
+            _exit(EXIT_SUCCESS);
         }
         else
         {
