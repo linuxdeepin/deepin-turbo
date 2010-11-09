@@ -53,32 +53,3 @@ bool invoke_send_str(int fd, char *str)
     return write(fd, str, size) != -1;
 }
 
-char* invoke_recv_str(int fd)
-{
-    int size = 0;
-    char *str;
-
-    /* Get the size. */
-    invoke_recv_msg(fd, (uint32_t*) &size);
-    str = (char*)malloc(size);
-    if (!str)
-    {
-        error("mallocing in %s\n", __FUNCTION__);
-        return NULL;
-    }
-
-    /* Get the string. */
-    int ret = read(fd, str, size);
-    if (ret < size)
-    {
-        error("getting string, got %u of %u bytes\n", ret, size);
-        free(str);
-        return NULL;
-    }
-    str[size - 1] = '\0';
-
-    debug("%s: '%s'\n", __FUNCTION__, str);
-
-    return str;
-}
-

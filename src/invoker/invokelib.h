@@ -27,7 +27,6 @@ bool invoke_send_msg(int fd, uint32_t msg);
 bool invoke_recv_msg(int fd, uint32_t *msg);
 
 bool invoke_send_str(int fd, char *str);
-char *invoke_recv_str(int fd);
 
 /* FIXME: Should be '/var/run/'. */
 //#define INVOKER_SOCK	"/tmp/."PACKAGE
