@@ -108,3 +108,9 @@ const string & MonitorBooster::boosterTemporaryProcessName() const
 {
     return temporaryProcessName();
 }
+
+char MonitorBooster::boosterType() const
+{
+    return type();
+}
+

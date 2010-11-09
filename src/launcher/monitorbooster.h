@@ -56,7 +56,7 @@ class MonitorBooster : public QObject, public Booster
     virtual void run();
 
     //! \reimp
-    virtual char boosterType() const { return type(); }
+    virtual char boosterType() const;
 
     //! \reimp
     virtual void initialize(int initialArgc, char ** initialArgv, int pipeFd[2]);
