@@ -1,3 +1,13 @@
+applauncherd (0.14.6) stable; urgency=low
+
+  * Fixes: NB#199342 - Music-suite crashes when started using invoker
+  * Changes: Add test_invoker_search_prog to tests.xml
+  * Changes: Add a test for invoker searching PATH for programs
+  * Changes: Moved the implementation of MonitorBooster::boosterType() to the source file from the header file
+  * Changes: Remove invoke_recv_str as it is never used
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 10 Nov 2010 11:51:05 +0200
+
 applauncherd (0.14.5) stable; urgency=low
 
   * Changes: acceptance and validation flags removed for tests package
