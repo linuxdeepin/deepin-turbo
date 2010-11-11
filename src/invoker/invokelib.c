@@ -26,30 +26,32 @@
 #include "report.h"
 #include "invokelib.h"
 
-bool invoke_send_msg(int fd, uint32_t msg)
+void invoke_send_msg(int fd, uint32_t msg)
 {
     debug("%s: %08x\n", __FUNCTION__, msg);
-    return write(fd, &msg, sizeof(msg)) != -1;
+    write(fd, &msg, sizeof(msg)) != -1;
 }
 
-bool invoke_recv_msg(int fd, uint32_t *msg)
+void invoke_recv_msg(int fd, uint32_t *msg)
 {
-    int res = read(fd, msg, sizeof(*msg));
+    read(fd, msg, sizeof(*msg));
     debug("%s: %08x\n", __FUNCTION__, *msg);
-    return res != -1;
 }
 
-bool invoke_send_str(int fd, char *str)
+void invoke_send_str(int fd, char *str)
 {
-    uint32_t size;
+    if (str)
+    {
+        uint32_t size;
 
-    /* Send size. */
-    size = strlen(str) + 1;
-    invoke_send_msg(fd, size);
+        /* Send size. */
+        size = strlen(str) + 1;
+        invoke_send_msg(fd, size);
 
-    debug("%s: '%s'\n", __FUNCTION__, str);
+        debug("%s: '%s'\n", __FUNCTION__, str);
 
-    /* Send the string. */
-    return write(fd, str, size) != -1;
+        /* Send the string. */
+        write(fd, str, size) != -1;
+    }
 }
 

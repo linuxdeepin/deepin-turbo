@@ -23,13 +23,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-bool invoke_send_msg(int fd, uint32_t msg);
-bool invoke_recv_msg(int fd, uint32_t *msg);
+void invoke_send_msg(int fd, uint32_t msg);
+void invoke_recv_msg(int fd, uint32_t *msg);
 
-bool invoke_send_str(int fd, char *str);
+void invoke_send_str(int fd, char *str);
 
-/* FIXME: Should be '/var/run/'. */
-//#define INVOKER_SOCK	"/tmp/."PACKAGE
 #define INVOKER_M_SOCK     "/tmp/boostm"
 #define INVOKER_QT_SOCK    "/tmp/boostq"
 #define INVOKER_WRT_SOCK   "/tmp/boostw"
