@@ -1,9 +1,9 @@
 What is applauncherd?
 ==============================
 
-Applauncherd is a daemon and it helps to launch applications faster by preloading
-MeeGo Touch and Qt dynamically linked libraries and making some initializations
-before loading the application binary and executing the main function.
+Applauncherd is a daemon thah helps to launch applications faster by preloading
+MeeGo Touch and Qt dynamically linked libraries. It also does some 
+MeeGo Touch-specific initializations before loading the application binary and executing the main function.
 
 The applauncherd daemon is started by UpStart as part of XSession, that is, at the
 same level as the desktop (MeeGo Touch homescreen). Applauncherd forks the 
@@ -19,7 +19,11 @@ the binary is done with dlopen(), and therefore the application needs to be
 compiled and linked as a shared library or a position independent executable. The
 booster process also sets the environment variables. Finally, it finds the main
 function in the application binary with dlsym() and calls the main() with the
-command line arguments given by the invoker.
+command line arguments given by the invoker. 
+
+The launcher itself is a library that is loaded by a small C-program (/usr/bin/applauncherd.bin). Idea behind this is to avoid linking the launcher binary to any
+libraries. This allows us to fully control how (with which flags) the preloaded
+libraries are opened with dlopen(). 
 
 Aegis platform security is used to protect the socket connection between invoker
 and launcher. Currently this works only on the target device. It is automatically
