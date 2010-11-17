@@ -29,6 +29,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
     COUNT = 3
     APP_WITH_LAUNCHER = 'fala_wl' 
     APP_WITHOUT_LAUNCHER = 'fala_wol' 
+    TEST_SCRIPT_LOCATION = '/usr/share/applauncherd-testscripts'
+    PIXELCHANGED_LOG = '/tmp/pixelchanged.log'
     @start_time = 0
     @end_time = 0
     @pos = 0
@@ -44,9 +46,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
             # restart duihome so that qttasserver notices it
             # NOTE: Remove the cludge after duihome -> meegotouchhome renaming is complete
-            if not system("/sbin/initctl restart xsession/duihome")
-                system("/sbin/initctl restart xsession/mthome")
-            end
+#            if not system("/sbin/initctl restart xsession/duihome")
+#                system("/sbin/initctl restart xsession/mthome")
+#            end
 
             system("initctl stop xsession/sysuid")
             sleep (5)
@@ -62,8 +64,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     def open_Apps(appName)
         #Remove the Log file if it exists
-        if FileTest.exists?("/tmp/app_xresponse.log")
-          system "rm /tmp/app_xresponse.log"
+        if FileTest.exists?(PIXELCHANGED_LOG)
+          system "rm #{PIXELCHANGED_LOG}"
         end
         
         #Open the Application from the application grid
@@ -85,19 +87,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
 	    ypos = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('y')
 	    @pos = "#{xpos}x#{ypos}"
 
-            if appName == APP_WITH_LAUNCHER 
-                @winId = `sh /usr/share/applauncherd-testscripts/fala_xres_wl #{@pos}`
-                @winId = @winId.split("\n")[0]
-            else
-                system "sh /usr/share/applauncherd-testscripts/fala_xres_wol #{@pos}"
-            end 
- 
-            @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).tap
-            sleep (2)
-            @app = @sut.application(:name => appName)
-            sleep (2)
-            @app.MEscapeButtonPanel.MButton( :name => 'CloseButton' ).tap
-            system "pkill xresponse"
+	    puts @pos
+
+	    system "#{TEST_SCRIPT_LOCATION}/pixelchanged -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
+            sleep (4)
+            system "pkill #{appName}"
        else
             #icon does not
             #raise error and exit
@@ -108,47 +102,34 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     def read_file(appName)
         #Reading the log file to get the time
-	file_name="/tmp/app_xresponse.log"
-	search_str1 = "Button 1 pressed at #{@pos}"
-	x = check_file('/tmp/app_xresponse.log', search_str1)
-	@start_time = x.split(':')[0].split('ms')[0]
+	
+	lines = File.open(PIXELCHANGED_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
         
-        if appName == APP_WITH_LAUNCHER 
-            search_str2 = "Got damage event 864x480+0+0 from #{@winId}"
-            y = check_file('/tmp/app_xresponse.log', search_str2)
-            @end_time = y.split(':')[0].split('ms')[0]
-        else
-            search_wId = check_file('/tmp/app_xresponse.log',APP_WITHOUT_LAUNCHER ) 
-            @winId = search_wId.split(" ")[6]
-            search_str2 = "Got damage event 864x480+0+0 from #{@winId}"
-            y = check_file('/tmp/app_xresponse.log', search_str2)
-            @end_time = y.split(':')[0].split('ms')[0]
-        end
+	# First line tells when the button is released
+	@start_time = lines[0]
+	puts "Line1: #{lines[0]}"
+	# Second one when the first pixel has changed its color
+	@end_time = lines[1]
+	puts "Line2: #{lines[1]}"
+	
     end
  
-    def check_file( file, string )
-	File.open( file ) do |io|
-	io.each {|line| line.chomp! ; 
-		return line if line.include? string}
-	end
-	nil
-    end
 
     def measure_time
        #Measuring the Startup Time for applications
-       app_t = @end_time.to_i - @start_time.to_i
+       app_t = @end_time - @start_time
        return app_t
     end
 
     def test_performance
       wL = []
       woL = []
-      wLsum = 0.0
-      woLsum = 0.0
+      wLsum = 0
+      woLsum = 0
      
       #Run Application with invoker
       for i in 1..COUNT
-          print "Now Launching  APP_WITH_LAUNCHER %d times\n" %i
+          print "Now Launching  #{APP_WITH_LAUNCHER} %d times\n" %i
           open_Apps(APP_WITH_LAUNCHER)
           sleep (5)
           read_file(APP_WITH_LAUNCHER)
@@ -158,7 +139,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
       #Run Application without invoker
       for i in 1..COUNT
-          print "Now Launching APP_WITHOUT_LAUNCHER %d times\n" %i
+          print "Now Launching #{APP_WITHOUT_LAUNCHER} %d times\n" %i
           open_Apps(APP_WITHOUT_LAUNCHER)
           sleep (5)
           read_file(APP_WITHOUT_LAUNCHER)
@@ -169,13 +150,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
       #Printing the data
       for i in 0..COUNT-1
-          print "%.2f \t\t\t %.2f\n" %[wL[i],woL[i]]
+          print "%d \t\t\t %d\n" %[wL[i],woL[i]]
           wLsum = wLsum + wL[i]
           woLsum = woLsum + woL[i]
       end
       print "\nAverage Values \n"
-      print "%.2f \t\t\t %.2f\n\n" %[wLsum/COUNT, woLsum/COUNT]
+      print "%d \t\t\t %d\n\n" %[wLsum/COUNT, woLsum/COUNT]
 
        
     end
 end
+
+
+
