@@ -1,3 +1,10 @@
+applauncherd (0.15.1) stable; urgency=low
+
+  * Changes: Added the "startup time from application grid" test 
+  * Implemented: SWP#DUI-4282
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Fri, 19 Nov 2010 14:20:22 +0200
+
 applauncherd (0.15.0) stable; urgency=low
 
   * Changes: Basic implementation of library-based launcher
