@@ -29,7 +29,7 @@
 void invoke_send_msg(int fd, uint32_t msg)
 {
     debug("%s: %08x\n", __FUNCTION__, msg);
-    write(fd, &msg, sizeof(msg)) != -1;
+    write(fd, &msg, sizeof(msg));
 }
 
 void invoke_recv_msg(int fd, uint32_t *msg)
@@ -51,7 +51,7 @@ void invoke_send_str(int fd, char *str)
         debug("%s: '%s'\n", __FUNCTION__, str);
 
         /* Send the string. */
-        write(fd, str, size) != -1;
+        write(fd, str, size);
     }
 }
 
