@@ -67,7 +67,7 @@ void MBooster::hupSignalHandler(int)
 
 void MBooster::handleSigHup()
 {
-    ::exit(EXIT_SUCCESS);
+    ::_exit(EXIT_SUCCESS);
 }
 
 bool MBooster::setupUnixSignalHandlers()

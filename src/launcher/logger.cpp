@@ -235,7 +235,7 @@ void Logger::logErrorAndDie(int code, const char * format, ...)
     vfprintf(stderr, format, ap);
     va_end(ap);
 
-    exit(code);
+    _exit(code);
 }
 
 void Logger::setEchoMode(bool enable)
