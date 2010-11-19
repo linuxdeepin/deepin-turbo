@@ -1,3 +1,10 @@
+applauncherd (0.15.0) unstable; urgency=low
+
+  * Changes: Basic implementation of library-based launcher
+  * Fixes: NB#205663 - crashes due to exit() is used in forked process
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Fri, 19 Nov 2010 14:20:22 +0200
+
 applauncherd (0.14.6) stable; urgency=low
 
   * Fixes: NB#199342 - Music-suite crashes when started using invoker
