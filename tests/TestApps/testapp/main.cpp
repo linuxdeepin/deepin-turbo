@@ -65,17 +65,30 @@ int main(int argc, char **argv) {
     
 #ifdef HAVE_MCOMPONENTCACHE   
     MApplication* app = MComponentCache::mApplication(argc, argv);
+    timestamp("app from cache");
     MApplicationWindow* w = MComponentCache::mApplicationWindow();
+    timestamp("win from cache");
+
 #else
     MApplication* app = new MApplication(argc, argv);
+    timestamp("app created without cache");
+
     MApplicationWindow* w = new MApplicationWindow;
+    timestamp("win created without cache");
 #endif
     
     MyApplicationPage p;
+    timestamp("page created");
+
     MApplication::setPrestartMode(M::LazyShutdown);
     p.setTitle("Applauncherd testapp");
-    w->show();
+
     p.appear();
+    timestamp("page.appear() called");
+
+    w->show(); 
+    timestamp("w->show() called");
+
     return app->exec();
 }
 

@@ -33,3 +33,6 @@ add_subdirectory(TestApps/fala_status)
 
 # Sub build: TestApps
 add_subdirectory(TestApps/fala_gettime)
+
+# Sub build: TestApps
+add_subdirectory(TestApps/pixelchanged)

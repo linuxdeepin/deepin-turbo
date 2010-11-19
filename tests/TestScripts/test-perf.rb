@@ -29,8 +29,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
     COUNT = 3
     APP_WITH_LAUNCHER = 'fala_wl' 
     APP_WITHOUT_LAUNCHER = 'fala_wol' 
+    PIXELCHANGED_BINARY= '/usr/bin/fala_pixelchanged' 
     TEST_SCRIPT_LOCATION = '/usr/share/applauncherd-testscripts'
-    PIXELCHANGED_LOG = '/tmp/pixelchanged.log'
+    PIXELCHANGED_LOG = '/tmp/fala_pixelchanged.log'
     @start_time = 0
     @end_time = 0
     @pos = 0
@@ -39,6 +40,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     # method called before any test case
     def setup
+
+        @sut = TDriver.sut(:Id=> 'sut_qt_maemo')
         if $path.include?("scratchbox")
             puts "Inside SB, Do Nothing to unlock"
         else
@@ -46,20 +49,25 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
             # restart duihome so that qttasserver notices it
             # NOTE: Remove the cludge after duihome -> meegotouchhome renaming is complete
-#            if not system("/sbin/initctl restart xsession/duihome")
-#                system("/sbin/initctl restart xsession/mthome")
-#            end
+            if not system("/sbin/initctl restart xsession/duihome")
+                system("/sbin/initctl restart xsession/mthome")
+            end
 
             system("initctl stop xsession/sysuid")
-            sleep (5)
-        end
-        @sut = TDriver.sut(:Id=> 'sut_qt_maemo')
+            system("initctl stop xsession/applifed")
+   
+
+	end
+
+
+        
     end
 
     # method called after any test case for cleanup purposes
     def teardown
         puts "exit from teardown"
         system("initctl start xsession/sysuid")
+        system("initctl start xsession/applifed")	
     end
 
     def open_Apps(appName)
@@ -67,7 +75,14 @@ class TC_PerformanceTests < Test::Unit::TestCase
         if FileTest.exists?(PIXELCHANGED_LOG)
           system "rm #{PIXELCHANGED_LOG}"
         end
-        
+    	appOnTop = @sut.application()	
+        while appOnTop.attribute('objectName') != 'meegotouchhome'
+	    fullName = appOnTop.attribute('FullName')
+	    puts "Now killing #{fullName} from the top"
+	    system "pkill #{fullName}"
+	    appOnTop = @sut.application()
+        end
+
         #Open the Application from the application grid
         begin
             @meegoHome = @sut.application(:name => 'duihome')
@@ -88,8 +103,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
 	    @pos = "#{xpos}x#{ypos}"
 
 	    puts @pos
-
-	    system "#{TEST_SCRIPT_LOCATION}/pixelchanged -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
+	    sleep (2)
+	    system "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
             sleep (4)
             system "pkill #{appName}"
        else
