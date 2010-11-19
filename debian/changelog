@@ -1,4 +1,4 @@
-applauncherd (0.15.0) unstable; urgency=low
+applauncherd (0.15.0) stable; urgency=low
 
   * Changes: Basic implementation of library-based launcher
   * Fixes: NB#205663 - crashes due to exit() is used in forked process
