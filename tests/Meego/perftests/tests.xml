@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-M-performance-tests" domain="Application framework"> 
+
+    <set name="test-commandline" description="applauncherd application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="launcher1" type="Performance" description="Measure launcher performance" timeout="240" level="System">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-M-testscripts/test-perf-mbooster.py test_001 &gt; /tmp/launcher_perf.txt</step>
+      </case>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <get>
+          <file>/tmp/launcher_perf.txt</file>
+      </get>
+    </set>
+
+    <!--set name="test-applicationGrid" description="applauncherd application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="Perf-Test" type="Performance" description="Measure launcher performance" timeout="360" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-M-testscripts/test-perf.rb name test_performance &gt; /tmp/launcher_perf_new.txt</step>
+      </case>
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <get>
+          <file>/tmp/launcher_perf_new.txt</file>
+      </get>
+    </set-->
+
+  </suite>
+</testdefinition>
+
+
