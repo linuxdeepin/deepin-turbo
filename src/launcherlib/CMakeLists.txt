@@ -3,6 +3,9 @@ include(${QT_USE_FILE})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common)
 
+# Hide all symbols except the ones explicitly exported in the code (like main())
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+
 # Set sources
 set(SRC appdata.cpp booster.cpp boosterfactory.cpp monitorbooster.cpp connection.cpp daemon.cpp mbooster.cpp logger.cpp main.cpp qtbooster.cpp wrtbooster.cpp)
 set(MOC_HDRS monitorbooster.h mbooster.h)
