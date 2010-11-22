@@ -112,6 +112,11 @@
       <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_016_restart_booster</step>
       </case>
+
+      <case name="kill-applaunched-restart-booster" type="Functional" description="Test that booster is restarted if applauncherd is killed" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_killed_or_restarted</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
