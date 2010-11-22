@@ -1,4 +1,4 @@
 usr/bin/applauncherd.bin
-usr/bin/applauncherd.launch
+usr/lib/libapplauncherd.so
 usr/bin/applauncherd
 
