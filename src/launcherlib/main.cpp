@@ -38,7 +38,7 @@ void reapZombies(int)
 //! Signal handler to kill booster
 void exitBooster(int)
 {
-    Logger::logErrorAndDie(EXIT_FAILURE, "due to parent process applauncherd died, booster exit too");
+    Logger::logErrorAndDie(EXIT_FAILURE, "due to parent process applauncherd died, booster exit too \n");
 }
 
 void exitLauncher(int)
@@ -57,7 +57,7 @@ int main(int argc, char * argv[])
     // Check that an instance of launcher is not already running
     if(!Daemon::lock())
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "try to launch second instance");
+        Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
     }
 
     // Install signal handlers
