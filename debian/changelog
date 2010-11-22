@@ -1,5 +1,7 @@
 applauncherd (0.15.1) unstable; urgency=low
 
+  * Fixes: NB#201779 - cheap way how to load all libraries correct 
+  * Fixes: NB#206309 - applauncherd cannot locate shared objects
   * Changes: Launcher library exports only main()
   * Changes: Install /usr/bin/applauncherd.launcher to /usr/lib/libapplauncherd.so
              due to dh_strip problems and because it's not -pie.
