@@ -46,35 +46,9 @@ void exitLauncher(int)
     exit(0);
 }
 
-void usage()
-{
-    std::cout << "Usage: "<< PROG_NAME_LAUNCHER << " [options]\n"
-              << "\n"
-              << "Options:\n"
-              << "  --daemon            Fork and go into the background.\n"
-              //<< "  --pidfile FILE      Specify a different pid file (default " << LAUNCHER_PIDFILE << " ).\n"
-              //<< "  --send-app-died     Send application died signal.\n"
-              << "  --quiet             Do not print anything.\n"
-              << "  --help              Print this help message.\n"
-              << "\n"
-              << "Use the invoker to start a <shared object> from the launcher.\n"
-              << "Where <shared object> is a binary including a 'main' symbol.\n"
-              << "Note that the binary needs to be linked with -shared or -pie.\n";
-
-    exit(EXIT_SUCCESS);
-}
-
 //! Main function
 int main(int argc, char * argv[])
 {
-    // Print usage if requested on commandline
-    for (int i = 1; i < argc; ++i)
-    {
-        if (std::string(argv[i]) == "--help")
-        {
-            usage();
-        }
-    }
 
     // Open the log
     Logger::openLog(PROG_NAME_LAUNCHER);
