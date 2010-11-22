@@ -1,0 +1,3 @@
+#!/bin/sh
+xresponse -a 'meegotouchhome' -w 0 -a 'fala_wol' -c $1 -u > /tmp/app_xresponse.log&
+                                      
