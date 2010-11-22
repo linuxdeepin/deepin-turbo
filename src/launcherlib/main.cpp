@@ -26,6 +26,8 @@
 #include <fcntl.h>
 #include <sys/file.h>
 
+#include <QtCore/QtGlobal>
+
 //! Signal handler to reap zombie processes
 void reapZombies(int)
 {
@@ -47,7 +49,7 @@ void exitLauncher(int)
 }
 
 //! Main function
-int main(int argc, char * argv[])
+Q_DECL_EXPORT int main(int argc, char * argv[])
 {
 
     // Open the log

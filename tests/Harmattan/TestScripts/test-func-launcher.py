@@ -78,6 +78,8 @@ class launcher_tests (unittest.TestCase):
     def tearDown(self):
         #teardown here
         print "Executing TearDown"
+        if get_pid('applauncherd') == None:
+            os.system('initctl start xsession/applauncherd')
 
     #Testcases
     def test_001_launcher_exist(self):
@@ -530,7 +532,85 @@ class launcher_tests (unittest.TestCase):
         p = run_app_as_user('invoker --type=m --no-wait spam_cake.launch')
         self.assert_(p.wait() != 0, "Found spam_cake.launch for some reason")
         kill_process('spam_cake')
+    
+    def test_booster_killed_or_restarted(self):
+        """
+        Test that boosters are killed if applauncherd is stopped
+        and restarted if applauncherd is killed
+        """
+        #get the pids of boosters and make sure they are running
+        qpid = get_pid('booster-q')
+        print "Pid of booster-q before killing :%s" %qpid
+        self.assert_(qpid != None, "No booster process running")
+
+        mpid = get_pid('booster-m')
+        print "Pid of booster-m before killing :%s" %mpid
+        self.assert_(mpid != None, "No booster process running")
+
+        wpid = get_pid('booster-w')
+        print "Pid of booster-w before killing :%s" %mpid
+        self.assert_(wpid != None, "No booster process running")
+
+        #stop applauncherd
+        os.system("initctl stop xsession/applauncherd")
+ 
+        #wait for the boosters to be killed 
+        time.sleep(2)
+
+        #check that the none of the booster is running
+        qpid_new = get_pid('booster-q')
+        print "Pid of booster-q after killing :%s" %qpid_new
+        self.assert_(qpid_new == None, "booster-q still running")
         
+               
+        mpid_new = get_pid('booster-m')
+        print "Pid of booster-m after killing :%s" %mpid_new
+        self.assert_(mpid_new == None, "booster-m still running")
+
+        wpid_new = get_pid('booster-w')
+        print "Pid of booster-w after killing :%s" %wpid_new
+        self.assert_(wpid_new == None, "booster-w still running")
+
+        #Now start the applauncherd
+        os.system("initctl start xsession/applauncherd")
+        
+        #wait for the boosters to be restarted
+        time.sleep(6)
+
+        #get the pids of boosters and make sure they are running
+        qpid = get_pid('booster-q')
+        print "Pid of booster-q before killing :%s" %qpid
+        self.assert_(qpid != None, "No booster process running")
+
+        mpid = get_pid('booster-m')
+        print "Pid of booster-m before killing :%s" %mpid
+        self.assert_(mpid != None, "No booster process running")
+
+        wpid = get_pid('booster-w')
+        print "Pid of booster-w before killing :%s" %mpid
+        self.assert_(wpid != None, "No booster process running")
+
+        #Now kill applauncherd
+        kill_process('applauncherd')
+        
+        #wait for the boosters to be restarted
+        time.sleep(6)
+        
+        #check that the new boosters are started
+        qpid_new = get_pid('booster-q')
+        print "Pid of booster-q after killing :%s" %qpid_new
+        self.assert_(qpid_new != None, "No booster process running")
+        self.assert_(qpid_new != qpid, "booster process was not killed")
+
+        mpid_new = get_pid('booster-m')
+        print "Pid of booster-m after killing :%s" %mpid_new
+        self.assert_(mpid_new != None, "No booster process running")
+        self.assert_(mpid_new != mpid, "booster process was not killed")
+            
+        wpid_new = get_pid('booster-w')
+        print "Pid of booster-w after killing :%s" %wpid_new
+        self.assert_(wpid_new != None, "No booster process running")
+        self.assert_(wpid_new != wpid, "booster process was not killed")
 
 
 # main
