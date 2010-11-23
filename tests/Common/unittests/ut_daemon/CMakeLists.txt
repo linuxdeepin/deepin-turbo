@@ -1,9 +1,9 @@
 # Set sources
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
-set(SRC ut_daemon.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/boosterfactory.cpp ${LAUNCHER}/monitorbooster.cpp ${LAUNCHER}/daemon.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${LAUNCHER}/mbooster.cpp ${LAUNCHER}/qtbooster.cpp ${LAUNCHER}/wrtbooster.cpp)
+set(SRC ut_daemon.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/boosterfactory.cpp ${LAUNCHER}/daemon.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${LAUNCHER}/mbooster.cpp ${LAUNCHER}/qtbooster.cpp ${LAUNCHER}/wrtbooster.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_daemon.h ${LAUNCHER}/monitorbooster.h ${LAUNCHER}/mbooster.h)
+set(MOC_HDRS ut_daemon.h ${LAUNCHER}/mbooster.h ${LAUNCHER}/wrtbooster.h)
 
 # Set the program name define used in daemon.cpp
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPROG_NAME_LAUNCHER=\\\"applauncherd\\\"")
