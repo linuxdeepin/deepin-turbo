@@ -9,6 +9,7 @@ install(FILES
 install(PROGRAMS
   ts_prestartapp.rb
   tc_theming.rb
+  get-coordinates.rb
   test-perf.rb
   fala_wid
   fala_xres_wl

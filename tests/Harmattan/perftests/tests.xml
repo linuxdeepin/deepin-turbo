@@ -5,7 +5,7 @@
   <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
   <suite name="applauncherd-performance-tests" domain="Application framework"> 
 
-    <set name="test-commandline" description="applauncherd application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+    <set name="test-commandline" description="Applauncherd application startup time from command line with Python" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
@@ -24,13 +24,41 @@
       </get>
     </set>
 
-    <set name="test-applicationGrid" description="applauncherd application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+    <set name="test-applicationGrid" description="Application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="Perf-Test" type="Performance" description="Measure startup time of the application using launcher" timeout="360" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance &gt; /tmp/launcher_perf_new.txt</step>
+      <case name="Perf-Test-Grid-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="360" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wl &gt; /tmp/perf_grid_with_launcher.txt</step>
+      </case>
+
+      <case name="Perf-Test-Grid-plain" type="Performance" description="Measure startup time of the application without launcher" timeout="360" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wol &gt; /tmp/perf_grid_without_launcher.txt</step>
+      </case>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <get>
+          <file>/tmp/perf_grid_with_launcher.txt</file>
+          <file>/tmp/perf_grid_without_launcher.txt</file>
+      </get>
+
+    </set>
+
+    <set name="test-command-line" description="Application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="Perf-Test-Command-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="360" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_wl &gt; /tmp/perf_commandline_with_launcher.txt</step>
+      </case>
+      <case name="Perf-Test-Command-plain" type="Performance" description="Measure startup time of the application using launcher" timeout="360" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_wol &gt; /tmp/perf_commandline_without_launcher.txt</step>
       </case>
       <environments>
           <scratchbox>false</scratchbox>
@@ -38,7 +66,8 @@
       </environments>
 
       <get>
-          <file>/tmp/launcher_perf_new.txt</file>
+          <file>/tmp/perf_commandline_with_launcher.txt</file>
+          <file>/tmp/perf_commandline_without_launcher.txt</file>
       </get>
     </set>
 
