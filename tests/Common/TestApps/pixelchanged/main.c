@@ -38,7 +38,7 @@ void timestamp(char *msg)
     if (output_filename[0] == '\0') {
         printf("%s", txtbuffer);
     } else {
-        if (output_file = fopen(output_filename, "a+")) {
+        if ((output_file = fopen(output_filename, "a+"))) {
             fprintf(output_file, "%s", txtbuffer);
             fclose(output_file);
         } else {
@@ -108,10 +108,8 @@ int main(int argc, char **argv) {
     Display *dpy;
     int screen = 0;
     Window rootw;
-    XEvent event;
     char *DISPLAY = NULL;
     XDeviceInfo *devInfo;
-    char *deviceName;
     char txtbuffer[80];
 
     int click_x = -1;
@@ -147,7 +145,7 @@ int main(int argc, char **argv) {
 
     DISPLAY = (char*)getenv("DISPLAY");
     if (DISPLAY == NULL) {
-        printf("Cannot open display. DISPLAY variable not set.\n", argv[0]);
+        printf("Cannot open display. DISPLAY variable not set.\n");
         exit(1);
     }
 
