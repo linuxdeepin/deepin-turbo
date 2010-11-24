@@ -83,7 +83,7 @@ void Ut_Booster::testRenameBoosterProcess()
 {
     m_subject.reset(new MyBooster);
 
-    // if m_app.appName isn't initialized, new process name is booster_x
+    // if appData()->appName isn't initialized, new process name is booster_x
     // 20 chars dummy buffer used to fool ps to show correct process name with args
     const int INIT_ARGS = 2;
     char ** initialArgv = packTwoArgs("oldName", "                    ");
@@ -95,14 +95,14 @@ void Ut_Booster::testRenameBoosterProcess()
     // Define and copy args because it's assumed that they are allocated in the heap
     // (AppData deletes the argv on exit)
     const int ARGS = 3;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
 
     char ** argv = new char * [ARGS];
     argv[0] = strdup("newName");
     argv[1] = strdup("--foo");
     argv[2] = strdup("--bar");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName("newName");
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName("newName");
     m_subject->renameProcess(INIT_ARGS, const_cast<char **>(initialArgv));
 
     // New name and arguments fit and are correct
@@ -119,13 +119,13 @@ void Ut_Booster::testRenameProcess()
     // Define and copy args because it's assumed that they are allocated in the heap
     // (AppData deletes the argv on exit)
     const int ARGS = 3;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
     char ** argv = new char * [ARGS]; 
     argv[0] = strdup("newName");
     argv[1] = strdup("--foo");
     argv[2] = strdup("--bar");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName(m_subject->m_app.argv()[0]);
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName(m_subject->appData()->argv()[0]);
 
     // 20 chars dummy buffer used to fool ps to show correct process name with args
     const int INIT_ARGS = 2;
@@ -144,13 +144,13 @@ void Ut_Booster::testRenameProcessNotEnoughSpace()
     m_subject.reset(new MyBooster);
 
     const int ARGS = 3;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
     char ** argv = new char * [ARGS]; 
     argv[0] = strdup("newNameLong");
     argv[1] = strdup("--foo");
     argv[2] = strdup("--bar");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName(m_subject->m_app.argv()[0]);
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName(m_subject->appData()->argv()[0]);
 
     const int INIT_ARGS = 2;
     char ** initialArgv = packTwoArgs("oldName", "   ");
@@ -159,7 +159,7 @@ void Ut_Booster::testRenameProcessNotEnoughSpace()
 
     // Not enough space for the new name nor the arguments:
     // name should be cut
-    QVERIFY(strncmp(initialArgv[0], m_subject->m_app.argv()[0], initLen - 1) == 0);
+    QVERIFY(strncmp(initialArgv[0], m_subject->appData()->argv()[0], initLen - 1) == 0);
 
     delete [] initialArgv[0];
     delete [] initialArgv;
@@ -170,13 +170,13 @@ void Ut_Booster::testRenameProcessNotEnoughSpace2()
     m_subject.reset(new MyBooster);
 
     const int ARGS = 3;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
     char ** argv = new char * [ARGS]; 
     argv[0] = strdup("newName");
     argv[1] = strdup("--foo");
     argv[2] = strdup("--bar");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName(m_subject->m_app.argv()[0]);
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName(m_subject->appData()->argv()[0]);
 
     const int INIT_ARGS = 2;
     char ** initialArgv = packTwoArgs("oldName", "        ");
@@ -195,13 +195,13 @@ void Ut_Booster::testRenameProcessNotEnoughSpace3()
     m_subject.reset(new MyBooster);
 
     const int ARGS = 3;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
     char ** argv = new char * [ARGS]; 
     argv[0] = strdup("newName");
     argv[1] = strdup("--foo");
     argv[2] = strdup("--bar");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName(m_subject->m_app.argv()[0]);
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName(m_subject->appData()->argv()[0]);
 
     const int INIT_ARGS = 2;
     char ** initialArgv = packTwoArgs("app", "    ");
@@ -221,13 +221,13 @@ void Ut_Booster::testRenameProcessNotEnoughSpace4()
     m_subject.reset(new MyBooster);
 
     const int ARGS = 3;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
     char ** argv = new char * [ARGS]; 
     argv[0] = strdup("newNameLongLong");
     argv[1] = strdup("--foo");
     argv[2] = strdup("--bar");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName(m_subject->m_app.argv()[0]);
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName(m_subject->appData()->argv()[0]);
 
     const int INIT_ARGS = 2;
     char ** initialArgv = packTwoArgs("app", "   ");
@@ -245,12 +245,12 @@ void Ut_Booster::testRenameProcessNoArgs()
     m_subject.reset(new MyBooster);
 
     const int ARGS = 2;
-    m_subject->m_app.setArgc(ARGS);
+    m_subject->appData()->setArgc(ARGS);
     char ** argv = new char * [ARGS]; 
     argv[0] = strdup("newName");
     argv[1] = strdup("--foo");
-    m_subject->m_app.setArgv(const_cast<const char **>(argv));
-    m_subject->m_app.setAppName(m_subject->m_app.argv()[0]);
+    m_subject->appData()->setArgv(const_cast<const char **>(argv));
+    m_subject->appData()->setAppName(m_subject->appData()->argv()[0]);
 
     const int INIT_ARGS = 1;
     char ** initialArgv = new char * [INIT_ARGS];
@@ -258,7 +258,7 @@ void Ut_Booster::testRenameProcessNoArgs()
     m_subject->renameProcess(INIT_ARGS, initialArgv);
 
     // No dummy space argument at all, only name fits
-    QVERIFY(strcmp(initialArgv[0], m_subject->m_app.argv()[0]) == 0);
+    QVERIFY(strcmp(initialArgv[0], m_subject->appData()->argv()[0]) == 0);
 
     delete initialArgv[0];
     delete [] initialArgv;

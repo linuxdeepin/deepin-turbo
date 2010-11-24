@@ -151,43 +151,43 @@ int WRTBooster::processId()
 bool WRTBooster::readCommand()
 {
     // Setup the conversation channel with the invoker.
-    m_conn = new Connection(socketId());
+    setConnection(new Connection(socketId()));
 
-    // exit from event loop when invoker is ready to connect
+    // Exit from event loop when invoker is ready to connect
     connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
 
-    // enable theme change handler
+    // Enable theme change handler
     m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
     connect(m_item, SIGNAL(valueChanged()), this, SLOT(notifyThemeChange()));
 
-    // start another thread to listen connection from invoker
+    // Start another thread to listen connection from invoker
     QtConcurrent::run(this, &WRTBooster::accept);
 
     // Run event loop so MApplication and MApplicationWindow objects can receive notifications
     MApplication::exec();
 
-    // disable theme change handler
+    // Disable theme change handler
     disconnect(m_item, 0, this, 0);
     delete m_item;
     m_item = NULL;
-
 
     // Restore signal handlers to previous values
     restoreUnixSignalHandlers();
 
     // Receive application data from the invoker
-    if(!m_conn->receiveApplicationData(m_app))
+    if(!connection()->receiveApplicationData(appData()))
     {
-        m_conn->close();
+        connection()->close();
         return false;
     }
 
     // Close the connection if exit status doesn't need
     // to be sent back to invoker
-    if (!m_conn->isReportAppExitStatusNeeded())
+    if (!connection()->isReportAppExitStatusNeeded())
     {
-        m_conn->close();
+        connection()->close();
     }
+
     return true;
 }
 
@@ -197,10 +197,9 @@ void WRTBooster::notifyThemeChange()
     ::_exit(EXIT_SUCCESS);
 }
 
-
 void WRTBooster::accept()
 {
-    if (m_conn->accept(m_app))
+    if (connection()->accept(appData()))
     {
         emit connectionAccepted();
     }

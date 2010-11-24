@@ -42,9 +42,9 @@
     };
 #endif
 
-
 Booster::Booster() :
-    m_conn(NULL),
+    m_appData(new AppData),
+    m_connection(NULL),
     m_argvArraySize(0),
     m_oldPriority(0),
     m_oldPriorityOk(false)
@@ -52,8 +52,11 @@ Booster::Booster() :
 
 Booster::~Booster()
 {
-    delete m_conn;
-    m_conn = NULL;
+    delete m_connection;
+    m_connection = NULL;
+
+    delete m_appData;
+    m_appData = NULL;
 }
 
 bool Booster::preload()
@@ -120,7 +123,7 @@ void Booster::sendDataToParent()
     }
 
     // Send to the parent process booster respawn delay value
-    int delay = m_app.delay();
+    int delay = m_appData->delay();
     if (write(pipeFd(1), reinterpret_cast<const void *>(&delay), sizeof(int)) == -1) {
         Logger::logError("Booster: Couldn't send respawn delay value to launcher process\n");
     }
@@ -129,46 +132,47 @@ void Booster::sendDataToParent()
 bool Booster::readCommand()
 {
     // Setup the conversation channel with the invoker.
-    m_conn = new Connection(socketId());
+    m_connection = new Connection(socketId());
 
     // Accept a new invocation.
-    if (m_conn->accept(m_app))
+    if (m_connection->accept(m_appData))
     {
         // Receive application data from the invoker
-        if(!m_conn->receiveApplicationData(m_app))
+        if(!m_connection->receiveApplicationData(m_appData))
         {
-            m_conn->close();
+            m_connection->close();
             return false;
         }
 
         // Close the connection if exit status doesn't need
         // to be sent back to invoker
-        if (!m_conn->isReportAppExitStatusNeeded())
+        if (!m_connection->isReportAppExitStatusNeeded())
         {
-            m_conn->close();
+            m_connection->close();
         }
         return true;
     }
+
     return false;
 }
 
 void Booster::run()
 {
-    if (!m_app.fileName().empty())
+    if (!m_appData->fileName().empty())
     {
         //check if can close sockets here
-        if (!m_conn->isReportAppExitStatusNeeded())
+        if (!m_connection->isReportAppExitStatusNeeded())
         {
             Connection::closeAllSockets();
         }
 
-        Logger::logInfo("Booster: invoking '%s' ", m_app.fileName().c_str());
+        Logger::logInfo("Booster: invoking '%s' ", m_appData->fileName().c_str());
         int ret_val = launchProcess();
 
-        if (m_conn->isReportAppExitStatusNeeded())
+        if (m_connection->isReportAppExitStatusNeeded())
         {
-            m_conn->sendAppExitStatus(ret_val);
-            m_conn->close();
+            m_connection->sendAppExitStatus(ret_val);
+            m_connection->close();
             Connection::closeAllSockets();
         }
     }
@@ -191,14 +195,14 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
         m_argvArraySize--;
     }
 
-    if (m_app.appName().empty())
+    if (m_appData->appName().empty())
     {
         // application name isn't known yet, let's give to the process
         // temporary booster name
-        m_app.setAppName(boosterTemporaryProcessName());
+        m_appData->setAppName(boosterTemporaryProcessName());
     }
 
-    const char* newProcessName = m_app.appName().c_str();
+    const char* newProcessName = m_appData->appName().c_str();
     Logger::logNotice("Booster: set new name for process: %s", newProcessName);
     
     // This code copies all the new arguments to the space reserved
@@ -213,13 +217,13 @@ void Booster::renameProcess(int parentArgc, char** parentArgv)
         
         spaceAvailable -= strlen(parentArgv[0]);
         
-        for (int i = 1; i < m_app.argc(); i++)
+        for (int i = 1; i < m_appData->argc(); i++)
         {
-            if (spaceAvailable > static_cast<int>(strlen(m_app.argv()[i])) + 1)
+            if (spaceAvailable > static_cast<int>(strlen(m_appData->argv()[i])) + 1)
             {
                 strncat(parentArgv[0], " ", 1);
-                strncat(parentArgv[0], m_app.argv()[i], spaceAvailable);
-                spaceAvailable -= strlen(m_app.argv()[i] + 1);
+                strncat(parentArgv[0], m_appData->argv()[i], spaceAvailable);
+                spaceAvailable -= strlen(m_appData->argv()[i] + 1);
             }
             else
             {
@@ -240,28 +244,28 @@ int Booster::launchProcess()
     // Possibly restore process priority
     errno = 0;
     const int cur_prio = getpriority(PRIO_PROCESS, 0);
-    if (!errno && cur_prio < m_app.priority())
-        setpriority(PRIO_PROCESS, 0, m_app.priority());
+    if (!errno && cur_prio < m_appData->priority())
+        setpriority(PRIO_PROCESS, 0, m_appData->priority());
 
     // Set user ID and group ID of calling process if differing
     // from the ones we got from invoker
 
-    if (getuid() != m_app.userId())
-        setuid(m_app.userId());
+    if (getuid() != m_appData->userId())
+        setuid(m_appData->userId());
 
-    if (getgid() != m_app.groupId())
-        setgid(m_app.groupId());
+    if (getgid() != m_appData->groupId())
+        setgid(m_appData->groupId());
 
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
     // Duplicate I/O descriptors
-    for (unsigned int i = 0; i < m_app.ioDescriptors().size(); i++)
+    for (unsigned int i = 0; i < m_appData->ioDescriptors().size(); i++)
     {
-        if (m_app.ioDescriptors()[i] > 0)
+        if (m_appData->ioDescriptors()[i] > 0)
         {
-            dup2(m_app.ioDescriptors()[i], i);
-            close(m_app.ioDescriptors()[i]);
+            dup2(m_appData->ioDescriptors()[i], i);
+            close(m_appData->ioDescriptors()[i]);
         }
     }
 
@@ -269,12 +273,12 @@ int Booster::launchProcess()
     const char * pwd = getenv("PWD");
     if (pwd) chdir(pwd);
 
-    Logger::logNotice("Booster: launching process: '%s' ", m_app.fileName().c_str());
+    Logger::logNotice("Booster: launching process: '%s' ", m_appData->fileName().c_str());
     Logger::closeLog();
 
     // Jump to main()
-    const int retVal = m_app.entry()(m_app.argc(), const_cast<char **>(m_app.argv()));
-    m_app.deleteArgv();
+    const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
+    m_appData->deleteArgv();
     dlclose(handle);
     return retVal;
 }
@@ -283,13 +287,13 @@ void* Booster::loadMain()
 {
 #ifdef HAVE_CREDS
     // filter out invoker-specific credentials
-    Booster::filterOutCreds(m_app.peerCreds());
+    Booster::filterOutCreds(m_appData->peerCreds());
 
     // Set application's platform security credentials.
     // creds_confine2() tries first to use application-specific credentials, but if they are missing
     // from the system, it uses credentials inherited from the invoker.
-    int err = creds_confine2(m_app.fileName().c_str(), credp_str2flags("set", NULL), m_app.peerCreds());
-    m_app.deletePeerCreds();
+    int err = creds_confine2(m_appData->fileName().c_str(), credp_str2flags("set", NULL), m_appData->peerCreds());
+    m_appData->deletePeerCreds();
 
     if (err < 0)
     {
@@ -302,18 +306,18 @@ void* Booster::loadMain()
 
     int dlopenFlags = RTLD_LAZY;
 
-    if (m_app.dlopenGlobal())
+    if (m_appData->dlopenGlobal())
         dlopenFlags |= RTLD_GLOBAL;
     else
         dlopenFlags |= RTLD_LOCAL;
 
 #if (PLATFORM_ID == Linux)
-    if (m_app.dlopenDeep()) 
+    if (m_appData->dlopenDeep())
         dlopenFlags |= RTLD_DEEPBIND;
 #endif
 
     // Load the application as a library
-    void * module = dlopen(m_app.fileName().c_str(), dlopenFlags);
+    void * module = dlopen(m_appData->fileName().c_str(), dlopenFlags);
 
     if (!module)
         Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading invoked application failed: '%s'\n", dlerror());
@@ -323,7 +327,7 @@ void* Booster::loadMain()
     // in dlsym()'s man page.
 
     dlerror();
-    m_app.setEntry(reinterpret_cast<entry_t>(dlsym(module, "main")));
+    m_appData->setEntry(reinterpret_cast<entry_t>(dlsym(module, "main")));
 
     const char * error_s = dlerror();
     if (error_s != NULL)
@@ -362,9 +366,9 @@ bool Booster::popPriority()
 
 pid_t Booster::invokersPid()
 {
-    if (m_conn->isReportAppExitStatusNeeded())
+    if (m_connection->isReportAppExitStatusNeeded())
     {
-        return m_conn->peerPid();
+        return m_connection->peerPid();
     }
     else
     {
@@ -381,6 +385,22 @@ void Booster::setPipeFd(int newPipeFd[2])
 int Booster::pipeFd(bool whichEnd) const
 {
     return m_pipeFd[whichEnd];
+}
+
+Connection* Booster::connection() const
+{
+    return m_connection;
+}
+
+void Booster::setConnection(Connection * newConnection)
+{
+    delete m_connection;
+    m_connection = newConnection;
+}
+
+AppData* Booster::appData() const
+{
+    return m_appData;
 }
 
 #ifdef HAVE_CREDS
@@ -410,4 +430,3 @@ void Booster::filterOutCreds(creds_t creds)
 }
 
 #endif //HAVE_CREDS
-

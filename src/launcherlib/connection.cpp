@@ -127,7 +127,7 @@ void Connection::initSocket(const string socketId)
     }
 }
 
-bool Connection::accept(AppData & rApp)
+bool Connection::accept(AppData* appData)
 {
     if (!m_testMode)
     {
@@ -144,8 +144,8 @@ bool Connection::accept(AppData & rApp)
         // Get credentials of assumed invoker
         creds_t ccreds = creds_getpeer(m_fd);
 
-        // Fetched peer creds will be free'd with rApp.deletePeerCreds
-        rApp.setPeerCreds(ccreds);
+        // Fetched peer creds will be free'd with appData->deletePeerCreds
+        appData->setPeerCreds(ccreds);
 
 #if ! defined (DISABLE_VERIFICATION)
 
@@ -566,19 +566,19 @@ bool Connection::receiveActions()
     }
 }
 
-bool Connection::receiveApplicationData(AppData & rApp)
+bool Connection::receiveApplicationData(AppData* appData)
 {
     // Read magic number
-    rApp.setOptions(receiveMagic());
-    if (rApp.options() == -1)
+    appData->setOptions(receiveMagic());
+    if (appData->options() == -1)
     {
         Logger::logError("Connection: receiving magic failed\n");
         return false;
     }
 
     // Read application name
-    rApp.setAppName(receiveAppName());
-    if (rApp.appName().empty())
+    appData->setAppName(receiveAppName());
+    if (appData->appName().empty())
     {
         Logger::logError("Connection: receiving application name failed\n");
         return false;
@@ -587,13 +587,13 @@ bool Connection::receiveApplicationData(AppData & rApp)
     // Read application parameters
     if (receiveActions())
     {
-        rApp.setFileName(m_fileName);
-        rApp.setPriority(m_priority);
-        rApp.setDelay(m_delay);
-        rApp.setArgc(m_argc);
-        rApp.setArgv(m_argv);
-        rApp.setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
-        rApp.setIDs(m_uid, m_gid);
+        appData->setFileName(m_fileName);
+        appData->setPriority(m_priority);
+        appData->setDelay(m_delay);
+        appData->setArgc(m_argc);
+        appData->setArgv(m_argv);
+        appData->setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
+        appData->setIDs(m_uid, m_gid);
     }
     else
     {
@@ -622,4 +622,3 @@ pid_t Connection::peerPid()
     return cr.pid;
 
 }
-

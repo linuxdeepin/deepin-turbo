@@ -144,7 +144,7 @@ int MBooster::processId()
 bool MBooster::readCommand()
 {
     // Setup the conversation channel with the invoker.
-    m_conn = new Connection(socketId());
+    setConnection(new Connection(socketId()));
 
     // exit from event loop when invoker is ready to connect
     connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
@@ -164,23 +164,23 @@ bool MBooster::readCommand()
     delete m_item;
     m_item = NULL;
 
-
     // Restore signal handlers to previous values
     restoreUnixSignalHandlers();
 
     // Receive application data from the invoker
-    if(!m_conn->receiveApplicationData(m_app))
+    if(!connection()->receiveApplicationData(appData()))
     {
-        m_conn->close();
+        connection()->close();
         return false;
     }
 
     // Close the connection if exit status doesn't need
     // to be sent back to invoker
-    if (!m_conn->isReportAppExitStatusNeeded())
+    if (!connection()->isReportAppExitStatusNeeded())
     {
-        m_conn->close();
+        connection()->close();
     }
+
     return true;
 }
 
@@ -190,10 +190,9 @@ void MBooster::notifyThemeChange()
     ::_exit(EXIT_SUCCESS);
 }
 
-
 void MBooster::accept()
 {
-    if (m_conn->accept(m_app))
+    if (connection()->accept(appData()))
     {
         emit connectionAccepted();
     }

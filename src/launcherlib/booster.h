@@ -115,6 +115,15 @@ public:
     //! Get invoker's pid
     pid_t invokersPid();
 
+    //! Get the connection object
+    Connection* connection() const;
+
+    //! Set connection object. Booster takes the ownership.
+    void setConnection(Connection * connectio);
+
+    //! Get application data object
+    AppData* appData() const;
+
 #ifdef HAVE_CREDS
     //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
     static void initExtraCreds();
@@ -151,12 +160,6 @@ protected:
     //! Returns the given pipe fd (0 = read end, 1 = write end)
     int pipeFd(bool whichEnd) const;
 
-    //! Data structure representing the application to be invoked
-    AppData m_app;
-
-    //! Socket connection to invoker
-    Connection* m_conn;
-
 private:
 
     //! Disable copy-constructor
@@ -174,6 +177,12 @@ private:
 
     //! Helper method: load the library and find out address for "main".
     void* loadMain();
+
+    //! Data structure representing the application to be invoked
+    AppData* m_appData;
+
+    //! Socket connection to invoker
+    Connection* m_connection;
 
     //! Size (length) of the argument vector
     int m_argvArraySize;

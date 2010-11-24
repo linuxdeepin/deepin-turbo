@@ -65,17 +65,17 @@ public:
     /*! \brief Accept connection.
      * Accept a socket connection from the invoker.
      * Stores security credentials of the connected
-     * peer to rApp, if security is enabled. The credentials
-     * in rApp must be released by the caller.
+     * peer to appData, if security is enabled. The credentials
+     * in appData must be released by the caller.
      * \return true on success.
      */
-    bool accept(AppData & rApp);
+    bool accept(AppData* appData);
 
     //! \brief Close the socket connection.
     void close();
 
-    //! \brief Receive application data to rApp.
-    bool receiveApplicationData(AppData & rApp);
+    //! \brief Receive application data to appData.
+    bool receiveApplicationData(AppData* appData);
 
     //! \brief Return true if invoker wait for process exit status
     bool isReportAppExitStatusNeeded() const;
