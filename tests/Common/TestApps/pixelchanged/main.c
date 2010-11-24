@@ -1,8 +1,21 @@
-/*
-*XGetImage(Display *display, Drawable d, int x, int y, unsigned
-              int width, unsigned int height, unsigned long plane_mask, int
-              format);
-*/
+/***************************************************************************
+**
+** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+** All rights reserved.
+** Contact: Nokia Corporation (directui@nokia.com)
+**
+** This file is part of applauncherd
+**
+** If you have questions regarding the use of this file, please contact
+** Nokia at directui@nokia.com.
+**
+** This library is free software; you can redistribute it and/or
+** modify it under the terms of the GNU Lesser General Public
+** License version 2.1 as published by the Free Software Foundation
+** and appearing in the file LICENSE.LGPL included in the packaging
+** of this file.
+**
+****************************************************************************/
 
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
@@ -192,4 +205,7 @@ int main(int argc, char **argv) {
             if (quit_when_found) return 0;
         }
     }
+    
+    return 0;
 }
+

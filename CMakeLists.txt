@@ -5,7 +5,10 @@ cmake_policy(VERSION 2.6)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# Default C++-flags. Sub-builds might alter these.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -g -O2 -Wl,--as-needed")
+# Default C-flags. Sub-builds might alter these.
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -O2")
 
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")

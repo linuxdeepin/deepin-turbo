@@ -1,7 +1,7 @@
 # Set sources
-set(SRC fala_gettime_ms.cpp)
+set(SRC fala_gettime_ms.c)
 
-set(CMAKE_CXX_FLAGS "-O3")
+set(CMAKE_C_FLAGS "-W -Wall -O3")
 
 # Link statically to minimize startup time.
 set(CMAKE_EXE_LINKER_FLAGS "-static")
