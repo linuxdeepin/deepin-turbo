@@ -23,7 +23,6 @@
 #include "mbooster.h"
 #include "qtbooster.h"
 #include "wrtbooster.h"
-#include "monitorbooster.h"
 
 void Ut_BoosterFactory::initTestCase()
 {}
@@ -45,14 +44,10 @@ void Ut_BoosterFactory::testCreate()
     QVERIFY(dynamic_cast<WRTBooster *>(booster));
     delete booster;
 
-    booster = BoosterFactory::create('k');
-    QVERIFY(dynamic_cast<MonitorBooster *>(booster));
-    delete booster;
-
     for (int i = 0; i < 256; i++)
     {
         unsigned char t = static_cast<unsigned char>(i);
-        if (t != 'q' && t != 'm' && t != 'w' && t != 'k')
+        if (t != 'q' && t != 'm' && t != 'w')
         {
             QVERIFY(!BoosterFactory::create(t));
         }
@@ -76,19 +71,17 @@ void Ut_BoosterFactory::testGetBoosterTypeForPid()
     BoosterFactory::setProcessIdToBooster('q', 1);
     BoosterFactory::setProcessIdToBooster('m', 2);
     BoosterFactory::setProcessIdToBooster('w', 3);
-    BoosterFactory::setProcessIdToBooster('k', 4);
 
     QVERIFY(BoosterFactory::getBoosterTypeForPid(1) == 'q');
     QVERIFY(BoosterFactory::getBoosterTypeForPid(2) == 'm');
     QVERIFY(BoosterFactory::getBoosterTypeForPid(3) == 'w');
-    QVERIFY(BoosterFactory::getBoosterTypeForPid(4) == 'k');
 
     QVERIFY(BoosterFactory::getBoosterTypeForPid(0) == 0);
 
     for (int i = 0; i < 256; i++)
     {
         unsigned char t = static_cast<unsigned char>(i);
-        if (t != 'q' && t != 'm' && t != 'w' && t != 'k')
+        if (t != 'q' && t != 'm' && t != 'w')
         {
             BoosterFactory::setProcessIdToBooster(t, 1000);
             QVERIFY(BoosterFactory::getBoosterTypeForPid(1000) == 0);
@@ -101,17 +94,15 @@ void Ut_BoosterFactory::testGetBoosterPidForType()
     BoosterFactory::setProcessIdToBooster('q', 145);
     BoosterFactory::setProcessIdToBooster('m', 245);
     BoosterFactory::setProcessIdToBooster('w', 345);
-    BoosterFactory::setProcessIdToBooster('k', 445);
 
     QVERIFY(BoosterFactory::getBoosterPidForType('q') == 145);
     QVERIFY(BoosterFactory::getBoosterPidForType('m') == 245);
     QVERIFY(BoosterFactory::getBoosterPidForType('w') == 345);
-    QVERIFY(BoosterFactory::getBoosterPidForType('k') == 0);   // shouldn't be used!!!
 
     for (int i = 0; i < 256; i++)
     {
         unsigned char t = static_cast<unsigned char>(i);
-        if (t != 'q' && t != 'm' && t != 'w' && t != 'k')
+        if (t != 'q' && t != 'm' && t != 'w')
         {
             QVERIFY(BoosterFactory::getBoosterPidForType(t) == 0);
         }

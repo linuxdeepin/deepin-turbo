@@ -24,7 +24,6 @@
 #include "mbooster.h"
 #include "qtbooster.h"
 #include "wrtbooster.h"
-#include "monitorbooster.h"
 #include "boosterfactory.h"
 
 #include <cstdlib>
@@ -148,7 +147,6 @@ void Daemon::run()
     forkBooster(MBooster::type());
     forkBooster(QtBooster::type());
     forkBooster(WRTBooster::type());
-    forkBooster(MonitorBooster::type());
 
     // Main loop
     while (true)
@@ -160,58 +158,45 @@ void Daemon::run()
         ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
         if (count)
         {
-            // Read and store the pid of invoker if the message was not from
-            // a monitor booster it won't send the pid.
-            if (msg != MonitorBooster::type())
+            // Read pid of peer invoker
+            pid_t invokerPid;
+            count = read(m_pipefd[0], reinterpret_cast<void *>(&invokerPid), sizeof(pid_t));
+
+            if (count < static_cast<ssize_t>(sizeof(pid_t)))
             {
-                // Read pid of peer invoker
-                pid_t invokerPid;
-                count = read(m_pipefd[0], reinterpret_cast<void *>(&invokerPid), sizeof(pid_t));
-
-                if (count < static_cast<ssize_t>(sizeof(pid_t)))
-                {
-                    Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
-                }
-                else
-                {
-                    Logger::logInfo("Daemon: invoker's pid: %d \n", invokerPid);
-                }
-
-                if (invokerPid != 0)
-                {
-                    // Store booster - invoker pid pair
-                    m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
-                }
-
-                // Read booster respawn delay
-                int delay;
-                count = read(m_pipefd[0], reinterpret_cast<void *>(&delay), sizeof(int));
-
-                if (count < static_cast<ssize_t>(sizeof(int)))
-                {
-                    Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
-                }
-                else
-                {
-                    Logger::logInfo("Daemon: respawn delay: %d \n", delay);
-                }
-
-                // Fork a new booster of the given type
-
-                // 2nd param guarantees some time for the just launched application
-                // to start up before forking new booster. Not doing this would
-                // slow down the start-up significantly on single core CPUs.
-
-                forkBooster(msg, delay);
+                Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
             }
-            // It was from a monitor booster, that means that theme / language has
-            // changed so we need to reset (kill) MBooster and WRTBooster.
             else
             {
-                // Kill MBooster and WRTBooster
-                killProcess(BoosterFactory::getBoosterPidForType(MBooster::type()));
-                killProcess(BoosterFactory::getBoosterPidForType(WRTBooster::type()));
+                Logger::logInfo("Daemon: invoker's pid: %d \n", invokerPid);
             }
+
+            if (invokerPid != 0)
+            {
+                // Store booster - invoker pid pair
+                m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
+            }
+
+            // Read booster respawn delay
+            int delay;
+            count = read(m_pipefd[0], reinterpret_cast<void *>(&delay), sizeof(int));
+
+            if (count < static_cast<ssize_t>(sizeof(int)))
+            {
+                Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+            }
+            else
+            {
+                Logger::logInfo("Daemon: respawn delay: %d \n", delay);
+            }
+
+            // Fork a new booster of the given type
+
+            // 2nd param guarantees some time for the just launched application
+            // to start up before forking new booster. Not doing this would
+            // slow down the start-up significantly on single core CPUs.
+
+            forkBooster(msg, delay);
         }
         else
         {

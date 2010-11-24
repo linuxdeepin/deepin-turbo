@@ -35,7 +35,7 @@ int MBooster::m_ProcessID = 0;
 int MBooster::m_sighupFd[2];
 struct sigaction MBooster::m_oldSigAction;
 
-MBooster::MBooster()
+MBooster::MBooster() : m_item(0)
 {
     // Install signals handler e.g. to exit cleanly if launcher dies.
     // This is a problem because MBooster runs a Qt event loop.
@@ -149,11 +149,21 @@ bool MBooster::readCommand()
     // exit from event loop when invoker is ready to connect
     connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
 
+    // enable theme change handler
+    m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
+    connect(m_item, SIGNAL(valueChanged()), this, SLOT(notifyThemeChange()));
+
     // start another thread to listen connection from invoker
     QtConcurrent::run(this, &MBooster::accept);
 
     // Run event loop so MApplication and MApplicationWindow objects can receive notifications
     MApplication::exec();
+
+    // disable theme change handler
+    disconnect(m_item, 0, this, 0);
+    delete m_item;
+    m_item = NULL;
+
 
     // Restore signal handlers to previous values
     restoreUnixSignalHandlers();
@@ -173,6 +183,13 @@ bool MBooster::readCommand()
     }
     return true;
 }
+
+void MBooster::notifyThemeChange()
+{
+    MApplication::quit();
+    ::_exit(EXIT_SUCCESS);
+}
+
 
 void MBooster::accept()
 {

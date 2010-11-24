@@ -1,3 +1,10 @@
+applauncherd (0.15.2) unstable; urgency=low
+
+  * Fixes: NB#205006 - Redundant(?) booster-monitor processes takes a lot of memory
+  * Changed: Modified startup time tests to support command line starting and parameters
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 23 Nov 2010 17:10:56 +0200
+
 applauncherd (0.15.1) stable; urgency=low
 
   * Fixes: NB#201779 - cheap way how to load all libraries correct 

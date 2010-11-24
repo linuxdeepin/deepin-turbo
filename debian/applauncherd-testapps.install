@@ -15,6 +15,7 @@ usr/bin/fala_wl.launch
 usr/bin/fala_wol
 usr/bin/fala_wol.sh
 usr/bin/fala_gettime
+usr/bin/fala_gettime_ms
 usr/bin/fala_pixelchanged
 usr/share/dbus-1/services/com.nokia.fala_testapp.service
 usr/share/dbus-1/services/com.nokia.fala_wl.service

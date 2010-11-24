@@ -23,6 +23,7 @@
 #include "booster.h"
 #include <QObject>
 #include <QSocketNotifier>
+#include <MGConfItem>
 #include <tr1/memory>
 
 using std::tr1::shared_ptr;
@@ -118,6 +119,7 @@ private:
     //! yet transformed into a running application
     static const string m_temporaryProcessName;
 
+    //! wait for socket connection
     void accept();
 
     //! Socket pair used to get SIGHUP
@@ -129,10 +131,17 @@ private:
     //! Old sigaction struct
     static struct sigaction m_oldSigAction;
 
+    //! GConf item to listen theme change
+    MGConfItem* m_item;
+
 private slots:
 
     //! Qt signal handler for SIGHUP.
     void handleSigHup();
+
+    //! Qt signal handler for theme change
+    void notifyThemeChange();
+
 
 signals:
 
