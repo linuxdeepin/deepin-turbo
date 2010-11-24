@@ -1,0 +1,167 @@
+Name: meegotouch-applauncherd
+Summary: Application launcher for fast startup
+Version: 0.15.2
+Release: 1
+Group: System/Daemons
+License: LGPLv2+
+URL: http://meego.gitorious.com/meegotouch/meegotouch-applauncherd
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Patches:
+Description: |
+    Application invoker and launcher daemon that speed up
+    application startup time.
+PkgConfigBR:
+    - QtCore
+    - meegotouch
+    - x11
+    - xtst
+    - xextproto
+    - xi
+    - xext
+PkgBR:
+    - cmake
+Builder: make
+SubPackages:
+    - Name: devel
+      Group: Development/Tools
+      Summary: Development files for launchable applications
+      Description: |
+         Development files for creating applications that can be launched 
+         using meegotouch-applauncherd.
+      Files:
+        - "%{_libdir}/pkgconfig/meegotouch-boostable.pc"
+        - "%{_libdir}/applauncherd-tests/ut_boosterfactory"
+        - "%{_libdir}/applauncherd-tests/ut_wrtbooster"
+        - "%{_libdir}/libapplauncherd.so"
+        - "%{_libdir}/pkgconfig/qt-boostable.pc"
+        - "%doc %{_docdir}/applauncherd/README"
+        - "%{_datadir}/qt4/mkspecs/features/meegotouch-boostable.prf"
+
+    - Name: testapps
+      Group: Development/Tools
+      Summary: Test applications for launchable applications
+      Description: |
+         Test applications used for testing meegotouch-applauncherd.
+      Files:
+        - "%{_bindir}/fala_ft_hello"
+        - "%{_bindir}/fala_gettime_ms"
+        - "%{_bindir}/fala_pixelchanged"
+        - "%{_bindir}/fala_wl"
+        - "%{_bindir}/fala_wl.launch"
+        - "%{_bindir}/fala_wol"
+        - "%{_bindir}/fala_wol.sh"
+        - "%{_bindir}/fala_gettime"
+        - "%{_bindir}/fala_status.launch"
+        - "%{_bindir}/fala_ft_hello1"
+        - "%{_bindir}/fala_ft_hello2"
+        - "%{_bindir}/fala_ft_hello.launch"
+        - "%{_bindir}/fala_ft_hello1.launch"
+        - "%{_bindir}/fala_ft_hello2.launch"
+        - "%{_bindir}/fala_ft_creds1"
+        - "%{_bindir}/fala_ft_creds1.launch"
+        - "%{_bindir}/fala_ft_creds2"
+        - "%{_bindir}/fala_ft_creds2.launch"
+        - "%{_bindir}/fala_testapp"
+        - "%{_bindir}/fala_ft_themetest.launch"
+        - "%{_bindir}/fala_ft_themetest"
+        - "%{_datadir}/themes/base/meegotouch/fala_ft_themetest/svg/baa.svg"
+        - "%{_datadir}/dbus-1/services/com.nokia.fala_testapp.service"
+
+    - Name: tests
+      Group: Development/Tools
+      Summary: Test scripts for launchable applications
+      Description: |
+         Test scripts used for testing meegotouch-applauncherd.
+      Requires: "%{name}-testapps = %{version}-%{release}"
+      Files:
+      - "%{_datadir}/applauncherd-M-art-tests/tests.xml"
+      - "%{_datadir}/applauncherd-M-bug-tests/tests.xml"
+      - "%{_datadir}/applauncherd-M-functional-tests/tests.xml"
+      - "%{_datadir}/applauncherd-M-performance-tests/tests.xml"
+      - "%{_datadir}/applauncherd-tests"
+      - "%{_libdir}/applauncherd-tests/tests.xml"
+      - "%{_libdir}/applauncherd-tests/ut_booster"
+      - "%{_libdir}/applauncherd-tests/ut_connection"
+      - "%{_libdir}/applauncherd-tests/ut_daemon"
+      - "%{_libdir}/applauncherd-tests/ut_mbooster"
+      - "%{_libdir}/applauncherd-tests/ut_qtbooster"
+      - "%{_datadir}/applauncherd-M-testscripts/check_pipes.py"
+      - "%{_datadir}/applauncherd-M-testscripts/check_pipes.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/check_pipes.pyo"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.py"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.pyo"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.sh"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.py"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.pyo"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.sh"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.py"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.pyo"
+      - "%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.sh"
+      - "%{_datadir}/applauncherd-M-testscripts/tc_theming.rb"
+      - "%{_datadir}/applauncherd-M-testscripts/test-func-launcher.py"
+      - "%{_datadir}/applauncherd-M-testscripts/test-func-launcher.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/test-func-launcher.pyo"
+      - "%{_datadir}/applauncherd-M-testscripts/test-perf-mbooster.py"
+      - "%{_datadir}/applauncherd-M-testscripts/test-perf-mbooster.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/test-perf-mbooster.pyo"
+      - "%{_datadir}/applauncherd-M-testscripts/ts_prestartapp.rb"
+      - "%{_datadir}/applauncherd-M-testscripts/fala_wid"
+      - "%{_datadir}/applauncherd-M-testscripts/fala_xres_wl"
+      - "%{_datadir}/applauncherd-M-testscripts/fala_xres_wol"
+      - "%{_datadir}/applauncherd-M-testscripts/test-perf.rb"
+      - "%{_datadir}/applauncherd-M-testscripts/utils.py"
+      - "%{_datadir}/applauncherd-M-testscripts/utils.pyc"
+      - "%{_datadir}/applauncherd-M-testscripts/utils.pyo"
+      - "%{_datadir}/themes/base/meegotouch/fala_ft_themetest/style/fala_ft_themetest.css"
+      - "%ghost /usr/share/applauncherd-art-tests/tests.xml"
+      - "%ghost /usr/share/applauncherd-bug-tests/tests.xml"
+      - "%ghost /usr/share/applauncherd-functional-tests/tests.xml"
+      - "%ghost /usr/share/applauncherd-performance-tests/tests.xml"
+      - "%ghost /usr/share/applauncherd-testscripts/check_pipes.py"
+      - "%ghost /usr/share/applauncherd-testscripts/check_pipes.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/check_pipes.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/fala_wid"
+      - "%ghost /usr/share/applauncherd-testscripts/fala_xres_wl"
+      - "%ghost /usr/share/applauncherd-testscripts/fala_xres_wol"
+      - "%ghost /usr/share/applauncherd-testscripts/get-coordinates.rb"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.sh"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.sh"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.py"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.sh"
+      - "%ghost /usr/share/applauncherd-testscripts/tc_theming.rb"
+      - "%ghost /usr/share/applauncherd-testscripts/test-func-launcher.py"
+      - "%ghost /usr/share/applauncherd-testscripts/test-func-launcher.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/test-func-launcher.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/test-perf-mbooster.py"
+      - "%ghost /usr/share/applauncherd-testscripts/test-perf-mbooster.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/test-perf-mbooster.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/test-perf.rb"
+      - "%ghost /usr/share/applauncherd-testscripts/test-security.py"
+      - "%ghost /usr/share/applauncherd-testscripts/test-security.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/test-security.pyo"
+      - "%ghost /usr/share/applauncherd-testscripts/ts_prestartapp.rb"
+      - "%ghost /usr/share/applauncherd-testscripts/utils.py"
+      - "%ghost /usr/share/applauncherd-testscripts/utils.pyc"
+      - "%ghost /usr/share/applauncherd-testscripts/utils.pyo"
+      - "%ghost /usr/share/applications/fala_wl.desktop"
+      - "%ghost /usr/share/applications/fala_wol.desktop"
+      - "%ghost /usr/share/dbus-1/services/com.nokia.fala_wl.service"
+      - "%ghost /usr/share/dbus-1/services/com.nokia.fala_wol.service"
+      - "%ghost /usr/share/qt4/mkspecs/features/qt-boostable.prf"
+Files:
+    - "%{_bindir}/invoker"
+    - "%{_bindir}/applauncherd.bin"
+    - "%{_bindir}/applauncherd"
+    - "%config %{_sysconfdir}/xdg/autostart/applauncherd.desktop"
