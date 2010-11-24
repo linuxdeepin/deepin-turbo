@@ -1,5 +1,9 @@
 applauncherd (0.15.2) unstable; urgency=low
 
+  * Changes: License plates added to some test apps.
+  * Changes: fala_gettime.cpp => fala_gettime.c, fala_gettime_ms.cpp => fala_gettime_ms.c.
+  * Changes: Default C-flags added to top-level CMakeLists.
+  * Changes: pixelchanged test app: use pkg-config for x11, xtst and xi. C flags set correctly. Warnings fixed.
   * Fixes: NB#205006 - Redundant(?) booster-monitor processes takes a lot of memory
   * Changed: Modified startup time tests to support command line starting and parameters
 
