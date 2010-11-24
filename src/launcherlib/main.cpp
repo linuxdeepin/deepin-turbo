@@ -37,12 +37,6 @@ void reapZombies(int)
     }
 }
 
-//! Signal handler to kill booster
-void exitBooster(int)
-{
-    Logger::logErrorAndDie(EXIT_FAILURE, "due to parent process applauncherd died, booster exit too \n");
-}
-
 void exitLauncher(int)
 {
     exit(0);
@@ -64,7 +58,6 @@ Q_DECL_EXPORT int main(int argc, char * argv[])
 
     // Install signal handlers
     signal(SIGCHLD, reapZombies);
-    signal(SIGHUP,  exitBooster);
     signal(SIGTERM, exitLauncher);
 
     // Create main daemon instance

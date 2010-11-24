@@ -25,7 +25,6 @@
 #include <MApplication>
 #include <sys/socket.h>
 
-
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
 #endif
@@ -41,23 +40,7 @@ int WRTBooster::m_sighupFd[2];
 struct sigaction WRTBooster::m_oldSigAction;
 
 WRTBooster::WRTBooster() : m_item(0)
-{
-    // Install signals handler e.g. to exit cleanly if launcher dies.
-    // This is a problem because WRTBooster runs a Qt event loop.
-    setupUnixSignalHandlers();
-
-    // Create socket pair for SIGTERM
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, m_sighupFd))
-    {
-       Logger::logError("Couldn't create HUP socketpair");
-    }
-    else
-    {
-        // Install a socket notifier on the socket
-        m_snHup.reset(new QSocketNotifier(m_sighupFd[1], QSocketNotifier::Read, this));
-        connect(m_snHup.get(), SIGNAL(activated(int)), this, SLOT(handleSigHup()));
-    }
-}
+{}
 
 //
 // All this signal handling code is taken from Qt's Best Practices:
@@ -72,6 +55,7 @@ void WRTBooster::hupSignalHandler(int)
 
 void WRTBooster::handleSigHup()
 {
+    MApplication::quit();
     ::_exit(EXIT_SUCCESS);
 }
 
@@ -163,6 +147,25 @@ bool WRTBooster::receiveDataFromInvoker()
     // Start another thread to listen connection from invoker
     QtConcurrent::run(this, &WRTBooster::accept);
 
+    // Create socket pair for SIGHUP
+    bool handlerIsSet = false;
+    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, m_sighupFd))
+    {
+        Logger::logError("WRTBooster: Couldn't create HUP socketpair");
+    }
+    else
+    {
+        // Install signal handler e.g. to exit cleanly if launcher dies.
+        // This is a problem because MBooster runs a Qt event loop.
+        setupUnixSignalHandlers();
+
+        // Install a socket notifier on the socket
+        connect(new QSocketNotifier(m_sighupFd[1], QSocketNotifier::Read, this),
+                SIGNAL(activated(int)), this, SLOT(handleSigHup()));
+
+        handlerIsSet = true;
+    }
+
     // Run event loop so MApplication and MApplicationWindow objects can receive notifications
     MApplication::exec();
 
@@ -172,7 +175,10 @@ bool WRTBooster::receiveDataFromInvoker()
     m_item = NULL;
 
     // Restore signal handlers to previous values
-    restoreUnixSignalHandlers();
+    if (handlerIsSet)
+    {
+        restoreUnixSignalHandlers();
+    }
 
     // Receive application data from the invoker
     if(!connection()->receiveApplicationData(appData()))

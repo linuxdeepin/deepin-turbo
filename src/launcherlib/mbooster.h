@@ -142,7 +142,6 @@ private slots:
     //! Qt signal handler for theme change
     void notifyThemeChange();
 
-
 signals:
 
     void connectionAccepted();

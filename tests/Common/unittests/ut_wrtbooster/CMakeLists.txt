@@ -1,11 +1,10 @@
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 
 # Set sources
-set(SRC ut_wrtbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp
-   ${LAUNCHER}/logger.cpp ${LAUNCHER}/wrtbooster.cpp)
+set(SRC ut_wrtbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${LAUNCHER}/wrtbooster.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_wrtbooster.h  ${LAUNCHER}/wrtbooster.h)
+set(MOC_HDRS ut_wrtbooster.h ${LAUNCHER}/wrtbooster.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})

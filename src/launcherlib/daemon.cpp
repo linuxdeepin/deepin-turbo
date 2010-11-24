@@ -228,6 +228,7 @@ void Daemon::forkBooster(char type, int sleepTime)
     {
         // Reset used signal handlers
         signal(SIGCHLD, SIG_DFL);
+        signal(SIGTERM, SIG_DFL);
 
         // Will get this signal if applauncherd dies
         prctl(PR_SET_PDEATHSIG, SIGHUP);
