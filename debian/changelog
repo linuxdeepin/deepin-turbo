@@ -1,5 +1,14 @@
-applauncherd (0.15.2) unstable; urgency=low
+applauncherd (0.15.2) stable; urgency=low
 
+  * Changes: Fixed crash of booster-m and booster-w / non-quitting booster-m caused
+             by erroneous handling of SIGHUP. No more QThread warnings related to
+             QSocketNotifier. Removed SIGHUP handler from main.cpp
+             (Set in mbooster.cpp and wrtbooster.cpp. Default behavior is 
+              always exit() anyway).
+  * Changes: A bit confusing Booster::readCommand() renamed to
+    Booster::receiveDataFromInvoker().
+  * Changes: Access Booster::m_connection and Booster::m_appData through setter
+    /getter in derived classes.
   * Changes: License plates added to some test apps.
   * Changes: fala_gettime.cpp => fala_gettime.c, fala_gettime_ms.cpp => fala_gettime_ms.c.
   * Changes: Default C-flags added to top-level CMakeLists.
@@ -7,7 +16,7 @@ applauncherd (0.15.2) unstable; urgency=low
   * Fixes: NB#205006 - Redundant(?) booster-monitor processes takes a lot of memory
   * Changed: Modified startup time tests to support command line starting and parameters
 
- -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 23 Nov 2010 17:10:56 +0200
+ -- Jussi Lind <jussi.lind@nokia.com>  Wed, 24 Nov 2010 19:34:58 +0200
 
 applauncherd (0.15.1) stable; urgency=low
 
