@@ -144,7 +144,7 @@ protected:
      *
      * \return true on success
      */
-    virtual bool readCommand();
+    virtual bool receiveDataFromInvoker();
 
     /*!
      * \brief Return the communication socket used by a Booster.

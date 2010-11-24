@@ -101,7 +101,7 @@ protected:
     virtual const string & socketId() const;
 
     //! \reimp
-    virtual bool readCommand();
+    virtual bool receiveDataFromInvoker();
 
 private:
 

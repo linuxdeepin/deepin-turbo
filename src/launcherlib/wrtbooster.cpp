@@ -148,7 +148,7 @@ int WRTBooster::processId()
     return m_ProcessID;
 }
 
-bool WRTBooster::readCommand()
+bool WRTBooster::receiveDataFromInvoker()
 {
     // Setup the conversation channel with the invoker.
     setConnection(new Connection(socketId()));

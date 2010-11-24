@@ -85,12 +85,12 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
 
     // Wait and read commands from the invoker
     Logger::logNotice("Booster: Wait for message from invoker");
-    if (!readCommand()) {
+    if (!receiveDataFromInvoker()) {
         Logger::logError("Booster: Couldn't read command\n");
     }
 
     // Give the process the real application name now that it
-    // has been read from invoker in readCommand().
+    // has been read from invoker in receiveDataFromInvoker().
     renameProcess(initialArgc, initialArgv);
 
     // Send parent process a message that it can create a new booster,
@@ -129,7 +129,7 @@ void Booster::sendDataToParent()
     }
 }
 
-bool Booster::readCommand()
+bool Booster::receiveDataFromInvoker()
 {
     // Setup the conversation channel with the invoker.
     m_connection = new Connection(socketId());

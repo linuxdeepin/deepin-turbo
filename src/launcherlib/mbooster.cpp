@@ -141,7 +141,7 @@ int MBooster::processId()
     return m_ProcessID;
 }
 
-bool MBooster::readCommand()
+bool MBooster::receiveDataFromInvoker()
 {
     // Setup the conversation channel with the invoker.
     setConnection(new Connection(socketId()));
