@@ -88,18 +88,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
     else
       system "mcetool --set-tklock-mode=unlocked"
     end        
-    #restart duihome so that qttasserver notices it
-    #NOTE: Remove the cludge after duihome -> meegotouchhome renaming is complete
-    if not system("/sbin/initctl restart xsession/duihome")
-      system("/sbin/initctl restart xsession/mthome")
-    end
 
+     
     system("initctl stop xsession/sysuid")
     system("initctl stop xsession/applifed")
     system("initctl stop xsession/search")
+    system("initctl restart xsession/mthome")
     system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
-#    system("pkill call-history")
     sleep(4)
+    system("initctl stop xsession/mprogressindicator")
+
 
   end
   
@@ -124,7 +122,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
     if @options[:command] != nil
       puts "#{GET_COORDINATES_SCRIPT} -g"
       system "#{GET_COORDINATES_SCRIPT} -g"
-#      system "ls -l -s -R /usr/share/applications"
+      # Check the avarage system load is under 0.3
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 120 -d"
+
       start_command ="`#{PIXELCHANGED_BINARY} -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       puts "start command: #{start_command}"
       system "#{start_command}"
@@ -134,9 +134,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     else
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
+      
     
       puts @pos
       sleep (2)
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 120 -d"
       system "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       sleep (4)
       system "pkill #{appName}"
@@ -151,7 +153,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     
     # First line tells when the button is released
     @start_time = lines[0]
-    puts "Clicked: #{lines[0]}"
+    puts "Started: #{lines[0]}"
     # Second one when the first pixel has changed its color
     @end_time = lines[1]
     puts "Pixel changed: #{lines[1]}"
