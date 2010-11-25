@@ -93,10 +93,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
     system("initctl stop xsession/sysuid")
     system("initctl stop xsession/applifed")
     system("initctl stop xsession/search")
-    system("/sbin/initctl restart xsession/mthome")
+    system("initctl restart xsession/mthome")
     system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
     sleep(4)
-    system "pkill MProgressIndicator"
+    system("initctl stop xsession/MProgressIndicator")
+
 
   end
   
@@ -133,6 +134,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     else
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
+      
     
       puts @pos
       sleep (2)
@@ -151,7 +153,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     
     # First line tells when the button is released
     @start_time = lines[0]
-    puts "Clicked: #{lines[0]}"
+    puts "Started: #{lines[0]}"
     # Second one when the first pixel has changed its color
     @end_time = lines[1]
     puts "Pixel changed: #{lines[1]}"
