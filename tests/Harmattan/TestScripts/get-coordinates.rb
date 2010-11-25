@@ -67,7 +67,7 @@ sut = TDriver.sut(:Id=> 'sut_qt_maemo')
 appOnTop = sut.application()	
 
 # Stop the MProgressIndicator
-system("initctl stop xsession/MProgressIndicator")
+system("initctl stop xsession/mprogressindicator")
 
 while appOnTop.attribute('objectName') != 'meegotouchhome'
       fullName = appOnTop.attribute('FullName')

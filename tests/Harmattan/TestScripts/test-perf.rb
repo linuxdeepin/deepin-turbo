@@ -96,7 +96,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     system("initctl restart xsession/mthome")
     system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
     sleep(4)
-    system("initctl stop xsession/MProgressIndicator")
+    system("initctl stop xsession/mprogressindicator")
 
 
   end
