@@ -176,7 +176,7 @@ class TC_Theming < Test::Unit::TestCase
                     "/tmp/testshot3.png", "/tmp/testshot4.png")
     end
     
-    def test_booster_killer
+    def test_theme_change_booster_restart 
         m_pid = `pgrep -n booster-m`
         w_pid = `pgrep -n booster-w`
         print "Current booster-m %s" % m_pid

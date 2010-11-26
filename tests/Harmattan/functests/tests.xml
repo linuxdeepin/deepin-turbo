@@ -39,10 +39,6 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_012</step>
       </case>
 
-      <case name="applauncherd-usage" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_013_applauncherd_usage</step>
-      </case>
-
       <case name="invoker_search_prog" type="Functional" description="Test that invoker finds binaries from PATH" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_search_prog</step>
       </case>
