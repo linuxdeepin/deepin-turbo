@@ -7,7 +7,7 @@
 
 Name:       meegotouch-applauncherd
 Summary:    Application launcher for fast startup
-Version:    0.15.2
+Version:    0.15.3
 Release:    1
 Group:      System/Daemons
 License:    LGPLv2+
