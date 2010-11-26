@@ -1,10 +1,16 @@
+applauncherd (0.15.4) stable; urgency=low
+
+  * Changes: Modified component names in startup time tests
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Fri, 26 Nov 2010 16:47:26 +0200
+	
 applauncherd (0.15.3) stable; urgency=low
 
   * Implemented: SWP#DUI-4131
   * Changes: Changed warning message when library can't be preloaded
   * Changes: Modified the startup time tests to be more reliable
 
- -- Nimika Keshri <nimika.1.keshri.nokia.com>  Fri, 26 Nov 2010 13:47:26 +0200
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Fri, 26 Nov 2010 13:47:26 +0200
 
 applauncherd (0.15.2) stable; urgency=low
 
