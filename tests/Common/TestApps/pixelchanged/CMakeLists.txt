@@ -1,8 +1,6 @@
 # Set sources
 set(SRC main.c)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -Wall")
-
 # This is needed for MeeGo only?
 pkg_check_modules(XI xi REQUIRED)
 include_directories(${XI_INCLUDE_DIRS})
