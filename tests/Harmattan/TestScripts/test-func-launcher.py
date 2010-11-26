@@ -313,21 +313,6 @@ class launcher_tests (unittest.TestCase):
 
         self.assert_(success, "invoker terminated before delay elapsed")
 
-    def test_013_applauncherd_usage(self):
-        """
-        Test applauncherd.bin help
-        """
-        st, op = commands.getstatusoutput("applauncherd.bin --help")
-        self.assert_(st == 0, "Usage not printed")
-        str = op.split('\n')
-        self.assert_(str[0] == 'Usage: applauncherd [options]', "usage not printed properly")
-
-        # exec invoker --creds (for coverage)
-        run_app_as_user("invoker --creds")
-
-        # exec invoker --help (for coverage)
-        run_app_as_user("invoker --help")
-
 
     def test_014_fd_booster_m(self):
         """

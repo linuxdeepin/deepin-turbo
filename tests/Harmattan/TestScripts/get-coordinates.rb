@@ -66,11 +66,17 @@ appName=options[:application]
 sut = TDriver.sut(:Id=> 'sut_qt_maemo')    
 appOnTop = sut.application()	
 
-while appOnTop.attribute('objectName') != 'meegotouchhome'
-      fullName = appOnTop.attribute('FullName')
+# Stop the MProgressIndicator
+system("initctl stop xsession/mprogressindicator")
 
+while appOnTop.attribute('objectName') != 'meegotouchhome'
+  # Killing the topmost application with xkill
+  system "DISPLAY=:0 xkill &"
+  sleep(0.5)
+  sut.tap_screen(50, 50)
+#      fullName = appOnTop.attribute('FullName')
 #      puts "Now killing #{fullName} from the top"
-      system "pkill #{fullName}"
+#      system "pkill #{fullName}"
       appOnTop = sut.application()
 end
 
@@ -94,7 +100,7 @@ if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
   ypos = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('y')
   @pos = "#{xpos}x#{ypos}"
   
-  print @pos
+  puts @pos
   exit 0
 else
   #icon does not

@@ -111,16 +111,18 @@ class launcher_tests (unittest.TestCase):
         #self.kill_process(LAUNCHER_BINARY)
 
         process_handle = run_app_as_user(PREFERED_APP)
-        process_id = wait_for_app(PREFERED_APP, 5)
-        print process_id
+        process_id = wait_for_app(PREFERED_APP, 50)
+        debug("Pid of ",PREFERED_APP," is :",process_id)
+        time.sleep(2)
         kill_process(PREFERED_APP)
-        time.sleep(4)
+        time.sleep(2)
 
         process_handle = run_app_as_user(PREFERED_APP)
-        process_id1 = wait_for_app(PREFERED_APP, 5)
-        print process_id1
+        process_id1 = wait_for_app(PREFERED_APP, 50)
+        debug("Pid of ",PREFERED_APP," is :",process_id1)
+        time.sleep(2)
         kill_process(PREFERED_APP)
-        time.sleep(4)
+        time.sleep(2)
 
         process_id1 = get_pid(PREFERED_APP)
         print process_id1
@@ -141,11 +143,13 @@ class launcher_tests (unittest.TestCase):
 
         for app in LAUNCHABLE_APPS:
             p = run_app_as_user(app)
-            pid = wait_for_app(app, timeout = 10, sleep = 1)
+            pid = wait_for_app(app, timeout = 100, sleep = 1)
+            time.sleep(6)
+            debug("Pid of ",app," is :",pid)
 
             if pid == None:
                 kill_launched(pidlist)
-                self.fail("%s was not launched using applauncherd")
+                self.fail("%s was not launched using applauncherd",app)
 
             pidlist.append(pid)
 
@@ -163,12 +167,13 @@ class launcher_tests (unittest.TestCase):
         #y = commands.getstatusoutput(pgrep appname)
         #len(y[-1].split(' ')) == 1
         process_handle = run_app_as_user(PREFERED_APP)
-        process_id = wait_for_app(PREFERED_APP)
-        debug("PID of first %s" % process_id)
+        time.sleep(2)
+        process_id = wait_for_app(PREFERED_APP, 100)
+        debug("PID of 1st %s" % process_id)
 
         process_handle1 = run_app_as_user(PREFERED_APP)
         time.sleep(2)
-        process_id = wait_for_app(PREFERED_APP)
+        process_id = wait_for_app(PREFERED_APP,100)
         debug("PID of 2nd %s" % process_id)
 
         kill_process(PREFERED_APP)
@@ -186,7 +191,7 @@ class launcher_tests (unittest.TestCase):
             #in a global dictionary, append the pid
             process_handle = run_app_as_user(app)
 
-        time.sleep(8)
+        time.sleep(30)
 
         process_id = get_pid('fala_ft_hello')
         pid_list = process_id.split()
@@ -209,14 +214,16 @@ class launcher_tests (unittest.TestCase):
         # Launch the app with invoker using --wait-term
         p = run_app_as_user('invoker --type=m --wait-term %s' % app_path)
 
-        time.sleep(2)
+        time.sleep(4)
 
         # Retrieve their pids
         invoker_pid = wait_for_app('invoker')
+        time.sleep(4)
         app_pid = wait_for_app('fala_ft_hello')
+        time.sleep(4)
 
-        print "invoker_pid '%s'" % invoker_pid
-        print "app_pid '%s'" % app_pid
+        debug("invoker_pid ", invoker_pid)
+        debug("app_pid " ,app_pid)
 
         # Make sure that both apps started
         self.assert_(invoker_pid != None, "invoker not executed?")
@@ -225,7 +232,7 @@ class launcher_tests (unittest.TestCase):
         # Send SIGTERM to invoker, the launched app should die
         kill_process(None, invoker_pid, 15)
 
-        time.sleep(2)
+        time.sleep(8)
 
         # This should be None
         app_pid2 = get_pid('fala_ft_hello')
@@ -252,7 +259,9 @@ class launcher_tests (unittest.TestCase):
         time.sleep(5)
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
-        print op
+        time.sleep(5)
+        
+        debug("The pid of applauncherd in daemon mode is :", op) 
 
         # filter some cruft out from the output and see how many
         # instances are running
@@ -265,9 +274,10 @@ class launcher_tests (unittest.TestCase):
 
         # try to launch an app
         run_app_as_user('/usr/bin/fala_ft_hello')
-        time.sleep(2)
+        time.sleep(6)
 
         pid = wait_for_app('fala_ft_hello')
+        time.sleep(6)
 
         if pid != None:
             kill_process(apppid = pid)
@@ -312,21 +322,6 @@ class launcher_tests (unittest.TestCase):
         Popen(['pkill', 'fala_ft_hello']).wait()
 
         self.assert_(success, "invoker terminated before delay elapsed")
-
-    def test_013_applauncherd_usage(self):
-        """
-        Test applauncherd.bin help
-        """
-        st, op = commands.getstatusoutput("applauncherd.bin --help")
-        self.assert_(st == 0, "Usage not printed")
-        str = op.split('\n')
-        self.assert_(str[0] == 'Usage: applauncherd [options]', "usage not printed properly")
-
-        # exec invoker --creds (for coverage)
-        run_app_as_user("invoker --creds")
-
-        # exec invoker --help (for coverage)
-        run_app_as_user("invoker --help")
 
 
     def test_014_fd_booster_m(self):

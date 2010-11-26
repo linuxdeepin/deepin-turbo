@@ -53,6 +53,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
         options[:application] = app
       end
 
+      options[:binary] = nil
+      opts.on( '-b', '--binary BINARY', 'Name of the application binary which is used when killing the application' ) do|binary|
+        options[:binary] = binary
+      end
+
       options[:command] = nil
       opts.on( '-c', '--command_line COMMAND', 'Start application from witc COMMAND from command line instead of grid.' ) do|command|
         options[:command] = command
@@ -61,6 +66,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
       options[:limit] = nil
       opts.on( '-l', '--limit MILLISECONDS', 'Time limit in milliseconds. Slower startup will make test to fail.' ) do|milliseconds|
         options[:limit] = milliseconds.to_i
+      end
+
+      options[:pre_step] = nil
+      opts.on( '-p', '--pre_step PRE_STEP', 'Command to be executed everytime before starting the application' ) do|pre_step|
+        options[:pre_step] = pre_step
       end
       
       opts.on( '-h', '--help', 'Display this screen' ) do
@@ -79,8 +89,18 @@ class TC_PerformanceTests < Test::Unit::TestCase
       exit 1
     end
 
+    if @options[:binary] == nil
+      puts "Binary of the application not defined!" 
+      exit 1
+    end
+
+
     if @options[:command] != nil
       puts "#{@options[:command]}" 
+    end
+
+    if @options[:pre_step] != nil
+      puts "#{@options[:pre_step]}" 
     end
 
     if $path.include?("scratchbox")
@@ -88,18 +108,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
     else
       system "mcetool --set-tklock-mode=unlocked"
     end        
-    #restart duihome so that qttasserver notices it
-    #NOTE: Remove the cludge after duihome -> meegotouchhome renaming is complete
-    if not system("/sbin/initctl restart xsession/duihome")
-      system("/sbin/initctl restart xsession/mthome")
-    end
 
+     
     system("initctl stop xsession/sysuid")
     system("initctl stop xsession/applifed")
     system("initctl stop xsession/search")
+    system("initctl restart xsession/mthome")
     system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
-#    system("pkill call-history")
     sleep(4)
+    system("initctl stop xsession/mprogressindicator")
+
 
   end
   
@@ -115,6 +133,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   end
   
   def open_Apps(appName)
+    
     #Remove the Log file if it exists
     if FileTest.exists?(PIXELCHANGED_LOG)
       system "rm #{PIXELCHANGED_LOG}"
@@ -124,22 +143,45 @@ class TC_PerformanceTests < Test::Unit::TestCase
     if @options[:command] != nil
       puts "#{GET_COORDINATES_SCRIPT} -g"
       system "#{GET_COORDINATES_SCRIPT} -g"
-#      system "ls -l -s -R /usr/share/applications"
+      sleep (1)
+      # execute the optional command if available
+      if @options[:pre_step] != nil 
+        puts "pre_step: #{@options[:pre_step]}"
+        system "#{@options[:pre_step]}"
+      end
+
+
+      # Check the avarage system load is under 0.3
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 120 -d"
+
       start_command ="`#{PIXELCHANGED_BINARY} -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       puts "start command: #{start_command}"
       system "#{start_command}"
       sleep (4)
-      puts "pkill \"#{@options[:command]}\""
-      system "pkill \"#{@options[:command]}\""
+      puts "pkill \"#{@options[:binary]}\""
+      system "pkill \"#{@options[:binary]}\""
 
     else
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
+      puts "original: #{@pos}"
+      @pos = @pos.split("\n")[-1]
+      puts "current: #{@pos}"
+     # execute the optional command if available
+      if @options[:pre_step] != nil 
+        puts "pre_step: #{@options[:pre_step]}"
+        system "#{@options[:pre_step]}"
+      end
+      
     
       puts @pos
       sleep (2)
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 120 -d"
+      puts "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       system "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       sleep (4)
-      system "pkill #{appName}"
+      # Kill the application from the top
+#      system "#{GET_COORDINATES_SCRIPT} -g"
+      system "pkill #{@options[:binary]}"
     end
 
   end
@@ -151,7 +193,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     
     # First line tells when the button is released
     @start_time = lines[0]
-    puts "Clicked: #{lines[0]}"
+    puts "Started: #{lines[0]}"
     # Second one when the first pixel has changed its color
     @end_time = lines[1]
     puts "Pixel changed: #{lines[1]}"
