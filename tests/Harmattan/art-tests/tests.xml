@@ -10,20 +10,20 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="zombie-state" type="Functional" description="To test that process exits after the application is killed" timeout="120" level="System">
+      <case name="zombie-state" type="Functional" description="To test that process exits after the application is killed" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_003_zombie_state</step>
       </case>
 
-      <case name="launch-multi-app" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="120" level="System">
+      <case name="launch-multi-app" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_004_launch_multiple_apps</step>
       </case>
 
-      <case name="one-instance" type="Functional" description="To test that only one instance of a application exist" timeout="120" level="System">
+      <case name="one-instance" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_005_one_instance</step>
       </case>
       
       <!-- Enable this test for art once the credientials are stable-->
-      <!--case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="120" level="System">
+      <!--case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_006_creds</step>
       </case-->
 
@@ -40,7 +40,7 @@
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
-      <case name="Prestart-launched" type="Functional" description="To test that prestarted application is launched" timeout="120" level="System">
+      <case name="Prestart-launched" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/ts_prestartapp.rb name test_launch_prestarted_app</step>
       </case>
 

@@ -67,7 +67,7 @@ static void loadLibraries(const char * const libs[], unsigned int numLibs)
             dlerror();
             if (!dlopen(lib + skipChar, flags))
             {
-                fprintf(stderr, "%s\n", dlerror());
+                fprintf(stderr, "Warning: can't preload %s\n", lib + skipChar);
             }
         }
     }

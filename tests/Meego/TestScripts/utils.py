@@ -46,7 +46,7 @@ def start_applauncherd():
 
     return handle.wait() == 0
 
-def stop_applauncherd():
+def kill_applauncherd():
     handle = Popen(['initctl', 'stop', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
                    shell = False)
@@ -87,16 +87,14 @@ def get_pid(appname):
     else:
         return None
 
-def get_newest_pid(app):
-    p = subprocess.Popen(['pgrep', '-n', app], shell = False,
-                         stdout = subprocess.PIPE, stderr = DEV_NULL)
-
-    op = p.communicate()[0]
-
-    if p.wait() == 0:
-        return op.strip()
-    
-    return None
+def get_newest_pid(appname):
+    temp = basename(appname)[:14]
+    st, op = commands.getstatusoutput("pgrep -n %s" % temp)
+    time.sleep(5)
+    if st == 0:
+        return op
+    else:
+        return None
 
 def wait_for_app(app = None, timeout = 5, sleep = 0.5):
     """
