@@ -92,7 +92,7 @@ sleep(2)
 if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
   icon = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName)
   while icon.attribute('visibleOnScreen') == 'false' || @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('y').to_i > 400
-    @meegoHome.SwipeLauncher.MPannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 300)
+    @meegoHome.Launcher.MPannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 300)
     sleep(0.2)
     icon.refresh
   end
