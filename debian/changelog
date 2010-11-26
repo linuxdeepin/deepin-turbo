@@ -1,3 +1,10 @@
+applauncherd (0.15.3) unstable; urgency=low
+
+  * Implemented: SWP#DUI-4131
+  * Changes: change warning message when library can't be preloaded
+
+ -- Nimika Keshri <nimika.1.keshri.nokia.com>  Fri, 26 Nov 2010 13:47:26 +0200
+
 applauncherd (0.15.2) stable; urgency=low
 
   * Changes: Fixed crash of booster-m and booster-w / non-quitting booster-m caused
