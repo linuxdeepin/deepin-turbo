@@ -1,7 +1,8 @@
-applauncherd (0.15.3) unstable; urgency=low
+applauncherd (0.15.3) stable; urgency=low
 
   * Implemented: SWP#DUI-4131
-  * Changes: change warning message when library can't be preloaded
+  * Changes: Changed warning message when library can't be preloaded
+  * Changes: Modified the startup time tests to be more reliable
 
  -- Nimika Keshri <nimika.1.keshri.nokia.com>  Fri, 26 Nov 2010 13:47:26 +0200
 
