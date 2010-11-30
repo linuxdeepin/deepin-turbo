@@ -1,5 +1,5 @@
-* Fri Nov 26 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.5
-- Updated to version 0.15.5.
+* Fri Nov 30 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.5
+- BCM#10591 - meegotouch-applauncherd outdated in MeeGo
 - Changes: A bit confusing Booster::readCommand() renamed to
            Booster::receiveDataFromInvoker().
 - Changes: Access Booster::m_connection and Booster::m_appData through setter
