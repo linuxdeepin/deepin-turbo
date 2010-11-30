@@ -12,13 +12,13 @@ configure-stamp:
 
 ifeq ($(DEB_HOST_ARCH), arm)
 	# Configure Applauncherd to be build with tests
-	BUILD_TESTS=1 ./configure
+	BUILD_TESTS=1 HARMATTAN=1 ./configure
 else ifeq ($(DEB_HOST_ARCH), armel)
 	# Configure Applauncherd to be build with tests
-	BUILD_TESTS=1  ./configure
+	BUILD_TESTS=1 HARMATTAN=1 ./configure
 else
 	# Configure Applauncherd to be build with tests and without checking invoker credentials
-	BUILD_TESTS=1 DISABLE_VERIFICATION=1 ./configure
+	BUILD_TESTS=1 DISABLE_VERIFICATION=1 HARMATTAN=1 ./configure
 endif
 
 	touch configure-stamp
