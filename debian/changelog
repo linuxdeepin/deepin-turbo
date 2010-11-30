@@ -1,9 +1,18 @@
+applauncherd (0.15.5) stable; urgency=low
+
+  * Fixes: NB#206309 - applauncherd cannot locate shared objects 
+  * Changes: Changed again component names in meegotouchhome in test scripts
+  * Changes: pixelchanged can raise a window with -r.
+  * Changes: build env variable for Harmattan added
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 30 Nov 2010 14:04:57 +0200
+
 applauncherd (0.15.4) stable; urgency=low
 
   * Changes: Modified component names in startup time tests
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Fri, 26 Nov 2010 16:47:26 +0200
-	
+
 applauncherd (0.15.3) stable; urgency=low
 
   * Implemented: SWP#DUI-4131
