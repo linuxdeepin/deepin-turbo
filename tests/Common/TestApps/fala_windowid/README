@@ -1,0 +1,12 @@
+README
+======
+
+This is a program that outputs id's of all X11 windows of given PID.
+
+Example:
+
+$ ./windowpid 1264
+
+
+-- Jussi Lind <jussi.lind@nokia.com>
+

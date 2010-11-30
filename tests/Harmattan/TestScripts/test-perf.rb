@@ -138,12 +138,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
     if FileTest.exists?(PIXELCHANGED_LOG)
       system "rm #{PIXELCHANGED_LOG}"
     end
+    # Kill the binary if alive
+    system "pkill #{@options[:binary]}"
     sleep(2)
 
     if @options[:command] != nil
-      puts "#{GET_COORDINATES_SCRIPT} -g"
-      system "#{GET_COORDINATES_SCRIPT} -g"
-      sleep (1)
       # execute the optional command if available
       if @options[:pre_step] != nil 
         puts "pre_step: #{@options[:pre_step]}"
@@ -152,8 +151,13 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
 
       # Check the avarage system load is under 0.3
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 120 -d"
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
+      puts "#{GET_COORDINATES_SCRIPT} -g"
+      system "#{GET_COORDINATES_SCRIPT} -g"
+      sleep (1)
 
+      # Check the avarage system load is under 0.3
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
       start_command ="`#{PIXELCHANGED_BINARY} -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       puts "start command: #{start_command}"
       system "#{start_command}"
@@ -162,25 +166,22 @@ class TC_PerformanceTests < Test::Unit::TestCase
       system "pkill \"#{@options[:binary]}\""
 
     else
-      @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
-      puts "original: #{@pos}"
-      @pos = @pos.split("\n")[-1]
       puts "current: #{@pos}"
      # execute the optional command if available
       if @options[:pre_step] != nil 
         puts "pre_step: #{@options[:pre_step]}"
         system "#{@options[:pre_step]}"
       end
-      
+
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
+      @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
+      puts "original: #{@pos}"
+      @pos = @pos.split("\n")[-1]
     
-      puts @pos
-      sleep (2)
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 120 -d"
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
       puts "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       system "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       sleep (4)
-      # Kill the application from the top
-#      system "#{GET_COORDINATES_SCRIPT} -g"
       system "pkill #{@options[:binary]}"
     end
 

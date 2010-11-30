@@ -54,3 +54,6 @@ add_subdirectory(Common/TestApps/helloworld)
 
 # Sub build: Common/TestApps/pixelchanged
 add_subdirectory(Common/TestApps/pixelchanged)
+
+# Sub build: Common/TestApps/fala_windowid
+add_subdirectory(Common/TestApps/fala_windowid)

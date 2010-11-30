@@ -1,3 +1,9 @@
+applauncherd (0.15.6) unstable; urgency=low
+
+  * Changes: Added the windowid binary to be used in startup tests
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Tue, 30 Nov 2010 16:04:57 +0200
+
 applauncherd (0.15.5) stable; urgency=low
 
   * Fixes: NB#206309 - applauncherd cannot locate shared objects 

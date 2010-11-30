@@ -25,6 +25,10 @@ require 'optparse'
 
 include TDriverVerify
 
+WINDOWID_BINARY = '/usr/bin/fala_windowid'
+PIXELCHANGED_BINARY= '/usr/bin/fala_pixelchanged' 
+
+
 options = {}
  
 optparse = OptionParser.new do|opts|
@@ -64,29 +68,37 @@ end
 pos = 0
 appName=options[:application]
 sut = TDriver.sut(:Id=> 'sut_qt_maemo')    
-appOnTop = sut.application()	
 
-# Stop the MProgressIndicator
-system("initctl stop xsession/mprogressindicator")
+# Bring the meegotouchhome to the top of the screen
+meegotouchpid=`pgrep meegotouchhome`  
+if !(result=$?.success?)
+  #raise error and exit
+  puts "meegotouchpid: #{meegotouchpid}"
+  raise "Meegotouch home pid not found"
+  exit 1
+end 
+meegotouchpid = meegotouchpid.split("\n")[-1]
+puts "meegotouchpid: #{meegotouchpid}"
 
-while appOnTop.attribute('objectName') != 'meegotouchhome'
-  # Killing the topmost application with xkill
-#  system "DISPLAY=:0 xkill &"
-#  sleep(0.5)
-#  sut.tap_screen(50, 50)
-  fullName = appOnTop.attribute('FullName')
-  puts "Now killing #{fullName} from the top"
-  system "pkill #{fullName}"
-  appOnTop = sut.application()
+windowid=`#{WINDOWID_BINARY} #{meegotouchpid}`    
+if !(result=$?.success?)
+  #raise error and exit
+  puts "windowid: #{windowid}"
+  raise "Meegotouch home window id not found"
+  exit 1
 end
+windowid = windowid.split("\n")[-1]
+puts "windowid: #{windowid}"
 
-# Application grid should be now visible
-if options[:grid] 
-  exit 0;
-end
+system "#{PIXELCHANGED_BINARY} -r #{windowid}"
 
 @meegoHome = sut.application(:name => 'meegotouchhome')
 
+
+# Application grid should be now visible
+if options[:grid]
+  exit 0;
+end
 
 sleep(2)
 if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
@@ -102,7 +114,7 @@ if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
     exit 1
   end
 
-  while icon.attribute('visibleOnScreen') == 'false' || @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('y').to_i > 400
+  while icon.attribute('visibleOnScreen') == 'false' || icon.attribute('y').to_i > 400
     grid.MPannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 300)
     sleep(0.2)
     icon.refresh
