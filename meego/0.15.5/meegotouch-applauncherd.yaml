@@ -34,6 +34,7 @@ SubPackages:
         - "%{_libdir}/pkgconfig/qt-boostable.pc"
         - "%doc %{_docdir}/applauncherd/README"
         - "%{_datadir}/qt4/mkspecs/features/meegotouch-boostable.prf"
+        - "%{_datadir}/qt4/mkspecs/features/qt-boostable.prf"
 
     - Name: testapps
       Group: Development/Tools
@@ -116,7 +117,6 @@ SubPackages:
       - "%{_datadir}/applications/fala_wol.desktop"
       - "%{_datadir}/dbus-1/services/com.nokia.fala_wl.service"
       - "%{_datadir}/dbus-1/services/com.nokia.fala_wol.service"
-      - "%{_datadir}/qt4/mkspecs/features/qt-boostable.prf"
 Files:
     - "%{_bindir}/invoker"
     - "%{_libdir}/libapplauncherd.so"

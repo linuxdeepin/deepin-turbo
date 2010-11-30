@@ -7,7 +7,7 @@
 
 Name:       meegotouch-applauncherd
 Summary:    Application launcher for fast startup
-Version:    0.15.3
+Version:    0.15.5
 Release:    1
 Group:      System/Daemons
 License:    LGPLv2+
@@ -127,6 +127,7 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 %{_libdir}/pkgconfig/qt-boostable.pc
 %doc %{_docdir}/applauncherd/README
 %{_datadir}/qt4/mkspecs/features/meegotouch-boostable.prf
+%{_datadir}/qt4/mkspecs/features/qt-boostable.prf
 # >> files devel
 # << files devel
 
@@ -146,10 +147,6 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 %{_bindir}/fala_ft_hello.launch
 %{_bindir}/fala_ft_hello1.launch
 %{_bindir}/fala_ft_hello2.launch
-%{_bindir}/fala_ft_creds1
-%{_bindir}/fala_ft_creds1.launch
-%{_bindir}/fala_ft_creds2
-%{_bindir}/fala_ft_creds2.launch
 %{_bindir}/fala_testapp
 %{_bindir}/fala_ft_themetest.launch
 %{_bindir}/fala_ft_themetest
@@ -204,49 +201,10 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 %{_datadir}/applauncherd-M-testscripts/utils.pyc
 %{_datadir}/applauncherd-M-testscripts/utils.pyo
 %{_datadir}/themes/base/meegotouch/fala_ft_themetest/style/fala_ft_themetest.css
-%{_datadir}/applauncherd-art-tests/tests.xml
-%{_datadir}/applauncherd-bug-tests/tests.xml
-%{_datadir}/applauncherd-functional-tests/tests.xml
-%{_datadir}/applauncherd-performance-tests/tests.xml
-%{_datadir}/applauncherd-testscripts/check_pipes.py
-%{_datadir}/applauncherd-testscripts/check_pipes.pyc
-%{_datadir}/applauncherd-testscripts/check_pipes.pyo
-%{_datadir}/applauncherd-testscripts/fala_wid
-%{_datadir}/applauncherd-testscripts/fala_xres_wl
-%{_datadir}/applauncherd-testscripts/fala_xres_wol
-%{_datadir}/applauncherd-testscripts/get-coordinates.rb
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_m.py
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_m.pyc
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_m.pyo
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_m.sh
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_qt.py
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_qt.pyc
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_qt.pyo
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_qt.sh
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_wrt.py
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_wrt.pyc
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_wrt.pyo
-%{_datadir}/applauncherd-testscripts/signal-forward/fala_sf_wrt.sh
-%{_datadir}/applauncherd-testscripts/tc_theming.rb
-%{_datadir}/applauncherd-testscripts/test-func-launcher.py
-%{_datadir}/applauncherd-testscripts/test-func-launcher.pyc
-%{_datadir}/applauncherd-testscripts/test-func-launcher.pyo
-%{_datadir}/applauncherd-testscripts/test-perf-mbooster.py
-%{_datadir}/applauncherd-testscripts/test-perf-mbooster.pyc
-%{_datadir}/applauncherd-testscripts/test-perf-mbooster.pyo
-%{_datadir}/applauncherd-testscripts/test-perf.rb
-%{_datadir}/applauncherd-testscripts/test-security.py
-%{_datadir}/applauncherd-testscripts/test-security.pyc
-%{_datadir}/applauncherd-testscripts/test-security.pyo
-%{_datadir}/applauncherd-testscripts/ts_prestartapp.rb
-%{_datadir}/applauncherd-testscripts/utils.py
-%{_datadir}/applauncherd-testscripts/utils.pyc
-%{_datadir}/applauncherd-testscripts/utils.pyo
 %{_datadir}/applications/fala_wl.desktop
 %{_datadir}/applications/fala_wol.desktop
 %{_datadir}/dbus-1/services/com.nokia.fala_wl.service
 %{_datadir}/dbus-1/services/com.nokia.fala_wol.service
-%{_datadir}/qt4/mkspecs/features/qt-boostable.prf
 # >> files tests
 # << files tests
 
