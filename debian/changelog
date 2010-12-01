@@ -1,4 +1,4 @@
-applauncherd (0.15.6) unstable; urgency=low
+applauncherd (0.15.6) stable; urgency=low
 
   * Changes: Added the windowid binary to be used in startup tests
 
