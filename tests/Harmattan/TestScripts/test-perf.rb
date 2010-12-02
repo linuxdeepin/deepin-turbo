@@ -110,13 +110,15 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end        
 
     if @options[:application] != nil     
-      system("initctl stop xsession/sysuid")
+
       system("initctl stop xsession/applifed")
-      system("initctl stop xsession/search")
       system("initctl restart xsession/mthome")
     end
-    system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
+    system("initctl stop xsession/search")
+    system("initctl stop xsession/sysuid")
+    system("initctl restart xsession/mthome")
     sleep(4)
+    system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
     system("initctl stop xsession/mprogressindicator")
 
 
