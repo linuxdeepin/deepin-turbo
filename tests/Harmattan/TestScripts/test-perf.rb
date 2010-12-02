@@ -109,11 +109,12 @@ class TC_PerformanceTests < Test::Unit::TestCase
       system "mcetool --set-tklock-mode=unlocked"
     end        
 
-     
-    system("initctl stop xsession/sysuid")
-    system("initctl stop xsession/applifed")
-    system("initctl stop xsession/search")
-    system("initctl restart xsession/mthome")
+    if @options[:application] != nil     
+      system("initctl stop xsession/sysuid")
+      system("initctl stop xsession/applifed")
+      system("initctl stop xsession/search")
+      system("initctl restart xsession/mthome")
+    end
     system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
     sleep(4)
     system("initctl stop xsession/mprogressindicator")
@@ -152,12 +153,6 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
       # Check the avarage system load is under 0.3
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
-      puts "#{GET_COORDINATES_SCRIPT} -g"
-      system "#{GET_COORDINATES_SCRIPT} -g"
-      sleep (1)
-
-      # Check the avarage system load is under 0.3
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
       start_command ="`#{PIXELCHANGED_BINARY} -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       puts "start command: #{start_command}"
       system "#{start_command}"
