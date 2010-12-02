@@ -161,7 +161,6 @@ class TC_PerformanceTests < Test::Unit::TestCase
       system "pkill \"#{@options[:binary]}\""
 
     else
-      puts "current: #{@pos}"
      # execute the optional command if available
       if @options[:pre_step] != nil 
         puts "pre_step: #{@options[:pre_step]}"
@@ -177,6 +176,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
       puts "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       system "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
       sleep (4)
+      # Raise meegotouchhome to the top. Workaround for keeping the window
+      # stack in shape.
+      system "#{GET_COORDINATES_SCRIPT} -g"
+
       system "pkill #{@options[:binary]}"
     end
 
