@@ -129,10 +129,12 @@ class TC_PerformanceTests < Test::Unit::TestCase
   # method called after any test case for cleanup purposes
   def teardown
     puts "exit from teardown"
+    system("mv /tmp/libtestability.so /usr/lib/qt4/plugins/testability/libtestability.so")
+    sleep(4)
+    system("initctl restart xsession/mthome")
     system("initctl start xsession/sysuid")
     system("initctl start xsession/applifed")	
     system("initctl start xsession/search")
-    system("mv /tmp/libtestability.so /usr/lib/qt4/plugins/testability/libtestability.so")
   end
   
   def open_Apps(appName)
