@@ -1,3 +1,9 @@
+applauncherd (0.15.7) unstable; urgency=low
+
+  * Changes: Install libapplauncherd.so to /usr/lib/applauncherd/libapplauncherd.so
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Fri, 03 Dec 2010 11:21:06 +0200
+
 applauncherd (0.15.6) stable; urgency=low
 
   * Changes: Added the windowid binary to be used in startup tests
