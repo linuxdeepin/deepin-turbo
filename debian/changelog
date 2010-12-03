@@ -1,6 +1,8 @@
-applauncherd (0.15.7) unstable; urgency=low
+applauncherd (0.15.7) stable; urgency=low
 
   * Changes: Install libapplauncherd.so to /usr/lib/applauncherd/libapplauncherd.so
+  * Changes: Some useless X11 modules removed from fala_windowid's CMakeLists.txt
+  * Startup time tests polished
 
  -- Jussi Lind <jussi.lind@nokia.com>  Fri, 03 Dec 2010 11:21:06 +0200
 
