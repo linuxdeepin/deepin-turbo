@@ -52,12 +52,12 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="Perf-Test-Grid-plain" type="Performance" description="Measure startup time of the application without launcher" timeout="500" level="System" insignificant="true">
+      <case name="Perf-Test-Grid-plain" type="Performance" description="Measure startup time of the application without launcher" timeout="840" level="System" insignificant="true">
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wol -b "fala_wol" &gt; /tmp/perf_grid_without_launcher.txt</step>
       </case>
 
 
-      <case name="Perf-Test-Grid-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="500" level="System" insignificant="true">
+      <case name="Perf-Test-Grid-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="840" level="System" insignificant="true">
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wl -b "fala_wl" &gt; /tmp/perf_grid_with_launcher.txt</step>
       </case>
 
