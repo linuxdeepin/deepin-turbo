@@ -27,7 +27,8 @@ include TDriverVerify
 
 WINDOWID_BINARY = '/usr/bin/fala_windowid'
 PIXELCHANGED_BINARY= '/usr/bin/fala_pixelchanged' 
-
+MATTI_LOCATION='/usr/lib/qt4/plugins/testability/libtestability.so'
+TEMPORARY_MATTI_LOCATION='/root/libtestability.so'
 
 options = {}
  
@@ -63,11 +64,36 @@ if options[:application] == nil && !(options[:grid])
   exit 1
 end
 
-
-
 pos = 0
 appName=options[:application]
 sut = TDriver.sut(:Id=> 'sut_qt_maemo')    
+
+# Check if TDriver can attach to meegotouch instance.
+# If not, this might be caused because MtHome is started
+# before TDriver server or the Matti library is temporary
+# renamed.
+
+@meegoHome = nil
+begin
+  @meegoHome = sut.application(:name => 'meegotouchhome') 
+  puts "Meegotouchhome found"
+  
+rescue MobyBase::TestObjectNotFoundError
+  puts "Meegotouchhome not found"
+  matti_removed = false
+  if File.exists?(TEMPORARY_MATTI_LOCATION) && !(File.exists?(MATTI_LOCATION))
+      puts "matti removed. putting back.."
+    matti_removed = true
+    system "mv #{TEMPORARY_MATTI_LOCATION} #{MATTI_LOCATION}"
+  end
+  puts "restarting meegotouchhome"
+  system("initctl restart xsession/mthome")
+  sleep(4)
+  if matti_removed
+    puts "removing matti again.."
+    system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
+  end
+end
 
 # Bring the meegotouchhome to the top of the screen
 meegotouchpid=`pgrep meegotouchhome`  
@@ -91,14 +117,18 @@ windowid = windowid.split("\n")[-1]
 puts "windowid: #{windowid}"
 
 system "#{PIXELCHANGED_BINARY} -r #{windowid}"
-
-@meegoHome = sut.application(:name => 'meegotouchhome')
-
+sleep (2)
+system "mcetool --blank-screen"
+sleep (2)
+system "mcetool --unblank-screen"
 
 # Application grid should be now visible
 if options[:grid]
   exit 0;
 end
+
+@meegoHome = sut.application(:name => 'meegotouchhome')
+
 
 sleep(2)
 if @meegoHome.test_object_exists?("LauncherButton", :text => appName)

@@ -31,6 +31,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
   GET_COORDINATES_SCRIPT="#{TEST_SCRIPT_LOCATION}/get-coordinates.rb"
   PIXELCHANGED_LOG = '/tmp/fala_pixelchanged.log'
   FALA_GETTIME_BINARY = '/usr/bin/fala_gettime_ms'
+  MATTI_LOCATION='/usr/lib/qt4/plugins/testability/libtestability.so'
+  TEMPORARY_MATTI_LOCATION='/root/libtestability.so'
+
   @start_time = 0
   @end_time = 0
   @pos = 0
@@ -107,18 +110,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
       puts "Inside SB, Do Nothing to unlock"
     else
       system "mcetool --set-tklock-mode=unlocked"
+      system "mcetool --set-inhibit-mode=stay-on"
     end        
 
     if @options[:application] != nil     
 
       system("initctl stop xsession/applifed")
-      system("initctl restart xsession/mthome")
     end
     system("initctl stop xsession/search")
-    system("initctl stop xsession/sysuid")
-    system("initctl restart xsession/mthome")
     sleep(4)
-    system("mv /usr/lib/qt4/plugins/testability/libtestability.so /tmp/.")
+    system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
     system("initctl stop xsession/mprogressindicator")
 
 
@@ -129,12 +130,15 @@ class TC_PerformanceTests < Test::Unit::TestCase
   # method called after any test case for cleanup purposes
   def teardown
     puts "exit from teardown"
-    system("mv /tmp/libtestability.so /usr/lib/qt4/plugins/testability/libtestability.so")
-    sleep(4)
-    system("initctl restart xsession/mthome")
-    system("initctl start xsession/sysuid")
-    system("initctl start xsession/applifed")	
+    system "mv #{TEMPORARY_MATTI_LOCATION} #{MATTI_LOCATION}"
     system("initctl start xsession/search")
+
+    if @options[:application] != nil     
+
+      system("initctl start xsession/applifed")
+      system("initctl restart xsession/mthome")
+      sleep(10)
+    end
   end
   
   def open_Apps(appName)
@@ -157,7 +161,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
       # Check the avarage system load is under 0.3
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
-      start_command ="`#{PIXELCHANGED_BINARY} -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
+      start_command ="`#{PIXELCHANGED_BINARY} -t 2x200 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       puts "start command: #{start_command}"
       system "#{start_command}"
       sleep (4)
@@ -171,17 +175,17 @@ class TC_PerformanceTests < Test::Unit::TestCase
         system "#{@options[:pre_step]}"
       end
 
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
       puts "original: #{@pos}"
       @pos = @pos.split("\n")[-1]
-    
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
-      puts "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
-      system "#{PIXELCHANGED_BINARY} -c #{@pos} -f #{PIXELCHANGED_LOG} -q"		
+ 
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 50 -d" 
+      puts "#{PIXELCHANGED_BINARY} -c #{@pos} -t 2x200 -f #{PIXELCHANGED_LOG} -q"		
+      system "#{PIXELCHANGED_BINARY} -c #{@pos} -t 2x200 -f #{PIXELCHANGED_LOG} -q"		
       sleep (4)
-      # Raise meegotouchhome to the top. Workaround for keeping the window
-      # stack in shape.
+      # Raise meegotouchhome to the top.
+      #Workaround for keeping the window stack in shape.
       system "#{GET_COORDINATES_SCRIPT} -g"
 
       system "pkill #{@options[:binary]}"
