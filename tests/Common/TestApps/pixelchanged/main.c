@@ -148,7 +148,6 @@ static int client_msg(Display *disp, Window win, char *msg, /* {{{ */
 void raise_window(Display *dpy, Window win)
 {
     client_msg(dpy, win, "_NET_ACTIVE_WINDOW", 0, 0, 0, 0, 0);
-    XMapRaised(dpy, win);
     XSync(dpy, False);
 }
 
