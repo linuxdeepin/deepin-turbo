@@ -118,7 +118,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
       system("initctl stop xsession/applifed")
     end
     system("initctl stop xsession/search")
-    sleep(4)
+    system("initctl restart xsession/mthome")
+    sleep(10)
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
     system("initctl stop xsession/mprogressindicator")
 
