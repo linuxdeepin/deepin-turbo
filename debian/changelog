@@ -1,6 +1,7 @@
 applauncherd (0.15.8) unstable; urgency=low
 
   * Changes: Added a workaround to startup time tests from grid to make them work
+  * Fixes: NB#210094 - files cleanup for applauncherd/booster-m
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Mon, 06 Dec 2010 18:21:06 +0200
 
