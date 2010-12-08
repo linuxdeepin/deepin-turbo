@@ -236,6 +236,9 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Close unused read end
         close(m_pipefd[0]);
 
+        // Close unused sockets inherited from daemon
+        BoosterFactory::closeUnusedSockets(type);
+
         // Close lock file, it's not needed in the booster
         Daemon::unlock();
 

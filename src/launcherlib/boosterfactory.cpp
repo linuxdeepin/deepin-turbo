@@ -22,6 +22,7 @@
 #include "mbooster.h"
 #include "qtbooster.h"
 #include "wrtbooster.h"
+#include "connection.h"
 
 BoosterFactory::BoosterFactory()
 {}
@@ -99,5 +100,24 @@ pid_t BoosterFactory::getBoosterPidForType(char type)
     else
     {
         return 0;
+    }
+}
+
+void BoosterFactory::closeUnusedSockets(char type)
+{
+    if (MBooster::type() == type)
+    {
+        Connection::closeSocket(QtBooster::socketName());
+        Connection::closeSocket(WRTBooster::socketName());
+    }
+    else if (QtBooster::type() == type)
+    {
+        Connection::closeSocket(MBooster::socketName());
+        Connection::closeSocket(WRTBooster::socketName());
+    }
+    else if (WRTBooster::type() == type)
+    {
+        Connection::closeSocket(QtBooster::socketName());
+        Connection::closeSocket(MBooster::socketName());
     }
 }

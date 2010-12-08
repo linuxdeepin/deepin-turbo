@@ -53,6 +53,13 @@ public:
      */
     static pid_t getBoosterPidForType(char type);
 
+
+    /*! \brief Close unused sockets inherited from applauncherd
+     *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT
+     */
+    static void closeUnusedSockets(char type);
+
+
 private:
     BoosterFactory();
 };

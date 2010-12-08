@@ -88,6 +88,11 @@ public:
      */
     static void initSocket(const string socketId);
 
+    /*! \brief Close a file socket.
+     * \param socketId Path to the socket file
+     */
+    static void closeSocket(const string socketId);
+
     //! \brief Close all open sockets.
     static void closeAllSockets();
 

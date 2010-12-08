@@ -127,6 +127,18 @@ void Connection::initSocket(const string socketId)
     }
 }
 
+void Connection::closeSocket(const string socketId)
+{
+    PoolType::iterator it(socketPool.find(socketId));
+
+    if (it != socketPool.end())
+    {
+        ::close(it->second);
+        socketPool.erase(it);
+    }
+}
+
+
 bool Connection::accept(AppData* appData)
 {
     if (!m_testMode)
