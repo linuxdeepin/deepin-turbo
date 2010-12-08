@@ -28,6 +28,5 @@ link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY} ${WRT_LIBRA
 add_library(applauncherd MODULE ${SRC} ${MOC_SRC})
 
 # Add install rule
-#install(FILES liblauncher.so DESTINATION /usr/bin/ RENAME applauncherd.launch)
-install(FILES libapplauncherd.so DESTINATION /usr/lib)
+install(FILES libapplauncherd.so DESTINATION /usr/lib/applauncherd/)
 

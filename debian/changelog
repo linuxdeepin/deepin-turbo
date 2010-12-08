@@ -1,3 +1,17 @@
+applauncherd (0.15.8) unstable; urgency=low
+
+  * Changes: Added a workaround to startup time tests from grid to make them work
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Mon, 06 Dec 2010 18:21:06 +0200
+
+applauncherd (0.15.7) stable; urgency=low
+
+  * Changes: Install libapplauncherd.so to /usr/lib/applauncherd/libapplauncherd.so
+  * Changes: Some useless X11 modules removed from fala_windowid's CMakeLists.txt
+  * Startup time tests polished
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Fri, 03 Dec 2010 11:21:06 +0200
+
 applauncherd (0.15.6) stable; urgency=low
 
   * Changes: Added the windowid binary to be used in startup tests

@@ -1,0 +1,34 @@
+* Fri Dec 3 2010 Jussi Lind <jussi.lind@nokia.com> - 0.15.7
+- Changes: Install libapplauncherd.so to /usr/lib/applauncherd/libapplauncherd.so
+
+* Fri Nov 30 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.5
+- BCM#10591 - meegotouch-applauncherd outdated in MeeGo
+- Changes: A bit confusing Booster::readCommand() renamed to
+           Booster::receiveDataFromInvoker().
+- Changes: Access Booster::m_connection and Booster::m_appData through setter
+           /getter in derived classes.
+- Changes: License plates added to some test apps.
+- Changes: Default C-flags added to top-level CMakeLists.
+- Changes: Launcher library exports only main()
+- Changes: Install /usr/bin/applauncherd.launcher to /usr/lib/libapplauncherd.so
+           due to dh_strip problems and because it's not -pie.
+- Changes: Basic implementation of library-based launcher
+- Changes: no-wait option for invoker is added
+- Changes: invoker - launcher protocol simplification
+- Changes: use at() instead of [] operator to read-only access to vector elements
+- Changes: use RTLD_LOCAL flag instead of RTLD_GLOBAL in dlopen() to load application binary
+- Changes: remove -rdynamic linker parameter
+- Changes: acceptConn() => accept(), closeConn() => close(), socket pool is cleared on closeAllSockets()
+- Changes: Preloaded libraries are loaded with dlopen() (preload.h)
+
+* Thu Sep 2 2010 Pertti Kellomäki <pertti.kellomaki@nokia.com> - 0.12.1
+- Updated to version 0.12.1.
+- Packaged tests and test scripts as subpackages, reorganized testing
+  stuff to satisfy rpmlint.
+- Included a .desktop file which kicks off applauncherd in a UI session.
+
+* Wed Aug 25 2010 Pertti Kellomäki <pertti.kellomaki@nokia.com> - 0.10.3
+- Updated to version 0.10.3.
+
+* Wed Jul 14 2010 Pertti Kellomäki <pertti.kellomaki@nokia.com> - 0.8.0
+- Initial packaging.
