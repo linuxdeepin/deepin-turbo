@@ -108,7 +108,8 @@ void fake_event(Display *dpy, int x, int y)
   if (XPointerDevice) {
       scheduler_fake_event(dpy, SCHEDULER_EVENT_MOTION, x, y);
       scheduler_fake_event(dpy, SCHEDULER_EVENT_BUTTON, Button1, True);
-      usleep(5000);
+      XSync(dpy, False);
+      usleep(100000);
       scheduler_fake_event(dpy, SCHEDULER_EVENT_BUTTON, Button1, False);
       timestamp("Button1 released");
   }
@@ -165,8 +166,10 @@ int main(int argc, char **argv)
     int click_y = -1;
     unsigned long pixel_value = 0;
     int pixel_value_defined = False;
-    int pixel_x = 423; /* track pixel in the middle of dali display by default */
+    int pixel_x = 423;
     int pixel_y = 240;
+    int pixel2_x = -1;
+    int pixel2_y = -1;
     int quit_when_found = 0;
     int window_id = 0;
     int count = 0;
@@ -186,6 +189,8 @@ int main(int argc, char **argv)
     screen = XDefaultScreen(dpy);
     rootw = RootWindow(dpy, screen);
 
+    i = 0;
+
     while (arg < argc) {
         if (0 == strcmp("-c", argv[arg])) {
             sscanf(argv[++arg], "%ux%u", &click_x, &click_y);
@@ -197,7 +202,12 @@ int main(int argc, char **argv)
             raise_window(dpy, window_id);
             return EXIT_SUCCESS;
         } else if (0 == strcmp("-t", argv[arg])) { /* tracked pixel coordinates */
-            sscanf(argv[++arg], "%ux%u", &pixel_x, &pixel_y);
+            if (i == 0) {
+                sscanf(argv[++arg], "%ux%u", &pixel_x, &pixel_y);
+            } else {
+                sscanf(argv[++arg], "%ux%u", &pixel2_x, &pixel2_y);
+            }
+            i++;
         } else if (0 == strcmp("-f", argv[arg])) {
             sscanf(argv[++arg], "%s", g_output_filename);
         } else if (0 == strcmp("-q", argv[arg])) {
@@ -224,18 +234,30 @@ int main(int argc, char **argv)
     }
     
     XImage *image;
-    unsigned long pixel = 0;
-    unsigned long previous_pixel;
+    unsigned long pixel = 0, pixel2 = 0;
+    unsigned long previous_pixel = 0, previous_pixel2 = 0;
 
     image = XGetImage(dpy, rootw, pixel_x, pixel_y, 1, 1, AllPlanes, ZPixmap);
     previous_pixel = XGetPixel(image, 0, 0);
+
+    if (pixel2_x != -1) {
+        image = XGetImage(dpy, rootw, pixel2_x, pixel2_y, 1, 1, AllPlanes, ZPixmap);
+        previous_pixel2 = XGetPixel(image, 0, 0);
+    }
 
     if (click_x > -1) fake_event(dpy, click_x, click_y);
 
     while (1) {
         usleep(50000);
+
         image = XGetImage(dpy, rootw, pixel_x, pixel_y, 1, 1, AllPlanes, ZPixmap);
         pixel = XGetPixel(image, 0, 0);
+
+        if (pixel2_x != -1) {
+            image = XGetImage(dpy, rootw, pixel2_x, pixel2_y, 1, 1, AllPlanes, ZPixmap);
+            pixel2 = XGetPixel(image, 0, 0);            
+        }
+
         if ( 
             (!pixel_value_defined && pixel != previous_pixel) 
             || (pixel_value_defined && pixel == pixel_value) ) {
@@ -245,6 +267,18 @@ int main(int argc, char **argv)
             
             if (quit_when_found) return EXIT_SUCCESS;
         }
+
+        if ( 
+            pixel2_x != -1 &&
+            ((!pixel_value_defined && pixel2 != previous_pixel) 
+                || (pixel_value_defined && pixel2 == pixel_value)) ) {
+            snprintf(txtbuffer, 80, "pixel2 changed to value 0x%lx", pixel2);
+            timestamp(txtbuffer);
+            previous_pixel2 = pixel2;
+            
+            if (quit_when_found) return EXIT_SUCCESS;
+        }
+
     }
     
     return EXIT_SUCCESS;
