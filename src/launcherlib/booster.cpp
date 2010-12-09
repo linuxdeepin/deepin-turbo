@@ -74,9 +74,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
     // Preload stuff
     preload();
 
-    // Clean-up all the env variables
-    clearenv();
-
     // Rename process to temporary booster process name, e.g. "booster-m"
     renameProcess(initialArgc, initialArgv);
 
@@ -285,6 +282,9 @@ int Booster::launchProcess()
 
 void* Booster::loadMain()
 {
+    // Clean-up all the env variables
+    clearenv();
+
 #ifdef HAVE_CREDS
     // filter out invoker-specific credentials
     Booster::filterOutCreds(m_appData->peerCreds());

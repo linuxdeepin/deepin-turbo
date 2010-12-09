@@ -1,4 +1,10 @@
-applauncherd (0.15.8) unstable; urgency=low
+applauncherd (0.15.9) stable; urgency=low
+
+  * Fixes: NB#207781 - Some applications do not load QAccessibleBridgePlugin plug-ins
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Thu, 09 Dec 2010 14:59:32 +0200
+
+applauncherd (0.15.8) stable; urgency=low
 
   * Changes: Added a workaround to startup time tests from grid to make them work
   * Fixes: NB#210094 - files cleanup for applauncherd/booster-m
