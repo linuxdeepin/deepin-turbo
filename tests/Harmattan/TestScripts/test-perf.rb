@@ -162,7 +162,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
       # Check the avarage system load is under 0.3
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
-      start_command ="`#{PIXELCHANGED_BINARY} -t 2x200 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
+      start_command ="`#{PIXELCHANGED_BINARY} -t 20x20 -t 840x466 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       puts "start command: #{start_command}"
       system "#{start_command}"
       sleep (4)
@@ -175,15 +175,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
         puts "pre_step: #{@options[:pre_step]}"
         system "#{@options[:pre_step]}"
       end
-
+        
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
       puts "original: #{@pos}"
       @pos = @pos.split("\n")[-1]
  
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 50 -d" 
-      puts "#{PIXELCHANGED_BINARY} -c #{@pos} -t 2x200 -f #{PIXELCHANGED_LOG} -q"		
-      system "#{PIXELCHANGED_BINARY} -c #{@pos} -t 2x200 -f #{PIXELCHANGED_LOG} -q"		
+      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 50 -d"
+      cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 20x20 -t 840x466 -f #{PIXELCHANGED_LOG} -q"
+      puts cmd
+      system cmd
       sleep (4)
       # Raise meegotouchhome to the top.
       #Workaround for keeping the window stack in shape.
