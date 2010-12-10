@@ -550,6 +550,8 @@ bool Connection::receiveActions()
             receiveArgs();
             break;
         case INVOKER_MSG_ENV:
+            // Clean-up all the env variables
+            clearenv();
             receiveEnv();
             break;
         case INVOKER_MSG_PRIO:

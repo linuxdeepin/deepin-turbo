@@ -282,9 +282,6 @@ int Booster::launchProcess()
 
 void* Booster::loadMain()
 {
-    // Clean-up all the env variables
-    clearenv();
-
 #ifdef HAVE_CREDS
     // filter out invoker-specific credentials
     Booster::filterOutCreds(m_appData->peerCreds());
