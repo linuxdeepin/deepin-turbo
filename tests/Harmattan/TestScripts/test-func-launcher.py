@@ -68,16 +68,16 @@ def check_prerequisites():
               "You probably want to source /tmp/session_bus_address.user")
 
     for app in LAUNCHABLE_APPS: 
-        assert(len(basename(app)) < 15, "For app: %s, base name !<= 14" % app)
+        assert(len(basename(app)) <= 15, "For app: %s , base name !<= 14" %app)
 
 class launcher_tests (unittest.TestCase):
     def setUp(self):
         #setup here
-        print "Executing SetUp"
+        debug("Executing SetUp")
 
     def tearDown(self):
         #teardown here
-        print "Executing TearDown"
+        debug("Executing TearDown")
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
 
@@ -112,18 +112,18 @@ class launcher_tests (unittest.TestCase):
 
         process_handle = run_app_as_user(PREFERED_APP)
         process_id = wait_for_app(PREFERED_APP, 5)
-        print process_id
+        debug("The pid of %s id %s" %(PREFERED_APP, process_id))
         kill_process(PREFERED_APP)
         time.sleep(4)
 
         process_handle = run_app_as_user(PREFERED_APP)
         process_id1 = wait_for_app(PREFERED_APP, 5)
-        print process_id1
+        debug("The pid of %s id %s" %(PREFERED_APP, process_id1))
         kill_process(PREFERED_APP)
         time.sleep(4)
 
         process_id1 = get_pid(PREFERED_APP)
-        print process_id1
+        debug("The pid of %s id %s" %(PREFERED_APP, process_id1))
 
         self.assert_(process_id != process_id1 , "New Process not launched")
         self.assert_(process_id1 == None , "Process still running")
@@ -198,8 +198,6 @@ class launcher_tests (unittest.TestCase):
 
     def test_010(self):
         """
-        NB#179266
-
         When calling invoker with --wait-term and killing invoker,
         the launched application should die too.
         """
@@ -215,24 +213,20 @@ class launcher_tests (unittest.TestCase):
         invoker_pid = wait_for_app('invoker')
         app_pid = wait_for_app('fala_ft_hello')
 
-        print "invoker_pid '%s'" % invoker_pid
-        print "app_pid '%s'" % app_pid
-
         # Make sure that both apps started
         self.assert_(invoker_pid != None, "invoker not executed?")
         self.assert_(app_pid != None, "%s not launched by invoker?" % app_path)
 
         # Send SIGTERM to invoker, the launched app should die
+        debug(" Send SIGTERM to invoker, the launched app should die")
         kill_process(None, invoker_pid, 15)
 
         time.sleep(2)
 
         # This should be None
         app_pid2 = get_pid('fala_ft_hello')
+        self.assert_(app_pid2 == None, "%s was not killed" % app_path)
 
-        if (app_pid2 != None):
-            kill_process(None, app_pid2)
-            self.assert_(False, "%s was not killed" % app_path)
 
 
     def test_011(self):
@@ -252,14 +246,14 @@ class launcher_tests (unittest.TestCase):
         time.sleep(5)
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
-        print op
+        debug("The pid of applauncherd --daemon is %s" %op)
 
         # filter some cruft out from the output and see how many
         # instances are running
         op = filter(lambda x: x.find("sh ") == -1, op.split("\n"))
         count = len(op)
 
-        print "count = %d" % count
+        debug("count = %d" % count)
 
         self.assert_(count == 1, "applauncherd was not daemonized (or too many instances running ..)")
 
@@ -287,28 +281,28 @@ class launcher_tests (unittest.TestCase):
         """
 
         # launch an app with invoker --delay n
-        print "launching fala_ft_hello ..."
+        debug("launching fala_ft_hello ...")
         p = Popen(['/usr/bin/invoker', '--delay', '10', '--type=m', '--no-wait',
                    '/usr/bin/fala_ft_hello.launch'],
                   shell=False, 
                   stdout=DEV_NULL, stderr=DEV_NULL)
 
         # wait a little
-        print "waiting ..."
+        debug("waiting ...")
         time.sleep(5)
 
         success = True
 
         if p.poll() == None:
-            print "NOT DEAD"
+            debug("NOT DEAD")
         else:
-            print "DEAD"
+            debug("DEAD")
             success = False
 
-        print "waiting for invoker to terminate ..."
+        debug("waiting for invoker to terminate ...")
         p.wait()
 
-        print "terminating fala_ft_hello ..."
+        debug("terminating fala_ft_hello ...")
         Popen(['pkill', 'fala_ft_hello']).wait()
 
         self.assert_(success, "invoker terminated before delay elapsed")
@@ -333,29 +327,29 @@ class launcher_tests (unittest.TestCase):
         Test that booster is restarted if it is killed 
         """
         #get the pids of boosters and make sure they are running
+        debug("get the pids of boosters and make sure they are running")
         qpid = get_pid('booster-q')
-        print "Pid of booster-q before killing :%s" %qpid
         self.assert_(qpid != None, "No booster process running")
 
         mpid = get_pid('booster-m')
-        print "Pid of booster-m before killing :%s" %mpid
         self.assert_(mpid != None, "No booster process running")
 
         #Kill the booster processes
+        debug("Kill the booster processes")
         kill_process(apppid=qpid)
         kill_process(apppid=mpid)
         
         #wait for the boosters to be restarted
+        debug("wait for the boosters to be restarted")
         time.sleep(6)
 
         #check that the new boosters are started
+        debug("check that the new boosters are started")
         qpid_new = get_pid('booster-q')
-        print "Pid of booster-q after killing :%s" %qpid_new
         self.assert_(qpid_new != None, "No booster process running")
         self.assert_(qpid_new != qpid, "booster process was not killed")
 
         mpid_new = get_pid('booster-m')
-        print "Pid of booster-m after killing :%s" %mpid_new
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
 
@@ -364,39 +358,46 @@ class launcher_tests (unittest.TestCase):
         To test that invoker returns the same exit status as the application
         """
         #Run application without invoker and get the exit status
+        debug("Run application without invoker and get the exit status")
         st, op = commands.getstatusoutput('/usr/bin/fala_status.launch')
         app_st_wo_inv = os.WEXITSTATUS(st)
+        debug("The exit status of app without invoker is : %d" %app_st_wo_inv)
     
         #Run application with invoker and get the exit status
+        debug("Run application with invoker and get the exit status")
         st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status.launch')
         app_st_w_inv = os.WEXITSTATUS(st)
-
+        debug("The exit status of app with invoker is : %d" %app_st_w_inv)
+        
         self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status")
 
     def test_018_invoker_gid_uid(self):
         """
         To Test that the set gid and uid is passed from invoker process to launcher
         """
+        debug("This test uses a test application that returns the uid and gid and exits")
         #get the id in user mode 
-        print ("In User Mode \n")
+        debug("Get the system's uid and gid in User Mode \n")
         st, op =  commands.getstatusoutput('su user -c ' "id")
         usr_id1 = op.split(' ')[0].split('(')[0]
         grp_id1 = op.split(' ')[1].split('(')[0]
-        print("System %s \nSyetem %s" %(usr_id1, grp_id1))
+        debug("System %s \tSyetem %s" %(usr_id1, grp_id1))
 
-        #get id by running the application using invoker in user mode
+        #get invokers's uid and gid  by running the application using invoker in user mode
+        debug("get invoker's uid and gid by running the application using invoker in user mode")
         app = "invoker --type=m --no-wait /usr/bin/fala_status.launch" 
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
-        print("Invoker %s \nInvoker %s" %(usr_id, grp_id))
+        debug("Invoker %s \tInvoker %s" %(usr_id, grp_id))
         
-        #get id by running the application without invoker in user mode
+        #get application's uid and gid by running the application without invoker in user mode
+        debug("get application's uid and gid by running the application without invoker in user mode")
         app = "/usr/bin/fala_status.launch"
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
         usr_id2 = op.split('\n')[-2]
         grp_id2 = op.split('\n')[-1]
-        print("Application %s \nApplication %s" %(usr_id2, grp_id2))
+        debug("Application %s \tApplication %s" %(usr_id2, grp_id2))
 
         self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
         self.assert_(grp_id == grp_id1, "The correct GID is not passed by invoker")
@@ -405,25 +406,27 @@ class launcher_tests (unittest.TestCase):
         self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
 
         #get the id in root mode 
-        print ("In Root Mode \n")
+        debug("Get the Sysem's uid and gid in Root Mode \n")
         st, op =  commands.getstatusoutput("id")
         usr_id1 = op.split(' ')[0].split('(')[0]
         grp_id1 = op.split(' ')[1].split('(')[0]
-        print("System %s \nSyetem %s" %(usr_id1, grp_id1))
+        debug("System %s \tSyetem %s" %(usr_id1, grp_id1))
 
         #get id by running the application using invoker in root mode
+        debug("get invoker's uid and gid by running the application using invoker in root mode")
         app = "invoker --type=m --no-wait /usr/bin/fala_status.launch" 
         st, op = commands.getstatusoutput("%s" %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
-        print("Invoker %s \nInvoker %s" %(usr_id, grp_id))
+        debug("Invoker %s \tInvoker %s" %(usr_id, grp_id))
         
         #get id by running the application without invoker in root mode
+        debug("get application's uid and gid  by running the application without invoker in root mode")
         app = "/usr/bin/fala_status.launch"
         st, op = commands.getstatusoutput("%s" %app );
         usr_id2 = op.split('\n')[-2]
         grp_id2 = op.split('\n')[-1]
-        print("Application %s \nApplication %s" %(usr_id2, grp_id2))
+        debug("Application %s \tApplication %s" %(usr_id2, grp_id2))
 
         self.assert_(usr_id == usr_id1, "The correct UID is not passed by invoker")
         self.assert_(grp_id == grp_id1, "The correct GID is not passed by invoker")
@@ -437,23 +440,26 @@ class launcher_tests (unittest.TestCase):
         To test that invoker is killed by the same signal as the application
         """
         #Test for m-booster
+        debug("Test for m-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py")
-        print ("The Invoker killed by : %s" %op)
+        debug("The Invoker killed by : %s" %op)
     
         self.assert_(op == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
          
         #This case is launching the application in user mode
         #Test for q-booster
+        debug("Test for q-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
-        print ("The Invoker killed by : %s" %op.split('\n')[-1])
+        debug("The Invoker killed by : %s" %op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
         #Test for w-booster
+        debug("Test for w-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.py")
-        print ("The Invoker killed by : %s" %op)
+        debug("The Invoker killed by : %s" %op)
     
         self.assert_(op == 'User defined signal 1', "The invoker(w-booster) was not killed by the same signal")
         time.sleep(2)
@@ -524,76 +530,78 @@ class launcher_tests (unittest.TestCase):
         and restarted if applauncherd is killed
         """
         #get the pids of boosters and make sure they are running
+        debug("get the pids of boosters and make sure they are running")
         qpid = get_pid('booster-q')
-        print "Pid of booster-q before killing :%s" %qpid
+        self.assert_(len(qpid.split("\n")) == 1, "multiple instances of booster-q running")
         self.assert_(qpid != None, "No booster process running")
 
         mpid = get_pid('booster-m')
-        print "Pid of booster-m before killing :%s" %mpid
+        self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
         self.assert_(mpid != None, "No booster process running")
 
         wpid = get_pid('booster-w')
-        print "Pid of booster-w before killing :%s" %mpid
+        self.assert_(len(wpid.split("\n")) == 1, "multiple instances of booster-w running")
         self.assert_(wpid != None, "No booster process running")
 
         #stop applauncherd
-        os.system("initctl stop xsession/applauncherd")
+        stop_applauncherd()
  
         #wait for the boosters to be killed 
         time.sleep(2)
 
         #check that the none of the booster is running
+        debug("check that the none of the booster is running")
         qpid_new = get_pid('booster-q')
-        print "Pid of booster-q after killing :%s" %qpid_new
         self.assert_(qpid_new == None, "booster-q still running")
         
                
         mpid_new = get_pid('booster-m')
-        print "Pid of booster-m after killing :%s" %mpid_new
         self.assert_(mpid_new == None, "booster-m still running")
 
         wpid_new = get_pid('booster-w')
-        print "Pid of booster-w after killing :%s" %wpid_new
         self.assert_(wpid_new == None, "booster-w still running")
 
         #Now start the applauncherd
-        os.system("initctl start xsession/applauncherd")
+        start_applauncherd()
         
         #wait for the boosters to be restarted
         time.sleep(6)
 
         #get the pids of boosters and make sure they are running
+        debug("get the pids of boosters and make sure they are running")
         qpid = get_pid('booster-q')
-        print "Pid of booster-q before killing :%s" %qpid
+        self.assert_(len(qpid.split("\n")) == 1, "multiple instances of booster-q running")
         self.assert_(qpid != None, "No booster process running")
 
         mpid = get_pid('booster-m')
-        print "Pid of booster-m before killing :%s" %mpid
+        self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
         self.assert_(mpid != None, "No booster process running")
 
         wpid = get_pid('booster-w')
-        print "Pid of booster-w before killing :%s" %mpid
+        self.assert_(len(wpid.split("\n")) == 1, "multiple instances of booster-w running")
         self.assert_(wpid != None, "No booster process running")
 
         #Now kill applauncherd
+        debug("Now kill applauncherd")
         kill_process('applauncherd')
         
         #wait for the boosters to be restarted
         time.sleep(6)
         
         #check that the new boosters are started
+        debug("check that the new boosters are started")
         qpid_new = get_pid('booster-q')
-        print "Pid of booster-q after killing :%s" %qpid_new
+        self.assert_(len(qpid_new.split("\n")) == 1, "multiple instances of booster-q running")
         self.assert_(qpid_new != None, "No booster process running")
         self.assert_(qpid_new != qpid, "booster process was not killed")
 
         mpid_new = get_pid('booster-m')
-        print "Pid of booster-m after killing :%s" %mpid_new
+        self.assert_(len(mpid_new.split("\n")) == 1, "multiple instances of booster-m running")
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
             
         wpid_new = get_pid('booster-w')
-        print "Pid of booster-w after killing :%s" %wpid_new
+        self.assert_(len(wpid_new.split("\n")) == 1, "multiple instances of booster-w running")
         self.assert_(wpid_new != None, "No booster process running")
         self.assert_(wpid_new != wpid, "booster process was not killed")
 

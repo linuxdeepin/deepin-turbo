@@ -122,17 +122,19 @@ class SecurityTests(unittest.TestCase):
         Testapp = '/usr/bin/fala_ft_hello.launch'
 
         #launching the testapp with actual invoker
+        debug("launching the testapp with actual invoker")
+        
         st = os.system('%s --type=m --no-wait %s'%(INVOKER_BINARY, Testapp))
         pid = get_pid(Testapp.replace('.launch', ''))
         self.assert_((st == 0), "Application was not launched using launcher")
         self.assert_(not (pid == None), "Application was not launched using launcher: actual pid%s" %pid)
-        print pid
-        #self.kill_process(Testapp.replace('.launch', ''))       
+
         kill_process(apppid=pid)  
         pid = get_pid(Testapp.replace('.launch', '')) 
         self.assert_((pid == None), "Application still running")        
         
         #launching the testapp with fake invoker
+        debug("launching the testapp with fake invoker")
         st = os.system('%s --type=m --no-wait %s'%(FAKE_INVOKER_BINARY, Testapp)) 
         pid = get_pid(Testapp.replace('.launch', ''))
         self.assert_(not (st == 0), "Application was launched using fake launcher")

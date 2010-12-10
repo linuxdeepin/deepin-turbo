@@ -27,12 +27,12 @@ def remove_applauncherd_runtime_files():
     """
     Removes files that applauncherd leaves behind after it has been stopped
     """
-
+    debug("Removing files that applauncherd leaves behind after it has been stopped")
     files = ['/tmp/applauncherd.lock']
     files += glob.glob('/tmp/boost*')
 
     for f in files:
-        print "removing %s" % f
+        debug("removing %s" % f)
 
         try:
             os.remove(f)
@@ -40,6 +40,7 @@ def remove_applauncherd_runtime_files():
             pass
 
 def start_applauncherd():
+    debug("Staring applauncherd")
     handle = Popen(['initctl', 'start', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
                    shell = False)
@@ -47,6 +48,7 @@ def start_applauncherd():
     return handle.wait() == 0
 
 def stop_applauncherd():
+    debug("Stoping applauncherd")
     handle = Popen(['initctl', 'stop', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
                    shell = False)
@@ -58,6 +60,7 @@ def stop_applauncherd():
     return handle.wait()
 
 def restart_applauncherd():
+    debug("Restart applauncherd")
     stop_applauncherd()
     start_applauncherd()
 
@@ -66,6 +69,7 @@ def run_app_as_user(appname, out = DEV_NULL, err = DEV_NULL):
     Runs the specified command as a user.
     """
 
+    debug("run %s as user" %appname)
     cmd = ['su', '-', 'user', '-c']
 
     if type(appname) == list:
@@ -82,6 +86,7 @@ def run_app_as_user(appname, out = DEV_NULL, err = DEV_NULL):
 def get_pid(appname):
     temp = basename(appname)[:14]
     st, op = commands.getstatusoutput("pgrep %s" % temp)
+    debug("The Pid of %s is: %s" %(appname, op))
     if st == 0:
         return op
     else:
@@ -93,6 +98,7 @@ def get_newest_pid(app):
 
     op = p.communicate()[0]
 
+    debug("The New Pid of %s is %s:" %(app, op.strip()))
     if p.wait() == 0:
         return op.strip()
     
@@ -116,7 +122,7 @@ def wait_for_app(app = None, timeout = 5, sleep = 0.5):
         if pid != None:
             break
 
-        print "waiting %s secs for %s" % (sleep, app)
+        debug("waiting %s secs for %s" % (sleep, app))
 
         time.sleep(sleep)
 
@@ -127,19 +133,22 @@ def kill_process(appname=None, apppid=None, signum=9):
     if apppid and appname: 
         return None
     else:
-        if apppid: 
+        if apppid:
+            debug("Now killing the app with pid %s" %apppid) 
             st, op = commands.getstatusoutput("kill -%s %s" % (str(signum), str(apppid)))
         if appname: 
+            debug("Now killing %s" %appname) 
             temp = basename(appname)[:14]
             st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
 
             try:
                 os.wait()
             except Exception as e:
-                print e
+                print e 
 
 def process_state(processid):
     st, op = commands.getstatusoutput('cat /proc/%s/stat' %processid)
+    debug("The Process State of %s is %s" %(processid, op))
     if st == 0:
         return op
     else:
@@ -209,6 +218,7 @@ def get_file_descriptor(booster, type):
     To test that file descriptors are closed before calling application main
     """
     #get fd of booster before launching application
+    debug("get fd of booster before launching application")
     pid = commands.getoutput("pgrep '%s$'" %booster)
     fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
     fd_info = fd_info.split('\n')
@@ -218,20 +228,22 @@ def get_file_descriptor(booster, type):
     for fd in fd_info:
         if "->" in fd:
             init[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
-    print init
+    debug("\nThe initial file descriptors are : %s\n" %init)
 
     #launch application using booster
+    debug("launch fala_ft_hello using booster")
     st = os.system('invoker --type=%s --no-wait /usr/bin/fala_ft_hello.launch' %type)
     time.sleep(2)
 
     #get fd of booster after launching the application
+    debug("get fd of booster after launching the application")
     if st == 0:
         fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
         fd_info = fd_info.split('\n')
         for fd in fd_info:
             if "->" in fd:
                 final[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
-    print final
+    debug("\nThe final file descriptors are : %s\n" %final)
     pid = commands.getoutput('pgrep fala_ft_hello')    
 
     mykeys = init.keys()
@@ -244,7 +256,7 @@ def get_file_descriptor(booster, type):
         except KeyError:
             print "some key in init is not in final" 
     time.sleep(2)
-    print "The number of changed file descriptors %d" %count
+    debug("The number of changed file descriptors %d" %count)
     kill_process(apppid=pid) 
     return count
 
@@ -253,6 +265,7 @@ def get_groups_for_user():
     # the gid group)
     p = run_app_as_user('id -Gn', out = subprocess.PIPE)
     groups = p.communicate()[0].split()
+    debug("The groups for users is :%s" %groups)
     p.wait()
     
     return groups
