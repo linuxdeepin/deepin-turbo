@@ -1,5 +1,8 @@
 applauncherd (0.15.9) stable; urgency=low
 
+  * Changes: Add possibility to track 2 pixels at a time to pixelchanged
+             and increase the delay between mouse press and release to 100ms
+  * Changes: Performance test uses pixelchanged with two tracked pixels
   * Fixes: NB#207781 - Some applications do not load QAccessibleBridgePlugin plug-ins
 
  -- Juha Lintula <juha.lintula@nokia.com>  Thu, 09 Dec 2010 14:59:32 +0200
