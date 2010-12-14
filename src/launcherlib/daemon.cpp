@@ -244,9 +244,7 @@ void Daemon::forkBooster(char type, int sleepTime)
 
         // Set session id
         if (setsid() < 0)
-        {
-            Logger::logError("Daemon: Setting session id\n");
-        }
+            Logger::logError("Daemon: Couldn't set session id\n");
 
         // Guarantee some time for the just launched application to
         // start up before forking new booster if needed.
@@ -259,6 +257,7 @@ void Daemon::forkBooster(char type, int sleepTime)
         Booster * booster = BoosterFactory::create(type);
         if (booster)
         {
+            // Initialize and wait for commands from invoker
             booster->initialize(m_initialArgc, m_initialArgv, m_pipefd);
 
             // Run the current Booster
@@ -267,7 +266,8 @@ void Daemon::forkBooster(char type, int sleepTime)
             // Finish
             delete booster;
 
-            // avoid situation when destructors for static objects may be run incorrectly
+            // _exit() instead of exit() to avoid situation when destructors
+            // for static objects may be run incorrectly
             _exit(EXIT_SUCCESS);
         }
         else

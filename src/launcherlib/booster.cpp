@@ -157,15 +157,17 @@ void Booster::run()
 {
     if (!m_appData->fileName().empty())
     {
-        //check if can close sockets here
+        // Check if can close sockets already here
         if (!m_connection->isReportAppExitStatusNeeded())
         {
             Connection::closeAllSockets();
         }
 
+        // Execute the binary
         Logger::logInfo("Booster: invoking '%s' ", m_appData->fileName().c_str());
         int ret_val = launchProcess();
 
+        // Send exit status to invoker, if needed
         if (m_connection->isReportAppExitStatusNeeded())
         {
             m_connection->sendAppExitStatus(ret_val);
