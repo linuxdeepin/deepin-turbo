@@ -28,6 +28,7 @@
 #include <sys/user.h>
 #include <sys/prctl.h>
 #include <sys/resource.h>
+#include <fcntl.h>
 
 #ifdef HAVE_CREDS
     #include <sys/creds.h>
@@ -255,6 +256,26 @@ int Booster::launchProcess()
     if (getgid() != m_appData->groupId())
         setgid(m_appData->groupId());
 
+    // Reset out-of-memory killer adjustment
+    resetOomAdj();
+
+#ifdef HAVE_CREDS
+    // filter out invoker-specific credentials
+    Booster::filterOutCreds(m_appData->peerCreds());
+
+    // Set application's platform security credentials.
+    // creds_confine2() tries first to use application-specific credentials, but if they are missing
+    // from the system, it uses credentials inherited from the invoker.
+    int err = creds_confine2(m_appData->fileName().c_str(), credp_str2flags("set", NULL), m_appData->peerCreds());
+    m_appData->deletePeerCreds();
+
+    if (err < 0)
+    {
+        // Credential setup has failed, abort.
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Failed to setup credentials for launching application: %d\n", err);
+    }
+#endif
+
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
@@ -284,23 +305,6 @@ int Booster::launchProcess()
 
 void* Booster::loadMain()
 {
-#ifdef HAVE_CREDS
-    // filter out invoker-specific credentials
-    Booster::filterOutCreds(m_appData->peerCreds());
-
-    // Set application's platform security credentials.
-    // creds_confine2() tries first to use application-specific credentials, but if they are missing
-    // from the system, it uses credentials inherited from the invoker.
-    int err = creds_confine2(m_appData->fileName().c_str(), credp_str2flags("set", NULL), m_appData->peerCreds());
-    m_appData->deletePeerCreds();
-
-    if (err < 0)
-    {
-        // Credential setup has failed, abort.
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Failed to setup credentials for launching application: %d\n", err);
-    }
-#endif
-
     // Setup flags for dlopen
 
     int dlopenFlags = RTLD_LAZY;
@@ -429,3 +433,24 @@ void Booster::filterOutCreds(creds_t creds)
 }
 
 #endif //HAVE_CREDS
+
+void Booster::resetOomAdj()
+{
+    const char * PROC_OOM_ADJ_FILE = "/proc/self/oom_adj";
+    int fd = open(PROC_OOM_ADJ_FILE, O_WRONLY);
+    if (fd != -1)
+    {
+        if (write(fd, "0", sizeof(char)) == -1)
+        {
+            Logger::logError("Couldn't write to '%s': %s", PROC_OOM_ADJ_FILE,
+                             strerror(errno));
+        }
+
+        close(fd);
+    }
+    else
+    {
+        Logger::logError("Couldn't open '%s' for write: %s", PROC_OOM_ADJ_FILE,
+                         strerror(errno));
+    }
+}

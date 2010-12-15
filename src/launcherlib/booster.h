@@ -160,6 +160,9 @@ protected:
     //! Returns the given pipe fd (0 = read end, 1 = write end)
     int pipeFd(bool whichEnd) const;
 
+    //! Reset out-of-memory killer adjustment
+    void resetOomAdj();
+
 private:
 
     //! Disable copy-constructor
