@@ -109,7 +109,7 @@ void fake_event(Display *dpy, int x, int y)
       scheduler_fake_event(dpy, SCHEDULER_EVENT_MOTION, x, y);
       scheduler_fake_event(dpy, SCHEDULER_EVENT_BUTTON, Button1, True);
       XSync(dpy, False);
-      usleep(100000);
+      usleep(200000);
       scheduler_fake_event(dpy, SCHEDULER_EVENT_BUTTON, Button1, False);
       timestamp("Button1 released");
   }
