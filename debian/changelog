@@ -1,3 +1,11 @@
+applauncherd (0.15.10) stable; urgency=low
+
+  * Fixes: NB#211510 - boosters should update oom_adj to 0 before calling main
+  * Changes: Some comments made clearer / added.
+  * Changes: Code refactoring done for tests. Debugs added.
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Wed, 15 Dec 2010 13:00:08 +0200
+
 applauncherd (0.15.9) stable; urgency=low
 
   * Changes: Add possibility to track 2 pixels at a time to pixelchanged
