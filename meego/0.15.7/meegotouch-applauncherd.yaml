@@ -120,7 +120,7 @@ SubPackages:
       - "%{_datadir}/dbus-1/services/com.nokia.fala_wol.service"
 Files:
     - "%{_bindir}/invoker"
-    - "%{_libdir}/libapplauncherd/libapplauncherd.so"
+    - "%{_libdir}/applauncherd/libapplauncherd.so"
     - "%{_bindir}/applauncherd.bin"
     - "%{_bindir}/applauncherd"
     - "%config %{_sysconfdir}/xdg/autostart/applauncherd.desktop"

@@ -109,7 +109,7 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 %files
 %defattr(-,root,root,-)
 %{_bindir}/invoker
-%{_libdir}/libapplauncherd/libapplauncherd.so
+%{_libdir}/applauncherd/libapplauncherd.so
 %{_bindir}/applauncherd.bin
 %{_bindir}/applauncherd
 %config %{_sysconfdir}/xdg/autostart/applauncherd.desktop
