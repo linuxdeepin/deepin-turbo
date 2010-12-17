@@ -1,9 +1,11 @@
-* Wed Dec 8 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.7
+* Wed Dec 17 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.10
+- BCM#10591 - meegotouch-applauncherd outdated in MeeGo
+
+* Wed Dec 1 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.5
 - BCM#10591 - meegotouch-applauncherd outdated in MeeGo
 - Remove obsolete patch 0001-Changes-use-usr-bin-ruby-instead-of-usr-bin-ruby1.8-.patch 
 - Remove obsolete patch 0002-Changes-In-MeeGo-install-file-etc-xdg-autostart-appl.patch
 - Change yaml file updated with various changes
-- /usr/lib/libapplauncherd.so now installs at /usr/lib/applauncherd/libapplauncherd.so
 
 * Thu Sep 2 2010 Pertti Kellomäki <pertti.kellomaki@nokia.com> - 0.12.1
 - Updated to version 0.12.1.
