@@ -1,4 +1,6 @@
 usr/bin/applauncherd.bin
 usr/lib/applauncherd/libapplauncherd.so
 usr/bin/applauncherd
-
+usr/lib/applauncherd/libmbooster.so
+usr/lib/applauncherd/libwrtbooster.so
+usr/lib/applauncherd/libqtbooster.so

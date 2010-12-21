@@ -1,8 +1,10 @@
-set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
+set(LAUNCHER  ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
+set(QTBOOSTER ${CMAKE_HOME_DIRECTORY}/src/qtbooster)
 
 # Set sources
-set(SRC ut_qtbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp
-   ${LAUNCHER}/logger.cpp ${LAUNCHER}/qtbooster.cpp)
+set(SRC ut_qtbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
+${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${QTBOOSTER}/qtbooster.cpp
+${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
 set(MOC_HDRS ut_qtbooster.h)
@@ -14,7 +16,7 @@ qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 set(QT_USE_QTTEST TRUE)
 
 # Set include paths
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER} ${QTBOOSTER})
 link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBCREDS})
 
 # Enable Qt (may not be needed, because already defined on higher level)

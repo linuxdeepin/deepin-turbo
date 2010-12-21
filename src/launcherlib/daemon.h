@@ -20,16 +20,27 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-#include <vector>
+#include <QHash>
+
 #include <string>
-#include <map>
+
+using std::string;
+
 #include <sys/types.h>
+#include <tr1/memory>
+
+using std::tr1::shared_ptr;
+
+#include <vector>
 
 using std::vector;
-using std::string;
+
+#include <map>
+
 using std::map;
 
 class Booster;
+class SocketManager;
 
 /*!
  * \class Daemon.
@@ -55,6 +66,9 @@ public:
      * --help   == print usage
      */
     Daemon(int & argc, char * argv[]);
+
+    //! Destructor
+    ~Daemon();
 
     /*!
      * \brief Run main loop and fork Boosters.
@@ -96,11 +110,32 @@ private:
     //! Forks and initializes a new Booster
     void forkBooster(char type, int sleepTime = 0);
 
+    //! Init sockects used to communicate with boosters
+    void initBoosterSockets();
+
+    //! Fork all registered boosters
+    void forkBoosters();
+
     //! Don't use console for output
     void consoleQuiet();
 
     //! Kill given pid with SIGKILL
     void killProcess(pid_t pid) const;
+
+    //! Load (dlopen()) booster plugins
+    void loadBoosterPlugins();
+
+    //! Assign given pid to given booster
+    void setPidToBooster(char type, pid_t pid);
+
+    //! Return booster type for given pid. Return 0 if fails.
+    char boosterTypeForPid(pid_t pid) const;
+
+    //! Return pid for given booster type. Return 0 if fails.
+    pid_t boosterPidForType(char type) const;
+
+    //! Close all sockets NOT used by the given booster type.
+    void closeUnusedSockets(char type);
 
     //! Daemonize flag
     bool m_daemon;
@@ -112,9 +147,12 @@ private:
     typedef vector<pid_t> PidVect;
     PidVect m_children;
 
-    //! Storage of booster-invoker pid pairs
+    //! Storage of booster <-> invoker pid pairs
     typedef map<pid_t, pid_t> PidMap;
     PidMap m_boosterPidToInvokerPid;
+
+    //! Hash for booster type <-> pid mappings
+    QHash<char, pid_t> m_boosterToPidHash;
 
     //! Pipe used to tell the parent that a new booster is needed
     int m_pipefd[2];
@@ -133,6 +171,9 @@ private:
 
     //! Time to sleep before forking a new booster
     static const int m_boosterSleepTime;
+
+    //! Manager for invoker <-> booster sockets
+    SocketManager * m_socketManager;
 
 #ifdef UNIT_TEST
     friend class Ut_Daemon;

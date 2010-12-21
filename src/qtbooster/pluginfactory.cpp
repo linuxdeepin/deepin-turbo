@@ -17,35 +17,29 @@
 **
 ****************************************************************************/
 
-#ifndef UT_MBOOSTER_H
-#define UT_MBOOSTER_H
+#include "qtbooster.h"
+#include <QtCore>
 
-#include<QtTest/QtTest>
-#include<QObject>
-
-#include <tr1/memory>
-
-#define UNIT_TEST
-
-class MBooster;
-
-class Ut_MBooster : public QObject
+extern "C" 
 {
-    Q_OBJECT
+    // Create a new plugin instance.
+    Q_DECL_EXPORT void * create()
+    {
+        return new QtBooster;
+    }
 
-public:
-    Ut_MBooster();
-    virtual ~Ut_MBooster();
+    Q_DECL_EXPORT char type()
+    {
+        return QtBooster::type();
+    }
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void testSocketName();
-    void testType();
-    void testPreload();
+    Q_DECL_EXPORT const char * socketName()
+    {
+        return QtBooster::socketName().c_str();
+    }
 
-private:
-    std::tr1::shared_ptr<MBooster> m_subject;
-};
-
-#endif // UT_MBOOSTER_H
+    Q_DECL_EXPORT const char * temporaryProcessName()
+    {
+        return QtBooster::temporaryProcessName().c_str();
+    }
+}

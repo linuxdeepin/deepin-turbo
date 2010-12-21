@@ -1,7 +1,8 @@
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 
 # Set sources
-set(SRC ut_booster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp)
+set(SRC ut_booster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp
+${LAUNCHER}/logger.cpp  ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
 set(MOC_HDRS ut_booster.h)

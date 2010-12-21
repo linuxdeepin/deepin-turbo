@@ -32,8 +32,7 @@ Ut_Daemon::Ut_Daemon()
 }
 
 Ut_Daemon::~Ut_Daemon()
-{
-}
+{}
 
 void Ut_Daemon::initTestCase()
 {}
@@ -43,7 +42,8 @@ void Ut_Daemon::cleanupTestCase()
 
 void Ut_Daemon::testInitialArguments()
 {
-    QVERIFY2(m_subject->m_initialArgc == 3, "Failure");
+    QVERIFY(m_subject->m_initialArgc == 3);
+
     QCOMPARE(m_subject->m_initialArgv[0], "app");
     QCOMPARE(m_subject->m_initialArgv[1], "--testParameter");
     QCOMPARE(m_subject->m_initialArgv[2], "--123");
@@ -58,13 +58,13 @@ void Ut_Daemon::testParseArgs()
     argv[1] = strdup("--daemon");
     argv[2] = strdup("--quiet");
 
-    QVERIFY2(m_subject->m_daemon == false, "Failure");
-    QVERIFY2(m_subject->m_quiet == false, "Failure");
+    QVERIFY(m_subject->m_daemon == false);
+    QVERIFY(m_subject->m_quiet == false);
 
     m_subject->parseArgs(vector<string>(argv, argv + argc));
 
-    QVERIFY2(m_subject->m_daemon == true, "Failure");
-    QVERIFY2(m_subject->m_quiet == true, "Failure");
+    QVERIFY(m_subject->m_daemon == true);
+    QVERIFY(m_subject->m_quiet == true);
 
     delete argv[0];
     delete argv[1];
@@ -74,22 +74,20 @@ void Ut_Daemon::testParseArgs()
 
 void Ut_Daemon::testVerifyInstance()
 {
-    QVERIFY2(m_subject.get() == Daemon::instance(), "Failure");
+    QVERIFY(m_subject.get() == Daemon::instance());
 }
 
 void Ut_Daemon::testReapZombies()
 {
-    QVERIFY2(m_subject->m_children.size() == 0, "Failure");
+    QVERIFY(m_subject->m_children.size() == 0);
 
-    for (int i=234234; i<234245; i++) {
+    for (int i = 1; i < 10; i++) {
         m_subject->m_children.push_back(i);
     }
 
-    QVERIFY2(m_subject->m_children.size() == 11, "Failure");
-
     m_subject->reapZombies();
 
-    QVERIFY2(m_subject->m_children.size() == 0, "Failure");
+    QVERIFY(m_subject->m_children.size() == 0);
 }
 
 QTEST_APPLESS_MAIN(Ut_Daemon);

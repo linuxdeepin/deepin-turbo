@@ -1,10 +1,12 @@
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
+set(MBOOSTER ${CMAKE_HOME_DIRECTORY}/src/mbooster)
 
 # Set sources
-set(SRC ut_mbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${LAUNCHER}/mbooster.cpp)
+set(SRC ut_mbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/connection.cpp
+${LAUNCHER}/logger.cpp ${MBOOSTER}/mbooster.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_mbooster.h ${LAUNCHER}/mbooster.h)
+set(MOC_HDRS ut_mbooster.h ${MBOOSTER}/mbooster.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
@@ -13,7 +15,7 @@ qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 set(QT_USE_QTTEST TRUE)
 
 # Set include paths
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER} ${MBOOSTER})
 
 link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${MEEGOTOUCH_LIBRARIES} ${LIBCREDS})
 

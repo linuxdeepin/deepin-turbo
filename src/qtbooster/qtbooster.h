@@ -58,16 +58,6 @@ public:
      */
     static char type();
 
-    /*!
-     * \brief Keep booster pid, should be reset before booster run application's main() function
-     */
-    static void setProcessId(int pid);
-
-    /*!
-     * \brief Return booster pid
-     */
-    static int processId();
-
     //! \reimp
     virtual bool preload();
 
@@ -85,8 +75,6 @@ private:
     QtBooster & operator= (const QtBooster & r);
 
     static const string m_socketId;
-
-    static int m_ProcessID;
 
     //! Process name to be used when booster is not
     //! yet transformed into a running application

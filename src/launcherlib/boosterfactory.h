@@ -20,14 +20,13 @@
 #ifndef BOOSTERFACTORY_H
 #define BOOSTERFACTORY_H
 
-#include <sys/types.h>
-
 class Booster;
 
 /*!
  * \class BoosterFactory
  * \brief BoosterFactory creates a new booster of given type.
  */
+// TODO: Could be a namespace instead of a class.
 class BoosterFactory
 {
 public:
@@ -37,31 +36,10 @@ public:
      */
     static Booster * create(char type);
 
-    /*! Set current process ID globally to the given booster type
-     *  so that we know which booster to restart if on exits.
-     */
-    static void setProcessIdToBooster(char type, pid_t pid);
-
-    /*! \brief Return the type of booster currently assigned to pid.
-     *  \return 'q', 'm' or 'w' on success, 0 on failure.
-     */
-    static char getBoosterTypeForPid(pid_t pid);
-
-    /*! \brief Return the pid of last created booster of particular type
-     *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT
-     *  \return booster pid, 0 on failure
-     */
-    static pid_t getBoosterPidForType(char type);
-
-
-    /*! \brief Close unused sockets inherited from applauncherd
-     *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT
-     */
-    static void closeUnusedSockets(char type);
-
-
 private:
-    BoosterFactory();
+
+    //! Hidden constructor
+    BoosterFactory() {};
 };
 
 #endif // BOOSTERFACTORY_H

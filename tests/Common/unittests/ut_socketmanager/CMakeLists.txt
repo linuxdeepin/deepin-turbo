@@ -1,13 +1,10 @@
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 
 # Set sources
-set(SRC ut_connection.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
-${LAUNCHER}/boosterfactory.cpp ${LAUNCHER}/boosterpluginregistry.cpp
-${LAUNCHER}/daemon.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
-${LAUNCHER}/socketmanager.cpp)
+set(SRC ut_socketmanager.cpp ${LAUNCHER}/logger.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_connection.h)
+set(MOC_HDRS ut_socketmanager.h)
 
 # Set the program name define used in daemon.cpp
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPROG_NAME_LAUNCHER=\\\"applauncherd\\\"")
@@ -24,8 +21,8 @@ link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${MEEGOTOUCH_LIBRARIES}
 
 # Enable Qt (may not be needed, because already defined on higher level)
 include(${QT_USE_FILE})
-add_executable(ut_connection ${SRC} ${MOC_SRC})
+add_executable(ut_socketmanager ${SRC} ${MOC_SRC})
 
 # Install
-install(PROGRAMS ut_connection DESTINATION /usr/share/applauncherd-tests/)
+install(PROGRAMS ut_socketmanager DESTINATION /usr/share/applauncherd-tests/)
 

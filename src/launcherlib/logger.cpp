@@ -195,18 +195,6 @@ void Logger::logNotice(const char * format, ...)
 #endif
 }
 
-void Logger::logWarning(const char * format, ...)
-{
-#ifndef DEBUG_LOGGING_DISABLED
-    va_list(ap);
-    va_start(ap, format);
-    writeLog(LOG_WARNING, format, ap); 
-    va_end(ap);
-#else
-    Q_UNUSED(format);
-#endif
-}
-
 void Logger::logInfo(const char * format, ...)
 {
 #ifndef DEBUG_LOGGING_DISABLED
@@ -217,6 +205,14 @@ void Logger::logInfo(const char * format, ...)
 #else
     Q_UNUSED(format);
 #endif
+}
+
+void Logger::logWarning(const char * format, ...)
+{
+    va_list(ap);
+    va_start(ap, format);
+    writeLog(LOG_WARNING, format, ap);
+    va_end(ap);
 }
 
 void Logger::logError(const char * format, ...)

@@ -7,8 +7,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/comm
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC appdata.cpp booster.cpp boosterfactory.cpp connection.cpp daemon.cpp mbooster.cpp logger.cpp main.cpp qtbooster.cpp wrtbooster.cpp)
-set(MOC_HDRS mbooster.h wrtbooster.h)
+set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterpluginregistry.cpp
+        connection.cpp daemon.cpp logger.cpp main.cpp socketmanager.cpp)
+
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Use webruntime if found

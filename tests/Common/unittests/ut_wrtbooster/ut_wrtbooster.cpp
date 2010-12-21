@@ -49,12 +49,6 @@ void Ut_WRTBooster::testType()
     QVERIFY(m_subject->boosterType() == 'w');
 }
 
-void Ut_WRTBooster::testSetProcessId()
-{
-    WRTBooster::setProcessId(123);
-    QVERIFY(WRTBooster::processId() == 123);
-}
-
 void Ut_WRTBooster::testPreload()
 {
 #ifdef HAVE_MCOMPONENTCACHE

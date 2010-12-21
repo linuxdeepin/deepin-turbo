@@ -20,14 +20,14 @@
 #ifndef UT_CONNECTION_H
 #define UT_CONNECTION_H
 
-#include<QtTest/QtTest>
-#include<QObject>
-
+#include <QtTest/QtTest>
+#include <QObject>
 #include <tr1/memory>
 
 #define UNIT_TEST
 
 class Connection;
+class MyConnection;
 
 class Ut_Connection : public QObject
 {
@@ -41,13 +41,12 @@ private Q_SLOTS:
 
     void initTestCase();
     void cleanupTestCase();
-    void testInitConnection();
     void testSocket();
     void testGetEnv();
     void testGetAppName();
 
 private:
-    std::tr1::shared_ptr<Connection> m_subject;
+    std::tr1::shared_ptr<MyConnection> m_subject;
 };
 
 #endif // UT_CONNECTION_H

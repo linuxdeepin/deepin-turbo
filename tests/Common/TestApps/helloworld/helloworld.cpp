@@ -56,12 +56,12 @@ M_EXPORT int main(int argc, char ** argv)
 
     window->show();
 
-    char *foobar = "foo!";
+    const char *foobar = "foo!";
     for (int i = 0; i < argc; ++i)
     {
         if (QString(argv[i]) == "-segfault")
         {
-            foobar[3] = 'z';
+            const_cast<char *>(foobar)[3] = 'z';
         }
     }
 

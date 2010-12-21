@@ -42,7 +42,6 @@ private Q_SLOTS:
     void cleanupTestCase();
     void testSocketName();
     void testType();
-    void testSetProcessId();
     void testPreload();
 
 private:

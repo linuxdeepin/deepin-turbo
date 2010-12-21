@@ -17,48 +17,29 @@
 **
 ****************************************************************************/
 
-#include "qtbooster.h"
+#include "wrtbooster.h"
+#include <QtCore>
 
-const string QtBooster::m_socketId = "/tmp/boostq";
-const string QtBooster::m_temporaryProcessName = "booster-q";
-int QtBooster::m_ProcessID = 0;
-
-const string & QtBooster::socketId() const
+extern "C" 
 {
-    return m_socketId;
-}
+    // Create a new plugin instance.
+    Q_DECL_EXPORT void * create()
+    {
+        return new WRTBooster;
+    }
 
-const string & QtBooster::socketName()
-{
-    return m_socketId;
-}
+    Q_DECL_EXPORT char type()
+    {
+        return WRTBooster::type();
+    }
 
-const string & QtBooster::temporaryProcessName()
-{
-    return m_temporaryProcessName;
-}
+    Q_DECL_EXPORT const char * socketName()
+    {
+        return WRTBooster::socketName().c_str();
+    }
 
-const string & QtBooster::boosterTemporaryProcessName() const
-{
-    return temporaryProcessName();
-}
-
-char QtBooster::type()
-{
-    return 'q';
-}
-
-bool QtBooster::preload()
-{
-    return true;
-}
-
-void QtBooster::setProcessId(int pid)
-{
-    m_ProcessID = pid;
-}
-
-int QtBooster::processId()
-{
-    return m_ProcessID;
+    Q_DECL_EXPORT const char * temporaryProcessName()
+    {
+        return WRTBooster::temporaryProcessName().c_str();
+    }
 }

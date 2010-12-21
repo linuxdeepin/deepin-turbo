@@ -48,5 +48,3 @@ private:
 };
 
 #endif // UT_QTBOOSTER_H
-
-

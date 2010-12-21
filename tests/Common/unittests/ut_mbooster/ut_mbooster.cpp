@@ -49,12 +49,6 @@ void Ut_MBooster::testType()
     QVERIFY(m_subject->boosterType() == 'm');
 }
 
-void Ut_MBooster::testSetProcessId()
-{
-    MBooster::setProcessId(123);
-    QVERIFY(MBooster::processId() == 123);
-}
-
 void Ut_MBooster::testPreload()
 {
 #ifdef HAVE_MCOMPONENTCACHE

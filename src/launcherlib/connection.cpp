@@ -32,12 +32,10 @@
     const char * Connection::m_credsStr = "applauncherd-launcher::access";
 #endif
 
-PoolType Connection::socketPool;
-
-Connection::Connection(const string socketId, bool testMode) :
+Connection::Connection(int socketFd, bool testMode) :
         m_testMode(testMode),
         m_fd(-1),
-        m_curSocket(findSocket(socketId)),
+        m_curSocket(socketFd),
         m_fileName(""),
         m_argc(0),
         m_argv(NULL),
@@ -65,79 +63,6 @@ Connection::Connection(const string socketId, bool testMode) :
 
 #endif
 }
-
-void Connection::closeAllSockets()
-{
-    PoolType::iterator it;
-    for (it = socketPool.begin(); it != socketPool.end(); ++it)
-    {
-        if (it->second > 0)
-        {
-            ::close(it->second);
-        }
-    }
-    socketPool.clear();
-}
-
-int Connection::findSocket(const string socketId)
-{
-    PoolType::iterator it(socketPool.find(socketId));
-    return it == socketPool.end() ? -1 : it->second;
-}
-
-void Connection::initSocket(const string socketId)
-{
-    // Initialize a socket at socketId if one already doesn't
-    // exist for that id / path.
-    PoolType::iterator it(socketPool.find(socketId));
-    if (it == socketPool.end())
-    {
-        Logger::logInfo("Initing socket at '%s'..", socketId.c_str());
-
-        // Create a new local socket
-        int socketFd = socket(PF_UNIX, SOCK_STREAM, 0);
-        if (socketFd < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Failed to open socket\n");
-
-        // Remove the previous socket file
-        unlink(socketId.c_str());
-
-        // Initialize the socket struct
-        struct sockaddr sun;
-        sun.sa_family = AF_UNIX;
-        int maxLen = sizeof(sun.sa_data) - 1;
-        strncpy(sun.sa_data, socketId.c_str(), maxLen);
-        sun.sa_data[maxLen] = '\0';
-
-        // Bind the socket
-        if (bind(socketFd, &sun, sizeof(sun)) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Failed to bind to socket (fd=%d)\n", socketFd);
-
-        // Listen to the socket
-        if (listen(socketFd, 10) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Failed to listen to socket (fd=%d)\n", socketFd);
-
-        // Set permissions
-        chmod(socketId.c_str(), S_IRUSR | S_IWUSR | S_IXUSR |
-                                S_IRGRP | S_IWGRP | S_IXGRP |
-                                S_IROTH | S_IWOTH | S_IXOTH);
-
-        // Store path <-> file descriptor mapping
-        socketPool[socketId] = socketFd;
-    }
-}
-
-void Connection::closeSocket(const string socketId)
-{
-    PoolType::iterator it(socketPool.find(socketId));
-
-    if (it != socketPool.end())
-    {
-        ::close(it->second);
-        socketPool.erase(it);
-    }
-}
-
 
 bool Connection::accept(AppData* appData)
 {
@@ -546,26 +471,33 @@ bool Connection::receiveActions()
         case INVOKER_MSG_EXEC:
             receiveExec();
             break;
+
         case INVOKER_MSG_ARGS:
             receiveArgs();
             break;
+
         case INVOKER_MSG_ENV:
             // Clean-up all the env variables
             clearenv();
             receiveEnv();
             break;
+
         case INVOKER_MSG_PRIO:
             receivePriority();
             break;
+
         case INVOKER_MSG_DELAY:
             receiveDelay();
             break;
+
         case INVOKER_MSG_IO:
             receiveIO();
             break;
+
         case INVOKER_MSG_IDS:
             receiveIDs();
             break;
+
         case INVOKER_MSG_END:
             sendMsg(INVOKER_MSG_ACK);
 
@@ -573,6 +505,7 @@ bool Connection::receiveActions()
                 sendPid(getpid());
 
             return true;
+
         default:
             Logger::logError("Connection: received invalid action (%08x)\n", action);
             return false;

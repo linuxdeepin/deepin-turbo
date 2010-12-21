@@ -50,5 +50,3 @@ private:
 };
 
 #endif // UT_DAEMON_H
-
-

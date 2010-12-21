@@ -1,17 +1,32 @@
 What is applauncherd?
 ==============================
 
-Applauncherd is a daemon thah helps to launch applications faster by preloading
-MeeGo Touch and Qt dynamically linked libraries. It also does some 
-MeeGo Touch-specific initializations before loading the application binary and executing the main function.
+Applauncherd is a daemon that helps to launch applications faster by preloading
+dynamically linked libraries and caching stuff (MComponentCache). It also saves
+memory, because all launched applications share certain resources.
+
+Technical overview
+==============================
 
 The applauncherd daemon is started by UpStart as part of XSession, that is, at the
 same level as the desktop (MeeGo Touch homescreen). Applauncherd forks the 
-will-be-application process a.k.a booster before knowing which application is
-going to be launched next. 
+will-be-application process, "booster", before knowing which application is
+going to be launched next. There can be different kinds of boosters 
+optimized for different kinds of applications, e.g. Qt, Meego Touch, QML. 
+In the current architecture boosters are loaded as plugins. Applauncherd searches
+for plugin libraries in /usr/lib/applaucherd/lib*booster.so and forks a new process
+for each booster to wait for launch commands from the user.
 
-Users use the launcher always through a special invoker program. The invoker 
-(/usr/bin/invoker) tells booster process to load an application binary. 
+The user uses the launcher always through a special invoker program. The invoker 
+(/usr/bin/invoker) tells booster process to load an application binary via a
+socket connection. 
+
+The application to be used with applauncherd should be compiled as a shared 
+library or a position independent executable (-pie) and it should always
+export main().
+
+Technical details
+==============================
 
 Before loading, booster process changes its security credentials so that the code
 in the application binary will be executed with the correct credentials. Loading
@@ -25,9 +40,9 @@ The launcher itself is a library that is loaded by a small C-program (/usr/bin/a
 libraries. This allows us to fully control how (with which flags) the preloaded
 libraries are opened with dlopen(). 
 
-Aegis platform security is used to protect the socket connection between invoker
-and launcher. Currently this works only on the target device. It is automatically
-disabled by the build scripts when compiling on x86. 
+Aegis platform security is used to protect the socket connection between
+invoker and launcher. Currently this works only on the target device. It is
+automatically disabled by the build scripts when compiling on x86. 
 
 Each application type (currently Qt and MeeGo Touch) has its own booster process.
 When booster launches the application by calling the "main()" function,
@@ -35,7 +50,7 @@ applauncherd will create new booster process of that type. This document focuses
 on using MeeGo Touch booster, but other boosters briefly introduced in Section 7.
 
 Booster processes do some initializations that cannot be shared among other
-processes and therefore have to be done after the fork. This allows, for instance,
+processes and therefore have to be done after forking. This allows, for instance,
 instantiating a MeeGo Touch application before knowing the name of the
 application. Then the booster process waits for a connection from the invoker with
 the information about which application should be launched. 

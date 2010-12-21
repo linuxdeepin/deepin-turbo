@@ -20,93 +20,11 @@
 #include "ut_boosterfactory.h"
 #include "boosterfactory.h"
 #include "booster.h"
-#include "mbooster.h"
-#include "qtbooster.h"
-#include "wrtbooster.h"
 
 void Ut_BoosterFactory::initTestCase()
 {}
 
 void Ut_BoosterFactory::cleanupTestCase()
 {}
-
-void Ut_BoosterFactory::testCreate()
-{
-    Booster * booster = BoosterFactory::create('q');
-    QVERIFY(dynamic_cast<QtBooster *>(booster));
-    delete booster;
-
-    booster = BoosterFactory::create('m');
-    QVERIFY(dynamic_cast<MBooster *>(booster));
-    delete booster;
-
-    booster = BoosterFactory::create('w');
-    QVERIFY(dynamic_cast<WRTBooster *>(booster));
-    delete booster;
-
-    for (int i = 0; i < 256; i++)
-    {
-        unsigned char t = static_cast<unsigned char>(i);
-        if (t != 'q' && t != 'm' && t != 'w')
-        {
-            QVERIFY(!BoosterFactory::create(t));
-        }
-    }
-}
-
-void Ut_BoosterFactory::testSetProcessIdToBooster()
-{
-    BoosterFactory::setProcessIdToBooster('q', 123);
-    QVERIFY(QtBooster::processId() == 123);
-
-    BoosterFactory::setProcessIdToBooster('m', 234);
-    QVERIFY(MBooster::processId() == 234);
-
-    BoosterFactory::setProcessIdToBooster('w', 345);
-    QVERIFY(WRTBooster::processId() == 345);
-}
-
-void Ut_BoosterFactory::testGetBoosterTypeForPid()
-{
-    BoosterFactory::setProcessIdToBooster('q', 1);
-    BoosterFactory::setProcessIdToBooster('m', 2);
-    BoosterFactory::setProcessIdToBooster('w', 3);
-
-    QVERIFY(BoosterFactory::getBoosterTypeForPid(1) == 'q');
-    QVERIFY(BoosterFactory::getBoosterTypeForPid(2) == 'm');
-    QVERIFY(BoosterFactory::getBoosterTypeForPid(3) == 'w');
-
-    QVERIFY(BoosterFactory::getBoosterTypeForPid(0) == 0);
-
-    for (int i = 0; i < 256; i++)
-    {
-        unsigned char t = static_cast<unsigned char>(i);
-        if (t != 'q' && t != 'm' && t != 'w')
-        {
-            BoosterFactory::setProcessIdToBooster(t, 1000);
-            QVERIFY(BoosterFactory::getBoosterTypeForPid(1000) == 0);
-        }
-    }
-}
-
-void Ut_BoosterFactory::testGetBoosterPidForType()
-{
-    BoosterFactory::setProcessIdToBooster('q', 145);
-    BoosterFactory::setProcessIdToBooster('m', 245);
-    BoosterFactory::setProcessIdToBooster('w', 345);
-
-    QVERIFY(BoosterFactory::getBoosterPidForType('q') == 145);
-    QVERIFY(BoosterFactory::getBoosterPidForType('m') == 245);
-    QVERIFY(BoosterFactory::getBoosterPidForType('w') == 345);
-
-    for (int i = 0; i < 256; i++)
-    {
-        unsigned char t = static_cast<unsigned char>(i);
-        if (t != 'q' && t != 'm' && t != 'w')
-        {
-            QVERIFY(BoosterFactory::getBoosterPidForType(t) == 0);
-        }
-    }
-}
 
 QTEST_APPLESS_MAIN(Ut_BoosterFactory);

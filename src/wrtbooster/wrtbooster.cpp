@@ -35,7 +35,6 @@
 
 const string WRTBooster::m_socketId  = "/tmp/boostw";
 const string WRTBooster::m_temporaryProcessName = "booster-w";
-int WRTBooster::m_ProcessID = 0;
 int WRTBooster::m_sighupFd[2];
 struct sigaction WRTBooster::m_oldSigAction;
 
@@ -122,20 +121,10 @@ char WRTBooster::type()
     return 'w';
 }
 
-void WRTBooster::setProcessId(int pid)
-{
-    m_ProcessID = pid;
-}
-
-int WRTBooster::processId()
-{
-    return m_ProcessID;
-}
-
-bool WRTBooster::receiveDataFromInvoker()
+bool WRTBooster::receiveDataFromInvoker(int socketFd)
 {
     // Setup the conversation channel with the invoker.
-    setConnection(new Connection(socketId()));
+    setConnection(new Connection(socketFd));
 
     // Exit from event loop when invoker is ready to connect
     connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));

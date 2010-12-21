@@ -15,6 +15,10 @@
           <step expected_result="0">/usr/share/applauncherd-tests/ut_connection</step>
       </case>
 
+      <case name="SocketManager" type="Functional" description="Unit tests for SocketManager class" level="Component" timeout="20">
+          <step expected_result="0">/usr/share/applauncherd-tests/ut_socketmanager</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

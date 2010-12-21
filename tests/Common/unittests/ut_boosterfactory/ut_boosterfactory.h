@@ -32,12 +32,9 @@ class Ut_BoosterFactory : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+
     void initTestCase();
     void cleanupTestCase();
-    void testCreate();
-    void testSetProcessIdToBooster();
-    void testGetBoosterTypeForPid();
-    void testGetBoosterPidForType();
 };
 
 #endif // UT_BOOSTERFACTORY_H

@@ -28,16 +28,6 @@
 
 using std::string;
 
-#include <map>
-
-using std::map;
-
-#include <vector>
-
-using std::vector;
-
-typedef map<string, int> PoolType;
-
 #ifdef HAVE_CREDS
     #include <sys/creds.h>
 #endif
@@ -57,10 +47,10 @@ class Connection
 public:
 
     /*! \brief Constructor.
-     *  \param socketId Path to the UNIX file socket to be used.
+     *  \param socketFd Fd of the UNIX file socket to be used.
      *  \param testMode Bypass all real socket activity to help unit testing.
      */
-    explicit Connection(const string socketId, bool testMode = false);
+    explicit Connection(int socketFd, bool testMode = false);
 
     /*! \brief Accept connection.
      * Accept a socket connection from the invoker.
@@ -83,19 +73,6 @@ public:
     //! \brief Send application exit status to invoker
     bool sendAppExitStatus(int status);
 
-    /*! \brief Initialize a file socket.
-     * \param socketId Path to the socket file
-     */
-    static void initSocket(const string socketId);
-
-    /*! \brief Close a file socket.
-     * \param socketId Path to the socket file
-     */
-    static void closeSocket(const string socketId);
-
-    //! \brief Close all open sockets.
-    static void closeAllSockets();
-
     //! \brief Get pid of the process on the other end of socket connection
     pid_t peerPid();
 
@@ -117,11 +94,6 @@ private:
      * \return Name string
      */
     string receiveAppName();
-
-    /*! \brief Return initialized socket.
-     * \param socketId Path to the socket file
-     */
-    static int findSocket(const string socketId);
 
     //! Disable copy-constructor
     Connection(const Connection & r);
@@ -165,15 +137,15 @@ private:
     //! Receive a string. This is a virtual to help unit testing.
     virtual const char * recvStr();
 
-    //! Pool of sockets mapped to id's
-    static PoolType socketPool;
-
     //! Run in test mode, if true
     bool m_testMode;
 
-    //! Socket fd
-    int      m_fd;
-    int      m_curSocket;
+    //! Fd of an accepted connection
+    int m_fd;
+
+    //! Fd of the UNIX socket file
+    int m_curSocket;
+
     string   m_fileName;
     uint32_t m_argc;
     const char **  m_argv;

@@ -17,35 +17,35 @@
 **
 ****************************************************************************/
 
-#ifndef UT_MBOOSTER_H
-#define UT_MBOOSTER_H
+#ifndef UT_SOCKETMANAGER_H
+#define UT_SOCKETMANAGER_H
 
-#include<QtTest/QtTest>
-#include<QObject>
-
+#include <QtTest/QtTest>
+#include <QObject>
 #include <tr1/memory>
 
 #define UNIT_TEST
 
-class MBooster;
+class SocketManager;
 
-class Ut_MBooster : public QObject
+class Ut_SocketManager : public QObject
 {
     Q_OBJECT
 
 public:
-    Ut_MBooster();
-    virtual ~Ut_MBooster();
+
+    Ut_SocketManager();
+    ~Ut_SocketManager();
 
 private Q_SLOTS:
+
     void initTestCase();
     void cleanupTestCase();
-    void testSocketName();
-    void testType();
-    void testPreload();
+    void testInitSocket();
 
 private:
-    std::tr1::shared_ptr<MBooster> m_subject;
+
+    std::tr1::shared_ptr<SocketManager> m_subject;
 };
 
-#endif // UT_MBOOSTER_H
+#endif // UT_SOCKETMANAGER_H

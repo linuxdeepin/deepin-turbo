@@ -17,35 +17,37 @@
 **
 ****************************************************************************/
 
-#ifndef UT_MBOOSTER_H
-#define UT_MBOOSTER_H
+#include "qtbooster.h"
 
-#include<QtTest/QtTest>
-#include<QObject>
+const string QtBooster::m_socketId = "/tmp/boostq";
+const string QtBooster::m_temporaryProcessName = "booster-q";
 
-#include <tr1/memory>
-
-#define UNIT_TEST
-
-class MBooster;
-
-class Ut_MBooster : public QObject
+const string & QtBooster::socketId() const
 {
-    Q_OBJECT
+    return m_socketId;
+}
 
-public:
-    Ut_MBooster();
-    virtual ~Ut_MBooster();
+const string & QtBooster::socketName()
+{
+    return m_socketId;
+}
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void testSocketName();
-    void testType();
-    void testPreload();
+const string & QtBooster::temporaryProcessName()
+{
+    return m_temporaryProcessName;
+}
 
-private:
-    std::tr1::shared_ptr<MBooster> m_subject;
-};
+const string & QtBooster::boosterTemporaryProcessName() const
+{
+    return temporaryProcessName();
+}
 
-#endif // UT_MBOOSTER_H
+char QtBooster::type()
+{
+    return 'q';
+}
+
+bool QtBooster::preload()
+{
+    return true;
+}

@@ -18,7 +18,9 @@
 ****************************************************************************/
 
 #include "booster.h"
+#include "daemon.h"
 #include "connection.h"
+#include "socketmanager.h"
 #include "logger.h"
 
 #include <cstdlib>
@@ -65,7 +67,8 @@ bool Booster::preload()
     return true;
 }
 
-void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
+void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
+                         int socketFd)
 {
     setPipeFd(newPipeFd);
 
@@ -83,7 +86,7 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2])
 
     // Wait and read commands from the invoker
     Logger::logNotice("Booster: Wait for message from invoker");
-    if (!receiveDataFromInvoker()) {
+    if (!receiveDataFromInvoker(socketFd)) {
         Logger::logError("Booster: Couldn't read command\n");
     }
 
@@ -110,27 +113,27 @@ void Booster::sendDataToParent()
     // Signal the parent process that it can create a new
     // waiting booster process and close write end
     const char msg = boosterType();
-    if (write(pipeFd(1), reinterpret_cast<const void *>(&msg), 1) == -1) {
+    if (write(pipeFd(1), static_cast<const void *>(&msg), 1) == -1) {
         Logger::logError("Booster: Couldn't send type message to launcher process\n");
     }
 
     // Send to the parent process pid of invoker for tracking
     pid_t pid = invokersPid();
-    if (write(pipeFd(1), reinterpret_cast<const void *>(&pid), sizeof(pid_t)) == -1) {
+    if (write(pipeFd(1), static_cast<const void *>(&pid), sizeof(pid_t)) == -1) {
         Logger::logError("Booster: Couldn't send invoker's pid to launcher process\n");
     }
 
     // Send to the parent process booster respawn delay value
     int delay = m_appData->delay();
-    if (write(pipeFd(1), reinterpret_cast<const void *>(&delay), sizeof(int)) == -1) {
+    if (write(pipeFd(1), static_cast<const void *>(&delay), sizeof(int)) == -1) {
         Logger::logError("Booster: Couldn't send respawn delay value to launcher process\n");
     }
 }
 
-bool Booster::receiveDataFromInvoker()
+bool Booster::receiveDataFromInvoker(int socketFd)
 {
     // Setup the conversation channel with the invoker.
-    m_connection = new Connection(socketId());
+    m_connection = new Connection(socketFd);
 
     // Accept a new invocation.
     if (m_connection->accept(m_appData))
@@ -148,20 +151,24 @@ bool Booster::receiveDataFromInvoker()
         {
             m_connection->close();
         }
+
         return true;
     }
 
     return false;
 }
 
-void Booster::run()
+void Booster::run(SocketManager * socketManager)
 {
     if (!m_appData->fileName().empty())
     {
         // Check if can close sockets already here
         if (!m_connection->isReportAppExitStatusNeeded())
         {
-            Connection::closeAllSockets();
+            if (socketManager)
+            {
+                socketManager->closeAllSockets();
+            }
         }
 
         // Execute the binary
@@ -173,7 +180,11 @@ void Booster::run()
         {
             m_connection->sendAppExitStatus(ret_val);
             m_connection->close();
-            Connection::closeAllSockets();
+
+            if (socketManager)
+            {
+                socketManager->closeAllSockets();
+            }
         }
     }
     else

@@ -19,6 +19,7 @@
 
 #include "ut_connection.h"
 #include "connection.h"
+#include "socketmanager.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <errno.h>
@@ -30,15 +31,15 @@ public:
     int nextMsg;
     char* nextStr;
 
-    MyConnection(const string socketId, bool testMode);
+    MyConnection(int socketFd, bool testMode);
 
 private:
     bool recvMsg(uint32_t *msg);
     const char* recvStr();
 };
 
-MyConnection::MyConnection(const string socketId, bool testMode) :
-    Connection(socketId, testMode),
+MyConnection::MyConnection(int socketFd, bool testMode) :
+    Connection(socketFd, testMode),
     nextMsg(0),
     nextStr(NULL)
 {}
@@ -66,41 +67,22 @@ void Ut_Connection::initTestCase()
 void Ut_Connection::cleanupTestCase()
 {}
 
-/*
- * Check that socket gets initialized for provided socket id
- */
-void Ut_Connection::testInitConnection()
-{
-    unsigned int prevNum = Connection::socketPool.size();
-    Connection::initSocket("aaa");
-    Connection::initSocket("bbb");
-    Connection::initSocket("bbb");
-    Connection::initSocket("aaa");
-
-    QVERIFY(Connection::socketPool.size() == prevNum + 2);
-    QVERIFY(Connection::findSocket("aaa") != -1);
-    QVERIFY(Connection::findSocket("ccc") == -1);
-    QVERIFY(Connection::findSocket("bbb") != -1);
-
-    unlink("aaa");
-    unlink("bbb");
-}
-
 /* 
  * Test that socket creation / closing works.
  */
 void Ut_Connection::testSocket()
 {
     const char* socketName = "testAccept";
+    SocketManager sm;
 
-    Connection::initSocket(socketName);
-    MyConnection* conn = new MyConnection(socketName, false);
-    conn->m_fd = 1000;
+    sm.initSocket(socketName);
+    m_subject.reset(new MyConnection(sm.findSocket(socketName), false));
+    m_subject->m_fd = 1000;
 
-    QVERIFY(conn->m_fd > 0);
+    QVERIFY(m_subject->m_fd > 0);
 
-    conn->close();
-    QVERIFY(conn->m_fd == -1);
+    m_subject->close();
+    QVERIFY(m_subject->m_fd == -1);
 
     unlink(socketName);
 }
@@ -116,15 +98,15 @@ void Ut_Connection::testGetEnv()
     QVERIFY(getenv("MY_TEST_ENV_VAR") == NULL);
     QVERIFY(getenv("PATH") != NULL);
 
-    const char* socketName = "testGetEnv";
-    MyConnection* conn = new MyConnection(socketName, true);
+    const int socketFd = 0;
+    m_subject.reset(new MyConnection(socketFd, true));
 
     char* envVar = strdup("MY_TEST_ENV_VAR=3");
 
-    conn->nextMsg = 1;
-    conn->nextStr = envVar; 
+    m_subject->nextMsg = 1;
+    m_subject->nextStr = envVar;
 
-    QVERIFY(conn->receiveEnv() == true);
+    QVERIFY(m_subject->receiveEnv() == true);
     QVERIFY(getenv("MY_TEST_ENV_VAR") != NULL);
     QVERIFY(getenv("PATH") != NULL);
 
@@ -138,28 +120,28 @@ void Ut_Connection::testGetEnv()
  */
 void Ut_Connection::testGetAppName()
 {
-    const char* socketName = "testGetAppName";
-    MyConnection* conn = new MyConnection(socketName, true);
+    const int socketFd = 0;
+    m_subject.reset(new MyConnection(socketFd, true));
 
     // Wrong type of message
-    conn->nextMsg = INVOKER_MSG_EXEC;
-    string wrongStr = conn->receiveAppName();
+    m_subject->nextMsg = INVOKER_MSG_EXEC;
+    string wrongStr = m_subject->receiveAppName();
     QVERIFY(wrongStr.empty());
 
     // Empty app name
-    conn->nextMsg = INVOKER_MSG_NAME;
-    conn->nextStr = NULL;
-    string emptyName = conn->receiveAppName();
+    m_subject->nextMsg = INVOKER_MSG_NAME;
+    m_subject->nextStr = NULL;
+    string emptyName = m_subject->receiveAppName();
     QVERIFY(emptyName.empty());
 
     // Real name
     string realName("looooongApplicationName");
     char* dupName = strdup(realName.c_str());
 
-    conn->nextMsg = INVOKER_MSG_NAME;
-    conn->nextStr = dupName;
+    m_subject->nextMsg = INVOKER_MSG_NAME;
+    m_subject->nextStr = dupName;
 
-    string resName = conn->receiveAppName();
+    string resName = m_subject->receiveAppName();
     QVERIFY(!resName.empty());
     QVERIFY(resName.compare(realName) == 0);
 }

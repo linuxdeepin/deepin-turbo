@@ -17,13 +17,12 @@
 **
 ****************************************************************************/
 
-#ifndef WRTBOOSTER_H
-#define WRTBOOSTER_H
+#ifndef MBOOSTER_H
+#define MBOOSTER_H
 
 #include "booster.h"
-#include <MGConfItem>
-#include <QObject>
 #include <QSocketNotifier>
+#include <MGConfItem>
 #include <tr1/memory>
 
 using std::tr1::shared_ptr;
@@ -31,30 +30,31 @@ using std::tr1::shared_ptr;
 #include <signal.h>
 
 /*!
-    \class WRTBooster
-    \brief Booster for web runtime applications running on top of MeeGo Touch.
+    \class MBooster
+    \brief MeeGo Touch -specific version of the Booster.
 
-    WRTBooster effectively fills MComponentCache with fresh objects
-    similarly to MBooster. However, the cache content is optimized for
-    web runtime's use.
+    MBooster effectively fills MComponentCache with fresh objects.
+    MeeGo Touch applications can then try to use already initialized objects 
+    from MComponentCache. This can significantly reduce the startup time of a 
+    MeeGo Touch application.
  */
-class WRTBooster : public QObject, public Booster
+class MBooster : public Booster
 {
     Q_OBJECT
 
 public:
 
     //! \brief Constructor
-    WRTBooster();
+    MBooster();
 
     //! \brief Destructor
-    virtual ~WRTBooster() {};
+    virtual ~MBooster() {};
 
     //! \reimp
     virtual bool preload();
 
     /*!
-     * \brief Return the socket name common to all WRTBooster objects.
+     * \brief Return the socket name common to all MBooster objects.
      * \return Path to the socket file.
      */
     static const string & socketName();
@@ -70,20 +70,10 @@ public:
     virtual char boosterType() const { return type(); }
 
     /*!
-     * \brief Return a unique character ('d') represtenting the type of WRTBoosters.
+     * \brief Return a unique character ('d') represtenting the type of MBoosters.
      * \return Type character.
      */
     static char type();
-
-    /*!
-     * \brief Keep booster pid, should be reset before booster run application's main() function
-     */
-    static void setProcessId(int pid);
-
-    /*!
-     * \brief Return booster pid
-     */
-    static int processId();
 
     //! UNIX signal handler for SIGHUP
     static void hupSignalHandler(int unused);
@@ -94,27 +84,23 @@ public:
     //! Restore UNIX signal handlers to previous values
     static bool restoreUnixSignalHandlers();
 
+    //! \reimp
+    virtual const string & socketId() const;
 
 protected:
 
     //! \reimp
-    virtual const string & socketId() const;
-
-    //! \reimp
-    virtual bool receiveDataFromInvoker();
-
+    virtual bool receiveDataFromInvoker(int socketFd);
 
 private:
 
     //! Disable copy-constructor
-    WRTBooster(const WRTBooster & r);
+    MBooster(const MBooster & r);
 
     //! Disable assignment operator
-    WRTBooster & operator= (const WRTBooster & r);
+    MBooster & operator= (const MBooster & r);
 
     static const string m_socketId;
-
-    static int m_ProcessID;
 
     //! Process name to be used when booster is not
     //! yet transformed into a running application
@@ -143,15 +129,13 @@ private slots:
     //! Qt signal handler for theme change
     void notifyThemeChange();
 
-
 signals:
 
     void connectionAccepted();
 
-
 #ifdef UNIT_TEST
-    friend class Ut_WRTBooster;
+    friend class Ut_MBooster;
 #endif
 };
 
-#endif // WRTBOOSTER_H
+#endif // MBOOSTER_H

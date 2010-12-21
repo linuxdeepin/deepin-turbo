@@ -1,8 +1,10 @@
 usr/share/applauncherd-tests/tests.xml
-usr/share/applauncherd-tests/ut_daemon
 usr/share/applauncherd-tests/ut_booster
 usr/share/applauncherd-tests/ut_boosterfactory
+usr/share/applauncherd-tests/ut_daemon
 usr/share/applauncherd-tests/ut_connection
 usr/share/applauncherd-tests/ut_mbooster
 usr/share/applauncherd-tests/ut_qtbooster
+usr/share/applauncherd-tests/ut_socketmanager
 usr/share/applauncherd-tests/ut_wrtbooster
+

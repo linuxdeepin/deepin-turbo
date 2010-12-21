@@ -26,7 +26,9 @@
 using std::string;
 
 #include "appdata.h"
+
 class Connection;
+class SocketManager;
 
 #ifdef HAVE_CREDS
 
@@ -39,6 +41,8 @@ class Connection;
     typedef std::vector<BinCredsPair> CredsList;
 
 #endif
+
+#include <QObject>
 
 /*!
  *  \class Booster
@@ -53,7 +57,7 @@ class Connection;
  *  Booster instance dies with the launched application and a new one must be created
  *  in advance so as to launch a new application.
  */
-class Booster
+class Booster : public QObject
 {
 public:
 
@@ -66,7 +70,8 @@ public:
     /*!
      * \brief Initializes the booster process.
      */
-    virtual void initialize(int initialArgc, char ** initialArgv, int pipefd[2]);
+    virtual void initialize(int initialArgc, char ** initialArgv, int pipefd[2],
+                            int socketFd);
 
     /*!
      * \brief Preload libraries.
@@ -81,8 +86,11 @@ public:
      * "main()" found in the newly loaded library. The Booster process
      * exits with corresponding exit-code after the execution of
      * main() has finished.
+     *
+     * \param socketManager Pointer to the SocketManager so that
+     * we can close all needless sockets in the application process.
      */
-    virtual void run();
+    virtual void run(SocketManager * socketManager);
 
     /*!
      * \brief Rename process.
@@ -119,7 +127,7 @@ public:
     Connection* connection() const;
 
     //! Set connection object. Booster takes the ownership.
-    void setConnection(Connection * connectio);
+    void setConnection(Connection * connection);
 
     //! Get application data object
     AppData* appData() const;
@@ -128,6 +136,14 @@ public:
     //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
     static void initExtraCreds();
 #endif
+
+    /*!
+     * \brief Return the communication socket used by a Booster.
+     * This method returns the socket used between invoker and the Booster.
+     * (common to all Boosters of the type). Override in the custom Booster.
+     * \return Path to the socket file
+     */
+    virtual const string & socketId() const = 0;
 
 protected:
 
@@ -142,17 +158,10 @@ protected:
      * This method accepts a socket connection from the invoker
      * and reads the data of an application to be launched.
      *
+     * \param socketFd Fd of the UNIX socket file.
      * \return true on success
      */
-    virtual bool receiveDataFromInvoker();
-
-    /*!
-     * \brief Return the communication socket used by a Booster.
-     * This method returns the socket used between invoker and the Booster.
-     * (common to all Boosters of the type). Override in the custom Booster.
-     * \return Path to the socket file
-     */
-    virtual const string & socketId() const = 0;
+    virtual bool receiveDataFromInvoker(int socketFd);
 
     //! Sets pipe fd's used to communicate with the parent process
     void setPipeFd(int pipeFd[2]);

@@ -49,12 +49,12 @@ if (EXISTS ${CREDS_H})
     if (EXISTS ${LIBCREDS})
         add_definitions(-DHAVE_CREDS)
         link_libraries(${LIBCREDS})
-	    message(STATUS "  found: " ${LIBCREDS})
+        message(STATUS "  found: " ${LIBCREDS})
     else (EXISTS ${LIBCREDS})
-    	message(STATUS "  not found: Platform Security is disabled.")
+        message(STATUS "  not found: Platform Security is disabled.")
     endif (EXISTS ${LIBCREDS})
 else (EXISTS ${CREDS_H})
-  	message(STATUS "  not found: Platform Security is disabled.")
+    message(STATUS "  not found: Platform Security is disabled.")
 endif (EXISTS ${CREDS_H})
 
 if ($ENV{DISABLE_VERIFICATION})
@@ -70,8 +70,11 @@ add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
 add_definitions(-DMEEGOTOUCH_THEME_GCONF_KEY="/meegotouch/theme/name")
 add_definitions(-DMEEGOTOUCH_LANGUAGE_GCONF_KEY="/meegotouch/i18n/language")
 
-# Disable debug logging, only error messages get logged
-add_definitions(-DDEBUG_LOGGING_DISABLED)
+# applauncherd will find lib*booster.so from here
+add_definitions(-DBOOSTER_PLUGIN_DIR="/usr/lib/applauncherd")
+
+# Disable debug logging, only error and warning messages get logged
+#add_definitions(-DDEBUG_LOGGING_DISABLED)
 
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set
 if ($ENV{BUILD_COVERAGE})
@@ -85,18 +88,18 @@ add_subdirectory(src)
 
 # Build tests if BUILD_TESTS environment variable is set
 if ($ENV{BUILD_TESTS})
-	# Sub build: tests
-	# This will build the HelloWorld test library, unit tests, functional tests
-	# and performance tests
-	add_subdirectory(tests)
+    # Sub build: tests
+    # This will build the HelloWorld test library, unit tests, functional tests
+    # and performance tests
+    add_subdirectory(tests)
 endif ($ENV{BUILD_TESTS})
 
 # Target for documentation (make doc)
 find_program(Doxygen NAMES doxygen)
 if (EXISTS ${Doxygen})
-	add_custom_target(doc COMMAND ${Doxygen} doc/Doxyfile)
+    add_custom_target(doc COMMAND ${Doxygen} doc/Doxyfile)
 else (EXISTS ${Doxygen})
-	message(STATUS "Doxygen not found: you're not able to build documentation.")
+    message(STATUS "Doxygen not found: you're not able to build documentation.")
 endif (EXISTS ${Doxygen})
 
 # Install README

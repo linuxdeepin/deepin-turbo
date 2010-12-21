@@ -21,25 +21,23 @@
 #include "logger.h"
 #include "connection.h"
 #include "booster.h"
-#include "mbooster.h"
-#include "qtbooster.h"
-#include "wrtbooster.h"
 #include "boosterfactory.h"
+#include "boosterpluginregistry.h"
+#include "socketmanager.h"
 
 #include <cstdlib>
 #include <cerrno>
-
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
-
 #include <signal.h>
-
 #include <fcntl.h>
-#include <iostream>
 #include <dlfcn.h>
+
+#include <QDir>
+#include <QStringList>
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
@@ -47,7 +45,8 @@ const int Daemon::m_boosterSleepTime = 2;
 
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
-    m_quiet(false)
+    m_quiet(false),
+    m_socketManager(new SocketManager)
 {
     if (!Daemon::m_instance)
     {
@@ -127,26 +126,53 @@ void Daemon::unlock()
     }
 }
 
+void Daemon::initBoosterSockets()
+{
+    const int numBoosters = BoosterPluginRegistry::pluginCount();
+    for (int i = 0; i < numBoosters; i++)
+    {
+        BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
+        if (plugin)
+        {
+            Logger::logInfo("Daemon: initing socket: %s", plugin->socketNameFunc());
+            m_socketManager->initSocket(plugin->socketNameFunc());
+        }
+    }
+}
+
+void Daemon::forkBoosters()
+{
+    const int numBoosters = BoosterPluginRegistry::pluginCount();
+    for (int i = 0; i < numBoosters; i++)
+    {
+        BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
+        if (plugin)
+        {
+            Logger::logInfo("Daemon: forking booster: '%c'", plugin->type);
+            forkBooster(plugin->type);
+        }
+    }
+}
+
 void Daemon::run()
 {
     // Make sure that LD_BIND_NOW does not prevent dynamic linker to
     // use lazy binding in later dlopen() calls.
     unsetenv("LD_BIND_NOW");
 
-    // Create sockets for each of the boosters
-    Connection::initSocket(MBooster::socketName());
-    Connection::initSocket(QtBooster::socketName());
-    Connection::initSocket(WRTBooster::socketName());
+    // dlopen() booster plugins
+    loadBoosterPlugins();
 
-    #ifdef HAVE_CREDS
+    // Create sockets for each of the boosters
+    initBoosterSockets();
+
+#ifdef HAVE_CREDS
     // initialize credentials to be filtered out from boosted applications
     Booster::initExtraCreds();
-    #endif
+#endif
 
     // Fork each booster for the first time
-    forkBooster(MBooster::type());
-    forkBooster(QtBooster::type());
-    forkBooster(WRTBooster::type());
+    forkBoosters();
 
     // Main loop
     while (true)
@@ -155,12 +181,12 @@ void Daemon::run()
         // appear a character representing the type of a booster and then
         // pid of the invoker process that communicated with that booster.
         char msg;
-        ssize_t count = read(m_pipefd[0], reinterpret_cast<void *>(&msg), 1);
+        ssize_t count = read(m_pipefd[0], static_cast<void *>(&msg), 1);
         if (count)
         {
             // Read pid of peer invoker
             pid_t invokerPid;
-            count = read(m_pipefd[0], reinterpret_cast<void *>(&invokerPid), sizeof(pid_t));
+            count = read(m_pipefd[0], static_cast<void *>(&invokerPid), sizeof(pid_t));
 
             if (count < static_cast<ssize_t>(sizeof(pid_t)))
             {
@@ -174,12 +200,16 @@ void Daemon::run()
             if (invokerPid != 0)
             {
                 // Store booster - invoker pid pair
-                m_boosterPidToInvokerPid[BoosterFactory::getBoosterPidForType(msg)] = invokerPid;
+                pid_t boosterPid = boosterPidForType(msg);
+                if (boosterPid)
+                {
+                    m_boosterPidToInvokerPid[boosterPid] = invokerPid;
+                }
             }
 
             // Read booster respawn delay
             int delay;
-            count = read(m_pipefd[0], reinterpret_cast<void *>(&delay), sizeof(int));
+            count = read(m_pipefd[0], static_cast<void *>(&delay), sizeof(int));
 
             if (count < static_cast<ssize_t>(sizeof(int)))
             {
@@ -216,6 +246,43 @@ void Daemon::killProcess(pid_t pid) const
     }
 }
 
+void Daemon::loadBoosterPlugins()
+{
+    QString strPluginDir(BOOSTER_PLUGIN_DIR);
+    QDir pluginDir(strPluginDir);
+
+    QStringList filters;
+    filters << "lib*booster.so";
+    pluginDir.setNameFilters(filters);
+
+    // Loop through entries in the plugin dir
+    QStringListIterator entry(pluginDir.entryList());
+    while (entry.hasNext())
+    {
+        QString file = entry.next();
+        QString path = strPluginDir + QDir::separator() + file;
+
+        const char * constPath = path.toAscii().constData();
+        void * handle = dlopen(constPath, RTLD_NOW | RTLD_GLOBAL);
+        if (!handle)
+        {
+            Logger::logWarning("Daemon: dlopening booster failed: %s", dlerror());
+        }
+        else
+        {
+            char newType = BoosterPluginRegistry::validateAndRegisterPlugin(handle);
+            if (newType)
+            {
+                Logger::logInfo("Daemon: Booster of type '%c' loaded.'", newType);
+            }
+            else
+            {
+                Logger::logWarning("Daemon: Invalid booster plugin: '%s'", constPath);
+            }
+        }
+    }
+}
+
 void Daemon::forkBooster(char type, int sleepTime)
 {
     // Fork a new process
@@ -237,7 +304,7 @@ void Daemon::forkBooster(char type, int sleepTime)
         close(m_pipefd[0]);
 
         // Close unused sockets inherited from daemon
-        BoosterFactory::closeUnusedSockets(type);
+        closeUnusedSockets(type);
 
         // Close lock file, it's not needed in the booster
         Daemon::unlock();
@@ -251,17 +318,18 @@ void Daemon::forkBooster(char type, int sleepTime)
         if (sleepTime)
             sleep(sleepTime);
 
-        Logger::logNotice("Daemon: Running a new Booster of %c type...", type);
+        Logger::logInfo("Daemon: Running a new Booster of type '%c'", type);
 
         // Create a new booster, initialize and run it
         Booster * booster = BoosterFactory::create(type);
         if (booster)
         {
             // Initialize and wait for commands from invoker
-            booster->initialize(m_initialArgc, m_initialArgv, m_pipefd);
+            booster->initialize(m_initialArgc, m_initialArgv, m_pipefd,
+                                m_socketManager->findSocket(booster->socketId().c_str()));
 
             // Run the current Booster
-            booster->run();
+            booster->run(m_socketManager);
 
             // Finish
             delete booster;
@@ -272,7 +340,7 @@ void Daemon::forkBooster(char type, int sleepTime)
         }
         else
         {
-            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type \n");
+            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type '%c'\n", type);
         }
     }
     else /* Parent process */
@@ -281,8 +349,8 @@ void Daemon::forkBooster(char type, int sleepTime)
         m_children.push_back(newPid);
 
         // Set current process ID globally to the given booster type
-        // so that we now which booster to restart if on exits
-        BoosterFactory::setProcessIdToBooster(type, newPid);
+        // so that we now which booster to restart when booster exits.
+        setPidToBooster(type, newPid);
     }
 }
 
@@ -327,7 +395,7 @@ void Daemon::reapZombies()
             }
 
             // Check if pid belongs to a booster and restart the dead booster if needed
-            char type = BoosterFactory::getBoosterTypeForPid(pid);
+            char type = boosterTypeForPid(pid);
             if (type != 0)
             {
                 forkBooster(type, m_boosterSleepTime);
@@ -336,6 +404,34 @@ void Daemon::reapZombies()
         else
         {
             i++;
+        }
+    }
+}
+
+void Daemon::setPidToBooster(char type, pid_t pid)
+{
+    m_boosterToPidHash[type] = pid;
+}
+
+char Daemon::boosterTypeForPid(pid_t pid) const
+{
+    return m_boosterToPidHash.key(pid, 0);
+}
+
+pid_t Daemon::boosterPidForType(char type) const
+{
+    return m_boosterToPidHash.value(type, 0);
+}
+
+void Daemon::closeUnusedSockets(char type)
+{
+    const int numBoosters = BoosterPluginRegistry::pluginCount();
+    for (int i = 0; i < numBoosters; i++)
+    {
+        BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
+        if (plugin && (plugin->type != type))
+        {
+            m_socketManager->closeSocket(plugin->socketNameFunc());
         }
     }
 }
@@ -429,4 +525,9 @@ void Daemon::parseArgs(const ArgVect & args)
             m_quiet = true;
         }
     }
+}
+
+Daemon::~Daemon()
+{
+    delete m_socketManager;
 }

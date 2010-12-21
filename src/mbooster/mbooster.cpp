@@ -31,7 +31,6 @@
 
 const string MBooster::m_socketId  = "/tmp/boostm";
 const string MBooster::m_temporaryProcessName = "booster-m";
-int MBooster::m_ProcessID = 0;
 int MBooster::m_sighupFd[2];
 struct sigaction MBooster::m_oldSigAction;
 
@@ -116,20 +115,10 @@ char MBooster::type()
     return 'm';
 }
 
-void MBooster::setProcessId(int pid)
-{
-    m_ProcessID = pid;
-}
-
-int MBooster::processId()
-{
-    return m_ProcessID;
-}
-
-bool MBooster::receiveDataFromInvoker()
+bool MBooster::receiveDataFromInvoker(int socketFd)
 {
     // Setup the conversation channel with the invoker.
-    setConnection(new Connection(socketId()));
+    setConnection(new Connection(socketFd));
 
     // Exit from event loop when invoker is ready to connect
     connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
