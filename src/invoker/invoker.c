@@ -661,12 +661,6 @@ int main(int argc, char *argv[])
             usage(0);
         }
 
-        char *period = strstr(argv[optind], ".launch");
-        if (period)
-        {
-            *period = '\0';
-        }
-
         prog_argc = argc - optind;
         prog_argv = &argv[optind];
     }
