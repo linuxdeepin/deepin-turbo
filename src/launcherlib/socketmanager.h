@@ -20,8 +20,13 @@
 #ifndef SOCKETMANAGER_H
 #define SOCKETMANAGER_H
 
-#include <QHash>
-#include <QString>
+#include <map>
+
+using std::map;
+
+#include <string>
+
+using std::string;
 
 /*!
  * \class SocketManager
@@ -36,12 +41,12 @@ public:
     /*! \brief Initialize a file socket.
      *  \param socketId Path to the socket file.
      */
-    void initSocket(const QString & socketId);
+    void initSocket(const string & socketId);
 
     /*! \brief Close a file socket.
      *  \param socketId Path to the socket file.
      */
-    void closeSocket(const QString & socketId);
+    void closeSocket(const string & socketId);
 
     //! \brief Close all open sockets.
     void closeAllSockets();
@@ -50,14 +55,14 @@ public:
      *  \param socketId Path to the socket file.
      *  \returns socket fd or -1 on failure.
      */
-    int findSocket(const QString & socketId);
+    int findSocket(const string & socketId);
 
     //! Return count of currently active sockets
     unsigned int socketCount() const;
 
 private:
 
-    typedef QHash<QString, int> SocketHash;
+    typedef map<string, int> SocketHash;
     SocketHash m_socketHash;
 };
 

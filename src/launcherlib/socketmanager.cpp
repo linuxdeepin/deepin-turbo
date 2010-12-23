@@ -25,13 +25,13 @@
 #include <unistd.h>
 #include <cstdlib>
 
-void SocketManager::initSocket(const QString & socketId)
+void SocketManager::initSocket(const string & socketId)
 {
     // Initialize a socket at socketId if one already doesn't
     // exist for that id / path.
-    if (!m_socketHash.contains(socketId))
+    if (m_socketHash.find(socketId) == m_socketHash.end())
     {
-        Logger::logInfo("Initing socket at '%s'..", socketId.toStdString().c_str());
+        Logger::logInfo("Initing socket at '%s'..", socketId.c_str());
 
         // Create a new local socket
         int socketFd = socket(PF_UNIX, SOCK_STREAM, 0);
@@ -42,13 +42,13 @@ void SocketManager::initSocket(const QString & socketId)
         // try to remove a different file than is passed to sun.sa_data.
 
         // Remove the previous socket file
-        unlink(socketId.toStdString().c_str());
+        unlink(socketId.c_str());
 
         // Initialize the socket struct
         struct sockaddr sun;
         sun.sa_family = AF_UNIX;
         int maxLen = sizeof(sun.sa_data) - 1;
-        strncpy(sun.sa_data, socketId.toStdString().c_str(), maxLen);
+        strncpy(sun.sa_data, socketId.c_str(), maxLen);
         sun.sa_data[maxLen] = '\0';
 
         // Bind the socket
@@ -60,22 +60,22 @@ void SocketManager::initSocket(const QString & socketId)
             Logger::logErrorAndDie(EXIT_FAILURE, "SocketManager: Failed to listen to socket (fd=%d)\n", socketFd);
 
         // Set permissions
-        chmod(socketId.toStdString().c_str(), S_IRUSR | S_IWUSR | S_IXUSR |
-                                              S_IRGRP | S_IWGRP | S_IXGRP |
-                                              S_IROTH | S_IWOTH | S_IXOTH);
+        chmod(socketId.c_str(), S_IRUSR | S_IWUSR | S_IXUSR |
+              S_IRGRP | S_IWGRP | S_IXGRP |
+              S_IROTH | S_IWOTH | S_IXOTH);
 
         // Store path <-> file descriptor mapping
         m_socketHash[socketId] = socketFd;
     }
 }
 
-void SocketManager::closeSocket(const QString & socketId)
+void SocketManager::closeSocket(const string & socketId)
 {
     SocketHash::iterator it(m_socketHash.find(socketId));
 
     if (it != m_socketHash.end())
     {
-        ::close(it.value());
+        ::close(it->second);
         m_socketHash.erase(it);
     }
 }
@@ -85,22 +85,23 @@ void SocketManager::closeAllSockets()
     SocketHash::iterator it;
     for (it = m_socketHash.begin(); it != m_socketHash.end(); ++it)
     {
-        if (it.value() > 0)
+        if (it->second > 0)
         {
-            ::close(it.value());
+            ::close(it->second);
         }
     }
 
     m_socketHash.clear();
 }
 
-int SocketManager::findSocket(const QString & socketId)
+int SocketManager::findSocket(const string & socketId)
 {
-    return m_socketHash.value(socketId, -1);
+    SocketHash::iterator i(m_socketHash.find(socketId));
+    return i == m_socketHash.end() ? -1 : i->second;
 }
 
 unsigned int SocketManager::socketCount() const
 {
-    return m_socketHash.count();
+    return m_socketHash.size();
 }
 

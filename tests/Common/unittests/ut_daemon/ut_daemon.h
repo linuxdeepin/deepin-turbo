@@ -36,14 +36,15 @@ class Ut_Daemon : public QObject
 public:
     Ut_Daemon();
     ~Ut_Daemon();
-private Q_SLOTS:
 
+private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
     void testInitialArguments();
     void testParseArgs();
     void testVerifyInstance();
     void testReapZombies();
+    void testSetPidToBooster();
 
 private:
     std::tr1::shared_ptr<Daemon> m_subject;

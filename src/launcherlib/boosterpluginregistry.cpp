@@ -80,7 +80,7 @@ void BoosterPluginRegistry::registerPlugin(char type,
     if (!entry)
     {
         entry = new BoosterPluginEntry;
-        m_registry << shared_ptr<BoosterPluginEntry>(entry);
+        m_registry.push_back(shared_ptr<BoosterPluginEntry>(entry));
     }
 
     entry->type = type;
@@ -91,12 +91,12 @@ void BoosterPluginRegistry::registerPlugin(char type,
 
 int BoosterPluginRegistry::pluginCount()
 {
-    return m_registry.length();
+    return m_registry.size();
 }
 
 BoosterPluginEntry * BoosterPluginRegistry::pluginEntry(int index)
 {
-    if (index < 0 || index >= m_registry.size())
+    if (index < 0 || index >= static_cast<int>(m_registry.size()))
     {
         return NULL;
     }

@@ -31,6 +31,7 @@
 #include <sys/uio.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -47,10 +48,12 @@
 #endif
 
 // Delay before exit
-static const int DEFAULT_DELAY = 0;
-
-static const unsigned int RESPAWN_DELAY = 2;
+static const unsigned int DEFAULT_DELAY     = 0;
+static const unsigned int RESPAWN_DELAY     = 2;
 static const unsigned int MAX_RESPAWN_DELAY = 10;
+
+static const unsigned char EXIT_STATUS_APPLICATION_CONNECTION_LOST = 0xfa;
+static const unsigned char EXIT_STATUS_APPLICATION_NOT_FOUND = 0x7f;
 
 // Enumeration of possible application types:
 // M_APP   : MeeGo Touch application
@@ -254,10 +257,10 @@ static uint32_t invoker_recv_exit(int fd)
       // Boosted application process was killed somehow.
       // Let's give applauncherd process some time to cope 
       // with this situation.
-      sleep(1);
+      sleep(2);
 
-      // If nothing happend, just exit with error message.
-      die(1, "Received bad exit status (%08x)\n", action);
+      // If nothing happend, return
+      return EXIT_STATUS_APPLICATION_CONNECTION_LOST;
   }
   
   // Receive exit status.
@@ -558,6 +561,7 @@ int main(int argc, char *argv[])
     unsigned int  respawn_delay = RESPAWN_DELAY;
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
+    struct stat   file_stat;
 
     // wait-term parameter by default
     magic_options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
@@ -581,6 +585,7 @@ int main(int argc, char *argv[])
         {"no-wait",   no_argument,       NULL, 'n'},
         {"global-syms", no_argument,     NULL, 'G'},
         {"deep-syms", no_argument,       NULL, 'D'},
+        {"single-instance", no_argument, NULL, 's'},
         {"type",      required_argument, NULL, 't'},
         {"delay",     required_argument, NULL, 'd'},
         {"respawn",   required_argument, NULL, 'r'},
@@ -590,7 +595,7 @@ int main(int argc, char *argv[])
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwnGDd:t:r:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwnGDsd:t:r:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -646,6 +651,10 @@ int main(int argc, char *argv[])
             }
             break;
 
+        case 's':
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_SINGLE_INSTANCE;
+            break;
+
         case '?':
             usage(1);
         }
@@ -670,6 +679,20 @@ int main(int argc, char *argv[])
     {
         report(report_error, "Application's name is not defined.\n");
         usage(1);
+    }
+
+    // Check if application exists
+    if (stat(prog_name, &file_stat))
+    {
+        report(report_error, "%s: not found\n", prog_name);
+        return EXIT_STATUS_APPLICATION_NOT_FOUND;
+    }
+
+    // Check that 
+    if (!S_ISREG(file_stat.st_mode) && !S_ISLNK(file_stat.st_mode))
+    {
+        report(report_error, "%s: not a file\n", prog_name);
+        return EXIT_STATUS_APPLICATION_NOT_FOUND;
     }
 
     // Check if application type is unknown

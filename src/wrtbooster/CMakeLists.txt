@@ -10,7 +10,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
 set(SRC wrtbooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
-${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${LAUNCHER}/socketmanager.cpp)
+${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
+${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 set(MOC_HDRS wrtbooster.h)
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})

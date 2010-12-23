@@ -35,7 +35,7 @@ Description: Invoker debug package
  
 Package: applauncherd-launcher
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libcreds2 [arm armel]
+Depends: ${shlibs:Depends}, ${misc:Depends}, libcreds2 [arm armel], applauncherd-single-instance 
 Description: Launcher part of applauncherd
  Launcher part of applauncherd.
 
@@ -124,4 +124,12 @@ Depends: ${misc:Depends}
 Section: doc
 Architecture: all
 Description: Instructions for application developers
+
+Package: applauncherd-single-instance
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Single instance binary for applauncherd
+ Brings the already existing application window to foreground or
+ executes new instance if not already running.
+ Allows command line parameter --single-instance for invoker.
 

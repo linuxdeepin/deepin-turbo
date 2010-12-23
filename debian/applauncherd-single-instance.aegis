@@ -1,0 +1,7 @@
+<aegis>
+
+  <request policy="add not-inheritable">
+    	<for path="/usr/bin/single-instance" id="client"/>
+  </request>
+
+</aegis>

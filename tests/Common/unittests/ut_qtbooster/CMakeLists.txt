@@ -4,7 +4,7 @@ set(QTBOOSTER ${CMAKE_HOME_DIRECTORY}/src/qtbooster)
 # Set sources
 set(SRC ut_qtbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
 ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${QTBOOSTER}/qtbooster.cpp
-${LAUNCHER}/socketmanager.cpp)
+${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
 set(MOC_HDRS ut_qtbooster.h)

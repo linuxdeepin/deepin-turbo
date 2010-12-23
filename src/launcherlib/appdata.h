@@ -57,6 +57,9 @@ public:
     //! Return whether or not RTLD_DEEPBIND should be used in dlopen
     bool dlopenDeep();
 
+    //! Return whether or not application should be launched as a single instance application
+    bool singleInstance();
+
     //! Set argument count
     void setArgc(int argc);
 

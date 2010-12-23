@@ -16,4 +16,6 @@ add_subdirectory(wrtbooster)
 # Sub build: qtbooster plugin
 add_subdirectory(qtbooster)
 
+# Sub build: single-instance binary / library
+add_subdirectory(single-instance)
 

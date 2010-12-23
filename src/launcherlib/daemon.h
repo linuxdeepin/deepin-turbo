@@ -20,8 +20,6 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-#include <QHash>
-
 #include <string>
 
 using std::string;
@@ -41,6 +39,7 @@ using std::map;
 
 class Booster;
 class SocketManager;
+class SingleInstance;
 
 /*!
  * \class Daemon.
@@ -125,6 +124,9 @@ private:
     //! Load (dlopen()) booster plugins
     void loadBoosterPlugins();
 
+    //! Load single-instance plugin
+    void loadSingleInstancePlugin();
+
     //! Assign given pid to given booster
     void setPidToBooster(char type, pid_t pid);
 
@@ -151,8 +153,9 @@ private:
     typedef map<pid_t, pid_t> PidMap;
     PidMap m_boosterPidToInvokerPid;
 
-    //! Hash for booster type <-> pid mappings
-    QHash<char, pid_t> m_boosterToPidHash;
+    //! Mapping for booster type <-> pid
+    typedef map<char, pid_t> TypeMap;
+    TypeMap m_boosterTypeToPid;
 
     //! Pipe used to tell the parent that a new booster is needed
     int m_pipefd[2];
@@ -174,6 +177,9 @@ private:
 
     //! Manager for invoker <-> booster sockets
     SocketManager * m_socketManager;
+
+    //! Single instance plugin handle
+    SingleInstance * m_singleInstance;
 
 #ifdef UNIT_TEST
     friend class Ut_Daemon;

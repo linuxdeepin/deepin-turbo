@@ -61,6 +61,11 @@ bool AppData::dlopenDeep()
     return (m_options & INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP) != 0;
 }
 
+bool AppData::singleInstance()
+{
+    return (m_options & INVOKER_MSG_MAGIC_OPTION_SINGLE_INSTANCE) != 0;
+}
+
 void AppData::setArgc(int newArgc)
 {
     m_argc = newArgc;

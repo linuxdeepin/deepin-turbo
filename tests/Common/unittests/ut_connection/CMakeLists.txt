@@ -4,7 +4,7 @@ set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 set(SRC ut_connection.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
 ${LAUNCHER}/boosterfactory.cpp ${LAUNCHER}/boosterpluginregistry.cpp
 ${LAUNCHER}/daemon.cpp ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
-${LAUNCHER}/socketmanager.cpp)
+${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
 set(MOC_HDRS ut_connection.h)

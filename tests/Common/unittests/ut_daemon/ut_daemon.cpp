@@ -90,4 +90,19 @@ void Ut_Daemon::testReapZombies()
     QVERIFY(m_subject->m_children.size() == 0);
 }
 
+void Ut_Daemon::testSetPidToBooster()
+{
+    m_subject->setPidToBooster('a', 2);
+    m_subject->setPidToBooster('b', 1);
+
+    QVERIFY(m_subject->boosterTypeForPid(2) == 'a');
+    QVERIFY(m_subject->boosterPidForType('a') == 2);
+
+    QVERIFY(m_subject->boosterTypeForPid(1) == 'b');
+    QVERIFY(m_subject->boosterPidForType('b') == 1);
+
+    QVERIFY(m_subject->boosterTypeForPid(3) == 0);
+    QVERIFY(m_subject->boosterPidForType('c') == 0);
+}
+
 QTEST_APPLESS_MAIN(Ut_Daemon);

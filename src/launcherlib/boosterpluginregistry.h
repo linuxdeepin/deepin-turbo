@@ -20,7 +20,9 @@
 #ifndef BOOSTERPLUGINREGISTRY_H
 #define BOOSTERPLUGINREGISTRY_H
 
-#include <QList>
+#include <vector>
+
+using std::vector;
 
 #include <tr1/memory>
 
@@ -88,7 +90,7 @@ private:
                                tpn_func_t temporaryProcessNameFunc);
 
     //! Registry
-    typedef QList<shared_ptr<BoosterPluginEntry> > RegistryType;
+    typedef vector<shared_ptr<BoosterPluginEntry> > RegistryType;
     static RegistryType m_registry;
 };
 

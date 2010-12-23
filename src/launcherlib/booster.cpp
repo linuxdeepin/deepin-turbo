@@ -20,6 +20,7 @@
 #include "booster.h"
 #include "daemon.h"
 #include "connection.h"
+#include "singleinstance.h"
 #include "socketmanager.h"
 #include "logger.h"
 
@@ -68,7 +69,7 @@ bool Booster::preload()
 }
 
 void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
-                         int socketFd)
+                         int socketFd, SingleInstance * singleInstance)
 {
     setPipeFd(newPipeFd);
 
@@ -87,7 +88,35 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
     // Wait and read commands from the invoker
     Logger::logNotice("Booster: Wait for message from invoker");
     if (!receiveDataFromInvoker(socketFd)) {
-        Logger::logError("Booster: Couldn't read command\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Couldn't read command\n");
+    }
+
+    // Run process as single instance if requested
+    if (m_appData->singleInstance())
+    {  
+        // Check if instance is already running
+        SingleInstancePluginEntry * pluginEntry = singleInstance->pluginEntry();
+        if (pluginEntry)
+        {
+            if (!pluginEntry->lockFunc(m_appData->appName().c_str()))
+            {
+                // Try to activate the window of the existing instance
+                if (!pluginEntry->activateExistingInstanceFunc(m_appData->appName().c_str()))
+                {
+                    _exit(EXIT_FAILURE);
+                }
+
+                // Existing application instance activated, exit
+                _exit(EXIT_SUCCESS);
+            }
+
+            // Close the single-instance plugin
+            singleInstance->closePlugin();
+        }
+        else
+        {
+            Logger::logWarning("Booster: Single-instance launch wanted, but single-instance plugin not loaded!");
+        }
     }
 
     // Give the process the real application name now that it

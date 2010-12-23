@@ -64,6 +64,7 @@ endif ($ENV{DISABLE_VERIFICATION})
 # Set the program name defines. Must be at this level due to unit tests.
 add_definitions(-DPROG_NAME_INVOKER="invoker")
 add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
+add_definitions(-DPROG_NAME_SINGLE_INSTANCE="single-instance")
 
 # Set gconf key definitions. These are used by MonitorBooster to get
 # notifications when language / theme changes.
@@ -72,6 +73,9 @@ add_definitions(-DMEEGOTOUCH_LANGUAGE_GCONF_KEY="/meegotouch/i18n/language")
 
 # applauncherd will find lib*booster.so from here
 add_definitions(-DBOOSTER_PLUGIN_DIR="/usr/lib/applauncherd")
+
+# applauncherd will try to load single-instance using this path
+add_definitions(-DSINGLE_INSTANCE_PATH="/usr/bin/single-instance")
 
 # Disable debug logging, only error and warning messages get logged
 add_definitions(-DDEBUG_LOGGING_DISABLED)

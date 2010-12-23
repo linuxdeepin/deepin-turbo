@@ -48,15 +48,15 @@ void Ut_SocketManager::testInitSocket()
     QString name1 = QString("a-%1").arg(getpid());
     QString name2 = QString("b-%1").arg(getpid());
 
-    m_subject->initSocket(name1);
-    m_subject->initSocket(name2);
-    m_subject->initSocket(name2);
-    m_subject->initSocket(name1);
+    m_subject->initSocket(name1.toStdString());
+    m_subject->initSocket(name2.toStdString());
+    m_subject->initSocket(name2.toStdString());
+    m_subject->initSocket(name1.toStdString());
 
     QVERIFY(m_subject->socketCount() == 2);
 
-    QVERIFY(m_subject->findSocket(name1) != -1);
-    QVERIFY(m_subject->findSocket(name2) != -1);
+    QVERIFY(m_subject->findSocket(name1.toStdString()) != -1);
+    QVERIFY(m_subject->findSocket(name2.toStdString()) != -1);
     QVERIFY(m_subject->findSocket("foo") == -1);
 
     QVERIFY(m_subject->socketCount() == 2);

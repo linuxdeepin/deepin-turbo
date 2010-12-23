@@ -153,8 +153,8 @@ const char * const gLibs[] =
     "/usr/lib/libxml2.so.2",
     "/usr/lib/libXrandr.so.2",
     "/usr/lib/libXrender.so.1",
-    "/usr/lib/libz.so.1"
+    "/usr/lib/libz.so.1",
+    "/usr/bin/single-instance"
 };
-
 
 #endif // PRELOAD_H

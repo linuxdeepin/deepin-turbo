@@ -29,6 +29,7 @@ using std::string;
 
 class Connection;
 class SocketManager;
+class SingleInstance;
 
 #ifdef HAVE_CREDS
 
@@ -71,7 +72,7 @@ public:
      * \brief Initializes the booster process.
      */
     virtual void initialize(int initialArgc, char ** initialArgv, int pipefd[2],
-                            int socketFd);
+                            int socketFd, SingleInstance * singleInstance);
 
     /*!
      * \brief Preload libraries.

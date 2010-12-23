@@ -23,6 +23,7 @@
 #include "booster.h"
 #include "boosterfactory.h"
 #include "boosterpluginregistry.h"
+#include "singleinstance.h"
 #include "socketmanager.h"
 
 #include <cstdlib>
@@ -46,7 +47,8 @@ const int Daemon::m_boosterSleepTime = 2;
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
     m_quiet(false),
-    m_socketManager(new SocketManager)
+    m_socketManager(new SocketManager),
+    m_singleInstance(new SingleInstance)
 {
     if (!Daemon::m_instance)
     {
@@ -166,6 +168,9 @@ void Daemon::run()
     // Create sockets for each of the boosters
     initBoosterSockets();
 
+    // dlopen single-instance
+    loadSingleInstancePlugin();
+
 #ifdef HAVE_CREDS
     // initialize credentials to be filtered out from boosted applications
     Booster::initExtraCreds();
@@ -242,6 +247,27 @@ void Daemon::killProcess(pid_t pid) const
         if (kill(pid, SIGKILL) != 0)
         {
             Logger::logError("Daemon: Failed to kill %d: %s\n", pid, strerror(errno));
+        }
+    }
+}
+
+void Daemon::loadSingleInstancePlugin()
+{
+    void * handle = dlopen(SINGLE_INSTANCE_PATH, RTLD_NOW);
+    if (!handle)
+    {
+        Logger::logWarning("Daemon: dlopening single-instance failed: %s", dlerror());
+    }
+    else
+    {
+        if (m_singleInstance->validateAndRegisterPlugin(handle))
+        {
+            Logger::logInfo("Daemon: single-instance plugin loaded.'");
+        }
+        else
+        {
+            Logger::logWarning("Daemon: Invalid single-instance plugin: '%s'",
+                               SINGLE_INSTANCE_PATH);
         }
     }
 }
@@ -326,7 +352,8 @@ void Daemon::forkBooster(char type, int sleepTime)
         {
             // Initialize and wait for commands from invoker
             booster->initialize(m_initialArgc, m_initialArgv, m_pipefd,
-                                m_socketManager->findSocket(booster->socketId().c_str()));
+                                m_socketManager->findSocket(booster->socketId().c_str()),
+                                m_singleInstance);
 
             // Run the current Booster
             booster->run(m_socketManager);
@@ -410,17 +437,29 @@ void Daemon::reapZombies()
 
 void Daemon::setPidToBooster(char type, pid_t pid)
 {
-    m_boosterToPidHash[type] = pid;
+    m_boosterTypeToPid[type] = pid;
 }
 
 char Daemon::boosterTypeForPid(pid_t pid) const
 {
-    return m_boosterToPidHash.key(pid, 0);
+    TypeMap::const_iterator i = m_boosterTypeToPid.begin();
+    while (i != m_boosterTypeToPid.end())
+    {
+        if (i->second == pid)
+        {
+            return i->first;
+        }
+
+        i++;
+    }
+
+    return 0;
 }
 
 pid_t Daemon::boosterPidForType(char type) const
 {
-    return m_boosterToPidHash.value(type, 0);
+    TypeMap::const_iterator i = m_boosterTypeToPid.find(type);
+    return i == m_boosterTypeToPid.end() ? 0 : i->second;
 }
 
 void Daemon::closeUnusedSockets(char type)
@@ -530,4 +569,5 @@ void Daemon::parseArgs(const ArgVect & args)
 Daemon::~Daemon()
 {
     delete m_socketManager;
+    delete m_singleInstance;
 }
