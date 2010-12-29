@@ -82,14 +82,14 @@ class launcher_tests (unittest.TestCase):
             os.system('initctl start xsession/applauncherd')
 
     #Testcases
-    def test_001_launcher_exist(self):
+    def test_launcher_exist(self):
         """
         To test if the launcher exists and is executable or not
         """
         self.assert_(os.path.isfile(LAUNCHER_BINARY), "Launcher file does not exist")
         self.assert_(os.access(LAUNCHER_BINARY, os.X_OK), "Launcher exists, but is not executable")
 
-    def test_002_applications_exist(self):
+    def test_applications_exist(self):
         """
         test_launchable_application_exists
         """
@@ -100,7 +100,7 @@ class launcher_tests (unittest.TestCase):
                 failed_apps.append(temp)
         self.assert_(failed_apps == [], "Some applications do not have the launch files, list: %s" % str(failed_apps))
 
-    def test_003_zombie_state(self):
+    def test_zombie_state(self):
         """
         To test that no Zombie process exist after the application is killed
         """
@@ -128,7 +128,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(process_id != process_id1 , "New Process not launched")
         self.assert_(process_id1 == None , "Process still running")
     
-    def test_004_launch_multiple_apps(self):
+    def test_launch_multiple_apps(self):
         """
         To test that more than one applications are launched by the launcher 
         """
@@ -151,7 +151,7 @@ class launcher_tests (unittest.TestCase):
 
         kill_launched(pidlist)
     
-    def test_005_one_instance(self):
+    def test_one_instance(self):
         """
         To test that only one instance of a application exist 
         """
@@ -175,7 +175,7 @@ class launcher_tests (unittest.TestCase):
 
         self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
         
-    def test_009_launch_multiple_apps_cont(self):
+    def test_launch_multiple_apps_cont(self):
         """
         To test that more than one applications are launched by the launcher 
         """
@@ -196,7 +196,7 @@ class launcher_tests (unittest.TestCase):
         for pid in pid_list:
             kill_process(apppid=pid)
 
-    def test_010(self):
+    def test_wait_term(self):
         """
         When calling invoker with --wait-term and killing invoker,
         the launched application should die too.
@@ -229,7 +229,7 @@ class launcher_tests (unittest.TestCase):
 
 
 
-    def test_011(self):
+    def test_daemon(self):
         """
         Test that the --daemon parameter works for applauncherd
         """
@@ -275,7 +275,7 @@ class launcher_tests (unittest.TestCase):
 
         start_applauncherd()
 
-    def test_012(self):
+    def test_invoker_delay(self):
         """
         Test the --delay parameter of the invoker.
         """
@@ -308,21 +308,21 @@ class launcher_tests (unittest.TestCase):
         self.assert_(success, "invoker terminated before delay elapsed")
 
 
-    def test_014_fd_booster_m(self):
+    def test_fd_booster_m(self):
         """
         File descriptor test for booster-m
         """
         count = get_file_descriptor("booster-m","m")
         self.assert_(count != 0, "None of the file descriptors were changed")
 
-    def test_015_fd_booster_q(self):
+    def test_fd_booster_q(self):
         """
         File descriptor test for booster-q
         """
         count = get_file_descriptor("booster-q","qt")
         self.assert_(count != 0, "None of the file descriptors were changed")
 
-    def test_016_restart_booster(self):
+    def test_restart_booster(self):
         """
         Test that booster is restarted if it is killed 
         """
@@ -353,7 +353,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
 
-    def test_017_invoker_exit_status(self):
+    def test_invoker_exit_status(self):
         """
         To test that invoker returns the same exit status as the application
         """
@@ -371,7 +371,7 @@ class launcher_tests (unittest.TestCase):
         
         self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status")
 
-    def test_018_invoker_gid_uid(self):
+    def test_invoker_gid_uid(self):
         """
         To Test that the set gid and uid is passed from invoker process to launcher
         """
@@ -435,7 +435,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
        
 
-    def test_019_signal_forwarding(self):
+    def test_signal_forwarding(self):
         """
         To test that invoker is killed by the same signal as the application
         """
@@ -465,7 +465,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(2)
 
 
-    def test_020_launch_wo_applauncherd(self):
+    def test_launch_wo_applauncherd(self):
         """
         To Test that invoker can launch applications even when the
         applauncherd is not running

@@ -49,7 +49,7 @@ class SecurityTests(unittest.TestCase):
 
         return ['UID::user', 'GID::users'] + groups
         
-    def test_001(self):
+    def test_correct_creds(self):
         """
         Test that the fala_ft_creds* applications have the correct
         credentials set (check aegis file included in the debian package)
@@ -86,7 +86,7 @@ class SecurityTests(unittest.TestCase):
         self.assert_(cap1 == creds1, "fala_ft_creds1 has incorrect credentials")
         self.assert_(cap2 == creds2, "fala_ft_creds2 has incorrect credentials")
 
-    def test_002_no_aegis_Bug170905(self):
+    def test_no_aegis(self):
         """
         Check that an application that doesn't have aegis file doesn't
         get any funny credentials.
@@ -109,7 +109,7 @@ class SecurityTests(unittest.TestCase):
         self.assert_(creds == req_creds,
                      "fala_ft_hello has incorrect credentials")
 
-    def test_003_invoker_creds(self):
+    def test_invoker_creds(self):
         """
         Test that the launcher registered customized credentials 
         and invoker has proper credentials to access launcher
@@ -140,7 +140,7 @@ class SecurityTests(unittest.TestCase):
         self.assert_(not (st == 0), "Application was launched using fake launcher")
         self.assert_((pid == None), "Application was launched using fake launcher")
 
-    def test_004(self):
+    def test_compare_application_invoker_creds(self):
         """
         Compare the credentials of invoker and the launched application
         when applauncherd is running and when it's not. Verify that
@@ -215,7 +215,7 @@ class SecurityTests(unittest.TestCase):
                      'applauncherd is not running')
 
 
-    def test_005(self):
+    def test_compare_application_creds(self):
         """
         Launch an application as user and root both when applauncherd
         is running and when it isn't. Compare the credentials between
@@ -270,7 +270,7 @@ class SecurityTests(unittest.TestCase):
         self.assert_(creds2[0] != creds2[1],
                      'creds are same when applauncherd is running')
 
-    def test_006(self):
+    def test_dont_pass_invoker_creds(self):
         """
         Test that invoker specific credentials are not passed on to
         the launched application.

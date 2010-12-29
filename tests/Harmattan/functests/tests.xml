@@ -5,63 +5,141 @@
   <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
   <suite name="applauncherd-functional-tests" domain="Application framework"> 
 
-    <set name="applauncherd-functional-tests" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
+
+
+    <set name="TC_Launcher" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-
-      <case name="launcher-exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_001_launcher_exist</step>
+      <case name="applauncherd__test_launcher_exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launcher_exist</step>
       </case>
 
-      <case name="launchable-app-exist" type="Functional" description="test_launchable_application_exists " timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_002_applications_exist</step>
+      <case name="applauncherd__test_applications_exist" type="Functional" description="test_launchable_application_exists " timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_applications_exist</step>
       </case>
 
-      <case name="zombie-state" type="Functional" description="To test that process exits after the application is killed" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_003_zombie_state</step>
+      <case name="applauncherd__test_zombie_state" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state</step>
       </case>
 
-      <case name="launch-multi-app" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user;  DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_004_launch_multiple_apps</step>
+      <case name="applauncherd__test_launch_multiple_apps" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user;  DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps</step>
       </case>
 
-      <case name="one-instance" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_005_one_instance</step>
+      <case name="applauncherd__test_one_instance" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance</step>
       </case>
 
-      <case name="daemonized" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_011</step>
+      <case name="applauncherd__test_daemon" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_daemon</step>
       </case>
 
-      <case name="invoker-delay" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_012</step>
+      <case name="applauncherd__test_launch_multiple_apps_cont" type="Functional" description="Test that launcher can launch multiple applications continously" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont</step>
       </case>
 
-      <case name="invoker_search_prog" type="Functional" description="Test that invoker finds binaries from PATH" timeout="360" level="System" insignificant="true">
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+
+
+    <set name="TC_Invoker" description="Tests for invoker" feature="AF Basic Launcher daemon support" requirement="300168">
+
+      <case name="applauncherd__test_invoker_delay" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_delay</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_search_prog" type="Functional" description="Test that invoker finds binaries from PATH" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_search_prog</step>
       </case>
 
+      <case name="applauncherd__test_launch_wo_applauncherd" type="Functional" description="Test invoker can launch applications even when applauncherd is not running" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_wo_applauncherd</step>
+      </case>
+
+      <case name="applauncherd__test_wait_term" type="Functional" description="Test that the launched application is killed when killing invoker that is waiting for app to terminate" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_wait_term</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_exit_status" type="Functional" description="To test that invoker returns the same exit status as the application" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_exit_status</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_gid_uid" type="Functional" description="To Test that the set gid and uid is passed from invoker process to launcher" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_gid_uid</step>
+      </case>
+
+      <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_forwarding</step>
+      </case>
 
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
       </environments>
 
-      <!--get>
-      </get-->
     </set>
 
-    <set name="Security" description="Tests that have something to do with the security platform" feature="AF Basic Launcher daemon support" requirement="300168">
+    <set name="TC_Booster" description="Functional tests for applauncherd boosters" feature="AF Basic Launcher daemon support" requirement="300168">
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_fd_booster_m" type="Functional" description="File descriptor test for booster-m" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_m</step>
+      </case>
+
+      <case name="applauncherd__test_fd_booster_q" type="Functional" description="File descriptor test for booster-q" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_q</step>
+      </case>
+
+      <case name="applauncherd__test_restart_booster" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_restart_booster</step>
+      </case>
+
+      <case name="applauncherd__test_booster_killed_or_restarted" type="Functional" description="Test that booster is restarted if applauncherd is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_killed_or_restarted</step>
+      </case>
+
+      <case name="applauncherd__test_theme_change_booster_restart" type="Functional" description="Tests that booster-m and booster-w are restarted after theme change" timeout="360" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_theme_change_booster_restart</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+
+    <set name="TC_Security" description="Tests that have something to do with the security platform" feature="AF Basic Launcher daemon support" requirement="300168">
 
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="creds-test" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_001</step>
+      <case name="applauncherd__test_no_aegis" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="360" level="System" insignificant="false" >
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_no_aegis</step>
       </case>
+
+      <case name="applauncherd__test_invoker_creds" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_invoker_creds</step>
+      </case>
+
+
+      <case name="applauncherd__test_correct_creds" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_correct_creds</step>
+      </case>
+
+      <case name="applauncherd__test_dont_pass_invoker_creds" type="Functional" description="Test that invoker specific creds are not passed on to launched application" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_dont_pass_invoker_creds</step>
+      </case>
+
       
       <environments>
         <scratchbox>false</scratchbox>
