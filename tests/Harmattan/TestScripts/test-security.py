@@ -71,7 +71,7 @@ class SecurityTests(unittest.TestCase):
         # only UID and GID.
 
         # required caps for fala_ft_creds1
-        cap1 = ['tcb', 'drm', 'CAP::setuid', 'CAP::setgid',
+        cap1 = ['drm', 'CAP::setuid', 'CAP::setgid',
                 'CAP::setfcap'] + self.user_creds()
 
         # required caps for fala_ft_creds2
