@@ -74,7 +74,7 @@ add_definitions(-DMEEGOTOUCH_LANGUAGE_GCONF_KEY="/meegotouch/i18n/language")
 add_definitions(-DBOOSTER_PLUGIN_DIR="/usr/lib/applauncherd")
 
 # Disable debug logging, only error and warning messages get logged
-#add_definitions(-DDEBUG_LOGGING_DISABLED)
+add_definitions(-DDEBUG_LOGGING_DISABLED)
 
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set
 if ($ENV{BUILD_COVERAGE})
