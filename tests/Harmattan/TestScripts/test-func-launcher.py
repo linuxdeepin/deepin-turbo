@@ -606,6 +606,50 @@ class launcher_tests (unittest.TestCase):
         self.assert_(wpid_new != wpid, "booster process was not killed")
 
 
+    def test_booster_pid_change(self):
+        """
+        Test that application pid changes to the booster 'x' when application 
+        is started with invoker --type='x'
+        """
+        for i in xrange(3):
+            #Launching application with booster-m
+            mpid = get_pid('booster-m') 
+            p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
+            time.sleep(4)
+            app_pid = get_pid('fala_ft_hello')
+            mpid_new = get_pid('booster-m')
+            self.assert_(app_pid != None, "Application is not running")
+            self.assert_(app_pid == mpid, "Application is not assigned the booster-m pid")
+            self.assert_(mpid_new != None, "No booster process running")
+            self.assert_(mpid_new != mpid, "booster-m process did not receive the new pid")
+            kill_process('fala_ft_hello')
+            
+            #Launching application with booster-q
+            qpid = get_pid('booster-q') 
+            p = run_app_as_user('invoker --type=q --no-wait fala_ft_hello.launch')
+            time.sleep(4)
+            app_pid = get_pid('fala_ft_hello')
+            qpid_new = get_pid('booster-q')
+            self.assert_(app_pid != None, "Application is not running")
+            self.assert_(app_pid == qpid, "Application is not assigned the booster-q pid")
+            self.assert_(qpid_new != None, "No booster process running")
+            self.assert_(qpid_new != qpid, "booster-q process did not receive the new pid")
+            kill_process('fala_ft_hello')
+            
+            #Launching application with booster-w
+            wpid = get_pid('booster-w') 
+            p = run_app_as_user('invoker --type=wrt --no-wait fala_ft_hello.launch')
+            time.sleep(4)
+            app_pid = get_pid('fala_ft_hello')
+            wpid_new = get_pid('booster-w')
+            self.assert_(app_pid != None, "Application is not running")
+            self.assert_(app_pid == wpid, "Application is not assigned the booster-w pid")
+            self.assert_(wpid_new != None, "No booster process running")
+            self.assert_(wpid_new != wpid, "booster-w process did not receive the new pid")
+            kill_process('fala_ft_hello')
+            
+    
+
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include

@@ -110,6 +110,10 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_theme_change_booster_restart</step>
       </case>
 
+      <case name="applauncherd__test_booster_pid_change" type="Functional" description="Test that application pid changes to the booster 'x' when application is launched using booster 'x' " timeout="360" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_pid_change</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
