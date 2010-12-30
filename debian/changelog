@@ -1,3 +1,12 @@
+applauncherd (0.16.0) unstable; urgency=low
+
+  * Changes: Boosters loaded as plugins.
+  * Changes: New test added that checks that booster pid is acquired by application started using booster
+  * Changes: Changed wait time between button press and release from 100ms to 200ms in pixelchanged.
+  * Fixes: NB#214093 - application started with launcher has wrong name in the process list
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Thu, 30 Dec 2010 12:32:32 +0200
+
 applauncherd (0.15.10) stable; urgency=low
 
   * Fixes: NB#211510 - boosters should update oom_adj to 0 before calling main
