@@ -116,14 +116,15 @@ class TC_PerformanceTests < Test::Unit::TestCase
     if @options[:application] != nil     
 
       system("initctl stop xsession/applifed")
+      system("initctl stop xsession/sysuid")
+
     end
+
     system("initctl stop xsession/search")
     system("initctl restart xsession/mthome")
     sleep(10)
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
     system("initctl stop xsession/mprogressindicator")
-
-
   end
   
 
@@ -133,9 +134,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
     puts "exit from teardown"
     system "mv #{TEMPORARY_MATTI_LOCATION} #{MATTI_LOCATION}"
     system("initctl start xsession/search")
-
     if @options[:application] != nil     
-
+      system("initctl start xsession/sysuid")
       system("initctl start xsession/applifed")
       system("initctl restart xsession/mthome")
       sleep(10)
