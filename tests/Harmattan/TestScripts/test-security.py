@@ -93,6 +93,7 @@ class SecurityTests(unittest.TestCase):
         """
 
         creds = launch_and_get_creds('/usr/bin/fala_ft_hello')
+        creds = self.filter_creds(creds)
         debug("fala_ft_hello has %s" % ', '.join(creds))
 
         self.assert_(creds != None, "error retrieving credentials")
