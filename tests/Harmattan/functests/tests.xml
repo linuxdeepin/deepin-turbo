@@ -50,16 +50,16 @@
 
     <set name="TC_Invoker" description="Tests for invoker" feature="AF Basic Launcher daemon support" requirement="300168">
 
+      <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_forwarding</step>
+      </case>
+
       <case name="applauncherd__test_invoker_delay" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_delay</step>
       </case>
 
       <case name="applauncherd__test_invoker_search_prog" type="Functional" description="Test that invoker finds binaries from PATH" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_search_prog</step>
-      </case>
-
-      <case name="applauncherd__test_launch_wo_applauncherd" type="Functional" description="Test invoker can launch applications even when applauncherd is not running" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_wo_applauncherd</step>
       </case>
 
       <case name="applauncherd__test_wait_term" type="Functional" description="Test that the launched application is killed when killing invoker that is waiting for app to terminate" timeout="360" level="System" insignificant="false">
@@ -74,8 +74,9 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_gid_uid</step>
       </case>
 
-      <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_forwarding</step>
+
+      <case name="applauncherd__test_launch_wo_applauncherd" type="Functional" description="Test invoker can launch applications even when applauncherd is not running" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_wo_applauncherd</step>
       </case>
 
       <environments>
@@ -89,6 +90,10 @@
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
+
+      <case name="applauncherd__test_booster_pid_change" type="Functional" description="Test that application pid changes to the booster 'x' when application is launched using booster 'x' " timeout="360" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_pid_change</step>
+      </case>
 
       <case name="applauncherd__test_fd_booster_m" type="Functional" description="File descriptor test for booster-m" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_m</step>
@@ -106,13 +111,11 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_killed_or_restarted</step>
       </case>
 
-      <case name="applauncherd__test_theme_change_booster_restart" type="Functional" description="Tests that booster-m and booster-w are restarted after theme change" timeout="360" level="System" insignificant="false">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_theme_change_booster_restart</step>
-      </case>
+      <!-- Chaning of theme is no more valid-->
+      <!--case name="applauncherd__test_theme_change_booster_restart" type="Functional" description="Tests that booster-m and booster-w are restarted after theme change" timeout="360" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_theme_change_booster_restart</step>
+      </case-->
 
-      <case name="applauncherd__test_booster_pid_change" type="Functional" description="Test that application pid changes to the booster 'x' when application is launched using booster 'x' " timeout="360" level="System" insignificant="false">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_pid_change</step>
-      </case>
 
       <environments>
           <scratchbox>true</scratchbox>
