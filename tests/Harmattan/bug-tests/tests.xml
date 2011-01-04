@@ -21,6 +21,19 @@
       <case name="applauncherd__test_global_theming" type="Functional" description="Tests that global theming changes affect launched applications" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb --name test_global_theming</step>
       </case>
+
+      <case name="applauncherd__test_oom_adj" type="Functional" description="Test that oom.adj is 0 for launched application process" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_oom_adj</step>
+      </case>
+
+      <case name="applauncherd__test_launched_app_name" type="Functional" description="Test that launched application name  have .launch at the end" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_name</step>
+      </case>
+
+      <case name="applauncherd__test_stress_boosted_apps" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

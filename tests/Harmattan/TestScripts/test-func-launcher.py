@@ -68,7 +68,7 @@ def check_prerequisites():
               "You probably want to source /tmp/session_bus_address.user")
 
     for app in LAUNCHABLE_APPS: 
-        assert(len(basename(app)) <= 15, "For app: %s , base name !<= 14" %app)
+        assert len(basename(app)) <= 15, "For app: %s , base name !<= 14" %app
 
 class launcher_tests (unittest.TestCase):
     def setUp(self):
@@ -647,8 +647,81 @@ class launcher_tests (unittest.TestCase):
             self.assert_(wpid_new != None, "No booster process running")
             self.assert_(wpid_new != wpid, "booster-w process did not receive the new pid")
             kill_process('fala_ft_hello')
-            
+
+
+    def test_stress_boosted_apps(self):
+        """
+        Stress test for boosted applications to check only one instance is running.
+        """
+        p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
+        pid = get_pid('fala_ft_hello')
+        for i in xrange(10):
+            p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
+            app_pid = get_pid('fala_ft_hello')
+            self.assert_(app_pid != None, "Application is not running")
+            self.assert_(pid == app_pid, "Same instance of application not running")
+        time.sleep(5)
+        kill_process('fala_ft_hello')
+        
+    def test_launched_app_name(self):
+        """
+        Test that launched application name  have .launch at the end 
+        """
+        #For booster-m        
+        #Check though the process list
+        p = run_app_as_user('invoker --type=m --no-wait fala_wl.launch -faulty')
+        time.sleep(2)
+        pid = get_pid('fala_wl')
+        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
+        self.assert_(op.split('0')[0] == "fala_wl.launch",'Application name is incorrect')    
     
+        #check through the window property
+        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
+        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
+        self.assert_(op1.split(",")[0] == '"fala_wl.launch"','Application name is incorrect')   
+        kill_process('fala_wl') 
+        
+        #For booster-q        
+        #Check though the process list
+        p = run_app_as_user('invoker --type=qt --no-wait fala_wl.launch -faulty')
+        time.sleep(2)
+        pid = get_pid('fala_wl')
+        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
+        self.assert_(op.split('0')[0] == "fala_wl.launch",'Application name is incorrect')    
+    
+        #check through the window property
+        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
+        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
+        self.assert_(op1.split(",")[0] == '"fala_wl.launch"','Application name is incorrect')   
+        kill_process('fala_wl') 
+
+        #For booster-w        
+        #Check though the process list
+        p = run_app_as_user('invoker --type=wrt --no-wait fala_wl.launch -faulty')
+        time.sleep(2)
+        pid = get_pid('fala_wl')
+        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
+        self.assert_(op.split('0')[0] == "fala_wl.launch",'Application name is incorrect')    
+    
+        #check through the window property
+        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
+        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
+        self.assert_(op1.split(",")[0] == '"fala_wl.launch"','Application name is incorrect')   
+        kill_process('fala_wl') 
+
+    def test_oom_adj(self):
+        """
+        Test that oom.adj is 0 for launched application process 
+        """
+        p = run_app_as_user('invoker --type=qt --no-wait fala_wl.launch')
+        time.sleep(2)
+        pid = get_pid('fala_wl')
+        st, op = commands.getstatusoutput('cat /proc/%s/oom_adj' %pid)
+        self.assert_(op == '0',"oom.adj of the launched process is not 0")
+        kill_process('fala_wl') 
+
+
+
 
 # main
 if __name__ == '__main__':
