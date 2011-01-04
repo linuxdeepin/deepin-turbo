@@ -605,6 +605,32 @@ class launcher_tests (unittest.TestCase):
         self.assert_(wpid_new != None, "No booster process running")
         self.assert_(wpid_new != wpid, "booster process was not killed")
 
+    def test_invoker_param_creds(self):
+        p = run_app_as_user('invoker --creds')
+        self.assert_(p.wait() == 0, "'invoker --creds' failed")
+
+    def test_invoker_param_respawn_delay(self):
+        p = run_app_as_user('invoker --respawn 10 --type=q --no-wait fala_ft_hello.launch')
+
+        time.sleep(7)
+
+        pid = get_pid('booster-q')
+        self.assert_(pid == None, "'booster-q' was respawned too soon")
+
+        time.sleep(7)
+
+        pid = get_pid('booster-q')
+        self.assert_(pid != None, "'booster-q' was not respawned in time")
+
+        p = run_app_as_user('invoker --respawn 256 --type=q --no-wait fala_ft_hello.launch')
+        self.assert_(p.wait() != 0, "invoker didn't die with too big respawn delay")
+
+    def test_invoker_bogus_apptype(self):
+        p = run_app_as_user('invoker --type=foobar fala_ft_hello.launch')
+        self.assert_(p.wait() != 0, "invoker didn't die with bogus apptype")
+
+        p = run_app_as_user('invoker fala_ft_hello.launch')
+        self.assert_(p.wait() != 0, "invoker didn't die with empty apptype")
 
     def test_booster_pid_change(self):
         """
