@@ -36,9 +36,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <dlfcn.h>
-
-#include <QDir>
-#include <QStringList>
+#include <glob.h>
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
@@ -274,38 +272,50 @@ void Daemon::loadSingleInstancePlugin()
 
 void Daemon::loadBoosterPlugins()
 {
-    QString strPluginDir(BOOSTER_PLUGIN_DIR);
-    QDir pluginDir(strPluginDir);
+    const char* PATTERN = "lib*booster.so";
+    const int   BUF_LEN = 256;
 
-    QStringList filters;
-    filters << "lib*booster.so";
-    pluginDir.setNameFilters(filters);
-
-    // Loop through entries in the plugin dir
-    QStringListIterator entry(pluginDir.entryList());
-    while (entry.hasNext())
+    if (strlen(PATTERN) + strlen(BOOSTER_PLUGIN_DIR) + 2 > BUF_LEN)
     {
-        QString file = entry.next();
-        QString path = strPluginDir + QDir::separator() + file;
+        Logger::logError("Daemon: path to plugins too long");
+        return;
+    }
 
-        const char * constPath = path.toAscii().constData();
-        void * handle = dlopen(constPath, RTLD_NOW | RTLD_GLOBAL);
-        if (!handle)
+    char buffer[BUF_LEN];
+    memset(buffer, 0, BUF_LEN);
+    strcpy(buffer, BOOSTER_PLUGIN_DIR);
+    strcat(buffer, "/");
+    strcat(buffer, PATTERN);
+
+    // get full path to all plugins
+    glob_t globbuf;
+    if (glob(buffer, 0, NULL, &globbuf) == 0)
+    {
+        for (__size_t i = 0; i < globbuf.gl_pathc; i++)
         {
-            Logger::logWarning("Daemon: dlopening booster failed: %s", dlerror());
-        }
-        else
-        {
-            char newType = BoosterPluginRegistry::validateAndRegisterPlugin(handle);
-            if (newType)
+            void *handle = dlopen(globbuf.gl_pathv[i], RTLD_NOW | RTLD_GLOBAL);
+            if (!handle)
             {
-                Logger::logInfo("Daemon: Booster of type '%c' loaded.'", newType);
+                Logger::logWarning("Daemon: dlopening booster failed: %s", dlerror());
             }
             else
             {
-                Logger::logWarning("Daemon: Invalid booster plugin: '%s'", constPath);
+                char newType = BoosterPluginRegistry::validateAndRegisterPlugin(handle);
+                if (newType)
+                {
+                    Logger::logInfo("Daemon: Booster of type '%c' loaded.'", newType);
+                }
+                else
+                {
+                    Logger::logWarning("Daemon: Invalid booster plugin: '%s'", buffer);
+                }
             }
         }
+        globfree(&globbuf);
+    }
+    else
+    {
+        Logger::logError("Daemon: can't find booster plugins");
     }
 }
 
