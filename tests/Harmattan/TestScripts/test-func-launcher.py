@@ -483,6 +483,8 @@ class launcher_tests (unittest.TestCase):
 
         start_applauncherd()
 
+        time.sleep(4)
+
     def test_invoker_search_prog(self):
         """
         Test that invoker can find programs from directories listed in
