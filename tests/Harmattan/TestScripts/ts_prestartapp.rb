@@ -46,32 +46,62 @@ class TC_PRESTARTLAUNCHTESTS < Test::Unit::TestCase
         system "initctl start xsession/applifed"
     end
 
+    def get_pids(app)
+        pids = `pgrep #{app}`.split(/\s/).collect { |x| x.strip() }.delete_if { |x| x.empty? }
+        pids = nil if pids.empty?
+        return pids
+    end
+
+
     def test_launch_prestarted_app
         #Test that a prestarted application can be launched
-	@appname = 'fala_testapp'
+	@appname = 'fala_wl.launch'
 	if system("pgrep #{@appname}") == true
 	    system("kill -9 `pgrep #{@appname}`")
 	end
-	sleep 2    
 	verify_equal(false,2,"Application is Prestarted"){
 		system "pgrep #{@appname}"}
-	sleep 2
 
-	string = `export DISPLAY=:0; source /tmp/session_bus_address.user;dbus-send --dest=com.nokia.#{@appname} --type="method_call" /org/maemo/m com.nokia.MApplicationIf.ping`
-	sleep 1
+        #Prestart application using invoker
+        system("su - user -c '/usr/bin/invoker --type=m --no-wait #{@appname} -prestart'&") 
+        sleep(2)
+     
+        #verify that the application is prestarted and it has a valid pid
+        pid = get_pids(@appname)
+        verify_true(2,"The Application was not prestarted"){pid != nil}
 
-	verify_equal(true,2,"Application is not Prestarted"){
-		system "pgrep #{@appname}"}
-	pid = string = `pgrep #{@appname}`
-	sleep 1
+        @wid = `xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'` 
+        @wid = @wid.split(/\n/)[0]
 
-	string = `export DISPLAY=:0; source /tmp/session_bus_address.user;dbus-send --dest=com.nokia.#{@appname} --type="method_call" /org/maemo/m com.nokia.MApplicationIf.launch`
-	@app = @sut.application( :name => 'fala_testapp' ) 
-	@app.MButton( :name => 'CloseButton' ).tap
-	newid = string = `pgrep #{@appname}`
-	verify_true(30,"The application is not prestarted"){pid == newid}
-	sleep 1
-	system "kill -9 `pgrep #{@appname}`"
+        #verify that Window state of applications is blank as the application is not launhced 
+        @switcher =  `xprop -id #{@wid} | awk '/window state/{print $1}'`
+        verify_equal("",2,"Application was Launched"){@switcher}
+
+        #Now Launch the prestarted application 
+        system("su - user -c '/usr/bin/invoker --type=m --no-wait #{@appname}'")
+        sleep(2)
+
+        #verify that Window state of applications is Normal as the application is launhced 
+        @switcher =  `xprop -id #{@wid} | awk '/window state/{print $3}'`
+
+        verify_equal("Normal", 2,\
+               "The Application window was not launched") {@switcher.split(/\n/)[0]}
+        
+        #Close application using xsendevent
+        system("/usr/bin/xsendevent close #{@wid}")
+
+        #verify that the application is goes to lazyshutdown and has the same pid
+        npid = get_pids(@appname)
+        verify_true(2,"The Application was killed"){pid != nil}
+        verify_true(2,"The Application was Restarted"){npid == pid}
+
+        #verify that Window state of applications is blank as the application is not launhced 
+        @switcher =  `xprop -id #{@wid} | awk '/window state/{print $1}'`
+        verify_equal("",2,"Application was Launched"){@switcher}
+
+        #verify that prestarted state of the application is 1 
+        @switcher =  `xprop -id #{@wid} | awk '/_MEEGOTOUCH_PRESTARTED/{print $3}'`
+        verify_equal("1",2,"Application was Launched"){@switcher.split(/\n/)[0]}
     end
 
 end

@@ -1,0 +1,10 @@
+xsendevent - tool for sending various xevents to windows on command line
+
+# Compile:
+qmake -project; qmake; make
+
+# Install:
+scp xsendevent dali:/usr/bin/
+
+# Usage:
+xsendevent close 0xwhatever

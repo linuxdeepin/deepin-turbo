@@ -57,3 +57,6 @@ add_subdirectory(Common/TestApps/pixelchanged)
 
 # Sub build: Common/TestApps/fala_windowid
 add_subdirectory(Common/TestApps/fala_windowid)
+
+# Sub build: Common/TestApps/xsendevent
+add_subdirectory(Common/TestApps/xsendevent)
