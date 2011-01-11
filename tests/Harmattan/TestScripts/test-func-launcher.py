@@ -80,6 +80,7 @@ class launcher_tests (unittest.TestCase):
         debug("Executing TearDown")
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
 
     #Testcases
     def test_launcher_exist(self):
@@ -613,6 +614,7 @@ class launcher_tests (unittest.TestCase):
 
         p = run_app_as_user('invoker --respawn 256 --type=q --no-wait fala_ft_hello.launch')
         self.assert_(p.wait() != 0, "invoker didn't die with too big respawn delay")
+        kill_process('fala_ft_hello')
 
     def test_invoker_bogus_apptype(self):
         p = run_app_as_user('invoker --type=foobar fala_ft_hello.launch')
@@ -668,6 +670,9 @@ class launcher_tests (unittest.TestCase):
         """
         Stress test for boosted applications to check only one instance is running.
         """
+        if get_pid('fala_ft_hello') != None:
+            kill_process('fala_ft_hello')
+        time.sleep(2)
         count = 0
         p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
         pid = get_pid('fala_ft_hello')
