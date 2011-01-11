@@ -49,9 +49,9 @@
 Booster::Booster() :
     m_appData(new AppData),
     m_connection(NULL),
-    m_argvArraySize(0),
     m_oldPriority(0),
-    m_oldPriorityOk(false)
+    m_oldPriorityOk(false),
+    m_spaceAvailable(0)
 {}
 
 Booster::~Booster()
@@ -80,7 +80,8 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
     preload();
 
     // Rename process to temporary booster process name, e.g. "booster-m"
-    renameProcess(initialArgc, initialArgv);
+    const char * tempArgv[] = {boosterTemporaryProcessName().c_str()};
+    renameProcess(initialArgc, initialArgv, 1, tempArgv);
 
     // Restore priority
     popPriority();
@@ -121,7 +122,7 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
 
     // Give the process the real application name now that it
     // has been read from invoker in receiveDataFromInvoker().
-    renameProcess(initialArgc, initialArgv);
+    renameProcess(initialArgc, initialArgv, m_appData->argc(), m_appData->argv());
 
     // Send parent process a message that it can create a new booster,
     // send pid of invoker, send booster respawn value
@@ -222,62 +223,117 @@ void Booster::run(SocketManager * socketManager)
     }
 }
 
-void Booster::renameProcess(int parentArgc, char** parentArgv)
+void Booster::renameProcess(int parentArgc, char** parentArgv,
+                            int sourceArgc, const char** sourceArgv)
 {
-    if (m_argvArraySize == 0)
+    if (sourceArgc > 0 && parentArgc > 0)
     {
-        // rename process for the first time
-        // calculate and store size of parentArgv array
+        // Calculate original space reserved for arguments, if not
+        // already calculated
+        if (!m_spaceAvailable)
+            for (int i = 0; i < parentArgc; i++)
+                m_spaceAvailable += strlen(parentArgv[i]) + 1;
 
-        for (int i = 0; i < parentArgc; i++)
-            m_argvArraySize += strlen(parentArgv[i]) + 1;
-
-        m_argvArraySize--;
-    }
-
-    if (m_appData->appName().empty())
-    {
-        // application name isn't known yet, let's give to the process
-        // temporary booster name
-        m_appData->setAppName(boosterTemporaryProcessName());
-    }
-
-    const char* newProcessName = m_appData->appName().c_str();
-    Logger::logNotice("Booster: set new name for process: %s", newProcessName);
-    
-    // This code copies all the new arguments to the space reserved
-    // in the old argv array. If an argument won't fit then the algorithm
-    // leaves it fully out and terminates.
-    
-    int spaceAvailable = m_argvArraySize;
-    if (spaceAvailable > 0)
-    {
-        memset(parentArgv[0], '\0', spaceAvailable);
-        strncat(parentArgv[0], newProcessName, spaceAvailable);
-        
-        spaceAvailable -= strlen(parentArgv[0]);
-        
-        for (int i = 1; i < m_appData->argc(); i++)
+        if (m_spaceAvailable)
         {
-            if (spaceAvailable > static_cast<int>(strlen(m_appData->argv()[i])) + 1)
+            // Build a contiguous, NULL-separated block for the new arguments.
+            // This is how Linux puts them.
+            std::string newArgv;
+            for (int i = 0; i < sourceArgc; i++)
             {
-                strncat(parentArgv[0], " ", 1);
-                strncat(parentArgv[0], m_appData->argv()[i], spaceAvailable);
-                spaceAvailable -= strlen(m_appData->argv()[i] + 1);
+                newArgv += sourceArgv[i];
+                newArgv += '\0';
             }
-            else
+
+            const int spaceNeeded = std::min(m_spaceAvailable,
+                                             static_cast<int>(newArgv.size()));
+
+            // Reset the old space
+            memset(parentArgv[0], '\0', m_spaceAvailable);
+
+            if (spaceNeeded > 0)
             {
-                break;
+                // Copy the argument data. Note: if they don't fit, then
+                // they are just cut off.
+                memcpy(parentArgv[0], newArgv.c_str(), spaceNeeded);
+
+                // Ensure NULL at the end
+                parentArgv[0][spaceNeeded - 1] = '\0';
             }
         }
+
+        // Set the process name using prctl, 'killall' and 'top' use it
+        if ( prctl(PR_SET_NAME, basename(sourceArgv[0])) == -1 )
+            Logger::logError("Booster: on set new process name: %s ", strerror(errno));
+
+        setenv("_", sourceArgv[0], true);
     }
-
-    // Set the process name using prctl, 'killall' and 'top' use it
-    if ( prctl(PR_SET_NAME, basename(newProcessName)) == -1 )
-        Logger::logError("Booster: on set new process name: %s ", strerror(errno));
-
-    setenv("_", newProcessName, true);
 }
+
+//void Booster::renameProcess(int parentArgc, char** parentArgv)
+//{
+//    if (m_argvArraySize == 0)
+//    {
+//        // rename process for the first time
+//        // calculate and store size of parentArgv array
+
+//        for (int i = 0; i < parentArgc; i++)
+//            m_argvArraySize += strlen(parentArgv[i]) + 1;
+//    }
+
+//    if (m_appData->appName().empty())
+//    {
+//        // application name isn't known yet, let's give to the process
+//        // temporary booster name
+//        m_appData->setAppName(boosterTemporaryProcessName());
+//    }
+//    else
+//    {
+//        const char* newProcessName = m_appData->appName().c_str();
+//        Logger::logNotice("Booster: set new name for process: %s", newProcessName);
+
+//        // This code copies all the new arguments to the space reserved
+//        // in the old argv array. If an argument won't fit then the algorithm
+//        // leaves it fully out and terminates.
+
+//        int spaceAvailable = m_argvArraySize;
+//        if (spaceAvailable > 0)
+//        {
+//            memset(parentArgv[0], '\0', spaceAvailable);
+
+//            int spaceNeeded = 0;
+//            for (int i = 0; i < m_appData->argc(); i++)
+//                spaceNeeded += strlen(m_appData->argv()[i]) + 1;
+
+//            //        memset(parentArgv[0], '\0', spaceAvailable);
+//            //        strncat(parentArgv[0], newProcessName, spaceAvailable);
+//            //        spaceAvailable -= strlen(parentArgv[0]);
+
+//            memcpy(parentArgv[0], m_appData->argv()[0],
+//                   std::min(spaceAvailable, spaceNeeded));
+
+//            //        for (int i = 1; i < m_appData->argc(); i++)
+//            //        {
+//            //            if (spaceAvailable > static_cast<int>(strlen(m_appData->argv()[i])) + 1)
+//            //            {
+//            //                strncat(parentArgv[0], " ", 1);
+//            //                strncat(parentArgv[0], m_appData->argv()[i], spaceAvailable);
+//            //                spaceAvailable -= strlen(m_appData->argv()[i] + 1);
+//            //            }
+//            //            else
+//            //            {
+//            //                break;
+//            //            }
+//            //        }
+//        }
+//    }
+
+//    // Set the process name using prctl, 'killall' and 'top' use it
+//    if ( prctl(PR_SET_NAME, basename(newProcessName)) == -1 )
+//        Logger::logError("Booster: on set new process name: %s ", strerror(errno));
+
+//    setenv("_", newProcessName, true);
+//}
 
 int Booster::launchProcess()
 {

@@ -37,11 +37,6 @@ private Q_SLOTS:
     void initTestCase();
     void testRenameProcess();
     void testRenameProcessNotEnoughSpace();
-    void testRenameProcessNotEnoughSpace2();
-    void testRenameProcessNotEnoughSpace3();
-    void testRenameProcessNotEnoughSpace4();
-    void testRenameProcessNoArgs();
-    void testRenameBoosterProcess();
     void cleanupTestCase();
 
 private:
@@ -51,5 +46,3 @@ private:
 };
 
 #endif // UT_BOOSTER_H
-
-
