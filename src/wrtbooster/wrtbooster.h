@@ -21,8 +21,7 @@
 #define WRTBOOSTER_H
 
 #include "booster.h"
-#include <MGConfItem>
-#include <QSocketNotifier>
+#include "eventhandler.h"
 #include <tr1/memory>
 
 using std::tr1::shared_ptr;
@@ -39,8 +38,6 @@ using std::tr1::shared_ptr;
  */
 class WRTBooster : public Booster
 {
-    Q_OBJECT
-
 public:
 
     //! \brief Constructor
@@ -74,15 +71,6 @@ public:
      */
     static char type();
 
-    //! UNIX signal handler for SIGHUP
-    static void hupSignalHandler(int unused);
-
-    //! Setup UNIX signal handlers
-    static bool setupUnixSignalHandlers();
-
-    //! Restore UNIX signal handlers to previous values
-    static bool restoreUnixSignalHandlers();
-
     //! \reimp
     virtual const string & socketId() const;
 
@@ -105,32 +93,6 @@ private:
     //! yet transformed into a running application
     static const string m_temporaryProcessName;
 
-    //! wait for socket connection
-    void accept();
-
-    //! Socket pair used to get SIGHUP
-    static int m_sighupFd[2];
-
-    //! Socket notifier used for m_sighupFd
-    shared_ptr<QSocketNotifier> m_snHup;
-
-    //! Old sigaction struct
-    static struct sigaction m_oldSigAction;
-
-    //! GConf item to listen theme change
-    MGConfItem* m_item;
-
-private slots:
-
-    //! Qt signal handler for SIGHUP.
-    void handleSigHup();
-
-    //! Qt signal handler for theme change
-    void notifyThemeChange();
-
-signals:
-
-    void connectionAccepted();
 
 #ifdef UNIT_TEST
     friend class Ut_WRTBooster;

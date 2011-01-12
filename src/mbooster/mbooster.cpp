@@ -20,9 +20,6 @@
 #include "mbooster.h"
 #include "logger.h"
 #include "connection.h"
-
-#include <QtConcurrentRun>
-#include <MApplication>
 #include <sys/socket.h>
 
 #ifdef HAVE_MCOMPONENTCACHE
@@ -31,54 +28,6 @@
 
 const string MBooster::m_socketId  = "/tmp/boostm";
 const string MBooster::m_temporaryProcessName = "booster-m";
-int MBooster::m_sighupFd[2];
-struct sigaction MBooster::m_oldSigAction;
-
-MBooster::MBooster() : m_item(0)
-{}
-
-//
-// All this signal handling code is taken from Qt's Best Practices:
-// http://doc.qt.nokia.com/latest/unix-signals.html
-//
-
-void MBooster::hupSignalHandler(int)
-{
-    char a = 1;
-    ::write(m_sighupFd[0], &a, sizeof(a));
-}
-
-void MBooster::handleSigHup()
-{
-    MApplication::quit();
-    ::_exit(EXIT_SUCCESS);
-}
-
-bool MBooster::setupUnixSignalHandlers()
-{
-    struct sigaction hup;
-
-    hup.sa_handler = MBooster::hupSignalHandler;
-    sigemptyset(&hup.sa_mask);
-    hup.sa_flags |= SA_RESTART;
-
-    if (sigaction(SIGHUP, &hup, &m_oldSigAction) > 0)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool MBooster::restoreUnixSignalHandlers()
-{
-    if (sigaction(SIGHUP, &m_oldSigAction, 0) > 0)
-    {
-        return false;
-    }
-
-    return true;
-}
 
 const string & MBooster::socketId() const
 {
@@ -120,48 +69,8 @@ bool MBooster::receiveDataFromInvoker(int socketFd)
     // Setup the conversation channel with the invoker.
     setConnection(new Connection(socketFd));
 
-    // Exit from event loop when invoker is ready to connect
-    connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
-
-    // Enable theme change handler
-    m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
-    connect(m_item, SIGNAL(valueChanged()), this, SLOT(notifyThemeChange()));
-
-    // Start another thread to listen connection from invoker
-    QtConcurrent::run(this, &MBooster::accept);
-
-    // Create socket pair for SIGHUP
-    bool handlerIsSet = false;
-    if (::socketpair(AF_UNIX, SOCK_STREAM, 0, m_sighupFd))
-    {
-        Logger::logError("MBooster: Couldn't create HUP socketpair");
-    }
-    else
-    {
-        // Install signal handler e.g. to exit cleanly if launcher dies.
-        // This is a problem because MBooster runs a Qt event loop.
-        setupUnixSignalHandlers();
-
-        // Install a socket notifier on the socket
-        connect(new QSocketNotifier(m_sighupFd[1], QSocketNotifier::Read, this),
-                SIGNAL(activated(int)), this, SLOT(handleSigHup()));
-
-        handlerIsSet = true;
-    }
-
-    // Run event loop so MApplication and MApplicationWindow objects can receive notifications
-    MApplication::exec();
-
-    // Disable theme change handler
-    disconnect(m_item, 0, this, 0);
-    delete m_item;
-    m_item = NULL;
-
-    // Restore signal handlers to previous values
-    if (handlerIsSet)
-    {
-        restoreUnixSignalHandlers();
-    }
+    EventHandler handler(this);
+    handler.runEventLoop();
 
     // Receive application data from the invoker
     if(!connection()->receiveApplicationData(appData()))
@@ -180,16 +89,3 @@ bool MBooster::receiveDataFromInvoker(int socketFd)
     return true;
 }
 
-void MBooster::notifyThemeChange()
-{
-    MApplication::quit();
-    ::_exit(EXIT_SUCCESS);
-}
-
-void MBooster::accept()
-{
-    if (connection()->accept(appData()))
-    {
-        emit connectionAccepted();
-    }
-}

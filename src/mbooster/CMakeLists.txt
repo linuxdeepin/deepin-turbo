@@ -9,11 +9,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/comm
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC mbooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
+set(SRC mbooster.cpp pluginfactory.cpp eventhandler.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
 ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
-set(MOC_HDRS mbooster.h)
+set(MOC_HDRS eventhandler.h)
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Set libraries to be linked.

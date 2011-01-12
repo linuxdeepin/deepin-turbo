@@ -43,8 +43,6 @@ class SingleInstance;
 
 #endif
 
-#include <QObject>
-
 /*!
  *  \class Booster
  *  \brief Abstract base class for all boosters (Qt-booster, M-booster and so on..)
@@ -58,7 +56,7 @@ class SingleInstance;
  *  Booster instance dies with the launched application and a new one must be created
  *  in advance so as to launch a new application.
  */
-class Booster : public QObject
+class Booster
 {
 public:
 

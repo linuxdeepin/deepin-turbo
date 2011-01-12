@@ -4,11 +4,12 @@ set(MBOOSTER ${CMAKE_HOME_DIRECTORY}/src/mbooster)
 # Set sources
 set(SRC ut_mbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
 ${LAUNCHER}/connection.cpp
-${LAUNCHER}/logger.cpp ${MBOOSTER}/mbooster.cpp
+${LAUNCHER}/logger.cpp 
+${MBOOSTER}/mbooster.cpp ${MBOOSTER}/eventhandler.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_mbooster.h ${MBOOSTER}/mbooster.h)
+set(MOC_HDRS ut_mbooster.h ${MBOOSTER}/eventhandler.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
