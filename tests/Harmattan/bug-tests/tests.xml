@@ -26,7 +26,7 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_oom_adj</step>
       </case>
 
-      <case name="applauncherd__test_launched_app_name" type="Functional" description="Test that launched application name  have .launch at the end" timeout="360" level="System" insignificant="true">
+      <case name="applauncherd__test_launched_app_name" type="Functional" description="Test that launched application name  have .launch at the end" timeout="900" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_name</step>
       </case>
 
@@ -46,7 +46,7 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_bogus_apptype</step>
       </case>
 
-      <case name="applauncherd__test_launch_prestarted_app" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System" insignificant="true">
+      <case name="applauncherd__test_launch_prestarted_app" type="Functional" description="To test that prestarted application is launched" timeout="900" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb --name test_launch_prestarted_app</step>
       </case>
 
