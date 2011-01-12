@@ -52,7 +52,8 @@ Booster::Booster() :
     m_connection(NULL),
     m_oldPriority(0),
     m_oldPriorityOk(false),
-    m_spaceAvailable(0)
+    m_spaceAvailable(0),
+    m_bootMode(false)
 {}
 
 Booster::~Booster()
@@ -64,21 +65,20 @@ Booster::~Booster()
     m_appData = NULL;
 }
 
-bool Booster::preload()
-{
-    return true;
-}
-
 void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
-                         int socketFd, SingleInstance * singleInstance)
+                         int socketFd, SingleInstance * singleInstance,
+                         bool newBootMode)
 {
+    m_bootMode = newBootMode;
+
     setPipeFd(newPipeFd);
 
     // Drop priority (nice = 10)
     pushPriority(10);
 
     // Preload stuff
-    preload();
+    if (!m_bootMode)
+        preload();
 
     // Rename process to temporary booster process name, e.g. "booster-m"
     const char * tempArgv[] = {boosterTemporaryProcessName().c_str()};
@@ -137,6 +137,11 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
 
     // Set dumpable flag
     prctl(PR_SET_DUMPABLE, 1);
+}
+
+bool Booster::bootMode() const
+{
+    return m_bootMode;
 }
 
 void Booster::sendDataToParent()

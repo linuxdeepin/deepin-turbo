@@ -28,24 +28,30 @@
 
 #define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 
-//! Signal handler to reap zombie processes
-void reapZombies(int)
+int  g_sigChldPipeFd = -1;
+int  g_sigTermPipeFd = -1;
+int  g_sigUsr1PipeFd = -1;
+
+char g_dummyPipeData =  0;
+
+static void sigChldHandler(int)
 {
-    if (Daemon::instance())
-    {
-        Daemon::instance()->reapZombies();
-    }
+    write(g_sigChldPipeFd, &g_dummyPipeData, 1);
 }
 
-void exitLauncher(int)
+static void sigTermHandler(int)
 {
-    exit(0);
+    write(g_sigTermPipeFd, &g_dummyPipeData, 1);
+}
+
+static void sigUsr1Handler(int)
+{
+    write(g_sigUsr1PipeFd, &g_dummyPipeData, 1);
 }
 
 //! Main function
 DECL_EXPORT int main(int argc, char * argv[])
 {
-
     // Open the log
     Logger::openLog(PROG_NAME_LAUNCHER);
     Logger::logDebug("%s starting..", PROG_NAME_LAUNCHER);
@@ -56,12 +62,18 @@ DECL_EXPORT int main(int argc, char * argv[])
         Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
     }
 
-    // Install signal handlers
-    signal(SIGCHLD, reapZombies);
-    signal(SIGTERM, exitLauncher);
-
     // Create main daemon instance
     Daemon myDaemon(argc, argv);
+
+    // Get fd's for signal pipes.
+    g_sigChldPipeFd = myDaemon.sigChldPipeFd();
+    g_sigTermPipeFd = myDaemon.sigTermPipeFd();
+    g_sigUsr1PipeFd = myDaemon.sigUsr1PipeFd();
+
+    // Install signal handlers
+    signal(SIGCHLD, sigChldHandler); // reap zombies
+    signal(SIGTERM, sigTermHandler); // exit launcher
+    signal(SIGUSR1, sigUsr1Handler); // restore normal mode
 
     // Run the main loop
     myDaemon.run();
@@ -71,4 +83,3 @@ DECL_EXPORT int main(int argc, char * argv[])
 
     return EXIT_SUCCESS;
 }
-

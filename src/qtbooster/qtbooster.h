@@ -58,10 +58,10 @@ public:
      */
     static char type();
 
+protected:
+
     //! \reimp
     virtual bool preload();
-
-protected:
 
     //! \reimp
     virtual const string & socketId() const;

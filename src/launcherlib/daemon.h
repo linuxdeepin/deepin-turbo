@@ -37,6 +37,8 @@ using std::vector;
 
 using std::map;
 
+#include <signal.h>
+
 class Booster;
 class SocketManager;
 class SingleInstance;
@@ -88,6 +90,15 @@ public:
     //! Unlock file (lock is not needed in boosters)
     static void unlock();
 
+    //! Get fd to write when SIGCHLD arrives
+    int sigChldPipeFd() const;
+
+    //! Get fd to write when SIGTERM arrives
+    int sigTermPipeFd() const;
+
+    //! Get fd to write when SIGUSR1 arrives
+    int sigUsr1PipeFd() const;
+
 private:
 
     //! Disable copy-constructor
@@ -118,8 +129,8 @@ private:
     //! Don't use console for output
     void consoleQuiet();
 
-    //! Kill given pid with SIGKILL
-    void killProcess(pid_t pid) const;
+    //! Kill given pid with SIGKILL by default
+    void killProcess(pid_t pid, int signal = SIGKILL) const;
 
     //! Load (dlopen()) booster plugins
     void loadBoosterPlugins();
@@ -139,11 +150,28 @@ private:
     //! Close all sockets NOT used by the given booster type.
     void closeUnusedSockets(char type);
 
-    //! Daemonize flag
+    //! Read and process data from a booster pipe
+    void readFromBoosterPipe(int fd);
+
+    //! Enter normal mode (restart boosters with cache enabled)
+    void enterNormalMode();
+
+    //! Kill all active boosters with -9
+    void killBoosters();
+
+    //! Daemonize flag (--fork). Daemon forks if true.
     bool m_daemon;
 
-    //! Debug print flag
+    //! Debug print flag (--quiet). Daemon closes fd's 0 - 2 if true.
     bool m_quiet;
+
+    /*! Flag indicating boot mode (--boot-mode). If true, then:
+     *  - Caches won't be initialized.
+     *  - Booster respwan delay is 0.
+     *
+     *  Normal mode is activated by firing SIGUSR1.
+     */
+    bool m_bootMode;
 
     //! Vector of current child PID's
     typedef vector<pid_t> PidVect;
@@ -157,8 +185,18 @@ private:
     typedef map<char, pid_t> TypeMap;
     TypeMap m_boosterTypeToPid;
 
-    //! Pipe used to tell the parent that a new booster is needed
-    int m_pipefd[2];
+    //! Pipe used to tell the parent that a new booster is needed +
+    //! some parameters.
+    int m_boosterPipeFd[2];
+
+    //! Pipe used to safely catch SIGCHLD
+    int m_sigChldPipeFd[2];
+
+    //! Pipe used to safely catch SIGTERM
+    int m_sigTermPipeFd[2];
+
+    //! Pipe used to safely catch SIGUSR1
+    int m_sigUsr1PipeFd[2];
 
     //! Argument vector initially given to the launcher process
     int m_initialArgc;

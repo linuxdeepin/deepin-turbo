@@ -68,15 +68,16 @@ public:
 
     /*!
      * \brief Initializes the booster process.
+     * \param initialArgc argc of the parent process.
+     * \param initialArgv argv of the parent process.
+     * \param pipefd pipe used to communicate with the parent process.
+     * \param socketFd File socket used to get commands from the invoker.
+     * \param singleInstance Pointer to a valid SingleInstance object.
+     * \param bootMode Booster-specific preloads are not executed if true.
      */
     virtual void initialize(int initialArgc, char ** initialArgv, int pipefd[2],
-                            int socketFd, SingleInstance * singleInstance);
-
-    /*!
-     * \brief Preload libraries.
-     * Override in the custom Booster.
-     */
-    virtual bool preload();
+                            int socketFd, SingleInstance * singleInstance,
+                            bool bootMode);
 
     /*!
      * \brief Run the application to be invoked.
@@ -141,17 +142,21 @@ public:
      * \brief Return the communication socket used by a Booster.
      * This method returns the socket used between invoker and the Booster.
      * (common to all Boosters of the type). Override in the custom Booster.
-     * \return Path to the socket file
+     * \return Path to the socket file.
      */
     virtual const string & socketId() const = 0;
 
+    //! Return true, if in boot mode.
+    bool bootMode() const;
+
 protected:
 
-    //! Set nice value and store the old priority. Return true on success.
-    bool pushPriority(int nice);
-
-    //! Restore the old priority stored by the previous successful setPriority().
-    bool popPriority();
+    /*!
+     * \brief Preload libraries / initialize cache etc.
+     * Called from initialize if not in the boot mode.
+     * Re-implement in the custom Booster.
+     */
+    virtual bool preload() = 0;
 
     /*!
      * \brief Wait for connection from invoker and read the input.
@@ -162,6 +167,12 @@ protected:
      * \return true on success
      */
     virtual bool receiveDataFromInvoker(int socketFd);
+
+    //! Set nice value and store the old priority. Return true on success.
+    bool pushPriority(int nice);
+
+    //! Restore the old priority stored by the previous successful setPriority().
+    bool popPriority();
 
     //! Sets pipe fd's used to communicate with the parent process
     void setPipeFd(int pipeFd[2]);
@@ -208,6 +219,9 @@ private:
 
     //! Original space available for arguments
     int m_spaceAvailable;
+
+    //! True, if being run in boot mode.
+    bool m_bootMode;
 
 #ifdef HAVE_CREDS
     //! filter out invoker-specific credentials from boosted application

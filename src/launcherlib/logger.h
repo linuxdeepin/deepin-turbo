@@ -42,16 +42,15 @@ public:
      */
     static void closeLog();
 
-
     /*!
-     * \brief Log a notice to the system message logger
+     * \brief Log a debug to the system message logger.
+     *        Effective only if Logger::setDebugMode(true) called;
      * \param format String identical to a printf format string
      * \param additionalArgs Depending on the format string, the function may expect a 
      *        sequence of additional arguments, each containing one value to be inserted
      *        in the format parameter, if any. 
      */
     static void logDebug(const char * format, ...);
-
 
     /*!
      * \brief Log an error to the system message logger
@@ -62,7 +61,6 @@ public:
      */
     static void logError(const char * format, ...);
 
-
     /*!
      * \brief Log a warning to the system message logger
      * \param format String identical to a printf format string
@@ -71,7 +69,6 @@ public:
      *        in the format parameter, if any. 
      */
     static void logWarning(const char * format, ...);
-
 
     /*!
      * \brief Log a piece of information to the system message logger
@@ -91,19 +88,20 @@ public:
      */
     static void logErrorAndDie(int code, const char * format, ...);
 
-
     /*!
-     * \brief Forces Logger to echo everything to stdout if set to true.
+     * \brief Forces Logger to log everything and echo to stdout if set to true.
      */
-    static void setEchoMode(bool enable);
+    static void setDebugMode(bool enable);
 
 private:
 
     static void writeLog(const int priority, const char * format, va_list ap); 
+
     //! True if the log is open
     static bool m_isOpened;
-    //! Echo everything to stdout if true
-    static bool m_echoMode;
+
+    //! Echo everything including debug messages to stdout if true
+    static bool m_debugMode;
 };
 
 #endif // LOGGER_H

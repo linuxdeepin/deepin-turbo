@@ -3,7 +3,9 @@ project(Applauncherd)
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(VERSION 2.6)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#
+# NOTE: For verbose build use VERBOSE=1
+#
 
 # Default C++-flags. Sub-builds might alter these.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -g -O3 -Wl,--as-needed")
@@ -78,6 +80,8 @@ add_definitions(-DBOOSTER_PLUGIN_DIR="/usr/lib/applauncherd")
 add_definitions(-DSINGLE_INSTANCE_PATH="/usr/bin/single-instance")
 
 # Disable debug logging, only error and warning messages get logged
+# Currently effective only for invoker. Launcher part recognizes --debug
+# which enables console echoing and debug messages.
 add_definitions(-DDEBUG_LOGGING_DISABLED)
 
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set

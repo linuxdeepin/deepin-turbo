@@ -26,7 +26,7 @@
 
 
 bool Logger::m_isOpened  = false;
-bool Logger::m_echoMode  = false;
+bool Logger::m_debugMode  = false;
 
 void Logger::openLog(const char * progName)
 {
@@ -48,8 +48,8 @@ void Logger::writeLog(const int priority, const char * format, va_list ap)
 {
     if (Logger::m_isOpened)
     {
-        // In echo mode everything is printed also to stdout
-        if (m_echoMode)
+        // In debug mode everything is printed also to stdout
+        if (m_debugMode)
         {
             vprintf(format, ap);
             printf("\n");
@@ -62,14 +62,13 @@ void Logger::writeLog(const int priority, const char * format, va_list ap)
 
 void Logger::logDebug(const char * format, ...)
 {
-#ifndef DEBUG_LOGGING_DISABLED
-    va_list(ap);
-    va_start(ap, format);
-    writeLog(LOG_DEBUG, format, ap);
-    va_end(ap);
-#else
-    (void)format;
-#endif
+    if (m_debugMode)
+    {
+        va_list(ap);
+        va_start(ap, format);
+        writeLog(LOG_DEBUG, format, ap);
+        va_end(ap);
+    }
 }
 
 void Logger::logInfo(const char * format, ...)
@@ -107,8 +106,8 @@ void Logger::logErrorAndDie(int code, const char * format, ...)
     _exit(code);
 }
 
-void Logger::setEchoMode(bool enable)
+void Logger::setDebugMode(bool enable)
 {
-    Logger::m_echoMode = enable;
+    Logger::m_debugMode = enable;
 }
 

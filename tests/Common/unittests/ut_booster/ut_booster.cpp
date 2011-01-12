@@ -30,6 +30,9 @@ public:
     const std::string & socketId() const;
     const std::string & boosterTemporaryProcessName() const;
 
+protected:
+    bool preload();
+
 private:
     const string m_socketId;
     const string m_temporaryProcessName;
@@ -43,6 +46,11 @@ MyBooster::MyBooster() :
 char MyBooster::boosterType() const
 {
     return 'x';
+}
+
+bool MyBooster::preload() 
+{
+    return true;
 }
 
 const std::string & MyBooster::boosterTemporaryProcessName() const

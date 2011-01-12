@@ -41,6 +41,7 @@ bool MBooster::preload()
     // an MApplication)
     MComponentCache::populateForMApplication();
 #endif
+
     return true;
 }
 
@@ -66,26 +67,36 @@ char MBooster::type()
 
 bool MBooster::receiveDataFromInvoker(int socketFd)
 {
-    // Setup the conversation channel with the invoker.
-    setConnection(new Connection(socketFd));
+    // Use the default implementation if in boot mode
+    // (it won't require QApplication running).
 
-    EventHandler handler(this);
-    handler.runEventLoop();
-
-    // Receive application data from the invoker
-    if(!connection()->receiveApplicationData(appData()))
+    if (bootMode())
     {
-        connection()->close();
-        return false;
+        return Booster::receiveDataFromInvoker(socketFd);
     }
-
-    // Close the connection if exit status doesn't need
-    // to be sent back to invoker
-    if (!connection()->isReportAppExitStatusNeeded())
+    else
     {
-        connection()->close();
-    }
+        // Setup the conversation channel with the invoker.
+        setConnection(new Connection(socketFd));
 
-    return true;
+        EventHandler handler(this);
+        handler.runEventLoop();
+
+        // Receive application data from the invoker
+        if(!connection()->receiveApplicationData(appData()))
+        {
+            connection()->close();
+            return false;
+        }
+
+        // Close the connection if exit status doesn't need
+        // to be sent back to invoker
+        if (!connection()->isReportAppExitStatusNeeded())
+        {
+            connection()->close();
+        }
+
+        return true;
+    }
 }
 

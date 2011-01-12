@@ -47,9 +47,6 @@ public:
     //! \brief Destructor
     virtual ~MBooster() {}
 
-    //! \reimp
-    virtual bool preload();
-
     /*!
      * \brief Return the socket name common to all MBooster objects.
      * \return Path to the socket file.
@@ -76,6 +73,9 @@ public:
     virtual const string & socketId() const;
 
 protected:
+
+    //! \reimp
+    virtual bool preload();
 
     //! \reimp
     virtual bool receiveDataFromInvoker(int socketFd);

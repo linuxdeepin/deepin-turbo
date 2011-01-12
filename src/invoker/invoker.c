@@ -49,7 +49,7 @@
 
 // Delay before exit
 static const unsigned int DEFAULT_DELAY     = 0;
-static const unsigned int RESPAWN_DELAY     = 2;
+static const unsigned int RESPAWN_DELAY     = 3;
 static const unsigned int MAX_RESPAWN_DELAY = 10;
 
 static const unsigned char EXIT_STATUS_APPLICATION_CONNECTION_LOST = 0xfa;

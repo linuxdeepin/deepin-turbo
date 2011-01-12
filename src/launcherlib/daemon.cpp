@@ -33,7 +33,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
-#include <signal.h>
 #include <fcntl.h>
 #include <dlfcn.h>
 #include <glob.h>
@@ -46,6 +45,7 @@ const int Daemon::m_boosterSleepTime = 2;
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
     m_quiet(false),
+    m_bootMode(false),
     m_socketManager(new SocketManager),
     m_singleInstance(new SingleInstance)
 {
@@ -69,9 +69,24 @@ Daemon::Daemon(int & argc, char * argv[]) :
     m_initialArgv = argv;
     m_initialArgc = argc;
 
-    if (pipe(m_pipefd) == -1)
+    if (pipe(m_boosterPipeFd) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe failed!\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for boosters failed!\n");
+    }
+
+    if (pipe(m_sigChldPipeFd) == -1)
+    {
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for SIGCHLD failed!\n");
+    }
+
+    if (pipe(m_sigTermPipeFd) == -1)
+    {
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for SIGTERM failed!\n");
+    }
+
+    if (pipe(m_sigUsr1PipeFd) == -1)
+    {
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for SIGUSR1 failed!\n");
     }
 
     // Daemonize if desired
@@ -181,71 +196,134 @@ void Daemon::run()
     // Main loop
     while (true)
     {
-        // Wait for something appearing in the pipe. There should first
-        // appear a character representing the type of a booster and then
-        // pid of the invoker process that communicated with that booster.
-        char msg;
-        ssize_t count = read(m_pipefd[0], static_cast<void *>(&msg), 1);
-        if (count)
+        // Variables used by the select call
+        fd_set rfds;
+        int ndfs = 0;
+
+        // Init data for select
+        FD_ZERO(&rfds);
+
+        FD_SET(m_boosterPipeFd[0], &rfds);
+        ndfs = std::max(ndfs, m_boosterPipeFd[0]);
+
+        FD_SET(m_sigChldPipeFd[0], &rfds);
+        ndfs = std::max(ndfs, m_sigChldPipeFd[0]);
+
+        FD_SET(m_sigTermPipeFd[0], &rfds);
+        ndfs = std::max(ndfs, m_sigTermPipeFd[0]);
+
+        FD_SET(m_sigUsr1PipeFd[0], &rfds);
+        ndfs = std::max(ndfs, m_sigUsr1PipeFd[0]);
+
+        char buffer;
+
+        // Wait for something appearing in the pipes.
+        if (select(ndfs + 1, &rfds, NULL, NULL, NULL) > 0)
         {
-            // Read pid of peer invoker
-            pid_t invokerPid;
-            count = read(m_pipefd[0], static_cast<void *>(&invokerPid), sizeof(pid_t));
+            Logger::logDebug("select done.");
 
-            if (count < static_cast<ssize_t>(sizeof(pid_t)))
+            // Check if a booster died
+            if (FD_ISSET(m_boosterPipeFd[0], &rfds))
             {
-                Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
-            }
-            else
-            {
-                Logger::logDebug("Daemon: invoker's pid: %d \n", invokerPid);
+                Logger::logDebug("FD_ISSET(m_boosterPipeFd[0])");
+                readFromBoosterPipe(m_boosterPipeFd[0]);
             }
 
-            if (invokerPid != 0)
+            // Check if we got SIGCHLD
+            if (FD_ISSET(m_sigChldPipeFd[0], &rfds))
             {
-                // Store booster - invoker pid pair
-                pid_t boosterPid = boosterPidForType(msg);
-                if (boosterPid)
-                {
-                    m_boosterPidToInvokerPid[boosterPid] = invokerPid;
-                }
+                Logger::logDebug("FD_ISSET(m_sigChldPipeFd[0])");
+                read(m_sigChldPipeFd[0], &buffer, 1);
+                reapZombies();
             }
 
-            // Read booster respawn delay
-            int delay;
-            count = read(m_pipefd[0], static_cast<void *>(&delay), sizeof(int));
-
-            if (count < static_cast<ssize_t>(sizeof(int)))
+            // Check if we got SIGTERM
+            if (FD_ISSET(m_sigTermPipeFd[0], &rfds))
             {
-                Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
-            }
-            else
-            {
-                Logger::logDebug("Daemon: respawn delay: %d \n", delay);
+                Logger::logDebug("FD_ISSET(m_sigTermPipeFd[0])");
+                read(m_sigTermPipeFd[0], &buffer, 1);
+                exit(EXIT_SUCCESS);
             }
 
-            // Fork a new booster of the given type
-
-            // 2nd param guarantees some time for the just launched application
-            // to start up before forking new booster. Not doing this would
-            // slow down the start-up significantly on single core CPUs.
-
-            forkBooster(msg, delay);
-        }
-        else
-        {
-            Logger::logWarning("Daemon: Nothing read from the pipe\n");
+            // Check if we got SIGUSR1
+            if (FD_ISSET(m_sigUsr1PipeFd[0], &rfds))
+            {
+                Logger::logDebug("FD_ISSET(m_sigUsr1PipeFd[0])");
+                read(m_sigUsr1PipeFd[0], &buffer, 1);
+                enterNormalMode();
+            }
         }
     }
 }
 
-void Daemon::killProcess(pid_t pid) const
+void Daemon::readFromBoosterPipe(int fd)
+{
+    // There should first appear a character representing the type of a
+    // booster and then pid of the invoker process that communicated with
+    // that booster.
+    char msg;
+    ssize_t count = read(fd, static_cast<void *>(&msg), 1);
+    if (count)
+    {
+        // Read pid of peer invoker
+        pid_t invokerPid;
+        count = read(fd, static_cast<void *>(&invokerPid), sizeof(pid_t));
+
+        if (count < static_cast<ssize_t>(sizeof(pid_t)))
+        {
+            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+        }
+        else
+        {
+            Logger::logDebug("Daemon: invoker's pid: %d \n", invokerPid);
+        }
+
+        if (invokerPid != 0)
+        {
+            // Store booster - invoker pid pair
+            pid_t boosterPid = boosterPidForType(msg);
+            if (boosterPid)
+            {
+                m_boosterPidToInvokerPid[boosterPid] = invokerPid;
+            }
+        }
+
+        // Read booster respawn delay
+        int delay;
+        count = read(fd, static_cast<void *>(&delay), sizeof(int));
+
+        if (count < static_cast<ssize_t>(sizeof(int)))
+        {
+            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
+        }
+        else
+        {
+            Logger::logDebug("Daemon: respawn delay received: %d \n", delay);
+        }
+
+        // Fork a new booster of the given type
+
+        // 2nd param guarantees some time for the just launched application
+        // to start up before forking new booster. Not doing this would
+        // slow down the start-up significantly on single core CPUs.
+
+        forkBooster(msg, delay);
+    }
+    else
+    {
+        Logger::logWarning("Daemon: Nothing read from the pipe\n");
+    }
+}
+
+void Daemon::killProcess(pid_t pid, int signal) const
 {
     if (pid)
     {
-        if (kill(pid, SIGKILL) != 0)
+        Logger::logDebug("Daemon: Killing pid %d with %d", pid, signal);
+        if (kill(pid, signal) != 0)
         {
-            Logger::logError("Daemon: Failed to kill %d: %s\n", pid, strerror(errno));
+            Logger::logError("Daemon: Failed to kill %d: %s\n",
+                             pid, strerror(errno));
         }
     }
 }
@@ -273,8 +351,8 @@ void Daemon::loadSingleInstancePlugin()
 
 void Daemon::loadBoosterPlugins()
 {
-    const char* PATTERN = "lib*booster.so";
-    const int   BUF_LEN = 256;
+    const char*        PATTERN = "lib*booster.so";
+    const unsigned int BUF_LEN = 256;
 
     if (strlen(PATTERN) + strlen(BOOSTER_PLUGIN_DIR) + 2 > BUF_LEN)
     {
@@ -322,6 +400,9 @@ void Daemon::loadBoosterPlugins()
 
 void Daemon::forkBooster(char type, int sleepTime)
 {
+    // Invalidate current booster pid for the given type
+    setPidToBooster(type, 0);
+
     // Fork a new process
     pid_t newPid = fork();
 
@@ -333,12 +414,25 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Reset used signal handlers
         signal(SIGCHLD, SIG_DFL);
         signal(SIGTERM, SIG_DFL);
+        signal(SIGUSR1, SIG_DFL);
 
         // Will get this signal if applauncherd dies
         prctl(PR_SET_PDEATHSIG, SIGHUP);
 
-        // Close unused read end
-        close(m_pipefd[0]);
+        // Close unused read end of the booster pipe
+        close(m_boosterPipeFd[0]);
+
+        // Close SIGCHLD pipe
+        close(m_sigChldPipeFd[0]);
+        close(m_sigChldPipeFd[1]);
+
+        // Close SIGTERM pipe
+        close(m_sigTermPipeFd[0]);
+        close(m_sigTermPipeFd[1]);
+
+        // Close SIGUSR1 pipe
+        close(m_sigUsr1PipeFd[0]);
+        close(m_sigUsr1PipeFd[1]);
 
         // Close unused sockets inherited from daemon
         closeUnusedSockets(type);
@@ -352,7 +446,8 @@ void Daemon::forkBooster(char type, int sleepTime)
 
         // Guarantee some time for the just launched application to
         // start up before forking new booster if needed.
-        if (sleepTime)
+        // Not done if in the boot mode.
+        if (!m_bootMode && sleepTime)
             sleep(sleepTime);
 
         Logger::logDebug("Daemon: Running a new Booster of type '%c'", type);
@@ -362,9 +457,9 @@ void Daemon::forkBooster(char type, int sleepTime)
         if (booster)
         {
             // Initialize and wait for commands from invoker
-            booster->initialize(m_initialArgc, m_initialArgv, m_pipefd,
+            booster->initialize(m_initialArgc, m_initialArgv, m_boosterPipeFd,
                                 m_socketManager->findSocket(booster->socketId().c_str()),
-                                m_singleInstance);
+                                m_singleInstance, m_bootMode);
 
             // Run the current Booster
             booster->run(m_socketManager);
@@ -543,9 +638,9 @@ void Daemon::daemonize()
     // Redirect standard file descriptors to /dev/null
     // Close new file descriptors
 
-    const int new_stdin  = open("/dev/null", O_RDONLY);
+    const int new_stdin = open("/dev/null", O_RDONLY);
     if (new_stdin != -1) {
-        dup2(new_stdin,  STDIN_FILENO);
+        dup2(new_stdin, STDIN_FILENO);
         close(new_stdin);
     }
 
@@ -566,15 +661,65 @@ void Daemon::parseArgs(const ArgVect & args)
 {
     for (ArgVect::const_iterator i(args.begin()); i != args.end(); i++)
     {
-        if ((*i) == "--daemon")
+        if ((*i) == "--daemon" || (*i) == "-d")
         {
             m_daemon = true;
         }
-        else if  ((*i) ==  "--quiet")
+        else if ((*i) == "--debug")
+        {
+            Logger::setDebugMode(true);
+        }
+        else if ((*i) == "--quiet" || (*i) == "-q")
         {
             m_quiet = true;
         }
+        else if ((*i) == "--boot-mode" || (*i) == "-b")
+        {
+            Logger::logInfo("Daemon: Boot mode set.");
+            m_bootMode = true;
+        }
     }
+}
+
+int Daemon::sigChldPipeFd() const
+{
+    return m_sigChldPipeFd[1];
+}
+
+int Daemon::sigTermPipeFd() const
+{
+    return m_sigTermPipeFd[1];
+}
+
+int Daemon::sigUsr1PipeFd() const
+{
+    return m_sigUsr1PipeFd[1];
+}
+
+void Daemon::enterNormalMode()
+{
+    if (m_bootMode)
+    {
+        m_bootMode = false;
+
+        // Kill current boosters
+        killBoosters();
+
+        Logger::logInfo("Daemon: Exited boot mode.");
+    }
+}
+
+void Daemon::killBoosters()
+{
+    TypeMap::iterator iter(m_boosterTypeToPid.begin());
+    while (iter != m_boosterTypeToPid.end())
+    {
+        killProcess(iter->second, SIGTERM);
+        iter++;
+    }
+
+    // NOTE!!: m_boosterTypeToPid must not be cleared
+    // in order to automatically start new boosters.
 }
 
 Daemon::~Daemon()
