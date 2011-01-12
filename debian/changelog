@@ -3,9 +3,12 @@ applauncherd (0.16.0) unstable; urgency=low
   * Changes: Boosters loaded as plugins.
   * Changes: New test added that checks that booster pid is acquired by application started using booster
   * Changes: Changed wait time between button press and release from 100ms to 200ms in pixelchanged.
+  * Changes: Single-instance binary added
   * Fixes: NB#214093 - application started with launcher has wrong name in the process list
+  * Fixes: NB#216191 - Lack of single instance support for qml applications 
+  * Fixes: NB#216196 - Boosters are not loaded as plugins 
 
- -- Jussi Lind <jussi.lind@nokia.com>  Thu, 30 Dec 2010 12:32:32 +0200
+ -- Juha Lintula <juha.lintula@nokia.com>  Wed, 12 Jan 2011 12:00:00 +0200
 
 applauncherd (0.15.10) stable; urgency=low
 

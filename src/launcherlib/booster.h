@@ -102,7 +102,8 @@ public:
      * \param initialArgc Number of the arguments of the launcher process.
      * \param initialArgv Address of the argument array of the launcher process.
      */
-    void renameProcess(int initialArgc, char** initialArgv);
+    void renameProcess(int parentArgc, char** parentArgv,
+                       int sourceArgc, const char** sourceArgv);
 
     /*!
      * \brief Return booster type common to all instances.
@@ -195,9 +196,6 @@ private:
     //! Socket connection to invoker
     Connection* m_connection;
 
-    //! Size (length) of the argument vector
-    int m_argvArraySize;
-
     //! Process priority before pushPriority() is called
     int m_oldPriority;
 
@@ -207,6 +205,9 @@ private:
 
     //! Pipe used to tell the parent that a new booster is needed
     int m_pipeFd[2];
+
+    //! Original space available for arguments
+    int m_spaceAvailable;
 
 #ifdef HAVE_CREDS
     //! filter out invoker-specific credentials from boosted application

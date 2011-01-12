@@ -80,6 +80,7 @@ class launcher_tests (unittest.TestCase):
         debug("Executing TearDown")
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
 
     #Testcases
     def test_launcher_exist(self):
@@ -495,35 +496,22 @@ class launcher_tests (unittest.TestCase):
         # invoker searches PATH for the executable
         p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
         self.assert_(p.wait() == 0, "Couldn't launch fala_ft_hello.launch")
+        time.sleep(2)
         kill_process('fala_ft_hello')
 
         # launch with relative path
-        cwd = os.getcwd()
-        os.chdir('/usr/share')
 
-        p = run_app_as_user('invoker --type=m --no-wait ' + 
+        p = run_app_as_user('cd /usr/share/; invoker --type=m --no-wait ' + 
                             "../bin/fala_ft_hello.launch")
         self.assert_(p.wait() == 0, "Couldnt launch fala_ft_hello.launch" + 
                     " with relative path")
+        time.sleep(2)
         kill_process('fala_ft_hello')
-
-        # find a relative path from PATH and launch from there
-        oldpath = os.environ['PATH']
-        os.environ['PATH'] =  '../bin:' + os.environ['PATH']
-
-        p = run_app_as_user('invoker --type=m --no-wait ' +
-                            "fala_ft_hello.launch")
-        self.assert_(p.wait() == 0, "Couldnt launch fala_ft_hello.launch" +
-                    " with relative path (2)")
-        kill_process('fala_ft_hello')
-        
-        # restore CWD and PATH
-        os.chdir(cwd)
-        os.environ['PATH'] = oldpath
 
         # and finally, try to launch something that doesn't exist
         p = run_app_as_user('invoker --type=m --no-wait spam_cake.launch')
-        self.assert_(p.wait() != 0, "Found spam_cake.launch for some reason")
+        self.assert_(p.wait() != 127, "Found spam_cake.launch for some reason")
+        time.sleep(2)
         kill_process('spam_cake')
     
     def test_booster_killed_or_restarted(self):
@@ -626,6 +614,7 @@ class launcher_tests (unittest.TestCase):
 
         p = run_app_as_user('invoker --respawn 256 --type=q --no-wait fala_ft_hello.launch')
         self.assert_(p.wait() != 0, "invoker didn't die with too big respawn delay")
+        kill_process('fala_ft_hello')
 
     def test_invoker_bogus_apptype(self):
         p = run_app_as_user('invoker --type=foobar fala_ft_hello.launch')
@@ -681,6 +670,10 @@ class launcher_tests (unittest.TestCase):
         """
         Stress test for boosted applications to check only one instance is running.
         """
+        if get_pid('fala_ft_hello') != None:
+            kill_process('fala_ft_hello')
+        time.sleep(2)
+        count = 0
         p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
         pid = get_pid('fala_ft_hello')
         for i in xrange(10):
@@ -688,7 +681,14 @@ class launcher_tests (unittest.TestCase):
             app_pid = get_pid('fala_ft_hello')
             self.assert_(app_pid != None, "Application is not running")
             self.assert_(pid == app_pid, "Same instance of application not running")
-        time.sleep(5)
+        st, op = commands.getstatusoutput('ps ax | grep invoker | grep fala_ft_hello.launch | grep -v -- -sh | wc -l')
+        count = int(op)
+        while count != 0:
+            debug("The value of queue is %d" %count)
+            time.sleep(3)
+            debug("Sleeping for 3 secs")
+            st, op = commands.getstatusoutput('ps ax | grep invoker | grep fala_ft_hello.launch | grep -v -- -sh | wc -l')
+            count = int(op)
         kill_process('fala_ft_hello')
         
     def test_launched_app_name(self):
