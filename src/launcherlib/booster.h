@@ -104,8 +104,6 @@ public:
      * \param initialArgc Number of the arguments of the launcher process.
      * \param initialArgv Address of the argument array of the launcher process.
      */
-//    void renameProcess(int initialArgc, char** initialArgv);
-
     void renameProcess(int parentArgc, char** parentArgv,
                        int sourceArgc, const char** sourceArgv);
 
