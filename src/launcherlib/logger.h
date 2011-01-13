@@ -52,7 +52,7 @@ public:
      *        sequence of additional arguments, each containing one value to be inserted
      *        in the format parameter, if any. 
      */
-    static void logNotice(const char * format, ...);
+    static void logDebug(const char * format, ...);
 
 
     /*!

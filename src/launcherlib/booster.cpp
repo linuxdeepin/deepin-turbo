@@ -87,7 +87,7 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
     popPriority();
 
     // Wait and read commands from the invoker
-    Logger::logNotice("Booster: Wait for message from invoker");
+    Logger::logDebug("Booster: Wait for message from invoker");
     if (!receiveDataFromInvoker(socketFd)) {
         Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Couldn't read command\n");
     }
@@ -202,7 +202,7 @@ void Booster::run(SocketManager * socketManager)
         }
 
         // Execute the binary
-        Logger::logInfo("Booster: invoking '%s' ", m_appData->fileName().c_str());
+        Logger::logDebug("Booster: invoking '%s' ", m_appData->fileName().c_str());
         int ret_val = launchProcess();
 
         // Send exit status to invoker, if needed
@@ -324,7 +324,7 @@ int Booster::launchProcess()
     const char * pwd = getenv("PWD");
     if (pwd) chdir(pwd);
 
-    Logger::logNotice("Booster: launching process: '%s' ", m_appData->fileName().c_str());
+    Logger::logDebug("Booster: launching process: '%s' ", m_appData->fileName().c_str());
     Logger::closeLog();
 
     // Jump to main()
