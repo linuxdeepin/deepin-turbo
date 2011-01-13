@@ -154,8 +154,8 @@ void Logger::writeLog(const int priority, const char * format, va_list ap)
             // Print type prefix to the stream
             switch (priority)
             {
-            case LOG_NOTICE:
-                m_logStream << " [NOTICE] ";
+            case LOG_DEBUG:
+                m_logStream << " [DEBUG] ";
                 break;
 
             case LOG_ERR:
@@ -183,12 +183,12 @@ void Logger::writeLog(const int priority, const char * format, va_list ap)
 }
 
 
-void Logger::logNotice(const char * format, ...)
+void Logger::logDebug(const char * format, ...)
 {
 #ifndef DEBUG_LOGGING_DISABLED
     va_list(ap);
     va_start(ap, format);
-    writeLog(LOG_NOTICE, format, ap);
+    writeLog(LOG_DEBUG, format, ap);
     va_end(ap);
 #else
     Q_UNUSED(format);
@@ -197,14 +197,10 @@ void Logger::logNotice(const char * format, ...)
 
 void Logger::logInfo(const char * format, ...)
 {
-#ifndef DEBUG_LOGGING_DISABLED
     va_list(ap);
     va_start(ap, format);
     writeLog(LOG_INFO, format, ap); 
     va_end(ap);
-#else
-    Q_UNUSED(format);
-#endif
 }
 
 void Logger::logWarning(const char * format, ...)

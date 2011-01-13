@@ -48,7 +48,7 @@ Q_DECL_EXPORT int main(int argc, char * argv[])
 
     // Open the log
     Logger::openLog(PROG_NAME_LAUNCHER);
-    Logger::logNotice("%s starting..", PROG_NAME_LAUNCHER);
+    Logger::logDebug("%s starting..", PROG_NAME_LAUNCHER);
 
     // Check that an instance of launcher is not already running
     if(!Daemon::lock())

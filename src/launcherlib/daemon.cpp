@@ -134,7 +134,7 @@ void Daemon::initBoosterSockets()
         BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
         if (plugin)
         {
-            Logger::logInfo("Daemon: initing socket: %s", plugin->socketNameFunc());
+            Logger::logDebug("Daemon: initing socket: %s", plugin->socketNameFunc());
             m_socketManager->initSocket(plugin->socketNameFunc());
         }
     }
@@ -148,7 +148,7 @@ void Daemon::forkBoosters()
         BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
         if (plugin)
         {
-            Logger::logInfo("Daemon: forking booster: '%c'", plugin->type);
+            Logger::logDebug("Daemon: forking booster: '%c'", plugin->type);
             forkBooster(plugin->type);
         }
     }
@@ -197,7 +197,7 @@ void Daemon::run()
             }
             else
             {
-                Logger::logInfo("Daemon: invoker's pid: %d \n", invokerPid);
+                Logger::logDebug("Daemon: invoker's pid: %d \n", invokerPid);
             }
 
             if (invokerPid != 0)
@@ -220,7 +220,7 @@ void Daemon::run()
             }
             else
             {
-                Logger::logInfo("Daemon: respawn delay: %d \n", delay);
+                Logger::logDebug("Daemon: respawn delay: %d \n", delay);
             }
 
             // Fork a new booster of the given type
@@ -260,7 +260,7 @@ void Daemon::loadSingleInstancePlugin()
     {
         if (m_singleInstance->validateAndRegisterPlugin(handle))
         {
-            Logger::logInfo("Daemon: single-instance plugin loaded.'");
+            Logger::logDebug("Daemon: single-instance plugin loaded.'");
         }
         else
         {
@@ -303,7 +303,7 @@ void Daemon::loadBoosterPlugins()
                 char newType = BoosterPluginRegistry::validateAndRegisterPlugin(handle);
                 if (newType)
                 {
-                    Logger::logInfo("Daemon: Booster of type '%c' loaded.'", newType);
+                    Logger::logDebug("Daemon: Booster of type '%c' loaded.'", newType);
                 }
                 else
                 {
@@ -354,7 +354,7 @@ void Daemon::forkBooster(char type, int sleepTime)
         if (sleepTime)
             sleep(sleepTime);
 
-        Logger::logInfo("Daemon: Running a new Booster of type '%c'", type);
+        Logger::logDebug("Daemon: Running a new Booster of type '%c'", type);
 
         // Create a new booster, initialize and run it
         Booster * booster = BoosterFactory::create(type);
@@ -411,15 +411,15 @@ void Daemon::reapZombies()
             PidMap::iterator it = m_boosterPidToInvokerPid.find(pid);
             if (it != m_boosterPidToInvokerPid.end())
             {
-                Logger::logInfo("Daemon: Terminated process had a mapping to an invoker pid");
+                Logger::logDebug("Daemon: Terminated process had a mapping to an invoker pid");
 
                 if (WIFSIGNALED(status))
                 {
                     int signal = WTERMSIG(status);
                     pid_t invokerPid = (*it).second;
 
-                    Logger::logInfo("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
-                    Logger::logInfo("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
+                    Logger::logDebug("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
+                    Logger::logDebug("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
 
                     if (kill(invokerPid, signal) != 0)
                     {

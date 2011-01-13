@@ -31,7 +31,7 @@ void SocketManager::initSocket(const string & socketId)
     // exist for that id / path.
     if (m_socketHash.find(socketId) == m_socketHash.end())
     {
-        Logger::logInfo("Initing socket at '%s'..", socketId.c_str());
+        Logger::logDebug("SoketManager: Initing socket at '%s'..", socketId.c_str());
 
         // Create a new local socket
         int socketFd = socket(PF_UNIX, SOCK_STREAM, 0);

@@ -122,7 +122,7 @@ bool Connection::sendMsg(uint32_t msg)
 {
     if (!m_testMode)
     {
-        Logger::logInfo("%s: %08x", __FUNCTION__, msg);
+        Logger::logDebug("Connection: %s: %08x", __FUNCTION__, msg);
         return write(m_fd, &msg, sizeof(msg)) != -1;
     }
     else
@@ -146,7 +146,7 @@ bool Connection::recvMsg(uint32_t *msg)
         }
         else
         {
-            Logger::logInfo("%s: %08x", __FUNCTION__, *msg);
+            Logger::logDebug("Connection: %s: %08x", __FUNCTION__, *msg);
             *msg = buf;
         }
 
@@ -166,7 +166,7 @@ bool Connection::sendStr(const char * str)
         uint32_t size = strlen(str) + 1;
         sendMsg(size);
 
-        Logger::logInfo("Connection: %s: '%s'", __FUNCTION__, str);
+        Logger::logDebug("Connection: %s: '%s'", __FUNCTION__, str);
 
         // Send the string.
         return write(m_fd, str, size) != -1;
@@ -209,7 +209,7 @@ const char * Connection::recvStr()
         }
 
         str[size - 1] = '\0';
-        Logger::logInfo("%s: '%s'", __FUNCTION__, str);
+        Logger::logDebug("Connection: %s: '%s'", __FUNCTION__, str);
 
         return str;
     }
@@ -457,7 +457,7 @@ bool Connection::receiveIO()
 
 bool Connection::receiveActions()
 {
-    Logger::logInfo("Connection: enter: %s", __FUNCTION__);
+    Logger::logDebug("Connection: enter: %s", __FUNCTION__);
 
     while (1)
     {
