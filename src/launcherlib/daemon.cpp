@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <dlfcn.h>
 #include <glob.h>
+#include <cstring>
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;

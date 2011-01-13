@@ -21,88 +21,17 @@
 #include <cstdlib>
 #include <syslog.h>
 #include <cstdarg>
-#include <QDateTime>
-#include <QDir>
-#include <QString>
+#include <cstdio>
+#include <unistd.h>
 
-namespace
-{
-    const QString logDirectory("/var/log");
-    const QString logFileName(logDirectory + QDir::separator() + PROG_NAME_LAUNCHER + ".log");
-    const QString oldLogFileName(logFileName + ".old");
-    const QString dateFormat("yyyy-MM-dd hh:mm:ss.zzz");
-}
 
 bool Logger::m_isOpened  = false;
-bool Logger::m_useSyslog = false;
 bool Logger::m_echoMode  = false;
-
-QTextStream Logger::m_logStream;
-QFile Logger::m_logFile;
 
 void Logger::openLog(const char * progName)
 {
-    if (!Logger::m_isOpened)
-    {
-        // Check if it's possible to write under /var/log
-        // Should make it possible to get the logs in the enviroments
-        // with and without syslog.
-        QDir logDir;
-        if (logDir.exists(logDirectory))
-        {
-            // Directory exists, is it possible to create a file in it?
-            m_logFile.setFileName(oldLogFileName);
-            if (m_logFile.open(QIODevice::WriteOnly))
-            {
-                m_logFile.close();
-                m_logFile.remove();
-            }
-            else
-            {
-                // It is not possible to write to file. Use syslog
-                m_useSyslog = true;
-            }
-        }
-        else
-        {
-            // Directory does not exist. Is it possible to create it?
-            if (logDir.mkdir(logDirectory) == false)
-            {
-                // Not possible to create directory. Use syslog.
-                m_useSyslog = true;
-            }
-        }
-
-        // Initialize the logging interface
-        if (m_useSyslog == false)
-        {
-            // Remove the oldest log file
-            m_logFile.setFileName(oldLogFileName);
-            m_logFile.remove();
-
-            // Copy latest log file to .log.old
-            m_logFile.setFileName(logFileName);
-            m_logFile.rename(oldLogFileName);
-
-            // Open current log file
-            m_logFile.setFileName(logFileName);
-            if (m_logFile.open(QIODevice::WriteOnly))
-            {
-                Logger::m_logStream.setDevice(&m_logFile);
-            }
-            else
-            {
-                m_useSyslog = true;
-            }
-        } 
-
-        if (m_useSyslog)
-        {
-            openlog(progName, LOG_PID, LOG_DAEMON);
-        }
-
-        Logger::m_isOpened = true;
-    }
+    openlog(progName, LOG_PID, LOG_DAEMON);
+    Logger::m_isOpened = true;
 }
 
 void Logger::closeLog()
@@ -110,16 +39,7 @@ void Logger::closeLog()
     if (Logger::m_isOpened)
     {
         // Close syslog
-        if (m_useSyslog)
-        {
-            closelog();
-        }
-        // Close log file
-        else
-        {
-            m_logFile.close();
-        }
-
+        closelog();
         Logger::m_isOpened = false;
     }
 }
@@ -136,52 +56,9 @@ void Logger::writeLog(const int priority, const char * format, va_list ap)
         }
 
         // Print to syslog
-        if (m_useSyslog)
-        {
-            vsyslog(priority, format, ap);
-        }
-        // Print to file
-        else
-        {
-            // Print message to a QString
-            QString msg;
-            msg.vsprintf(format, ap);
-
-            // Print date and time to the stream
-            m_logStream << 
-                QDateTime::currentDateTime().toString(dateFormat);
-
-            // Print type prefix to the stream
-            switch (priority)
-            {
-            case LOG_DEBUG:
-                m_logStream << " [DEBUG] ";
-                break;
-
-            case LOG_ERR:
-                m_logStream << " [ERROR] ";
-                break;
-
-            case LOG_WARNING:
-                m_logStream << " [WARNING] ";
-                break;
-
-            case LOG_INFO:
-                m_logStream << " [INFO] ";
-                break;
-
-            default:
-                m_logStream << " [N/A] ";
-                break;
-            }
-
-            // Print message to the stream
-            m_logStream << msg << "\n";
-            m_logStream.flush();
-        }
+        vsyslog(priority, format, ap);
     }
 }
-
 
 void Logger::logDebug(const char * format, ...)
 {
@@ -191,7 +68,7 @@ void Logger::logDebug(const char * format, ...)
     writeLog(LOG_DEBUG, format, ap);
     va_end(ap);
 #else
-    Q_UNUSED(format);
+    (void)format;
 #endif
 }
 

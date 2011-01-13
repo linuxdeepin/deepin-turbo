@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <cstdlib>
+#include <cstring>
 
 void SocketManager::initSocket(const string & socketId)
 {

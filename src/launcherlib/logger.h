@@ -20,8 +20,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QTextStream>
-#include <QFile>
 #include <cstdarg>
 
 /*!
@@ -104,13 +102,6 @@ private:
     static void writeLog(const int priority, const char * format, va_list ap); 
     //! True if the log is open
     static bool m_isOpened;
-    //! Log file which is used if the syslog is not available    
-    //static QFile m_logFile;
-    static QFile m_logFile;
-    //! Text stream for log file
-    static QTextStream m_logStream;
-    //! True if the syslog is available
-    static bool m_useSyslog; 
     //! Echo everything to stdout if true
     static bool m_echoMode;
 };

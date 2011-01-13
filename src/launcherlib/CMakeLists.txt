@@ -23,7 +23,7 @@ endif(WRT_FOUND)
 
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.
-link_libraries(${LIBDL} ${QT_QTCORE_LIBRARY})
+link_libraries(${LIBDL} )
 
 # Set executable
 add_library(applauncherd MODULE ${SRC} ${MOC_SRC})

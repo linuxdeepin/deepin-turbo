@@ -26,7 +26,7 @@
 #include <fcntl.h>
 #include <sys/file.h>
 
-#include <QtCore/QtGlobal>
+#define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 
 //! Signal handler to reap zombie processes
 void reapZombies(int)
@@ -43,7 +43,7 @@ void exitLauncher(int)
 }
 
 //! Main function
-Q_DECL_EXPORT int main(int argc, char * argv[])
+DECL_EXPORT int main(int argc, char * argv[])
 {
 
     // Open the log
