@@ -461,14 +461,6 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
-        #Test for w-booster
-        st, op = commands.getstatusoutput("/usr/share/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.py")
-        print ("The Invoker killed by : %s" %op)
-    
-        self.assert_(op == 'User defined signal 1', "The invoker(w-booster) was not killed by the same signal")
-        time.sleep(2)
-
-
     def test_020_launch_wo_applauncherd(self):
         """
         To Test that invoker can launch applications even when the
@@ -542,10 +534,6 @@ class launcher_tests (unittest.TestCase):
         print "Pid of booster-m before killing :%s" %mpid
         self.assert_(mpid != None, "No booster process running")
 
-        wpid = get_pid('booster-w')
-        print "Pid of booster-w before killing :%s" %mpid
-        self.assert_(wpid != None, "No booster process running")
-
         #stop applauncherd
         os.system("initctl stop xsession/applauncherd")
  
@@ -557,14 +545,9 @@ class launcher_tests (unittest.TestCase):
         print "Pid of booster-q after killing :%s" %qpid_new
         self.assert_(qpid_new == None, "booster-q still running")
         
-               
         mpid_new = get_pid('booster-m')
         print "Pid of booster-m after killing :%s" %mpid_new
         self.assert_(mpid_new == None, "booster-m still running")
-
-        wpid_new = get_pid('booster-w')
-        print "Pid of booster-w after killing :%s" %wpid_new
-        self.assert_(wpid_new == None, "booster-w still running")
 
         #Now start the applauncherd
         os.system("initctl start xsession/applauncherd")
@@ -580,10 +563,6 @@ class launcher_tests (unittest.TestCase):
         mpid = get_pid('booster-m')
         print "Pid of booster-m before killing :%s" %mpid
         self.assert_(mpid != None, "No booster process running")
-
-        wpid = get_pid('booster-w')
-        print "Pid of booster-w before killing :%s" %mpid
-        self.assert_(wpid != None, "No booster process running")
 
         #Now kill applauncherd
         kill_process('applauncherd')
@@ -601,12 +580,6 @@ class launcher_tests (unittest.TestCase):
         print "Pid of booster-m after killing :%s" %mpid_new
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
-            
-        wpid_new = get_pid('booster-w')
-        print "Pid of booster-w after killing :%s" %wpid_new
-        self.assert_(wpid_new != None, "No booster process running")
-        self.assert_(wpid_new != wpid, "booster process was not killed")
-
 
 # main
 if __name__ == '__main__':

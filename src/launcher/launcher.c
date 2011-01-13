@@ -26,6 +26,8 @@
 
 typedef int (*entry_t)(int, char **);
 
+int g_debugPrinting;
+
 //! Load libraries from the given array
 static void loadLibraries(const char * const libs[], unsigned int numLibs)
 {
@@ -63,9 +65,9 @@ static void loadLibraries(const char * const libs[], unsigned int numLibs)
                 flags =  RTLD_NOW | RTLD_GLOBAL;
             }
 
-            // Open the library
+            // Open the library. Print possible errors only in debug mode.
             dlerror();
-            if (!dlopen(lib + skipChar, flags))
+            if (!dlopen(lib + skipChar, flags) && g_debugPrinting)
             {
                 fprintf(stderr, "Warning: can't preload %s\n", lib + skipChar);
             }
@@ -121,8 +123,17 @@ static int invokeLauncherLib(int argc, char ** argv)
 //! Entry point
 int main(int argc, char ** argv)
 {
+    // Parse command line
+    g_debugPrinting = 0;
+    for (int i = 1; i < argc; ++i)
+    {
+        if (strcmp(argv[i], "--debug")) g_debugPrinting = 1;
+    }
+
+    // Preload libraries
     loadLibraries(gLibs, sizeof(gLibs) / sizeof(char *));
 
+    // Start the real applauncherd.
     if (!invokeLauncherLib(argc, argv))
     {
         fprintf(stderr, "FATAL!!: Failed to load the launcher library\n");
@@ -131,4 +142,3 @@ int main(int argc, char ** argv)
    
     return EXIT_SUCCESS;
 }
-

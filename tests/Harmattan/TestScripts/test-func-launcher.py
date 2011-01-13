@@ -457,15 +457,6 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
-        #Test for w-booster
-        debug("Test for w-booster")
-        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_wrt.py")
-        debug("The Invoker killed by : %s" %op)
-    
-        self.assert_(op == 'User defined signal 1', "The invoker(w-booster) was not killed by the same signal")
-        time.sleep(2)
-
-
     def test_launch_wo_applauncherd(self):
         """
         To Test that invoker can launch applications even when the
@@ -529,10 +520,6 @@ class launcher_tests (unittest.TestCase):
         self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
         self.assert_(mpid != None, "No booster process running")
 
-        wpid = get_pid('booster-w')
-        self.assert_(len(wpid.split("\n")) == 1, "multiple instances of booster-w running")
-        self.assert_(wpid != None, "No booster process running")
-
         #stop applauncherd
         stop_applauncherd()
  
@@ -547,9 +534,6 @@ class launcher_tests (unittest.TestCase):
                
         mpid_new = get_pid('booster-m')
         self.assert_(mpid_new == None, "booster-m still running")
-
-        wpid_new = get_pid('booster-w')
-        self.assert_(wpid_new == None, "booster-w still running")
 
         #Now start the applauncherd
         start_applauncherd()
@@ -566,10 +550,6 @@ class launcher_tests (unittest.TestCase):
         mpid = get_pid('booster-m')
         self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
         self.assert_(mpid != None, "No booster process running")
-
-        wpid = get_pid('booster-w')
-        self.assert_(len(wpid.split("\n")) == 1, "multiple instances of booster-w running")
-        self.assert_(wpid != None, "No booster process running")
 
         #Now kill applauncherd
         debug("Now kill applauncherd")
@@ -590,11 +570,6 @@ class launcher_tests (unittest.TestCase):
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
             
-        wpid_new = get_pid('booster-w')
-        self.assert_(len(wpid_new.split("\n")) == 1, "multiple instances of booster-w running")
-        self.assert_(wpid_new != None, "No booster process running")
-        self.assert_(wpid_new != wpid, "booster process was not killed")
-
     def test_invoker_param_creds(self):
         p = run_app_as_user('invoker --creds')
         self.assert_(p.wait() == 0, "'invoker --creds' failed")
@@ -652,19 +627,6 @@ class launcher_tests (unittest.TestCase):
             self.assert_(qpid_new != None, "No booster process running")
             self.assert_(qpid_new != qpid, "booster-q process did not receive the new pid")
             kill_process('fala_ft_hello')
-            
-            #Launching application with booster-w
-            wpid = get_pid('booster-w') 
-            p = run_app_as_user('invoker --type=wrt --no-wait fala_ft_hello.launch')
-            time.sleep(4)
-            app_pid = get_pid('fala_ft_hello')
-            wpid_new = get_pid('booster-w')
-            self.assert_(app_pid != None, "Application is not running")
-            self.assert_(app_pid == wpid, "Application is not assigned the booster-w pid")
-            self.assert_(wpid_new != None, "No booster process running")
-            self.assert_(wpid_new != wpid, "booster-w process did not receive the new pid")
-            kill_process('fala_ft_hello')
-
 
     def test_stress_boosted_apps(self):
         """
@@ -712,20 +674,6 @@ class launcher_tests (unittest.TestCase):
         #For booster-q        
         #Check though the process list
         p = run_app_as_user('invoker --type=qt --no-wait fala_wl.launch -faulty')
-        time.sleep(2)
-        pid = get_pid('fala_wl')
-        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('0')[0] == "fala_wl.launch",'Application name is incorrect')    
-    
-        #check through the window property
-        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
-        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
-        self.assert_(op1.split(",")[0] == '"fala_wl.launch"','Application name is incorrect')   
-        kill_process('fala_wl') 
-
-        #For booster-w        
-        #Check though the process list
-        p = run_app_as_user('invoker --type=wrt --no-wait fala_wl.launch -faulty')
         time.sleep(2)
         pid = get_pid('fala_wl')
         st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)

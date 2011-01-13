@@ -1,4 +1,12 @@
-applauncherd (0.16.0) unstable; urgency=low
+applauncherd (0.16.1) unstable; urgency=low
+  
+  * Changes: WRT Booster and related tests removed.
+  * Changes: Library preloading warnings are printed only if --debug commandline parameter is given.
+  * Fixes: NB#217662 - applauncherd depends on WRT
+
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Thu, 13 Jan 2011 12:00:00 +0200
+
+applauncherd (0.16.0) stable; urgency=low
 
   * Changes: Single instance test skeletons added
 

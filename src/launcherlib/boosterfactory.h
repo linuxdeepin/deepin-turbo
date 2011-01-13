@@ -31,7 +31,7 @@ class BoosterFactory
 {
 public:
     /*! \brief  Creates a new booster.
-     *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch, 'w' = WRT.
+     *  \param  type Wanted booster type: 'q' = Qt, 'm' = MeeGo Touch.
      *  \return Pointer to Booster on success, NULL if failed
      */
     static Booster * create(char type);

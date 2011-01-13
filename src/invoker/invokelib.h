@@ -30,6 +30,5 @@ void invoke_send_str(int fd, char *str);
 
 #define INVOKER_M_SOCK     "/tmp/boostm"
 #define INVOKER_QT_SOCK    "/tmp/boostq"
-#define INVOKER_WRT_SOCK   "/tmp/boostw"
 
 #endif

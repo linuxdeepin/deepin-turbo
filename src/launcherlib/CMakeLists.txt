@@ -13,14 +13,6 @@ set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterpluginregistry.cpp
 
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
-# Use webruntime if found
-# this is necessary for wrt booster to work efficiently
-pkg_check_modules(WRT webruntime)
-if(WRT_FOUND)
-  add_definitions(-DHAVE_WRT)
-  include_directories(${WRT_INCLUDE_DIRS})
-endif(WRT_FOUND)
-
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.
 link_libraries(${LIBDL} )

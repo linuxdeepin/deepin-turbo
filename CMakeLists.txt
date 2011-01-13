@@ -23,7 +23,7 @@ if (${QTVERSION} VERSION_LESS 4.6.0)
     message(FATAL_ERROR "You need Qt4.6, found ${QTVERSION}.")
 endif (${QTVERSION} VERSION_LESS 4.6.0)
 
-# Find libmeegotouch for MBooster, WRTBooster and the test programs
+# Find libmeegotouch for MBooster and the test programs
 include(FindPkgConfig) 
 pkg_check_modules(MEEGOTOUCH meegotouch>=0.20 REQUIRED)
 include_directories(${MEEGOTOUCH_INCLUDE_DIRS})

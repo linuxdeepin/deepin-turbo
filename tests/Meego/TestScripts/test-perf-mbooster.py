@@ -138,21 +138,6 @@ class launcher_perf_tests (unittest.TestCase):
         self.kill_process(appname)
         return app_time
 
-    def run_with_wrt_launcher(self, appname):                                                       
-        """starts the testapp with wrt-launcher and with duihome"""               
-        os.system ('mcetool --set-tklock-mode=unlocked')
-        if os.path.exists(LOG_FILE) and os.path.isfile(LOG_FILE):               
-            os.system('rm %s' %LOG_FILE)                                                        
-
-        self.start_timer()
-        os.system('invoker --type=wrt --no-wait %s' %TESTAPP)
-        debug("app", TESTAPP, "started with wrt-launcher")                                   
-        time.sleep(5)
-        self.read_log()
-        app_time = self.app_start_time()
-        self.kill_process(appname)
-        return app_time
-
     def run_with_launcher_without_duihome(self, appname):                                                       
         """starts the testapp with launcher but without duihome"""               
         os.system ('mcetool --set-tklock-mode=unlocked')
@@ -202,13 +187,6 @@ class launcher_perf_tests (unittest.TestCase):
 
         return with_l_with_d, with_l_no_d
 
-    def perftest_with_wrt_launcher(self, appname):
-        debug("run app with wrt-launcher with duihome")
-        wrt_l_with_dld = self.run_with_wrt_launcher(appname)
-        time.sleep(5)
-
-        return wrt_l_with_dld
-
     def perftest_without_launcher(self, appname):
         """Runs all the 4 scenarios with and without launcher"""
         debug("run app without launcher with duihome")
@@ -238,25 +216,24 @@ class launcher_perf_tests (unittest.TestCase):
         if with_without_times == []: return
 
         writeline("")
-        rowformat = "%12s %12s %12s %12s %12s"
+        rowformat = "%12s %12s %12s %12s"
         writeline('Startup times [s]:')
 
-        writeline(rowformat % ('launcher-Yes', 'launcher-Yes', 'launcher-No', 'launcher-No', 'wrtlauncher-Yes'))
-        writeline(rowformat % ('duihome-Yes', 'duihome-No', 'duihome-Yes', 'duihome-No', 'duihome-Yes'))
+        writeline(rowformat % ('launcher-Yes', 'launcher-Yes', 'launcher-No', 'launcher-No'))
+        writeline(rowformat % ('duihome-Yes', 'duihome-No', 'duihome-Yes', 'duihome-No'))
 
-        t1,t2,t3,t4,t5 = [], [], [], [], []
-        for no_l_with_d, no_l_no_d, with_l_with_d, with_l_no_d, wrt_l_with_d in with_without_times:
+        t1,t2,t3,t4 = [], [], [], []
+        for no_l_with_d, no_l_no_d, with_l_with_d, with_l_no_d in with_without_times:
             t1.append(no_l_with_d)
             t2.append(no_l_no_d)
             t3.append(with_l_with_d)
             t4.append(with_l_no_d)
-            t5.append(wrt_l_with_d)
             writeline(rowformat % (fmtfloat(no_l_with_d), fmtfloat(no_l_no_d),
-                                   fmtfloat(with_l_with_d), fmtfloat(with_l_no_d), fmtfloat(wrt_l_with_d)))
+                                   fmtfloat(with_l_with_d), fmtfloat(with_l_no_d)))
 
         writeline('Average times:')
         writeline(rowformat % (fmtfloat(sum(t1)/len(t1)), fmtfloat(sum(t2)/len(t2)),
-                               fmtfloat(sum(t3)/len(t3)), fmtfloat(sum(t4)/len(t4)), fmtfloat(sum(t5)/len(t5))))
+                               fmtfloat(sum(t3)/len(t3)), fmtfloat(sum(t4)/len(t4))))
         return fmtfloat(sum(t1)/len(t1))
 
     def test_001(self):
@@ -266,7 +243,7 @@ class launcher_perf_tests (unittest.TestCase):
 
         times = []
 
-        times1, times2, times3 = [], [], []
+        times1, times2 = [], []
 
         for i in xrange(3):
             times1.append(self.perftest_with_launcher(TESTAPP))
@@ -274,10 +251,7 @@ class launcher_perf_tests (unittest.TestCase):
         for i in xrange(3):
             times2.append(self.perftest_without_launcher(TESTAPP))
 
-        for i in xrange(3):
-            times3.append(self.perftest_with_wrt_launcher(TESTAPP))
-
-        times = [[t1[0], t1[1], times2[i][0], times2[i][1], times3[i]] for i, t1 in enumerate(times1)]
+        times = [[t1[0], t1[1], times2[i][0], times2[i][1]] for i, t1 in enumerate(times1)]
         avg_with_launcher = self.print_test_report(times, sys.stdout)
         self.assert_(float(avg_with_launcher) < float(0.75), "application launched with launcher takes more than 0.75 sec")
 

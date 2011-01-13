@@ -58,9 +58,8 @@ static const unsigned char EXIT_STATUS_APPLICATION_NOT_FOUND = 0x7f;
 // Enumeration of possible application types:
 // M_APP   : MeeGo Touch application
 // QT_APP  : Qt/generic application
-// WRT_APP : Web runtime application
 //
-enum APP_TYPE { M_APP, QT_APP, WRT_APP, UNKNOWN_APP };
+enum APP_TYPE { M_APP, QT_APP, UNKNOWN_APP };
 
 // Environment
 extern char ** environ;
@@ -205,10 +204,6 @@ static int invoker_init(enum APP_TYPE app_type)
     else if (app_type == QT_APP)
     {
         strncpy(sun.sun_path, INVOKER_QT_SOCK, maxSize);
-    }
-    else if (app_type == WRT_APP)
-    {
-        strncpy(sun.sun_path, INVOKER_WRT_SOCK, maxSize);
     }
     else
     {
@@ -404,7 +399,6 @@ static void usage(int status)
            "Possible values for TYPE: \n"
            "  m                   Launch a MeeGo Touch application.\n"
            "  qt                  Launch a Qt application.\n"
-           "  wrt                 Launch a web runtime application.\n\n"
            "Options:\n"
            "  -c, --creds         Print Aegis security credentials (if enabled).\n"
            "  -d, --delay SECS    After invoking sleep for SECS seconds (default %d).\n"
@@ -629,8 +623,6 @@ int main(int argc, char *argv[])
                 app_type = M_APP;
             else if (strcmp(optarg, "q") == 0 || strcmp(optarg, "qt") == 0)
                 app_type = QT_APP;
-            else if (strcmp(optarg, "w") == 0 || strcmp(optarg, "wrt") == 0)
-                app_type = WRT_APP;
             else
             {
                 report(report_error, "Unknown application type: %s \n", optarg);

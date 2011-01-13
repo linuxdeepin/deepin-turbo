@@ -38,12 +38,12 @@ graphics:
   * take screenshot of themed widgets (2)
   * verify that (1) and (2) are equal
 
-Testing that booster-m and booster-w are restarted after theme change
+Testing that booster-m is restarted after theme change
   
-  * get the pids of booster-m and booster-w (1)
+  * get the pid of booster-m (1)
   * launch application
   * change theme
-  * Again get the new pids of booster-m and booster-w (2)
+  * Again get the new pids of booster-m (2)
   * Make sure 1 and 2 differ.
 """
 
@@ -178,9 +178,7 @@ class TC_Theming < Test::Unit::TestCase
     
     def test_booster_killer
         m_pid = `pgrep -n booster-m`
-        w_pid = `pgrep -n booster-w`
         print "Current booster-m %s" % m_pid
-        print "Current booster-w %s" % w_pid
 
         app_name = 'fala_ft_hello'
         system("pkill #{app_name}")
@@ -196,18 +194,13 @@ class TC_Theming < Test::Unit::TestCase
         sleep(6)
 
         new_mpid = `pgrep -n booster-m`
-        new_wpid = `pgrep -n booster-w`
        
         system("pkill #{app_name}")
 
         print "New booster-m %s" % new_mpid
-        print "New booster-w %s" % new_wpid
 
        verify_true(2,"The booster-m was not restarted"){
                   m_pid != new_mpid}
-
-       verify_true(2,"The booster-w was not restarted"){
-                  w_pid != new_wpid}
 
     end
 end

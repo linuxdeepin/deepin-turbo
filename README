@@ -76,7 +76,7 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
 
 1.1 Build configuration for MeeGo Touch applications
 
-  Use these instructions if you are building a MeeGo Touch / WRT application.
+  Use these instructions if you are building a MeeGo Touch application.
   In this case your application must build-depend on libmeegotouch-dev. It will
   install the .pc file for pkg-config and the feature file for QMake.
 
@@ -266,10 +266,10 @@ Rename appication binary to <application_name>.launch and replace the original
 binary by a wrapper script that executes invoker with correct application type and
 the name of the application binary as a parameter. 
 
-Use --type=m parameter for MeeGo Touch applications, --type=wrt for Web Runtime
-applications and --type=qt for plain Qt applications and everything else (see
-section 7). In these examples --type=m is used. Here is a launch script example
-for a typical application:
+Use --type=m parameter for MeeGo Touch applications and --type=qt for
+plain Qt applications and everything else (see section 7). In these
+examples --type=m is used. Here is a launch script example for a
+typical application:
 
   #!/bin/sh
   echo "/usr/bin/invoker --type=m" $0.launch $@
@@ -280,7 +280,7 @@ straightly in the .service-file without any wrapper scripts:
 
   [D-BUS Service]
   Name=com.nokia.<application_name>
-  Exec=/usr/bin/invoker --delay <seconds> --type=m /usr/bin/<application_name>.launch
+  Exec=/usr/bin/invoker --type=m /usr/bin/<application_name>.launch
   
   Note: when launching through D-Bus, it is important to add enough delay to
   invoker so that it won't exit before the launched application gets its D-Bus
@@ -347,11 +347,6 @@ invoker --type=qt. Qt booster requires only the M_EXPORT source
 modification. Any MeeGo Touch boostable application can be launched
 with this booster type as well, but it will result in a slower start
 up because of empty cache in libmeegotouch.
-
-Wrt booster, used with invoker --type=wrt, populates MComponentCache
-with MApplication and MApplicationWindow, just like the MeeGo Touch
-booster. However, in this case MApplication uses a graphics system
-which suits better for rendering web content.
 
 
 8. FURTHER READING
