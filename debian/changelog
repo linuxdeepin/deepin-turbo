@@ -1,5 +1,11 @@
 applauncherd (0.16.0) unstable; urgency=low
 
+  * Changes: Single instance test skeletons added
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Thu, 13 Jan 2011 15:18:00 +0200
+
+applauncherd (0.16.0) stable; urgency=low
+
   * Changes: Boosters loaded as plugins.
   * Changes: New test added that checks that booster pid is acquired by application started using booster
   * Changes: Changed wait time between button press and release from 100ms to 200ms in pixelchanged.
