@@ -243,7 +243,7 @@ class launcher_perf_tests (unittest.TestCase):
 
         times = []
 
-        times1, times2 = [], [], []
+        times1, times2 = [], []
 
         for i in xrange(3):
             times1.append(self.perftest_with_launcher(TESTAPP))
