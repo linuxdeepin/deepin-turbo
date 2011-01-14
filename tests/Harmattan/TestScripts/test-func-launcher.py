@@ -696,7 +696,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op == '0',"oom.adj of the launched process is not 0")
         kill_process('fala_wl') 
 
-    def test_single_instance_window_raise_without_invoker(self):
+#    def test_single_instance_window_raise_without_invoker(self):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
         # 2. Minimize it with xsendevent
@@ -707,12 +707,12 @@ class launcher_tests (unittest.TestCase):
         # 7. Start the multi-instance application with single-instance binary
         # 8. Check that the pid has changed
 
-    def test_single_instance_and_non_single_instance_without_invoker(self):
+#    def test_single_instance_and_non_single_instance_without_invoker(self):
         # 1. Start the multi-instance application without single-instance binary
         # 2. Start another multi-instance application with single-instance binary
         # 3. Check that both  application pids exist
 
-    def test_single_instance_stress_test_without_invoker(self):
+#    def test_single_instance_stress_test_without_invoker(self):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
         # 2. Minimize it with xsendevent
@@ -721,7 +721,7 @@ class launcher_tests (unittest.TestCase):
         # 4. Check that there in only one application pid and it has the same than with 1. launch
         # 5. Check that window is raised with correct pid (from log files written by test application)
 
-    def test_single_instance_abnormal_lock_release_without_invoker(self):
+#    def test_single_instance_abnormal_lock_release_without_invoker(self):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
         # 2. Kill the application with -9
