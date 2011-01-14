@@ -127,7 +127,7 @@ int main(int argc, char ** argv)
     g_debugPrinting = 0;
     for (int i = 1; i < argc; ++i)
     {
-        if (strcmp(argv[i], "--debug")) g_debugPrinting = 1;
+        if (strcmp(argv[i], "--debug") == 0) g_debugPrinting = 1;
     }
 
     // Preload libraries
