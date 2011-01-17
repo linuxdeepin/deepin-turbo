@@ -1,4 +1,13 @@
-applauncherd (0.16.1) unstable; urgency=low
+applauncherd (0.17.0) unstable; urgency=low
+
+  * Fixes: NB#212024 - Application launcher should be usable (improve performance) also at boot
+  * Changes: --debug argument problem fixed in preloading
+  * Changes: Corrected error on test-perf-mbooster.py
+  * Changes: Commented out the single-instance test case skeletons
+  
+ -- Jussi Lind <jussi.lind@nokia.com>  Mon, 17 Jan 2011 15:53:15 +0200
+
+applauncherd (0.16.1) stable; urgency=low
   
   * Changes: WRT Booster and related tests removed.
   * Changes: Library preloading warnings are printed only if --debug commandline parameter is given.
