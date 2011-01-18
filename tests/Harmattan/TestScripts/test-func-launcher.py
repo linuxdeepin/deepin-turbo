@@ -138,6 +138,12 @@ class launcher_tests (unittest.TestCase):
         self.assert_(process_id1 == None , "Process still running")
     
     def test_launch_multiple_apps(self):
+        self._test_launch_multiple_apps(LAUNCHABLE_APPS)
+
+    def test_launch_multiple_apps_qml(self):
+        self._test_launch_multiple_apps(LAUNCHABLE_APPS_QML)
+
+    def _test_launch_multiple_apps(self, launchable_apps):
         """
         To test that more than one applications are launched by the launcher 
         """
@@ -148,7 +154,7 @@ class launcher_tests (unittest.TestCase):
 
         pidlist = []
 
-        for app in LAUNCHABLE_APPS:
+        for app in launchable_apps:
             p = run_app_as_user(app)
             pid = wait_for_app(app, timeout = 10, sleep = 1)
 
