@@ -104,6 +104,12 @@ class launcher_tests (unittest.TestCase):
         self.assert_(failed_apps == [], "Some applications do not have the launch files, list: %s" % str(failed_apps))
 
     def test_zombie_state(self):
+        self._test_zombie_state(PREFERED_APP)
+
+    def test_zombie_state_qml(self):
+        self._test_zombie_state(PREFERED_APP_QML)
+
+    def _test_zombie_state(self, prefered_app):
         """
         To test that no Zombie process exist after the application is killed
         """
@@ -113,20 +119,20 @@ class launcher_tests (unittest.TestCase):
         #check if pgrep appname should be nothing
         #self.kill_process(LAUNCHER_BINARY)
 
-        process_handle = run_app_as_user(PREFERED_APP)
-        process_id = wait_for_app(PREFERED_APP, 5)
-        debug("The pid of %s id %s" %(PREFERED_APP, process_id))
-        kill_process(PREFERED_APP)
+        process_handle = run_app_as_user(prefered_app)
+        process_id = wait_for_app(prefered_app, 5)
+        debug("The pid of %s id %s" %(prefered_app, process_id))
+        kill_process(prefered_app)
         time.sleep(4)
 
-        process_handle = run_app_as_user(PREFERED_APP)
-        process_id1 = wait_for_app(PREFERED_APP, 5)
-        debug("The pid of %s id %s" %(PREFERED_APP, process_id1))
-        kill_process(PREFERED_APP)
+        process_handle = run_app_as_user(prefered_app)
+        process_id1 = wait_for_app(prefered_app, 5)
+        debug("The pid of %s id %s" %(prefered_app, process_id1))
+        kill_process(prefered_app)
         time.sleep(4)
 
-        process_id1 = get_pid(PREFERED_APP)
-        debug("The pid of %s id %s" %(PREFERED_APP, process_id1))
+        process_id1 = get_pid(prefered_app)
+        debug("The pid of %s id %s" %(prefered_app, process_id1))
 
         self.assert_(process_id != process_id1 , "New Process not launched")
         self.assert_(process_id1 == None , "Process still running")
