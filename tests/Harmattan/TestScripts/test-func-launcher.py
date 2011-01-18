@@ -48,7 +48,9 @@ from os.path import basename
 LAUNCHER_BINARY='/usr/bin/applauncherd'
 DEV_NULL = file("/dev/null","w")
 LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin/fala_ft_hello2']
+LAUNCHABLE_APPS_QML = ['/usr/bin/fala_qml_helloworld','/usr/bin/fala_qml_helloworld1', '/usr/bin/fala_qml_helloworld2']
 PREFERED_APP = '/usr/bin/fala_ft_hello'
+PREFERED_APP_QML = '/usr/bin/fala_qml_helloworld'
 
 using_scratchbox = False
 
