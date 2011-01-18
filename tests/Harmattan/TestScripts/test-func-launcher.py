@@ -167,6 +167,12 @@ class launcher_tests (unittest.TestCase):
         kill_launched(pidlist)
     
     def test_one_instance(self):
+        self._test_one_instance(PREFERED_APP)
+
+    def test_one_instance_qml(self):
+        self._test_one_instance(PREFERED_APP_QML)
+
+    def _test_one_instance(self, prefered_app):
         """
         To test that only one instance of a application exist 
         """
@@ -177,16 +183,16 @@ class launcher_tests (unittest.TestCase):
         #check pgrep application
         #y = commands.getstatusoutput(pgrep appname)
         #len(y[-1].split(' ')) == 1
-        process_handle = run_app_as_user(PREFERED_APP)
-        process_id = wait_for_app(PREFERED_APP)
+        process_handle = run_app_as_user(prefered_app)
+        process_id = wait_for_app(prefered_app)
         debug("PID of first %s" % process_id)
 
-        process_handle1 = run_app_as_user(PREFERED_APP)
+        process_handle1 = run_app_as_user(prefered_app)
         time.sleep(2)
-        process_id = wait_for_app(PREFERED_APP)
+        process_id = wait_for_app(prefered_app)
         debug("PID of 2nd %s" % process_id)
 
-        kill_process(PREFERED_APP)
+        kill_process(prefered_app)
 
         self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
         
