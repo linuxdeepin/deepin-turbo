@@ -37,6 +37,7 @@
 #include <dlfcn.h>
 #include <glob.h>
 #include <cstring>
+#include <cstdio>
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
@@ -103,11 +104,11 @@ void Daemon::consoleQuiet()
     close(2);
 
     if (open("/dev/null", O_RDONLY) < 0)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: opening /dev/null readonly");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Failed to open /dev/null as read-only");
 
     int fd = open("/dev/null", O_WRONLY);
     if ((fd == -1) || (dup(fd) < 0))
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: opening /dev/null writeonly");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Failed to open /dev/null as write-only");
 }
 
 Daemon * Daemon::instance()
@@ -661,7 +662,12 @@ void Daemon::parseArgs(const ArgVect & args)
 {
     for (ArgVect::const_iterator i(args.begin()); i != args.end(); i++)
     {
-        if ((*i) == "--daemon" || (*i) == "-d")
+        if ((*i) == "--boot-mode" || (*i) == "-b")
+        {
+            Logger::logInfo("Daemon: Boot mode set.");
+            m_bootMode = true;
+        }
+        else if ((*i) == "--daemon" || (*i) == "-d")
         {
             m_daemon = true;
         }
@@ -669,16 +675,35 @@ void Daemon::parseArgs(const ArgVect & args)
         {
             Logger::setDebugMode(true);
         }
+        else if ((*i) == "--help" || (*i) == "-h")
+        {
+            usage(EXIT_SUCCESS);
+        }
         else if ((*i) == "--quiet" || (*i) == "-q")
         {
             m_quiet = true;
         }
-        else if ((*i) == "--boot-mode" || (*i) == "-b")
-        {
-            Logger::logInfo("Daemon: Boot mode set.");
-            m_bootMode = true;
-        }
     }
+}
+
+// Prints the usage and exits with given status
+void Daemon::usage(int status)
+{
+    printf("\nUsage: %s [options]\n\n"
+           "Start the application launcher daemon.\n\n"
+           "Options:\n"
+           "  -b, --boot-mode  Start %s in the boot mode. This means that\n"
+           "                   boosters will not initialize caches and booster\n"
+           "                   respawn delay is set to zero.\n"
+           "                   The normal mode is restored by sending SIGUSR1\n"
+           "                   to the launcher.\n"
+           "  -d, --daemon     Run as %s a daemon.\n"
+           "  --debug          Enable debug messages and log everything also to stdout.\n"
+           "  -q, --quiet      Close fd's 0, 1 and 2.\n"
+           "  -h, --help       Print this help.\n\n",
+           PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER);
+
+    exit(status);
 }
 
 int Daemon::sigChldPipeFd() const

@@ -125,13 +125,20 @@ int main(int argc, char ** argv)
 {
     // Parse command line
     g_debugPrinting = 0;
+
+    int helpWanted = 0;
     for (int i = 1; i < argc; ++i)
     {
-        if (strcmp(argv[i], "--debug") == 0) g_debugPrinting = 1;
+        if (strcmp(argv[i], "--debug") == 0)
+            g_debugPrinting = 1;
+
+        if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
+            helpWanted = 1;
     }
 
     // Preload libraries
-    loadLibraries(gLibs, sizeof(gLibs) / sizeof(char *));
+    if (!helpWanted)
+        loadLibraries(gLibs, sizeof(gLibs) / sizeof(char *));
 
     // Start the real applauncherd.
     if (!invokeLauncherLib(argc, argv))

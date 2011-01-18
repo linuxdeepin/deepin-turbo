@@ -159,6 +159,9 @@ private:
     //! Kill all active boosters with -9
     void killBoosters();
 
+    //! Prints the usage and exits with given status
+    void usage(int status);
+
     //! Daemonize flag (--fork). Daemon forks if true.
     bool m_daemon;
 

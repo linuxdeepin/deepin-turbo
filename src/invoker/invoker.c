@@ -393,23 +393,30 @@ static void invoker_send_end(int fd)
 // Prints the usage and exits with given status
 static void usage(int status)
 {
-    printf("\nUsage: %s [options] [--type=TYPE]  [file] [args]\n"
-           "Launch m or qt application.\n\n"
-           "TYPE chooses the type of booster used. Qt-booster may be used to launch anything.\n"
-           "Possible values for TYPE: \n"
-           "  m                   Launch a MeeGo Touch application.\n"
-           "  qt                  Launch a Qt application.\n"
+    printf("\nUsage: %s [options] [--type=TYPE] [file] [args]\n\n"
+           "Launch m or qt application compiled as a shared library (-shared) or\n"
+           "a position independent executable (-pie) through %s.\n\n"
+           "TYPE chooses the type of booster used. Qt-booster may be used to\n"
+           "launch anything. Possible values for TYPE:\n"
+           "  m                      Launch a MeeGo Touch application.\n"
+           "  qt                     Launch a Qt application.\n\n"
            "Options:\n"
-           "  -c, --creds         Print Aegis security credentials (if enabled).\n"
-           "  -d, --delay SECS    After invoking sleep for SECS seconds (default %d).\n"
-           "  -r, --respawn SECS  After invoking respawn new booster after SECS seconds (default %d, max %d).\n"
-           "  -w, --wait-term     Wait for launched process to terminate (by default).\n"
-           "  -n, --no-wait       Do not wait for launched process to terminate.\n"
-           "  -G, --global-syms   Places symbols in the application binary and its libraries to\n"
-           "                      the global scope. See RTLD_GLOBAL in the dlopen manual page.\n"
-           "  -h, --help          Print this help message.\n\n"
+           "  -c, --creds            Print Aegis security credentials (if enabled).\n"
+           "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
+           "                         (default %d).\n"
+           "  -r, --respawn SECS     After invoking respawn new booster after SECS seconds\n"
+           "                         (default %d, max %d).\n"
+           "  -w, --wait-term        Wait for launched process to terminate (default).\n"
+           "  -n, --no-wait          Do not wait for launched process to terminate.\n"
+           "  -G, --global-syms      Places symbols in the application binary and its\n"
+           "                         libraries to the global scope.\n"
+           "                         See RTLD_GLOBAL in the dlopen manual page.\n"
+           "  -s, --single-instance  Launch the application as a single instance.\n"
+           "                         The existing application window will be activated\n"
+           "                         if already launched.\n"
+           "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
-           PROG_NAME_INVOKER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
+           PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
 }
