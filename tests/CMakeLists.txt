@@ -49,6 +49,9 @@ add_subdirectory(Common/TestApps/fala_gettime)
 # Sub build: Common/TestApps/fala_gettime_ms
 add_subdirectory(Common/TestApps/fala_gettime_ms)
 
+# Sub build: Common/TestApps/fala_multi-instance
+add_subdirectory(Common/TestApps/fala_multi-instance)
+
 # Sub build: Common/TestApps/helloworld
 add_subdirectory(Common/TestApps/helloworld)
 

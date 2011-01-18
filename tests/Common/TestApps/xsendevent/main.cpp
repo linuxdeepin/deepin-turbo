@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 void printUsage()
 {
@@ -31,6 +32,26 @@ void sendCloseEvent(Window window)
     XSendEvent(display, rootWin, False, SubstructureRedirectMask, &ev);
 }
 
+void iconifyWindow(Window window)
+{
+    Display *display = QX11Info::display();
+
+    Window rootWin = QX11Info::appRootWindow(QX11Info::appScreen());
+
+    XEvent e;
+    memset(&e, 0, sizeof(e));
+
+    Atom iconicAtom = XInternAtom(display, "WM_CHANGE_STATE", True);
+
+    e.xclient.type = ClientMessage;
+    e.xclient.message_type = iconicAtom;
+    e.xclient.display = display;
+    e.xclient.window = window;
+    e.xclient.format = 32;
+    e.xclient.data.l[0] = IconicState;
+    XSendEvent(display, rootWin, False, SubstructureRedirectMask, &e);
+}
+
 int main (int argc, char **argv)
 {
     QApplication app(argc, argv); // connect to the X server
@@ -49,6 +70,14 @@ int main (int argc, char **argv)
             Window window;
             sscanf(argv[++i], "%lx", &window);
             sendCloseEvent(window);
+            return 0;
+        }
+
+        if (QString(argv[i]) == "iconify") {
+            Window window;
+            sscanf(argv[++i], "%lx", &window);
+            iconifyWindow(window);
+            return 0;
         }
 
     }
