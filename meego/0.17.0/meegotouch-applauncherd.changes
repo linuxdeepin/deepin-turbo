@@ -1,9 +1,7 @@
 * Mon Jan 17 2011 Jussi Lind <jussi.lind@nokia.com> - 0.17.0
-- single-instance binary added
-- Booster plugins libmbooster.so and libqtbooster.so added
-- ut_socketmanager added
-- ut_wrtbooster removed
+- BCM#10591 - meegotouch-applauncherd outdated in MeeGo
 - Package description updated
+- Change yaml file updated with various changes
 
 * Wed Dec 17 2010 Nimika Keshri <nimika.1.keshri@nokia.com> - 0.15.10
 - BCM#10591 - meegotouch-applauncherd outdated in MeeGo

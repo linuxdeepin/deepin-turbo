@@ -151,6 +151,8 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 %{_bindir}/fala_ft_themetest.launch
 %{_bindir}/fala_ft_themetest
 %{_bindir}/fala_windowid
+%{_bindir}/fala_multi-instance
+%{_bindir}/xsendevent
 %{_datadir}/themes/base/meegotouch/fala_ft_themetest/svg/baa.svg
 %{_datadir}/dbus-1/services/com.nokia.fala_testapp.service
 # >> files testapps
@@ -176,8 +178,6 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 %{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.sh
 %{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.py
 %{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.sh
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.py
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_wrt.sh
 %{_datadir}/applauncherd-M-testscripts/tc_theming.rb
 %{_datadir}/applauncherd-M-testscripts/test-func-launcher.py
 %{_datadir}/applauncherd-M-testscripts/test-perf-mbooster.py
