@@ -5,6 +5,9 @@ Applauncherd is a daemon that helps to launch applications faster by preloading
 dynamically linked libraries and caching stuff (MComponentCache). It also saves
 memory, because all launched applications share certain resources.
 
+There's also an option to efficiently launch applications as single instances 
+(see 2.3).  
+
 Technical overview
 ==============================
 
@@ -24,6 +27,7 @@ socket connection.
 The application to be used with applauncherd should be compiled as a shared 
 library or a position independent executable (-pie) and it should always
 export main().
+
 
 Technical details
 ==============================
@@ -76,9 +80,9 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
 
 1.1 Build configuration for MeeGo Touch applications
 
-  Use these instructions if you are building a MeeGo Touch application.
-  In this case your application must build-depend on libmeegotouch-dev. It will
-  install the .pc file for pkg-config and the feature file for QMake.
+Use these instructions if you are building a MeeGo Touch application.
+In this case your application must build-depend on libmeegotouch-dev. It will
+install the .pc file for pkg-config and the feature file for QMake.
 
   Using QMake
   -----------
@@ -150,10 +154,10 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
 
 1.2 Build configuration for plain Qt / generic applications
 
-  Use these instructions if you are building a plain Qt / generic application
-  that is not depending on libmeegotouch. In this case, your application
-  must build-depend on applauncherd-dev, not libmeegotouch-dev. It will install
-  the .pc file for pkg-config and the feature file for QMake. 
+Use these instructions if you are building a plain Qt / generic application
+that is not depending on libmeegotouch. In this case, your application
+must build-depend on applauncherd-dev, not libmeegotouch-dev. It will install
+the .pc file for pkg-config and the feature file for QMake. 
 
   Using QMake
   -----------
@@ -227,9 +231,9 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
 
 1.3 Changes to the code
 
-  With -fvisibility=hidden you must make sure that the symbol for main() is
-  exported, because otherwise the launcher is not able to find the entry point
-  for your application. This can be done like this (MeeGo Touch):
+With -fvisibility=hidden you must make sure that the symbol for main() is
+exported, because otherwise the launcher is not able to find the entry point
+for your application. This can be done like this (MeeGo Touch):
 
   #include <MExport>
 
@@ -238,7 +242,7 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
   ...
   }
 
-  or like this (Qt):
+or like this (Qt):
 
   #include <QtCore/QtGlobal>
   
@@ -247,24 +251,32 @@ binary by using -fvisibility=hidden and -fvisibility-inlines-hidden flags as wel
   ...
   }
 
-  or like this (generic way with gcc):
+or like this (generic way with gcc):
 
   extern "C" __attribute__ ((__visibility__("default"))) int main(int argc, char **argv)
   {
   ...
   }
 
-  Note: Please refer to the MeeGo Touch documentation for instructions on 
-  MComponentCache and how to enable it in your application. This README file
-  describes only the idea behind the launcher and the basic usage, it's not the
-  user documentation for MeeGo Touch. 
+Note: Please refer to the MeeGo Touch documentation for instructions on 
+MComponentCache and how to enable it in your application. This README file
+describes only the idea behind the launcher and the basic usage, it's not the
+user documentation for MeeGo Touch. 
 
 
-2. LAUNCHING YOUR APPLICATION
+2. LAUNCHING YOUR APPLICATION USING INVOKER
 
-Rename appication binary to <application_name>.launch and replace the original
-binary by a wrapper script that executes invoker with correct application type and
-the name of the application binary as a parameter. 
+The application to be launched must be "invoked" using the invoker binary.
+Invoker then sends the application data, essentially arguments and environment, 
+to the launcher daemon via a socket connection. The launched application will
+see its real binary name in its argv[0] (the old maemo-launcher stripped
+the assumed .launch extension, but that is not done anymore). 
+
+2.1 Wrapper script
+
+Rename application binary to e.g. <application_name>.launch and replace the
+original binary by a wrapper script that executes invoker with correct
+application type and the name of the application binary as a parameter.
 
 Use --type=m parameter for MeeGo Touch applications and --type=qt for
 plain Qt applications and everything else (see section 7). In these
@@ -275,51 +287,105 @@ typical application:
   echo "/usr/bin/invoker --type=m" $0.launch $@
   exec /usr/bin/invoker --type=m $0.launch $@
 
-If you are using D-Bus to launch your application, then this can be done
-straightly in the .service-file without any wrapper scripts:
+2.2 D-Bus launch
+
+If you are using D-Bus to launch your application, it can be done
+straightly in the .service-file without any wrapper scripts slowing
+things down:
 
   [D-BUS Service]
   Name=com.nokia.<application_name>
   Exec=/usr/bin/invoker --type=m /usr/bin/<application_name>.launch
+
+By default, invoker waits for the application to terminate and exits with
+the same exit code. Unix signals are also forwarded.
   
-  Note: when launching through D-Bus, it is important to add enough delay to
-  invoker so that it won't exit before the launched application gets its D-Bus
-  service registered. Otherwise D-Bus daemon may think that the application just
-  died. Another option is to use --wait-term which makes invoker wait until the
-  launched application exits.
+Note: If --no-wait and --delay is used, it is important to add enough delay to
+invoker so that it won't exit before the launched application gets its
+(possible) D-Bus service registered. Otherwise D-Bus daemon may think that the
+application just died. 
+
+See invoker --help for all possible command-line parameters.
+
+2.3 Single instance launch
+
+Usually user wants his application to be run as a single instance. This means,
+that if the launched application was already running, the existing application
+window is activated and no new application processes are started.
+
+This can be achieved by adding --single-instance to the invoker command:
+
+  [D-BUS Service]
+  Name=com.nokia.<application_name>
+  Exec=/usr/bin/invoker --single-instance --type=m /usr/bin/<application_name>.launch
+ 
+As a result, a lock file 
+/tmp/single-instance-locks/<application_name>.launch/instance.lock is created. 
+If applauncherd cannot acquire the lock, it tries to find the corresponding
+window and activates it.
+
+This functionality is implemented in a position-independent executable called
+single-instance. Applauncherd uses this executable as a library, but it can be
+used as an ordinary program to start anything as a single instance:
+
+  /usr/bun/single-instance <application_name>
+
+Note, that in this case the launcher is not used.
+
+Consider using --single-instance instead of the single instance functionality
+provided by D-Bus, because it very likely is much faster.
 
  
-3. STARTING Applauncherd
+3. STARTING APPLAUNCHERD
 
-Applauncherd is started by UpStart during the boot time, but it can be also started manually in scratchbox or on the device by the /usr/bin/applauncherd script.
+Applauncherd is usually started by UpStart during the boot time, but it can be
+also started manually in scratchbox or in the device by the /usr/bin/applauncherd
+script. Applauncherd does not daemonize itself by default. If daemonizing is
+wanted, use --daemon command-line parameter.
+
+3.1 Boot mode
+
+There is a special boot mode that can be used to speed up device boots when
+applauncherd is used. 
+
+In boot mode, no booster caches are initialized and the booster respawn delay is 
+set to zero to ensure quick booster restarts after launches.
+
+The boot mode is activated by starting applauncherd with --boot-mode. Normal mode
+can be entered again by sending SIGUSR1 Unix signal to the launcher.
+
+3.2 Debug info
+
+Additional debug messages and logging also to stdout can be enabled with --debug.
 
 
-4. PLATFORM SECURITY (Aegis)
+4. PLATFORM SECURITY (AEGIS)
 
-Altough the connection between invoker and launcher is protected by Aegis, Application developer doesn't need to request for any additional security tokens to make things work.
+If your application does not have an Aegis manifest file, no actions are required.
+
+All security tokens requested for the application must be requested also for 
+applauncherd.bin in the application's Aegis manifest file.
 
 
-5. PACKAGING
+5. PACKAGE DEPENDENCIES
 
 Applications using the launcher must depend on applauncherd package.
 
 
 6. CURRENT KNOWN ISSUES
 
-  Forking and MComponentCache
-  ---------------------------
+6.1 Forking and MComponentCache
 
-  It's not possible to use MComponentCache if you fork() in your application
-  before trying to fetch components from the cache. This is just due to the
-  fact that X11 connections get messed up after fork(). 
+It's not possible to use MComponentCache if you fork() in your application
+before trying to fetch components from the cache. This is just due to the
+fact that X11 connections get messed up after fork(). 
 
-  Issues with scripts, D-Bus, and process monitoring
-  --------------------------------------------------
+6.2 Issues with scripts, D-Bus, and process monitoring
   
-  By default, invoker processes terminate before or right after booster 
-  processes have called main(). This may confuse shell scripts and process
-  monitoring in D-Bus daemon and Upstart, for instance. To help solving these
-  issues invoker accepts parameters:
+By default, invoker processes terminate before or right after booster 
+processes have called main(). This may confuse shell scripts and process
+monitoring in D-Bus daemon and Upstart, for instance. To help solving these
+issues invoker accepts parameters:
   
   --delay 10 invoker waits for 10 seconds before terminating 
 
@@ -329,13 +395,12 @@ Applications using the launcher must depend on applauncherd package.
     the same signal as the launched application. Signals received by
     the invoker process will be forwarded to the launched application.
 
-  Crashes after application's main()
-  ----------------------------------
+6.3 Crashes after application's main()
 
-  If an application is launched with invoker, there may be some
-  destructors of MeeGo Touch classes executed after application's
-  main(). This can cause crashes, if the application has installed a
-  custom debug message handler and not uninstalled it before exit.
+If an application is launched with invoker, there may be some
+destructors of MeeGo Touch classes executed after application's
+main(). This can cause crashes, if the application has installed a
+custom debug message handler and didn't uninstall it before exit.
 
 
 7. OTHER BOOSTERS
@@ -343,14 +408,21 @@ Applications using the launcher must depend on applauncherd package.
 Warning: behavior of these boosters is subject to change.
 
 Qt booster is a no-operation booster. It can be used by calling
-invoker --type=qt. Qt booster requires only the M_EXPORT source
-modification. Any MeeGo Touch boostable application can be launched
+invoker --type=qt. Qt booster requires only the Q_DECL_EXPORT/M_EXPORT 
+source modification. Any MeeGo Touch boostable application can be launched
 with this booster type as well, but it will result in a slower start
 up because of empty cache in libmeegotouch.
 
 
-8. FURTHER READING
+8. COMMAND-LINE PARAMETERS
 
-MeeGo Touch documentation for fast application startup.
+All parameters are listed by:
 
+invoker --help
+applauncherd --help
+
+
+9. MORE INFORMATION
+
+See MeeGo Touch documentation for fast application startup.
 
