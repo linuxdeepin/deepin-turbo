@@ -55,7 +55,7 @@ def check_prerequisites():
               "You probably want to source /tmp/session_bus_address.user")
 
 class SingleInstanceTests(unittest.TestCase):
-    def test_single_instance_window_raise_without_invoker(self):
+    def single_instance_window_raise(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
         # 2. Minimize it with xsendevent
@@ -71,7 +71,7 @@ class SingleInstanceTests(unittest.TestCase):
         kill_process(app)
 
         # start for the first time
-        p1 = run_app_as_user('single-instance %s foo' % app)
+        p1 = run_app_as_user('%s %s foo' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -94,7 +94,7 @@ class SingleInstanceTests(unittest.TestCase):
         time.sleep(2)
 
         # start for the second time
-        p2 = run_app_as_user('single-instance %s bar' % app)
+        p2 = run_app_as_user('%s %s bar' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -110,7 +110,7 @@ class SingleInstanceTests(unittest.TestCase):
         kill_process(app, signum = 15)
 
         # start for the third time and see that the pid has changed
-        run_app_as_user('single-instance %s baz' % app)
+        run_app_as_user('%s %s baz' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -122,7 +122,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app, signum = 15)
 
-    def test_single_instance_and_non_single_instance_without_invoker(self):
+    def single_instance_and_non_single_instance(self, si_cmd):
         # 1. Start the multi-instance application without single-instance binary
         # 2. Start another multi-instance application with single-instance binary
         # 3. Check that both  application pids exist
@@ -134,7 +134,7 @@ class SingleInstanceTests(unittest.TestCase):
         run_app_as_user(app + " foo")
         time.sleep(2)
 
-        run_app_as_user("single-instance %s bar" % app)
+        run_app_as_user("%s %s bar" % (si_cmd, app))
         time.sleep(2)
 
         pids = get_pid(app)
@@ -145,7 +145,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app, signum = 15)
 
-    def test_single_instance_stress_test_without_invoker(self):
+    def single_instance_stress_test(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
         # 2. Minimize it with xsendevent
@@ -174,7 +174,7 @@ class SingleInstanceTests(unittest.TestCase):
         except:
             pass
 
-        run_app_as_user("single-instance %s foo" % app)
+        run_app_as_user("%s %s foo" % (si_cmd, app))
 
         time.sleep(2)
 
@@ -187,7 +187,7 @@ class SingleInstanceTests(unittest.TestCase):
         time.sleep(2)
 
         for i in range(20):
-            p = run_app_as_user("single-instance %s bar%d" % (app, i))
+            p = run_app_as_user("%s %s bar%d" % (si_cmd, app, i))
             self.assert_(p.wait() == 0, "[%d] return code was %d, should have been 0" % (i, p.returncode))
 
         pid = get_pid(app)
@@ -211,7 +211,7 @@ class SingleInstanceTests(unittest.TestCase):
 
                     break
         
-    def test_single_instance_abnormal_lock_release_without_invoker(self):
+    def single_instance_abnormal_lock_release(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
         # 2. Kill the application with -9
@@ -222,7 +222,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app)
 
-        run_app_as_user('single-instance %s foo' % app)
+        run_app_as_user('%s %s foo' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -232,7 +232,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app, signum = 9)
 
-        run_app_as_user('single-instance %s bar' % app)
+        run_app_as_user('%s %s bar' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -243,6 +243,18 @@ class SingleInstanceTests(unittest.TestCase):
         kill_process(app, signum = 15)
 
         self.assert_(pid != pid2, "pid was not changed")
+
+    def test_single_instance_window_raise_without_invoker(self):
+        self.single_instance_window_raise('single-instance')
+
+    def test_single_instance_and_non_single_instance_without_invoker(self):
+        self.single_instance_and_non_single_instance('single-instance')
+
+    def test_single_instance_stress_test_without_invoker(self):
+        self.single_instance_stress_test('single-instance')
+
+    def test_single_instance_abnormal_lock_release_without_invoker(self):
+        self.single_instance_abnormal_lock_release('single-instance')
 
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
