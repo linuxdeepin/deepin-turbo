@@ -683,6 +683,18 @@ class launcher_tests (unittest.TestCase):
             self.assert_(mpid_new != mpid, "booster-m process did not receive the new pid")
             kill_process('fala_ft_hello')
             
+            #Launching application with booster-d
+            dpid = get_pid('booster-d') 
+            p = run_app_as_user('invoker --type=d --no-wait fala_qml_helloworld.launch')
+            time.sleep(4)
+            app_pid = get_pid('fala_qml_helloworld')
+            dpid_new = get_pid('booster-d')
+            self.assert_(app_pid != None, "Application is not running")
+            self.assert_(app_pid == dpid, "Application is not assigned the booster-d pid")
+            self.assert_(dpid_new != None, "No booster process running")
+            self.assert_(dpid_new != dpid, "booster-d process did not receive the new pid")
+            kill_process('fala_qml_helloworld')
+            
             #Launching application with booster-q
             qpid = get_pid('booster-q') 
             p = run_app_as_user('invoker --type=q --no-wait fala_ft_hello.launch')
