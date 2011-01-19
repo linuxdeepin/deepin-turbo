@@ -197,10 +197,16 @@ class launcher_tests (unittest.TestCase):
         self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
         
     def test_launch_multiple_apps_cont(self):
+        self._test_launch_multiple_apps_cont(LAUNCHABLE_APPS, 'fala_ft_hello')
+
+    def test_launch_multiple_apps_cont_qml(self):
+        self._test_launch_multiple_apps_cont(LAUNCHABLE_APPS_QML, 'fala_qml_helloworld')
+
+    def _test_launch_multiple_apps_cont(self, launchable_apps, app_common_prefix):
         """
         To test that more than one applications are launched by the launcher 
         """
-        for app in LAUNCHABLE_APPS: 
+        for app in launchable_apps: 
             #launch application with launcher
             #check if the application is running
             #check if p.pid is same as pgrep appname
@@ -209,10 +215,10 @@ class launcher_tests (unittest.TestCase):
 
         time.sleep(8)
 
-        process_id = get_pid('fala_ft_hello')
+        process_id = get_pid(app_common_prefix)
         pid_list = process_id.split()
 
-        self.assert_(len(pid_list) == len(LAUNCHABLE_APPS), "All Applications were not launched using launcher")
+        self.assert_(len(pid_list) == len(launchable_apps), "All Applications were not launched using launcher")
 
         for pid in pid_list:
             kill_process(apppid=pid)
