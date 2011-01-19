@@ -372,10 +372,14 @@ class launcher_tests (unittest.TestCase):
         mpid = get_pid('booster-m')
         self.assert_(mpid != None, "No booster process running")
 
+        dpid = get_pid('booster-d')
+        self.assert_(dpid != None, "No booster process running")
+
         #Kill the booster processes
         debug("Kill the booster processes")
         kill_process(apppid=qpid)
         kill_process(apppid=mpid)
+        kill_process(apppid=dpid)
         
         #wait for the boosters to be restarted
         debug("wait for the boosters to be restarted")
@@ -390,6 +394,10 @@ class launcher_tests (unittest.TestCase):
         mpid_new = get_pid('booster-m')
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
+
+        dpid_new = get_pid('booster-d')
+        self.assert_(dpid_new != None, "No booster process running")
+        self.assert_(dpid_new != dpid, "booster process was not killed")
 
     def test_invoker_exit_status(self):
         """
