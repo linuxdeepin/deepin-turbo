@@ -568,6 +568,10 @@ class launcher_tests (unittest.TestCase):
         self.assert_(len(qpid.split("\n")) == 1, "multiple instances of booster-q running")
         self.assert_(qpid != None, "No booster process running")
 
+        dpid = get_pid('booster-d')
+        self.assert_(len(dpid.split("\n")) == 1, "multiple instances of booster-d running")
+        self.assert_(dpid != None, "No booster process running")
+
         mpid = get_pid('booster-m')
         self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
         self.assert_(mpid != None, "No booster process running")
@@ -583,7 +587,9 @@ class launcher_tests (unittest.TestCase):
         qpid_new = get_pid('booster-q')
         self.assert_(qpid_new == None, "booster-q still running")
         
-               
+        dpid_new = get_pid('booster-d')
+        self.assert_(dpid_new == None, "booster-d still running")
+        
         mpid_new = get_pid('booster-m')
         self.assert_(mpid_new == None, "booster-m still running")
 
@@ -598,6 +604,10 @@ class launcher_tests (unittest.TestCase):
         qpid = get_pid('booster-q')
         self.assert_(len(qpid.split("\n")) == 1, "multiple instances of booster-q running")
         self.assert_(qpid != None, "No booster process running")
+
+        dpid = get_pid('booster-d')
+        self.assert_(len(dpid.split("\n")) == 1, "multiple instances of booster-d running")
+        self.assert_(dpid != None, "No booster process running")
 
         mpid = get_pid('booster-m')
         self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
@@ -616,6 +626,11 @@ class launcher_tests (unittest.TestCase):
         self.assert_(len(qpid_new.split("\n")) == 1, "multiple instances of booster-q running")
         self.assert_(qpid_new != None, "No booster process running")
         self.assert_(qpid_new != qpid, "booster process was not killed")
+
+        dpid_new = get_pid('booster-d')
+        self.assert_(len(dpid_new.split("\n")) == 1, "multiple instances of booster-d running")
+        self.assert_(dpid_new != None, "No booster process running")
+        self.assert_(dpid_new != dpid, "booster process was not killed")
 
         mpid_new = get_pid('booster-m')
         self.assert_(len(mpid_new.split("\n")) == 1, "multiple instances of booster-m running")
