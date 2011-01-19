@@ -493,6 +493,14 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
          
+        #Test for d-booster
+        debug("Test for d-booster")
+        st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_d.py")
+        debug("The Invoker killed by : %s" % op.split('\n')[-1])
+    
+        self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(d-booster) was not killed by the same signal")
+        time.sleep(2)
+         
         #This case is launching the application in user mode
         #Test for q-booster
         debug("Test for q-booster")
