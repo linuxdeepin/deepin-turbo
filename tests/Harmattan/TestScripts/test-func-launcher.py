@@ -224,12 +224,16 @@ class launcher_tests (unittest.TestCase):
             kill_process(apppid=pid)
 
     def test_wait_term(self):
+        self._test_wait_term('/usr/bin/fala_ft_hello.launch', 'fala_ft_hello')
+
+    def test_wait_term_qml(self):
+        self._test_wait_term('/usr/bin/fala_qml_helloworld.launch', 'fala_qml_helloworld')
+
+    def _test_wait_term(self, app_path, app_name):
         """
         When calling invoker with --wait-term and killing invoker,
         the launched application should die too.
         """
-
-        app_path = '/usr/bin/fala_ft_hello.launch'
 
         # Launch the app with invoker using --wait-term
         p = run_app_as_user('invoker --type=m --wait-term %s' % app_path)
@@ -238,7 +242,7 @@ class launcher_tests (unittest.TestCase):
 
         # Retrieve their pids
         invoker_pid = wait_for_app('invoker')
-        app_pid = wait_for_app('fala_ft_hello')
+        app_pid = wait_for_app(app_name)
 
         # Make sure that both apps started
         self.assert_(invoker_pid != None, "invoker not executed?")
@@ -251,7 +255,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(2)
 
         # This should be None
-        app_pid2 = get_pid('fala_ft_hello')
+        app_pid2 = get_pid(app_name)
         self.assert_(app_pid2 == None, "%s was not killed" % app_path)
 
 
