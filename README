@@ -328,7 +328,7 @@ This functionality is implemented in a position-independent executable called
 single-instance. Applauncherd uses this executable as a library, but it can be
 used as an ordinary program to start anything as a single instance:
 
-  /usr/bun/single-instance <application_name>
+  /usr/bin/single-instance <application_name>
 
 Note, that in this case the launcher is not used.
 
