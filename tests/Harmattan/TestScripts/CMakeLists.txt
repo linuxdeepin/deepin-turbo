@@ -9,6 +9,7 @@ if ($ENV{HARMATTAN})
         test-func-launcher.py
         utils.py
         test-security.py
+        test-single-instance.py
         DESTINATION /usr/share/applauncherd-testscripts)
 
     install(PROGRAMS
