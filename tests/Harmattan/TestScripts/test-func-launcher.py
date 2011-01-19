@@ -708,29 +708,35 @@ class launcher_tests (unittest.TestCase):
             kill_process('fala_ft_hello')
 
     def test_stress_boosted_apps(self):
+        self._test_stress_boosted_apps('m', 'fala_ft_hello')
+        self._test_stress_boosted_apps('d', 'fala_qml_helloworld', invoker_extra_flags='--single-instance')
+
+    def _test_stress_boosted_apps(self, booster_type, app_name, invoker_extra_flags=''):
         """
         Stress test for boosted applications to check only one instance is running.
         """
-        if get_pid('fala_ft_hello') != None:
-            kill_process('fala_ft_hello')
+        if get_pid(app_name) != None:
+            kill_process(app_name)
         time.sleep(2)
         count = 0
-        p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
-        pid = get_pid('fala_ft_hello')
+        p = run_app_as_user('invoker --type=%s --no-wait %s %s.launch' % (booster_type, invoker_extra_flags, app_name))
+        pid = get_pid(app_name)
         for i in xrange(10):
-            p = run_app_as_user('invoker --type=m --no-wait fala_ft_hello.launch')
-            app_pid = get_pid('fala_ft_hello')
+            p = run_app_as_user('invoker --type=%s --no-wait %s %s.launch' % (booster_type, invoker_extra_flags, app_name))
+            app_pid = get_pid(app_name)
             self.assert_(app_pid != None, "Application is not running")
             self.assert_(pid == app_pid, "Same instance of application not running")
-        st, op = commands.getstatusoutput('ps ax | grep invoker | grep fala_ft_hello.launch | grep -v -- -sh | wc -l')
+        st, op = commands.getstatusoutput('ps ax | grep invoker | grep %s.launch | grep -v -- -sh | wc -l' % app_name)
         count = int(op)
         while count != 0:
             debug("The value of queue is %d" %count)
             time.sleep(3)
             debug("Sleeping for 3 secs")
-            st, op = commands.getstatusoutput('ps ax | grep invoker | grep fala_ft_hello.launch | grep -v -- -sh | wc -l')
+            app_pid = get_pid(app_name)
+            self.assert_(pid == app_pid, "Same instance of application not running")
+            st, op = commands.getstatusoutput('ps ax | grep invoker | grep %s.launch | grep -v -- -sh | wc -l' % app_name)
             count = int(op)
-        kill_process('fala_ft_hello')
+        kill_process(app_name)
         
     def test_launched_app_name(self):
         """
