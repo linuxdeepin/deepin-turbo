@@ -343,14 +343,21 @@ class launcher_tests (unittest.TestCase):
         """
         File descriptor test for booster-m
         """
-        count = get_file_descriptor("booster-m","m")
+        count = get_file_descriptor("booster-m", "m", "fala_ft_hello")
         self.assert_(count != 0, "None of the file descriptors were changed")
 
     def test_fd_booster_q(self):
         """
         File descriptor test for booster-q
         """
-        count = get_file_descriptor("booster-q","qt")
+        count = get_file_descriptor("booster-q", "qt", "fala_ft_hello")
+        self.assert_(count != 0, "None of the file descriptors were changed")
+
+    def test_fd_booster_d(self):
+        """
+        File descriptor test for booster-d
+        """
+        count = get_file_descriptor("booster-d", "d", "fala_qml_helloworld")
         self.assert_(count != 0, "None of the file descriptors were changed")
 
     def test_restart_booster(self):

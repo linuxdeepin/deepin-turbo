@@ -213,7 +213,7 @@ def launch_and_get_creds(path):
 
     return creds
 
-def get_file_descriptor(booster, type):
+def get_file_descriptor(booster, type, app_name):
     """
     To test that file descriptors are closed before calling application main
     """
@@ -231,8 +231,8 @@ def get_file_descriptor(booster, type):
     debug("\nThe initial file descriptors are : %s\n" %init)
 
     #launch application using booster
-    debug("launch fala_ft_hello using booster")
-    st = os.system('invoker --type=%s --no-wait /usr/bin/fala_ft_hello.launch' %type)
+    debug("launch %s using booster" % app_name)
+    st = os.system('invoker --type=%s --no-wait /usr/bin/%s.launch' % (type, app_name))
     time.sleep(2)
 
     #get fd of booster after launching the application
@@ -244,7 +244,7 @@ def get_file_descriptor(booster, type):
             if "->" in fd:
                 final[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
     debug("\nThe final file descriptors are : %s\n" %final)
-    pid = commands.getoutput('pgrep fala_ft_hello')    
+    pid = commands.getoutput('pgrep %s' % app_name)    
 
     mykeys = init.keys()
     count = 0
