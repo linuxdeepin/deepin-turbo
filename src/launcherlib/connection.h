@@ -88,7 +88,7 @@ private:
     /*! \brief Receive and return the magic number.
      * \return The magic number received from the invoker.
      */
-    int receiveMagic();
+    uint32_t receiveMagic();
 
     /*! \brief Receive and return the application name.
      * \return Name string

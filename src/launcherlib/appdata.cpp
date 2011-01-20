@@ -19,6 +19,7 @@
 
 #include "appdata.h"
 #include "protocol.h"
+#include <stdint.h>
 
 #ifdef HAVE_CREDS
     #include <sys/creds.h>
@@ -41,7 +42,7 @@ AppData::AppData() :
 #endif
 {}
 
-void AppData::setOptions(int newOptions)
+void AppData::setOptions(uint32_t newOptions)
 {
     m_options = newOptions;
 }

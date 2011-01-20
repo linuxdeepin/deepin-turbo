@@ -235,7 +235,7 @@ bool Connection::sendAppExitStatus(int status)
     return true;
 }
 
-int Connection::receiveMagic()
+uint32_t Connection::receiveMagic()
 {
     uint32_t magic = 0;
 

@@ -24,6 +24,8 @@
     #include <sys/creds.h>
 #endif
 
+#include <stdint.h>
+
 #include <string>
 
 using std::string;
@@ -46,7 +48,7 @@ public:
     ~AppData();
 
     //! Set options
-    void setOptions(int options);
+    void setOptions(uint32_t options);
 
     //! Return options
     int options() const;
@@ -136,7 +138,7 @@ private:
     AppData(const AppData & r);
     AppData & operator= (const AppData & r);
 
-    int         m_options;
+    uint32_t    m_options;
     int         m_argc;
     const char ** m_argv;
     string      m_appName;

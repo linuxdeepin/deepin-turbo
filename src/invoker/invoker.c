@@ -264,7 +264,7 @@ static uint32_t invoker_recv_exit(int fd)
 }
 
 // Sends magic number / protocol version
-static void invoker_send_magic(int fd, int options)
+static void invoker_send_magic(int fd, uint32_t options)
 {
     // Send magic.
     invoke_send_msg(fd, INVOKER_MSG_MAGIC | INVOKER_MSG_MAGIC_VERSION | options);
@@ -476,7 +476,7 @@ void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 
 // "normal" invoke through a socket connection
 int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
-                  int magic_options, bool wait_term, unsigned int respawn_delay)
+                  uint32_t magic_options, bool wait_term, unsigned int respawn_delay)
 {
     int status = 0;
 
@@ -527,7 +527,7 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
 
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
-                  enum APP_TYPE app_type, int magic_options, bool wait_term, unsigned int respawn_delay)
+                  enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay)
 {
     int status = 0;
 
@@ -556,7 +556,7 @@ int main(int argc, char *argv[])
 {
     enum APP_TYPE app_type      = UNKNOWN_APP;
     int           prog_argc     = 0;
-    int           magic_options = 0;
+    uint32_t      magic_options = 0;
     bool          wait_term     = true;
     unsigned int  delay         = DEFAULT_DELAY;
     unsigned int  respawn_delay = RESPAWN_DELAY;
@@ -614,7 +614,7 @@ int main(int argc, char *argv[])
 
         case 'n':
             wait_term = false;
-            magic_options &= (!INVOKER_MSG_MAGIC_OPTION_WAIT);
+            magic_options &= (~INVOKER_MSG_MAGIC_OPTION_WAIT);
             break;
 
         case 'G':

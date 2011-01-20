@@ -32,7 +32,7 @@ void SocketManager::initSocket(const string & socketId)
     // exist for that id / path.
     if (m_socketHash.find(socketId) == m_socketHash.end())
     {
-        Logger::logDebug("SoketManager: Initing socket at '%s'..", socketId.c_str());
+        Logger::logDebug("SocketManager: Initing socket at '%s'..", socketId.c_str());
 
         // Create a new local socket
         int socketFd = socket(PF_UNIX, SOCK_STREAM, 0);
@@ -43,7 +43,8 @@ void SocketManager::initSocket(const string & socketId)
         // try to remove a different file than is passed to sun.sa_data.
 
         // Remove the previous socket file
-        unlink(socketId.c_str());
+        if (unlink(socketId.c_str()))
+            Logger::logError("SocketManager: Failed to unlink existing socket file '%s'", socketId.c_str());
 
         // Initialize the socket struct
         struct sockaddr sun;
