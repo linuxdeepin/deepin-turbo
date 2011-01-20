@@ -133,11 +133,6 @@ public:
     //! Get application data object
     AppData* appData() const;
 
-#ifdef HAVE_CREDS
-    //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
-    static void initExtraCreds();
-#endif
-
     /*!
      * \brief Return the communication socket used by a Booster.
      * This method returns the socket used between invoker and the Booster.
@@ -224,15 +219,16 @@ private:
     bool m_bootMode;
 
 #ifdef HAVE_CREDS
+    //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
+    void convertStringsToCreds(const char * const strings[], unsigned int numStrings);
+
     //! filter out invoker-specific credentials from boosted application
-    static void filterOutCreds(creds_t creds);
+    void filterOutCreds(creds_t creds);
 
     //! set of credentials to be filtered out of credentials
     //! inhereted from invoker process
-    static CredsList m_extraCreds;
+    CredsList m_extraCreds;
 
-    //! str array of creds to filter out
-    static const char * const m_strCreds[];
 #endif
 
 #ifdef UNIT_TEST

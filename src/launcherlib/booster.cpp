@@ -35,17 +35,19 @@
 #include <cstring>
 
 #ifdef HAVE_CREDS
-    #include <sys/creds.h>
+#include <sys/creds.h>
 
-    CredsList Booster::m_extraCreds;
-
-    const char * const Booster::m_strCreds[] = {
+namespace 
+{
+    const char * const g_strCreds[] = 
+    {
         "applauncherd-launcher::access",
         "SRC::com.nokia.maemo",
         "AID::com.nokia.maemo.applauncherd-invoker.client",
         "applauncherd-invoker::applauncherd-invoker"
     };
-#endif
+}
+#endif // HAVE_CREDS
 
 Booster::Booster() :
     m_appData(new AppData),
@@ -54,7 +56,12 @@ Booster::Booster() :
     m_oldPriorityOk(false),
     m_spaceAvailable(0),
     m_bootMode(false)
-{}
+{
+#ifdef HAVE_CREDS
+    // initialize credentials to be filtered out from boosted applications
+    convertStringsToCreds(g_strCreds, sizeof(g_strCreds) / sizeof(char*));
+#endif
+}
 
 Booster::~Booster()
 {
@@ -453,16 +460,15 @@ AppData* Booster::appData() const
 
 #ifdef HAVE_CREDS
 
-void Booster::initExtraCreds()
+void Booster::convertStringsToCreds(const char * const strings[], unsigned int numStrings)
 {
     // Convert string-formatted credentials into
     // "binary"-formatted credentials
 
-    unsigned int numCreds = sizeof(m_strCreds) / sizeof(char*);
-    for (unsigned int i = 0; i < numCreds; i++)
+    for (unsigned int i = 0; i < numStrings; i++)
     {
         creds_value_t value;
-        creds_value_t ret = creds_str2creds(m_strCreds[i], &value);
+        creds_value_t ret = creds_str2creds(strings[i], &value);
 
         if (ret != CREDS_BAD)
             m_extraCreds.push_back(BinCredsPair(ret, value));

@@ -186,11 +186,6 @@ void Daemon::run()
     // dlopen single-instance
     loadSingleInstancePlugin();
 
-#ifdef HAVE_CREDS
-    // initialize credentials to be filtered out from boosted applications
-    Booster::initExtraCreds();
-#endif
-
     // Fork each booster for the first time
     forkBoosters();
 
