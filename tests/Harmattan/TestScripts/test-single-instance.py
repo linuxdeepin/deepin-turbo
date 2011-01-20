@@ -55,6 +55,19 @@ def check_prerequisites():
               "You probably want to source /tmp/session_bus_address.user")
 
 class SingleInstanceTests(unittest.TestCase):
+    def minimize(self, pid):
+        # get window id
+        st, op = commands.getstatusoutput('fala_windowid %s' % pid)
+        wid = op.splitlines()
+
+        self.assert_(len(wid) > 0, "no windows found for pid %s" % pid)
+
+        # minimize all window id's reported
+        for w in wid:
+            run_app_as_user('xsendevent iconify %s' % w)
+
+        time.sleep(2)
+
     def single_instance_window_raise(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
@@ -80,18 +93,7 @@ class SingleInstanceTests(unittest.TestCase):
         self.assert_(pid1 != None, "%s was not started")
         pid1 = pid1.splitlines()[0]
 
-        # get window id
-        st, op = commands.getstatusoutput('fala_windowid %s' % pid1)
-        wid = op.splitlines()
-
-        self.assert_(len(wid) > 0, "no windows found for xxx")
-
-        wid = wid[0]
-
-        # minimize the window
-        run_app_as_user('xsendevent iconify %s' % wid)
-
-        time.sleep(2)
+        self.minimize(pid1)
 
         # start for the second time
         p2 = run_app_as_user('%s %s bar' % (si_cmd, app))
@@ -154,17 +156,6 @@ class SingleInstanceTests(unittest.TestCase):
         # 4. Check that there in only one application pid and it has the same than with 1. launch
         # 5. Check that window is raised with correct pid (from log files written by test application)
 
-        def minimize(pid):
-            st, op = commands.getstatusoutput("fala_windowid %s" % pid)
-            op = op.splitlines()
-
-            self.assert_(len(op) >= 1, "no window found for pid %s" % pid)
-            
-            wid = op[0]
-
-            debug("minimizing window %s (pid %s)" % (wid, pid))
-            run_app_as_user("xsendevent iconify %s" % wid)
-
         app = '/usr/bin/fala_multi-instance'
 
         kill_process(app)
@@ -182,13 +173,13 @@ class SingleInstanceTests(unittest.TestCase):
         self.assert_(pid1 != None, "%s was not started" % app)
         pid1 = pid1.splitlines()[0]
 
-        minimize(pid1)
-
-        time.sleep(2)
+        self.minimize(pid1)
 
         for i in range(20):
             p = run_app_as_user("%s %s bar%d" % (si_cmd, app, i))
-            self.assert_(p.wait() == 0, "[%d] return code was %d, should have been 0" % (i, p.returncode))
+            rc = p.wait()
+            self.assert_(rc == 0 or rc == 250,
+                         "[%d] return code was %d, should have been 0" % (i, p.returncode))
 
         pid = get_pid(app)
         self.assert_(pid != None, "%s was not started" % app)
@@ -255,6 +246,19 @@ class SingleInstanceTests(unittest.TestCase):
 
     def test_single_instance_abnormal_lock_release_without_invoker(self):
         self.single_instance_abnormal_lock_release('single-instance')
+
+    def test_single_instance_window_raise_with_invoker(self):
+        self.single_instance_window_raise('invoker --type=m --single-instance')
+
+    def test_single_instance_and_non_single_instance_with_invoker(self):
+        self.single_instance_and_non_single_instance('invoker --type=m --single-instance')
+
+    def test_single_instance_stress_test_with_invoker(self):
+        self.single_instance_stress_test('invoker --type=m --single-instance')
+
+    def test_single_instance_abnormal_lock_release_with_invoker(self):
+        self.single_instance_abnormal_lock_release('invoker --type=m --single-instance')
+
 
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
