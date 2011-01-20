@@ -333,6 +333,14 @@ int Booster::launchProcess()
     Logger::logDebug("Booster: launching process: '%s' ", m_appData->fileName().c_str());
     Logger::closeLog();
 
+    // Workaround skype account plugin bug #218766.
+    // TODO: remove this when the bug fix for skype plugin is released.
+    if (strstr(m_appData->argv()[0], "skypeplugin.launch"))
+    {
+        char * launch = const_cast<char *>(strstr(m_appData->argv()[0], ".launch"));
+        *launch = '\0';
+    }
+
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
     m_appData->deleteArgv();
