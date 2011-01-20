@@ -136,6 +136,12 @@ int main(int argc, char ** argv)
             helpWanted = 1;
     }
 
+    // Set environment. Because applauncherd is usually a privileged
+    // process, TMPDIR variable might be unset by the C library. In
+    // case it's not set, we set it to /var/tmp, which usually is not
+    // a RAM disk.
+    setenv("TMPDIR", "/var/tmp", 0);
+
     // Preload libraries
     if (!helpWanted)
         loadLibraries(gLibs, sizeof(gLibs) / sizeof(char *));
