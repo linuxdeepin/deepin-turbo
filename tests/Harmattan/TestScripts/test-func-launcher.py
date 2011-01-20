@@ -756,6 +756,20 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op1.split(",")[0] == '"fala_wl.launch"','Application name is incorrect')   
         kill_process('fala_wl') 
         
+        #For booster-d
+        #Check though the process list
+        p = run_app_as_user('invoker --type=d --no-wait fala_qml_helloworld.launch -faulty')
+        time.sleep(2)
+        pid = get_pid('fala_qml_helloworld')
+        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
+        self.assert_(op.split('\0')[0] == "fala_qml_helloworld.launch",'Application name is incorrect')    
+    
+        #check through the window property
+        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd QML testapp/ {print $1}'")
+        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
+        self.assert_(op1.split(",")[0] == '"fala_qml_helloworld.launch"','Application name is incorrect')   
+        kill_process('fala_qml_helloworld') 
+        
         #For booster-q        
         #Check though the process list
         p = run_app_as_user('invoker --type=qt --no-wait fala_wl.launch -faulty')
