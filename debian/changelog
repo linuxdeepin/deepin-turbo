@@ -8,6 +8,7 @@ applauncherd (0.17.0) unstable; urgency=low
   * Changes: --debug argument problem fixed in preloading
   * Changes: Corrected error on test-perf-mbooster.py
   * Changes: Commented out the single-instance test case skeletons
+  * Changes: Removed invoker fallback to execve
   
  -- Jussi Lind <jussi.lind@nokia.com>  Mon, 17 Jan 2011 15:53:15 +0200
 

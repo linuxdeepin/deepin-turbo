@@ -105,6 +105,11 @@ bool Connection::accept(AppData* appData)
     return true;
 }
 
+bool Connection::connected() const
+{
+    return m_fd > -1;
+}
+
 void Connection::close()
 {
     if (m_fd != -1)

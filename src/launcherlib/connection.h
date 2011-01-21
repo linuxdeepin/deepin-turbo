@@ -64,6 +64,9 @@ public:
     //! \brief Close the socket connection.
     void close();
 
+    //! \brief Check connection state.
+    bool connected() const;
+
     //! \brief Receive application data to appData.
     bool receiveApplicationData(AppData* appData);
 

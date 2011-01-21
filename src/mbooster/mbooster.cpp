@@ -82,6 +82,11 @@ bool MBooster::receiveDataFromInvoker(int socketFd)
         EventHandler handler(this);
         handler.runEventLoop();
 
+        if (!connection()->connected())
+        {
+            return false;
+        }
+
         // Receive application data from the invoker
         if(!connection()->receiveApplicationData(appData()))
         {

@@ -441,7 +441,7 @@ void Daemon::forkBooster(char type, int sleepTime)
             Logger::logError("Daemon: Couldn't set session id\n");
 
         // Guarantee some time for the just launched application to
-        // start up before forking new booster if needed.
+        // start up before initializing new booster if needed.
         // Not done if in the boot mode.
         if (!m_bootMode && sleepTime)
             sleep(sleepTime);

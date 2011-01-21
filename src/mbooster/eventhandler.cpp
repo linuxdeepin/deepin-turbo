@@ -19,6 +19,7 @@ void EventHandler::runEventLoop()
 
     // Exit from event loop when invoker is ready to connect
     connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
+    connect(this, SIGNAL(connectionRejected()), MApplication::instance() , SLOT(quit()));
 
     // Enable theme change handler
     m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
@@ -67,6 +68,11 @@ void EventHandler::accept()
     {
         emit connectionAccepted();
     }
+    else
+    {
+        emit connectionRejected();
+    }
+
 }
 
 void EventHandler::notifyThemeChange()

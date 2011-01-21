@@ -52,7 +52,6 @@ private:
     // Parent object
     Booster* m_parent;
 
-
 private slots:
 
     //! Qt signal handler for SIGHUP.
@@ -63,5 +62,5 @@ private slots:
 
 signals:
     void connectionAccepted();
-
+    void connectionRejected();
 };

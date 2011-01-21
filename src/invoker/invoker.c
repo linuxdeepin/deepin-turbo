@@ -459,7 +459,7 @@ void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 
         if (newPid == -1)
         {
-            report(report_error, "Invoker failed to fork");
+            report(report_error, "Invoker failed to fork\n");
             exit(EXIT_FAILURE);
         }
         else if (newPid != 0) /* parent process */
@@ -533,12 +533,13 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
 
     if (prog_name && prog_argv)
     {
-        // This is a fallback if connection with the launcher
-        // process is broken       
+        // If invoker cannot find the socket to connect to,
+        // exit with an error message.
         int fd = invoker_init(app_type);
         if (fd == -1)
         {
-            invoke_fallback(prog_argv, prog_name, wait_term);
+            report(report_error, "Cannot find booster socket.\n");
+            exit(EXIT_FAILURE);
         }
         // "normal" invoke through a socket connetion
         else
