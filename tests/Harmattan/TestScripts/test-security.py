@@ -94,28 +94,27 @@ class SecurityTests(unittest.TestCase):
         self.assert_(creds1 != None, "couldn't get credentials")
         self.assert_(creds2 != None, "couldn't get credentials")
 
-        creds1 = self.filter_creds(creds1)
-        creds2 = self.filter_creds(creds2)
-
-        debug("fala_ft_creds1 has %s" % ', '.join(creds1))
-        debug("fala_ft_creds2 has %s" % ', '.join(creds2))
-
         # When an application has a manifest, the users supplementary
         # groups are not by default included in the credential list,
         # only UID and GID.
 
         # required caps for fala_ft_creds1
-        cap1 = ['drm', 'CAP::setuid', 'CAP::setgid',
-                'CAP::setfcap'] + self.user_creds()
+        cap1 = self.creds_defined_for_app('fala_ft_creds1') + self.user_creds()
 
         # required caps for fala_ft_creds2
-        cap2 = ['Cellular'] + self.user_creds()
+        cap2 = self.creds_defined_for_app('fala_ft_creds2') + self.user_creds()
 
         cap1.sort()
         cap2.sort()
 
         creds1.sort()
         creds2.sort()
+
+        debug("fala_ft_creds1 has %s" % ', '.join(creds1))
+        debug("fala_ft_creds1 requires %s" % ', '.join(cap1))
+
+        debug("fala_ft_creds2 has %s" % ', '.join(creds2))
+        debug("fala_ft_creds2 has %s" % ', '.join(cap2))
 
         self.assert_(cap1 == creds1, "fala_ft_creds1 has incorrect credentials")
         self.assert_(cap2 == creds2, "fala_ft_creds2 has incorrect credentials")
