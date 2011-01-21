@@ -48,6 +48,40 @@ class SecurityTests(unittest.TestCase):
             groups = map(f, groups)
 
         return ['UID::user', 'GID::users'] + groups
+
+    def creds_defined_for_app(self, app):
+        """
+        Reads the security tokens an application should have from
+        /sys/kernel/security/credp/policy and converts them to
+        human-readable form with creds-test (from the package
+        libcreds2-tools).
+        """
+
+        f = open("/sys/kernel/security/credp/policy")
+        lines = f.readlines()
+        f.close()
+
+        creds = []
+        found  = False
+
+        for line in lines:
+            if not found and line.find(app) != -1:
+                found = True
+                debug(line)
+                continue
+
+            if found:
+                if re.match('^\s', line) != None:
+                    creds.append(line.strip())
+                    debug(line)
+                else:
+                    break
+
+        def cred2str(cred):
+            st, op = commands.getstatusoutput("creds-test %s" % cred)
+            return op.split()[3]
+
+        return [cred2str(cred) for cred in creds]
         
     def test_correct_creds(self):
         """
