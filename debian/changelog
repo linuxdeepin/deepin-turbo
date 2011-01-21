@@ -1,4 +1,4 @@
-applauncherd (0.17.0) unstable; urgency=low
+applauncherd (0.17.0) stable; urgency=low
 
   * Fixes: NB#212024 - Application launcher should be usable (improve performance) also at boot
   * Fixes: NB#220076 - applauncherd.bin does not work without link to /tmp/m.themedaemon
@@ -9,6 +9,7 @@ applauncherd (0.17.0) unstable; urgency=low
   * Changes: Corrected error on test-perf-mbooster.py
   * Changes: Commented out the single-instance test case skeletons
   * Changes: Removed invoker fallback to execve
+  * Changes: References to .launch removed from README. Some minor fixes.
   
  -- Jussi Lind <jussi.lind@nokia.com>  Mon, 17 Jan 2011 15:53:15 +0200
 
