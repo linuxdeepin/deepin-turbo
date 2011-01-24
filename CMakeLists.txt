@@ -127,6 +127,7 @@ install(FILES data/pkgconfig/meegotouch-boostable.pc DESTINATION /usr/lib/pkgcon
 install(FILES data/mkspecs/features/meegotouch-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
 install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
 install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
+install(FILES data/pkgconfig/qdeclarative-boostable.pc DESTINATION /usr/lib/pkgconfig)
 if ($ENV{MEEGO})
     install(FILES meego/applauncherd.desktop DESTINATION /etc/xdg/autostart)
 endif ($ENV{MEEGO})
