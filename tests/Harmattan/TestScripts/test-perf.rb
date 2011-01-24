@@ -125,6 +125,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
     sleep(10)
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
     system("initctl stop xsession/mprogressindicator")
+    system("initctl restart xsession/applauncherd")
+    sleep(6)
   end
   
 
