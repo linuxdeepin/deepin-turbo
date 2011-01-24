@@ -1,3 +1,4 @@
 usr/lib/pkgconfig/qt-boostable.pc
 usr/share/qt4/mkspecs/features/qt-boostable.prf
 usr/include/qdeclarativeboostercache.h
+usr/lib/pkgconfig/qdeclarative-boostable.pc
