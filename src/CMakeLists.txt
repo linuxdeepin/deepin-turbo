@@ -13,6 +13,9 @@ add_subdirectory(mbooster)
 # Sub build: qtbooster plugin
 add_subdirectory(qtbooster)
 
+# Sub build: qdeclarativebooster plugin
+add_subdirectory(qdeclarativebooster)
+
 # Sub build: single-instance binary / library
 add_subdirectory(single-instance)
 

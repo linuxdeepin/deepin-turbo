@@ -1,0 +1,20 @@
+# Qt support
+include(${QT_USE_FILE})
+
+set(LAUNCHER "${CMAKE_HOME_DIRECTORY}/src/launcherlib")
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
+
+# Hide all symbols except the ones explicitly exported in the code (like main())
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+
+# Set sources
+set(LIBSRC qdeclarativeboostercache.cpp qdeclarativeboostercache.h qdeclarativeboostercache_p.h)
+
+# Set executables
+add_library(qdeclarativeboostercache SHARED ${LIBSRC})
+target_link_libraries(qdeclarativeboostercache ${LIBDL} ${QT_QTCORE_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY})
+
+# Add install rule
+install(FILES libqdeclarativeboostercache.so DESTINATION /usr/lib/)
+install(FILES qdeclarativeboostercache.h DESTINATION /usr/include)
