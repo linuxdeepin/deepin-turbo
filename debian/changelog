@@ -1,3 +1,9 @@
+applauncherd (0.17.1) stable; urgency=low
+
+  * Changes: Broken tests fixed
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 24 Jan 2011 10:33:38 +0200
+
 applauncherd (0.17.0) stable; urgency=low
 
   * Fixes: NB#212024 - Application launcher should be usable (improve performance) also at boot
