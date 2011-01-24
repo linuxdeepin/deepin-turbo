@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "/usr/bin/invoker --single-instance --type=d --no-wait" $0.launch $@
+exec /usr/bin/invoker --single-instance  --type=d --no-wait $0.launch $@

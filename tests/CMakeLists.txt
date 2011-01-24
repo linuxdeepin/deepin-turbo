@@ -63,3 +63,6 @@ add_subdirectory(Common/TestApps/fala_windowid)
 
 # Sub build: Common/TestApps/xsendevent
 add_subdirectory(Common/TestApps/xsendevent)
+
+# Sub build: Common/TestApps/fala_qml_helloworld
+add_subdirectory(Common/TestApps/fala_qml_helloworld)
