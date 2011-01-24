@@ -75,7 +75,7 @@
       </case>
 
 
-      <case name="applauncherd__test_launch_wo_applauncherd" type="Functional" description="Test invoker can launch applications even when applauncherd is not running" timeout="360" level="System" insignificant="false">
+      <case name="applauncherd__test_launch_wo_applauncherd" type="Functional" description="Test invoker cannot launch applications when applauncherd is not running" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_wo_applauncherd</step>
       </case>
 

@@ -39,7 +39,7 @@
       </case>
 
       <case name="MBooster" type="Functional" description="Unit tests for MBooster class" level="Component" timeout="20">
-          <step expected_result="0">source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_mbooster</step>
+          <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_mbooster'</step>
       </case>
 
       <case name="QtBooster" type="Functional" description="Unit tests for QtBooster class" level="Component" timeout="20">

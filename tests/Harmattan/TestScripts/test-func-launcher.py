@@ -459,19 +459,18 @@ class launcher_tests (unittest.TestCase):
 
     def test_launch_wo_applauncherd(self):
         """
-        To Test that invoker can launch applications even when the
+        To Test that invoker cannot launch applications when the
         applauncherd is not running
         """
 
         stop_applauncherd()
 
-        handle = run_app_as_user('fala_ft_hello')
+        st, op = commands.getstatusoutput('su - user -c fala_ft_hello')
         time.sleep(3)
         pid1 = get_pid('fala_ft_hello')
         
-        self.assert_(pid1 != None, "Application wasn't executed")
-
-        kill_process('fala_ft_hello')
+        self.assert_(pid1 == None, "Application was executed")
+        self.assert_(op.split('\n')[2] == "invoker: warning: Failed to initiate connect on the socket.", "Application was executed")
 
         start_applauncherd()
 
