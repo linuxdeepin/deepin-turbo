@@ -56,10 +56,11 @@ static const unsigned char EXIT_STATUS_APPLICATION_CONNECTION_LOST = 0xfa;
 static const unsigned char EXIT_STATUS_APPLICATION_NOT_FOUND = 0x7f;
 
 // Enumeration of possible application types:
-// M_APP   : MeeGo Touch application
-// QT_APP  : Qt/generic application
+// M_APP    : MeeGo Touch application
+// QT_APP   : Qt/generic application
+// QDECL_APP: QDeclarative (QML) application
 //
-enum APP_TYPE { M_APP, QT_APP, UNKNOWN_APP };
+enum APP_TYPE { M_APP, QT_APP, QDECL_APP, UNKNOWN_APP };
 
 // Environment
 extern char ** environ;
@@ -204,6 +205,10 @@ static int invoker_init(enum APP_TYPE app_type)
     else if (app_type == QT_APP)
     {
         strncpy(sun.sun_path, INVOKER_QT_SOCK, maxSize);
+    }
+    else if (app_type == QDECL_APP)
+    {
+      strncpy(sun.sun_path, INVOKER_QDECL_SOCK, maxSize);
     }
     else
     {
@@ -394,12 +399,13 @@ static void invoker_send_end(int fd)
 static void usage(int status)
 {
     printf("\nUsage: %s [options] [--type=TYPE] [file] [args]\n\n"
-           "Launch m or qt application compiled as a shared library (-shared) or\n"
+           "Launch m, qt, or qdeclarative application compiled as a shared library (-shared) or\n"
            "a position independent executable (-pie) through %s.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
            "  m                      Launch a MeeGo Touch application.\n"
-           "  qt                     Launch a Qt application.\n\n"
+           "  qt                     Launch a Qt application.\n"
+           "  d                      Launch a Qt Declarative (QML) application.\n\n"
            "Options:\n"
            "  -c, --creds            Print Aegis security credentials (if enabled).\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
@@ -631,6 +637,8 @@ int main(int argc, char *argv[])
                 app_type = M_APP;
             else if (strcmp(optarg, "q") == 0 || strcmp(optarg, "qt") == 0)
                 app_type = QT_APP;
+            else if (strcmp(optarg, "d") == 0)
+                app_type = QDECL_APP;
             else
             {
                 report(report_error, "Unknown application type: %s \n", optarg);

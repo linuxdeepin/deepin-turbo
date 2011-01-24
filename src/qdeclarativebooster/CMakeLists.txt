@@ -9,12 +9,22 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/comm
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
+set(PLUGINSRC qdeclarativebooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
+${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
+${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 set(LIBSRC qdeclarativeboostercache.cpp qdeclarativeboostercache.h qdeclarativeboostercache_p.h)
+set(MOC_HDRS qdeclarativebooster.h)
+qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Set executables
 add_library(qdeclarativeboostercache SHARED ${LIBSRC})
 target_link_libraries(qdeclarativeboostercache ${LIBDL} ${QT_QTCORE_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY})
 
+add_library(qdeclarativebooster MODULE ${PLUGINSRC} ${MOC_SRC})
+target_link_libraries(qdeclarativebooster ${LIBDL} ${QT_QTCORE_LIBRARY}  "-L. -lqdeclarativeboostercache")
+add_dependencies(qdeclarativebooster qdeclarativeboostercache) 
+
 # Add install rule
+install(FILES libqdeclarativebooster.so DESTINATION /usr/lib/applauncherd/)
 install(FILES libqdeclarativeboostercache.so DESTINATION /usr/lib/)
 install(FILES qdeclarativeboostercache.h DESTINATION /usr/include)
