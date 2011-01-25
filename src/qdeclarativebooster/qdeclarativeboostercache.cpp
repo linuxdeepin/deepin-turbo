@@ -47,7 +47,13 @@ void QDeclarativeBoosterCachePrivate::populate()
 {
     
     static const char *const emptyString = "";
-    static const char *const appName = "qdeclarativeboostercache_pre_initialized_qapplication";
+    static const char *const appNameFormat = "qdeclarativeboostercache_pre_initialized_qapplication%d";
+    static char appName[strlen(appNameFormat) + 8];
+
+    // Append pid to appName to make it unique. This is required because the
+    // libminputcontext.so instantiates MComponentData, which in turn registers
+    // a dbus service with the application's name.
+    sprintf(appName, appNameFormat, getpid());
 
     // We support at most ARGV_LIMIT arguments in QCoreApplication. These will be set when real
     // arguments are known (in QDeclarativeBoosterCachePrivate::qApplication). 
