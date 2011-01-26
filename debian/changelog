@@ -1,3 +1,9 @@
+applauncherd (0.18.0) unstable; urgency=low
+  
+  * New: QML booster added
+  
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Thu, 26 Jan 2011 17:00:00 +0200
+
 applauncherd (0.17.1) stable; urgency=low
 
   * Changes: Broken tests fixed
