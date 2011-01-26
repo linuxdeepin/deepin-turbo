@@ -43,8 +43,8 @@ void timestamp(const char *s)
     timeval tim;
     char msg[80];
     gettimeofday(&tim, NULL);
-    snprintf(msg, 80, "%d.%06d %s\n", 
-             static_cast<int>(tim.tv_sec), static_cast<int>(tim.tv_usec), s);
+    snprintf(msg, 80, "%d%03d %s", 
+             static_cast<int>(tim.tv_sec), static_cast<int>(tim.tv_usec)/1000, s);
     FANGORNLOG(msg);
 }
 

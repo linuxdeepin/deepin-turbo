@@ -113,20 +113,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
       system "mcetool --set-inhibit-mode=stay-on"
     end        
 
-    if @options[:application] != nil     
-
-      system("initctl stop xsession/applifed")
-      system("initctl stop xsession/sysuid")
-
-    end
-
-    system("initctl stop xsession/search")
     system("initctl restart xsession/mthome")
-    sleep(10)
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
-    system("initctl stop xsession/mprogressindicator")
     system("initctl restart xsession/applauncherd")
-    sleep(6)
+    sleep(10)
   end
   
 
@@ -135,10 +125,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   def teardown
     puts "exit from teardown"
     system "mv #{TEMPORARY_MATTI_LOCATION} #{MATTI_LOCATION}"
-    system("initctl start xsession/search")
     if @options[:application] != nil     
-      system("initctl start xsession/sysuid")
-      system("initctl start xsession/applifed")
       system("initctl restart xsession/mthome")
       sleep(10)
     end
@@ -178,7 +165,6 @@ class TC_PerformanceTests < Test::Unit::TestCase
         system "#{@options[:pre_step]}"
       end
         
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 30 -d"
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
       puts "original: #{@pos}"
       @pos = @pos.split("\n")[-1]

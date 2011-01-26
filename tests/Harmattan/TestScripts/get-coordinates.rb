@@ -118,9 +118,10 @@ puts "windowid: #{windowid}"
 
 system "#{PIXELCHANGED_BINARY} -r #{windowid}"
 sleep (2)
-system "mcetool --blank-screen"
+system "mcetool --blank-screen > /dev/null"
 sleep (2)
-system "mcetool --unblank-screen"
+system "mcetool --set-tklock-mode=unlocked > /dev/null"
+system "mcetool --unblank-screen > /dev/null"
 
 # Application grid should be now visible
 if options[:grid]
