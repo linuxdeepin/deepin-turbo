@@ -13,15 +13,12 @@ set(SRC qtbooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/boos
 ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
-set(MOC_HDRS qtbooster.h)
-qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
-
 # Set libraries to be linked.
 link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY})
 
 # Set executable
-add_library(qtbooster MODULE ${SRC} ${MOC_SRC})
+add_library(qtbooster MODULE ${SRC})
 
 # Add install rule
-install(FILES libqtbooster.so DESTINATION /usr/lib/applauncherd/)
+install(TARGETS qtbooster DESTINATION /usr/lib/applauncherd/)
 

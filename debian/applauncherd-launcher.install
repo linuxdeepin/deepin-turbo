@@ -5,3 +5,4 @@ usr/lib/applauncherd/libmbooster.so
 usr/lib/applauncherd/libqtbooster.so
 usr/lib/applauncherd/libqdeclarativebooster.so
 usr/lib/libqdeclarativeboostercache.so
+usr/lib/libqdeclarativeboostercache.so.*

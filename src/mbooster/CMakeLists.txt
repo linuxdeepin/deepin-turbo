@@ -23,5 +23,4 @@ link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY})
 add_library(mbooster MODULE ${SRC} ${MOC_SRC})
 
 # Add install rule
-install(FILES libmbooster.so DESTINATION /usr/lib/applauncherd/)
-
+install(TARGETS mbooster DESTINATION /usr/lib/applauncherd/)

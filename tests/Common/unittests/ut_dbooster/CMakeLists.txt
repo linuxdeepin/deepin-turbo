@@ -8,7 +8,7 @@ ${LAUNCHER}/logger.cpp ${DBOOSTER}/qdeclarativebooster.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_dbooster.h ${DBOOSTER}/qdeclarativebooster.h)
+set(MOC_HDRS ut_dbooster.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})

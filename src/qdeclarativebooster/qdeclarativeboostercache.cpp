@@ -24,6 +24,7 @@
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #endif
 
 QDeclarativeBoosterCachePrivate * const QDeclarativeBoosterCache::d_ptr = new QDeclarativeBoosterCachePrivate;
@@ -63,6 +64,11 @@ void QDeclarativeBoosterCachePrivate::populate()
     }
 
     if (qApplicationInstance == 0) {
+#ifdef __arm__
+        QApplication::setGraphicsSystem("meego");
+#else
+        QApplication::setGraphicsSystem("raster");
+#endif
         qApplicationInstance = new QApplication(initialArgc, initialArgv);
     }
 
@@ -74,95 +80,45 @@ QApplication* QDeclarativeBoosterCachePrivate::qApplication(int &argc, char **ar
     if (qApplicationInstance == 0) {
         qApplicationInstance = new QApplication(argc, argv);
     } else {
-        if (canUseCachedApp(argc, argv)) {
-            if(argc > ARGV_LIMIT) {
-                qWarning("MComponentCache: QCoreApplication::arguments() will not contain all arguments.");
-            }
-
-            // Copy arguments to QCoreApplication 
-            for (int i = 0; i < qMin(argc, ARGV_LIMIT); i++) {
-                qApp->argv()[i] = argv[i];
-            }
-
-            // This changes argc in QCoreApplication
-            initialArgc = qMin(argc, ARGV_LIMIT);
-
-#ifdef Q_WS_X11
-            // reinit WM_COMMAND X11 property
-            if (qDeclarativeViewInstance) {
-                Display *display = QX11Info::display();
-                if (display) {
-                    XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
-                }
-            }
-#endif
-        } else {
-	    // Clean up cache.
-            if (qDeclarativeViewInstance) {
-                delete qDeclarativeViewInstance;
-                qDeclarativeViewInstance = 0;
-            }
-
-            delete qApplicationInstance;
-            qApplicationInstance = new QApplication(argc, argv);
+        if (argc > ARGV_LIMIT) {
+            qWarning("MComponentCache: QCoreApplication::arguments() will not contain all arguments.");
         }
+        
+        // Copy arguments to QCoreApplication 
+        for (int i = 0; i < qMin(argc, ARGV_LIMIT); i++) {
+            qApp->argv()[i] = argv[i];
+        }
+        
+        // This changes argc in QCoreApplication
+        initialArgc = qMin(argc, ARGV_LIMIT);
+        
+#ifdef Q_WS_X11
+        // reinit WM_COMMAND X11 property
+        if (qDeclarativeViewInstance) {
+            Display *display = QX11Info::display();
+            if (display) {
+                XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
+
+                // set correct WM_CLASS properties
+		QString appName = QFileInfo(argv[0]).fileName();
+		QString appClass = appName.left(1).toUpper();
+		if (appName.length() > 1)
+                    appClass += appName.right(appName.length() - 1);
+		
+		// reserve memory for C strings
+		QByteArray arrName(appName.toLatin1());
+		QByteArray arrClass(appClass.toLatin1());
+		
+		XClassHint class_hint;
+		class_hint.res_name = arrName.data();
+		class_hint.res_class = arrClass.data();
+		
+		XSetClassHint(display, qDeclarativeViewInstance->effectiveWinId(), &class_hint);
+            }
+        }
+#endif
     }
     return qApplicationInstance;
-}
-
-bool QDeclarativeBoosterCachePrivate::canUseCachedApp(int &argc, char **argv)
-{
-    if ( hasExtraParams(argc, argv) )
-        return false;
-
-    return true;
-}
-
-bool QDeclarativeBoosterCachePrivate::hasExtraParams(int &argc, char **argv)
-{
-    for (int i = 1; i < argc; ++i) 
-    {
-        QString s(argv[i]);
-
-        if (
-            /* QApplication command options */
-            (s == "-style")                       ||
-            (s == "-stylesheet")                  ||
-            (s == "-session")                     ||
-            (s == "-widgetcount")                 ||
-            (s == "-reverse")                     ||
-            (s == "-graphicssystem")              ||
-
-            /* X11 options */
-            (s == "-display")                     ||
-            (s == "-geometry" )                   ||
-            (s == "-fn" )                         ||
-            (s == "-font")                        ||
-            (s == "-bg")                          ||
-            (s == "-background")                  ||
-            (s == "-fg")                          ||
-            (s == "-foreground")                  ||
-            (s == "-btn")                         ||
-            (s == "-button")                      ||
-            (s == "-name" )                       ||
-            (s == "-title" )                      ||
-            (s == "-visual" )                     ||
-            (s == "-ncols")                       ||
-            (s == "-cmap")                        ||
-            (s == "-im")                          ||
-            (s == "-inputstyle" )                 ||
-
-            /* help options, application will not be started */
-            (s == "-v")                           ||
-            (s.startsWith("-version"))            ||
-            (s.startsWith("--version"))           ||
-            (s == "-h")                           ||
-            (s.startsWith("-help"))               ||
-            (s.startsWith("--help"))
-           )
-            return true;
-    }
-    return false;
 }
 
 QDeclarativeView* QDeclarativeBoosterCachePrivate::qDeclarativeView()

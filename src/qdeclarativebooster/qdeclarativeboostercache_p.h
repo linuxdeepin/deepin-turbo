@@ -33,9 +33,6 @@ public:
     QApplication* qApplication(int &argc, char **argv);
     QDeclarativeView* qDeclarativeView();
 
-    bool canUseCachedApp(int &argc, char **argv);
-    bool hasExtraParams(int &argc, char **argv);
-
     static const int ARGV_LIMIT;
     QApplication *qApplicationInstance;
     QDeclarativeView *qDeclarativeViewInstance;

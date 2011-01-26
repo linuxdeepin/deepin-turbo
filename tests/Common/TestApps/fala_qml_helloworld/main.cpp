@@ -44,11 +44,6 @@ void timestamp(const char *s)
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
     timestamp("application main");
-#ifdef __arm__
-    QApplication::setGraphicsSystem("meego");
-#else
-    QApplication::setGraphicsSystem("raster");
-#endif
 
     QApplication *app = QDeclarativeBoosterCache::qApplication(argc, argv);
     timestamp("QApplication from cache");
