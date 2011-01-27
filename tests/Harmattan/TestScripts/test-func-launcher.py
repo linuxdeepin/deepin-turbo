@@ -709,7 +709,9 @@ class launcher_tests (unittest.TestCase):
 
     def test_stress_boosted_apps(self):
         self._test_stress_boosted_apps('m', 'fala_ft_hello')
+        time.sleep(5)
         self._test_stress_boosted_apps('d', 'fala_qml_helloworld', invoker_extra_flags='--single-instance')
+        time.sleep(5)
 
     def _test_stress_boosted_apps(self, booster_type, app_name, invoker_extra_flags=''):
         """
@@ -748,7 +750,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(2)
         pid = get_pid('fala_wl')
         st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('0')[0] == "fala_wl.launch",'Application name is incorrect')    
+        self.assert_(op.split('\0')[0] == "fala_wl.launch",'Application name is incorrect')    
     
         #check through the window property
         st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
@@ -776,7 +778,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(2)
         pid = get_pid('fala_wl')
         st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('0')[0] == "fala_wl.launch",'Application name is incorrect')    
+        self.assert_(op.split('\0')[0] == "fala_wl.launch",'Application name is incorrect')    
     
         #check through the window property
         st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")

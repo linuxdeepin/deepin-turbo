@@ -5,7 +5,7 @@
   <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
   <suite name="applauncherd-performance-tests" domain="Application framework"> 
 
-    <set name="test-commandline" description="Applauncherd application startup time from command line with Python" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+    <!--set name="test-commandline" description="Applauncherd application startup time from command line with Python" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
@@ -22,7 +22,7 @@
       <get>
           <file>/tmp/launcher_perf.txt</file>
       </get>
-    </set>
+    </set-->
 
     <set name="test-command-line2" description="Application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
