@@ -17,18 +17,18 @@
 **
 ****************************************************************************/
 
-#ifndef QDECLARATIVEBOOSTERCACHE_P_H
-#define QDECLARATIVEBOOSTERCACHE_P_H
+#ifndef MDECLARATIVECACHE_P_H
+#define MDECLARATIVECACHE_P_H
 
-class QDeclarativeBoosterCache;
+class MDeclarativeCache;
 class QApplication;
 class QDeclarativeView;
 
-class QDeclarativeBoosterCachePrivate
+class MDeclarativeCachePrivate
 {
 public:
-    QDeclarativeBoosterCachePrivate();
-    virtual ~QDeclarativeBoosterCachePrivate();
+    MDeclarativeCachePrivate();
+    virtual ~MDeclarativeCachePrivate();
     void populate();
     QApplication* qApplication(int &argc, char **argv);
     QDeclarativeView* qDeclarativeView();
@@ -40,8 +40,8 @@ public:
     char **initialArgv;
 
 #ifdef UNIT_TEST
-    friend class Ut_QDeclarativeBoosterCache;
+    friend class Ut_MDeclarativeCache;
 #endif
 };
 
-#endif // QDECLARATIVEBOOSTERCACHE_P_H
+#endif // MDECLARATIVECACHE_P_H

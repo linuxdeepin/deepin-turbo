@@ -1,5 +1,5 @@
 usr/lib/pkgconfig/qt-boostable.pc
 usr/share/qt4/mkspecs/features/qt-boostable.prf
-usr/include/applauncherd/qdeclarativeboostercache.h
+usr/include/applauncherd/mdeclarativecache.h
 usr/lib/pkgconfig/qdeclarative-boostable.pc
 usr/share/qt4/mkspecs/features/qdeclarative-boostable.prf

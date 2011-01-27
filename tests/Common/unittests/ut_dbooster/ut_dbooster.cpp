@@ -19,7 +19,7 @@
 
 #include "ut_dbooster.h"
 #include "qdeclarativebooster.h"
-#include "qdeclarativeboostercache.h"
+#include "mdeclarativecache.h"
 
 Ut_DBooster::Ut_DBooster() :
     m_subject(new QDeclarativeBooster)
@@ -53,8 +53,8 @@ void Ut_DBooster::testPreload()
     const char * argv[] = {"foo"};
     int argc = 1;
 
-    QVERIFY(QDeclarativeBoosterCache::qApplication(argc, const_cast<char **>(argv)));
-    QVERIFY(QDeclarativeBoosterCache::qDeclarativeView());
+    QVERIFY(MDeclarativeCache::qApplication(argc, const_cast<char **>(argv)));
+    QVERIFY(MDeclarativeCache::qDeclarativeView());
 }
 
 QTEST_APPLESS_MAIN(Ut_DBooster);

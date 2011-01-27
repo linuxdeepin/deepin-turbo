@@ -19,18 +19,18 @@
 
 #include <Qt/QtDeclarative>
 #include <QX11Info>
-#include "qdeclarativeboostercache.h"
-#include "qdeclarativeboostercache_p.h"
+#include "mdeclarativecache.h"
+#include "mdeclarativecache_p.h"
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #endif
 
-QDeclarativeBoosterCachePrivate * const QDeclarativeBoosterCache::d_ptr = new QDeclarativeBoosterCachePrivate;
-const int QDeclarativeBoosterCachePrivate::ARGV_LIMIT = 32;
+MDeclarativeCachePrivate * const MDeclarativeCache::d_ptr = new MDeclarativeCachePrivate;
+const int MDeclarativeCachePrivate::ARGV_LIMIT = 32;
 
-QDeclarativeBoosterCachePrivate::QDeclarativeBoosterCachePrivate() :
+MDeclarativeCachePrivate::MDeclarativeCachePrivate() :
     qApplicationInstance(0),
     qDeclarativeViewInstance(0),
     initialArgc(ARGV_LIMIT),
@@ -38,17 +38,17 @@ QDeclarativeBoosterCachePrivate::QDeclarativeBoosterCachePrivate() :
 {
 }
 
-QDeclarativeBoosterCachePrivate::~QDeclarativeBoosterCachePrivate()
+MDeclarativeCachePrivate::~MDeclarativeCachePrivate()
 {
     delete qDeclarativeViewInstance;
     delete[] initialArgv;
 }
 
-void QDeclarativeBoosterCachePrivate::populate()
+void MDeclarativeCachePrivate::populate()
 {
     
     static const char *const emptyString = "";
-    static const char *const appNameFormat = "qdeclarativeboostercache_pre_initialized_qapplication%d";
+    static const char *const appNameFormat = "mdeclarativecache_pre_initialized_qapplication%d";
     static char appName[strlen(appNameFormat) + 8];
 
     // Append pid to appName to make it unique. This is required because the
@@ -57,7 +57,7 @@ void QDeclarativeBoosterCachePrivate::populate()
     sprintf(appName, appNameFormat, getpid());
 
     // We support at most ARGV_LIMIT arguments in QCoreApplication. These will be set when real
-    // arguments are known (in QDeclarativeBoosterCachePrivate::qApplication). 
+    // arguments are known (in MDeclarativeCachePrivate::qApplication). 
     initialArgv[0] = const_cast<char *>(appName);
     for (int i = 1; i < initialArgc; i++) {
         initialArgv[i] = const_cast<char *>(emptyString);
@@ -75,7 +75,7 @@ void QDeclarativeBoosterCachePrivate::populate()
     qDeclarativeViewInstance = new QDeclarativeView();
 }
 
-QApplication* QDeclarativeBoosterCachePrivate::qApplication(int &argc, char **argv)
+QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
 {
     if (qApplicationInstance == 0) {
         qApplicationInstance = new QApplication(argc, argv);
@@ -121,7 +121,7 @@ QApplication* QDeclarativeBoosterCachePrivate::qApplication(int &argc, char **ar
     return qApplicationInstance;
 }
 
-QDeclarativeView* QDeclarativeBoosterCachePrivate::qDeclarativeView()
+QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
 {
     QDeclarativeView *returnValue;
     if (qDeclarativeViewInstance != 0) {
@@ -133,17 +133,17 @@ QDeclarativeView* QDeclarativeBoosterCachePrivate::qDeclarativeView()
     return returnValue;
 }
 
-void QDeclarativeBoosterCache::populate()
+void MDeclarativeCache::populate()
 {
     d_ptr->populate();
 }
 
-QApplication* QDeclarativeBoosterCache::qApplication(int &argc, char **argv)
+QApplication* MDeclarativeCache::qApplication(int &argc, char **argv)
 {    
     return d_ptr->qApplication(argc, argv);
 }
 
-QDeclarativeView* QDeclarativeBoosterCache::qDeclarativeView()
+QDeclarativeView* MDeclarativeCache::qDeclarativeView()
 {
     return d_ptr->qDeclarativeView();
 }

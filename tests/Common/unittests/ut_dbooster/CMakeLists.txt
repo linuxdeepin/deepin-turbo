@@ -19,7 +19,7 @@ set(QT_USE_QTTEST TRUE)
 # Set include paths
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER} ${DBOOSTER})
 
-link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${MEEGOTOUCH_LIBRARIES} ${LIBCREDS} "-L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster -lqdeclarativeboostercache")
+link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${MEEGOTOUCH_LIBRARIES} ${LIBCREDS} "-L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster -lmdeclarativecache")
 
 # Enable Qt (may not be needed, because already defined on higher level)
 include(${QT_USE_FILE})

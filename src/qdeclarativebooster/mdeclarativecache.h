@@ -17,26 +17,26 @@
 **
 ****************************************************************************/
 
-#ifndef QDECLARATIVEBOOSTERCACHE_H
-#define QDECLARATIVEBOOSTERCACHE_H
+#ifndef MDECLARATIVECACHE_H
+#define MDECLARATIVECACHE_H
 
-class QDeclarativeBoosterCachePrivate;
+class MDeclarativeCachePrivate;
 class QApplication;
 class QDeclarativeView;
 
 /*!
- * \class QDeclarativeBoosterCache.
+ * \class MDeclarativeCache.
  * \brief Cache class for QDeclarativeBooster.
  */
-class QDeclarativeBoosterCache
+class MDeclarativeCache
 {
 public:
 
     //! Constructor.
-    QDeclarativeBoosterCache() {};
+    MDeclarativeCache() {};
 
     //! Destructor.
-    virtual ~QDeclarativeBoosterCache() {};
+    virtual ~MDeclarativeCache() {};
 
     //! Populate cache with QApplication and QDeclarativeView
     static void populate();
@@ -55,20 +55,20 @@ public:
 
  protected:
 
-    static QDeclarativeBoosterCachePrivate* const d_ptr;
+    static MDeclarativeCachePrivate* const d_ptr;
 
 private:
 
     //! Disable copy-constructor
-    QDeclarativeBoosterCache(const QDeclarativeBoosterCache & r);
+    MDeclarativeCache(const MDeclarativeCache & r);
 
     //! Disable assignment operator
-    QDeclarativeBoosterCache & operator= (const QDeclarativeBoosterCache & r);
+    MDeclarativeCache & operator= (const MDeclarativeCache & r);
 
 
 #ifdef UNIT_TEST
-    friend class Ut_QDeclarativeBoosterCache;
+    friend class Ut_MDeclarativeCache;
 #endif
 };
 
-#endif //QDECLARATIVEBOOSTERCACHE_H
+#endif //MDECLARATIVECACHE_H

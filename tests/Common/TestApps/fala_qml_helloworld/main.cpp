@@ -20,7 +20,7 @@
 #include <Qt/QtDeclarative>
 #include <QFile>
 #include <sys/time.h>
-#include "qdeclarativeboostercache.h"
+#include "mdeclarativecache.h"
 
 void FANGORNLOG(const char* s)
 {
@@ -45,10 +45,10 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 {
     timestamp("application main");
 
-    QApplication *app = QDeclarativeBoosterCache::qApplication(argc, argv);
+    QApplication *app = MDeclarativeCache::qApplication(argc, argv);
     timestamp("QApplication from cache");
 
-    QDeclarativeView *window = QDeclarativeBoosterCache::qDeclarativeView();
+    QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
     timestamp("QDeclarativeView from cache");
     
     window->setWindowTitle("Applauncherd QML testapp");

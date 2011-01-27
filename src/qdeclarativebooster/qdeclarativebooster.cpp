@@ -18,7 +18,7 @@
 ****************************************************************************/
 
 #include "qdeclarativebooster.h"
-#include "qdeclarativeboostercache.h"
+#include "mdeclarativecache.h"
 
 const string QDeclarativeBooster::m_socketId = "/tmp/boostd";
 const string QDeclarativeBooster::m_temporaryProcessName = "booster-d";
@@ -50,6 +50,6 @@ char QDeclarativeBooster::type()
 
 bool QDeclarativeBooster::preload()
 {
-    QDeclarativeBoosterCache::populate();
+    MDeclarativeCache::populate();
     return true;
 }
