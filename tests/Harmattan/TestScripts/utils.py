@@ -45,6 +45,7 @@ def start_applauncherd():
                    stdout = DEV_NULL, stderr = DEV_NULL,
                    shell = False)
 
+    time.sleep(4)
     return handle.wait() == 0
 
 def stop_applauncherd():

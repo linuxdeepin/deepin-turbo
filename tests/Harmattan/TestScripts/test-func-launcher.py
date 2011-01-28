@@ -74,6 +74,12 @@ def check_prerequisites():
 
 class launcher_tests (unittest.TestCase):
     def setUp(self):
+        if get_pid('applauncherd') == None:
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
         #setup here
         debug("Executing SetUp")
 
@@ -83,6 +89,9 @@ class launcher_tests (unittest.TestCase):
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
 
     #Testcases
     def test_launcher_exist(self):

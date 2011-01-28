@@ -55,6 +55,28 @@ def check_prerequisites():
               "You probably want to source /tmp/session_bus_address.user")
 
 class SingleInstanceTests(unittest.TestCase):
+
+    def setUp(self):
+        if get_pid('applauncherd') == None:
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
+        #setup here
+        debug("Executing SetUp")
+
+    def tearDown(self):
+        #teardown here
+        debug("Executing TearDown")
+        if get_pid('applauncherd') == None:
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
+
+    #Testcases
     def minimize(self, pid):
         # get window id
         st, op = commands.getstatusoutput('fala_windowid %s' % pid)
@@ -271,7 +293,7 @@ if __name__ == '__main__':
 
     restart_applauncherd()
 
-    time.sleep(3)
+    time.sleep(5)
 
     tests = sys.argv[1:]
 

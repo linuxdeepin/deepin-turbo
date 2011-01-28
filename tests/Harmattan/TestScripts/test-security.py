@@ -19,6 +19,28 @@ import unittest
 from utils import *
 
 class SecurityTests(unittest.TestCase):
+
+    def setUp(self):
+        if get_pid('applauncherd') == None:
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
+        #setup here
+        debug("Executing SetUp")
+
+    def tearDown(self):
+        #teardown here
+        debug("Executing TearDown")
+        if get_pid('applauncherd') == None:
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
+
+    #Testcases
     def filter_creds(self, creds):
         """
         Filter out some unnecessary cruft from the test point of view
