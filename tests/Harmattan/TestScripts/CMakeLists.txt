@@ -17,10 +17,11 @@ if ($ENV{HARMATTAN})
         tc_theming.rb
         get-coordinates.rb
         test-perf.rb
-        fala_wid
         fala_xres_wl
         fala_xres_wol
         DESTINATION /usr/share/applauncherd-testscripts)
+
+    install(PROGRAMS fala_wid DESTINATION /usr/bin/)
 
     add_subdirectory (signal-forward)
 endif ($ENV{HARMATTAN})

@@ -25,7 +25,7 @@ require 'optparse'
 
 include TDriverVerify
 
-WINDOWID_BINARY = '/usr/bin/fala_windowid'
+WINDOWID_BINARY = '/usr/bin/fala_wid'
 PIXELCHANGED_BINARY= '/usr/bin/fala_pixelchanged' 
 MATTI_LOCATION='/usr/lib/qt4/plugins/testability/libtestability.so'
 TEMPORARY_MATTI_LOCATION='/root/libtestability.so'

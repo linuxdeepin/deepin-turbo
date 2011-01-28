@@ -1,2 +1,2 @@
 #!/bin/sh
-for wid in $(xwininfo -root -tree| awk '/864x480\+0\+0/{print $1}'); do echo $wid $(xprop -id $wid | awk '/_NET_WM_PID/{print $3}') | awk -v BOOSTERPID=$(pidof booster-m) '{if (BOOSTERPID == $2) print $1}'; done
+for wid in $(xwininfo -root -tree| awk '/854x480\+0\+0/{print $1}'); do echo $wid $(xprop -id $wid | awk '/_NET_WM_PID/{print $3}') | awk -v APP_PID=$1 '{if (APP_PID == $2) print $1}'; done
