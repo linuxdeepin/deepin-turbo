@@ -33,9 +33,12 @@ class TC_PerformanceTests < Test::Unit::TestCase
   FALA_GETTIME_BINARY = '/usr/bin/fala_gettime_ms'
   MATTI_LOCATION='/usr/lib/qt4/plugins/testability/libtestability.so'
   TEMPORARY_MATTI_LOCATION='/root/libtestability.so'
+  TESTAPP_LOG = '/tmp/testapp.log'
 
   @start_time = 0
   @end_time = 0
+  @app_from_cache = 0
+  @win_from_cache = 0
   @pos = 0
   @options = {}  
  
@@ -137,6 +140,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
     if FileTest.exists?(PIXELCHANGED_LOG)
       system "rm #{PIXELCHANGED_LOG}"
     end
+    if FileTest.exists?(TESTAPP_LOG)
+      system "rm #{TESTAPP_LOG}"
+    end
     # Kill the binary if alive
     system "pkill #{@options[:binary]}"
     sleep(2)
@@ -187,14 +193,20 @@ class TC_PerformanceTests < Test::Unit::TestCase
     #Reading the log file to get the time
     
     lines = File.open(PIXELCHANGED_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
+    lines_app = File.open(TESTAPP_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
     
+    #app_from_cache value
+    @app_from_cache = lines_app[2] - lines_app[1]   
+    puts "App from cache #{@app_from_cache}\n"
+    @win_from_cache = lines_app[3] - lines_app[2]   
+    puts "Window from cache #{@win_from_cache}\n"
     # First line tells when the button is released
     @start_time = lines[0]
     puts "Started: #{lines[0]}"
     # Second one when the first pixel has changed its color
     @end_time = lines[1]
     puts "Pixel changed: #{lines[1]}"
-    
+    return @app_from_cache, @win_from_cache
   end
   
   
@@ -206,14 +218,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
   
   def test_performance
     wL = []
+    list = []
     wLsum = 0
-    
+    app_cache_sum = 0
+    win_cache_sum = 0 
     #Run Application with invoker
     for i in 1..COUNT
       print "Now Launching  #{@options[:application]} %d times\n" %i
       open_Apps(@options[:application])
       sleep (5)
-      read_file(@options[:application])
+      list.push(read_file(@options[:application]))
       wL.push(measure_time)
     end
     
@@ -228,9 +242,15 @@ class TC_PerformanceTests < Test::Unit::TestCase
     for i in 0..COUNT-1
       print "%d \n" %[wL[i]]
       wLsum = wLsum + wL[i]
+      app_cache_sum = app_cache_sum + list[i][0]
+      win_cache_sum = win_cache_sum + list[i][1]
     end
     print "\nAverage: \n"
     print "%d\n" %[wLsum/COUNT]
+    print "\nAverage: Application from cache \n"
+    print "%d\n" %[app_cache_sum/COUNT]
+    print "\nAverage: Window from cache \n"
+    print "%d\n" %[win_cache_sum/COUNT]
 
     if @options[:limit] != nil
       assert((wLsum/COUNT) < @options[:limit], "Application: #{@options[:application]} avarage startup was slower than #{@options[:limit]} ms")
