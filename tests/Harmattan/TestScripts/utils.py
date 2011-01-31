@@ -142,11 +142,6 @@ def kill_process(appname=None, apppid=None, signum=9):
             temp = basename(appname)[:14]
             st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
 
-            try:
-                os.wait()
-            except Exception as e:
-                print e 
-
 def process_state(processid):
     st, op = commands.getstatusoutput('cat /proc/%s/stat' %processid)
     debug("The Process State of %s is %s" %(processid, op))
