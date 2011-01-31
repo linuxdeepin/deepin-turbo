@@ -24,7 +24,7 @@
       </get>
     </set-->
 
-    <set name="test-command-line2" description="Application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+    <set name="test-command-line" description="Application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
@@ -53,7 +53,7 @@
 
       <get>
           <file>/tmp/perf_commandline_with_launcher.txt</file>
-          <file>/tmp/perf_commandline_with_launcher.txt</file>
+          <file>/tmp/perf_commandline_without_launcher.txt</file>
           <file>/tmp/cmdline_testapp_plain.log</file>
           <file>/tmp/cmdline_testapp_launcher.log</file>
       </get>
