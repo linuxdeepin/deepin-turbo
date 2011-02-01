@@ -69,9 +69,19 @@ class TC_PerformanceTests < Test::Unit::TestCase
         options[:command] = command
       end
 
-      options[:limit] = nil
-      opts.on( '-l', '--limit MILLISECONDS', 'Time limit in milliseconds. Slower startup will make test to fail.' ) do|milliseconds|
-        options[:limit] = milliseconds.to_i
+      options[:startup] = nil
+      opts.on( '-s', '--startup MILLISECONDS', 'Time limit in milliseconds. Slower startup will make test to fail.' ) do|milliseconds|
+        options[:startup] = milliseconds.to_i
+      end
+
+      options[:appCache] = nil
+      opts.on( '-t', '--appCache MILLISECONDS', 'Time limit in milliseconds for application from cache.' ) do|milliseconds|
+        options[:appCache] = milliseconds.to_i
+      end
+
+      options[:winCache] = nil
+      opts.on( '-w', '--winCache MILLISECONDS', 'Time limit in milliseconds for window from cache.' ) do|milliseconds|
+        options[:winCache] = milliseconds.to_i
       end
 
       options[:pre_step] = nil
@@ -234,8 +244,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
     
     print "\n\nStartup time in milliseconds\n"
     print "Application: #{@options[:application]} \n"
-    if @options[:limit] != nil
-      print "Time limit: #{@options[:limit]} \n"
+    if @options[:startup] != nil
+      print "Time startup: #{@options[:startup]} \n"
     end 
     
     #Printing the data
@@ -252,8 +262,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
     print "\nAverage: Window from cache \n"
     print "%d\n" %[win_cache_sum/COUNT]
 
-    if @options[:limit] != nil
-      assert((wLsum/COUNT) < @options[:limit], "Application: #{@options[:application]} avarage startup was slower than #{@options[:limit]} ms")
+    if @options[:startup] != nil
+      assert((wLsum/COUNT) < @options[:startup], "Application: #{@options[:application]} avarage startup was slower than #{@options[:startup]} ms")
+    end
+
+    if @options[:appCache] != nil
+      assert((app_cache_sum/COUNT) < @options[:appCache], "Application: #{@options[:application]} avarage app-cache was slower than #{@options[:appCache]} ms")
+    end
+
+    if @options[:winCache] != nil
+      assert((win_cache_sum/COUNT) < @options[:winCache], "Application: #{@options[:application]} avarage window-cache was slower than #{@options[:winCache]} ms")
     end
     
   end

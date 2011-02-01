@@ -38,7 +38,7 @@
       </post_steps>
 
       <case name="Perf-Test-Command-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="500" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_wl -b "fala_wl" -l 600 &gt; /tmp/perf_commandline_with_launcher.txt</step>
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_wl -b "fala_wl" -s 600 -t 50 -w 10 &gt; /tmp/perf_commandline_with_launcher.txt</step>
       </case>
 
       <post_steps>
@@ -74,7 +74,7 @@
 
 
       <case name="Perf-Test-Grid-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="840" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wl -b "fala_wl" &gt; /tmp/perf_grid_with_launcher.txt</step>
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wl -b "fala_wl" -s 750 -t 50 -w 10 &gt; /tmp/perf_grid_with_launcher.txt</step>
       </case>
 
       <post_steps>
