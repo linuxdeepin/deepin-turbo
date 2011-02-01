@@ -45,6 +45,21 @@
           <step>cp /tmp/testapp.log /tmp/cmdline_testapp_launcher.log</step>
       </post_steps>
 
+      <case name="Perf-Test-Command-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="500" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_qml_helloworld.launch -b fala_qml_helloworld &gt; /tmp/perf_commandline_qml_without_launcher.txt</step>
+      </case>
+
+      <post_steps>
+          <step>cp /tmp/testapp.log /tmp/cmdline_testapp_qml_plain.log</step>
+      </post_steps>
+
+      <case name="Perf-Test-Command-QML-launcher" type="Performance" description="Measure startup time of the QML application using launcher" timeout="500" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_qml_helloworld -b fala_qml_helloworld -s 600 -t 50 -w 10 &gt; /tmp/perf_commandline_qml_with_launcher.txt</step>
+      </case>
+
+      <post_steps>
+          <step>cp /tmp/testapp.log /tmp/cmdline_testapp_qml_launcher.log</step>
+      </post_steps>
 
       <environments>
           <scratchbox>false</scratchbox>
@@ -54,8 +69,12 @@
       <get>
           <file>/tmp/perf_commandline_with_launcher.txt</file>
           <file>/tmp/perf_commandline_without_launcher.txt</file>
+          <file>/tmp/perf_commandline_qml_with_launcher.txt</file>
+          <file>/tmp/perf_commandline_qml_without_launcher.txt</file>
           <file>/tmp/cmdline_testapp_plain.log</file>
           <file>/tmp/cmdline_testapp_launcher.log</file>
+          <file>/tmp/cmdline_testapp_qml_plain.log</file>
+          <file>/tmp/cmdline_testapp_qml_launcher.log</file>
       </get>
     </set>
 
@@ -81,6 +100,26 @@
           <step>cp /tmp/testapp.log /tmp/grid_testapp_launcher.log</step>
       </post_steps>
 
+<!-- QML -->
+
+      <case name="Perf-Test-Grid-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="840" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a qml_wol_helloworld -b fala_qml_helloworld &gt; /tmp/perf_grid_qml_without_launcher.txt</step>
+      </case>
+
+      <post_steps>
+          <step>cp /tmp/testapp.log /tmp/grid_testapp_qml_plain.log</step>
+      </post_steps>
+
+
+      <case name="Perf-Test-Grid-QML-launcher" type="Performance" description="Measure startup time of the QML application using launcher" timeout="840" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a qml_wl_helloworld -b fala_qml_helloworld -s 750 -t 50 -w 10 &gt; /tmp/perf_grid_qml_with_launcher.txt</step>
+      </case>
+
+      <post_steps>
+          <step>cp /tmp/testapp.log /tmp/grid_testapp_qml_launcher.log</step>
+      </post_steps>
+
+<!-- /QML -->
 
       <environments>
           <scratchbox>false</scratchbox>
@@ -90,8 +129,12 @@
       <get>
           <file>/tmp/perf_grid_with_launcher.txt</file>
           <file>/tmp/perf_grid_without_launcher.txt</file>
+          <file>/tmp/perf_grid_qml_with_launcher.txt</file>
+          <file>/tmp/perf_grid_qml_without_launcher.txt</file>
           <file>/tmp/grid_testapp_launcher.log</file>
           <file>/tmp/grid_testapp_plain.log</file>
+          <file>/tmp/grid_testapp_qml_launcher.log</file>
+          <file>/tmp/grid_testapp_qml_plain.log</file>
       </get>
 
     </set>
