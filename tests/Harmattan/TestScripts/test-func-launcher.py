@@ -195,9 +195,10 @@ class launcher_tests (unittest.TestCase):
         process_handle = run_app_as_user(prefered_app)
         process_id = wait_for_app(prefered_app)
         debug("PID of first %s" % process_id)
+        time.sleep(3)
 
         process_handle1 = run_app_as_user(prefered_app)
-        time.sleep(2)
+        time.sleep(3)
         process_id = wait_for_app(prefered_app)
         debug("PID of 2nd %s" % process_id)
 
