@@ -34,7 +34,10 @@ MDeclarativeCachePrivate::MDeclarativeCachePrivate() :
     qApplicationInstance(0),
     qDeclarativeViewInstance(0),
     initialArgc(ARGV_LIMIT),
-    initialArgv(new char* [initialArgc])
+    initialArgv(new char* [initialArgc]),
+    appDirPath(QString()),
+    appFilePath(QString()),
+    cachePopulated(false)
 {
 }
 
@@ -46,6 +49,8 @@ MDeclarativeCachePrivate::~MDeclarativeCachePrivate()
 
 void MDeclarativeCachePrivate::populate()
 {
+    // Record the fact that the cache has been populated
+    cachePopulated = true;
     
     static const char *const emptyString = "";
     static const char *const appNameFormat = "mdeclarativecache_pre_initialized_qapplication%d";
@@ -117,6 +122,16 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             }
         }
 #endif
+	if (cachePopulated) {
+	    // In Qt 4.7, QCoreApplication::applicationDirPath() and
+	    // QCoreApplication::applicationFilePath() look up the paths in /proc,
+	    // which does not work when the booster is used. As a workaround, we
+	    // use argv[0] to provide the correct values in the cache class.
+	    appFilePath = QString(argv[0]);
+	    appDirPath = QString(argv[0]);
+	    appDirPath.chop(appDirPath.size() - appDirPath.lastIndexOf("/"));
+	}
+	
     }
     return qApplicationInstance;
 }
@@ -133,6 +148,26 @@ QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
     return returnValue;
 }
 
+QString MDeclarativeCachePrivate::applicationDirPath()
+{
+    if (cachePopulated) {
+	// In the booster case use the workaround
+	return appDirPath;
+    } else {
+	return QCoreApplication::applicationDirPath();
+    }
+}
+
+QString MDeclarativeCachePrivate::applicationFilePath()
+{
+    if (cachePopulated) {
+	// In the booster case use the workaround
+	return appFilePath;
+    } else {
+	return QCoreApplication::applicationFilePath();
+    }	    
+}
+
 void MDeclarativeCache::populate()
 {
     d_ptr->populate();
@@ -146,5 +181,15 @@ QApplication* MDeclarativeCache::qApplication(int &argc, char **argv)
 QDeclarativeView* MDeclarativeCache::qDeclarativeView()
 {
     return d_ptr->qDeclarativeView();
+}
+
+QString MDeclarativeCache::applicationDirPath()
+{
+    return d_ptr->applicationDirPath();
+}
+
+QString MDeclarativeCache::applicationFilePath()
+{
+    return d_ptr->applicationFilePath();
 }
 

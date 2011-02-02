@@ -20,6 +20,8 @@
 #ifndef MDECLARATIVECACHE_H
 #define MDECLARATIVECACHE_H
 
+#include <QString>
+
 class MDeclarativeCachePrivate;
 class QApplication;
 class QDeclarativeView;
@@ -52,6 +54,21 @@ public:
      * Ownership of the returned object is passed to the caller.
      */
     static QDeclarativeView *qDeclarativeView();
+
+    //! Returns the directory that contains the application executable.
+    /*!
+     * Workaround for QApplication::applicationDirPath() that does not
+     * work on linux with qdeclarativebooster and Qt 4.7.
+     */
+    static QString applicationDirPath();
+
+    //! Returns the file path of the application executable.
+    /*!
+     * Workaround for QApplication::applicationFilePath() that does not
+     * work on linux with qdeclarativebooster and Qt 4.7.
+     */
+    static QString applicationFilePath();
+
 
  protected:
 

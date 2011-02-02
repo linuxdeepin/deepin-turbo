@@ -20,6 +20,8 @@
 #ifndef MDECLARATIVECACHE_P_H
 #define MDECLARATIVECACHE_P_H
 
+#include <QString>
+
 class MDeclarativeCache;
 class QApplication;
 class QDeclarativeView;
@@ -32,12 +34,17 @@ public:
     void populate();
     QApplication* qApplication(int &argc, char **argv);
     QDeclarativeView* qDeclarativeView();
+    QString applicationDirPath();
+    QString applicationFilePath();
 
     static const int ARGV_LIMIT;
     QApplication *qApplicationInstance;
     QDeclarativeView *qDeclarativeViewInstance;
     int initialArgc;
     char **initialArgv;
+    QString appDirPath;
+    QString appFilePath;
+    bool cachePopulated;
 
 #ifdef UNIT_TEST
     friend class Ut_MDeclarativeCache;
