@@ -26,6 +26,9 @@ These instructions describe how to build your application so that it
 can be launched using applauncherd. Only Debian packaging is considered,
 you have to creatively apply the instructions if you are doing RPM packaging.
 
+If you are too impatient to read instructions, take a look at the
+examples in the source tree instead.
+
   Using QMake
   -----------
 
@@ -112,6 +115,8 @@ you need to pick up instances of QApplication and QDeclarativeView from a cache:
      QApplication *app = MDeclarativeCache::qApplication(argc, argv);
      QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
 
+If you plan to use QCoreApplication::applicationDirPath() or
+QCoreApplication::applicationFilePath(), please see KNOWN ISSUES below.
 
 2. LAUNCHING YOUR APPLICATION USING INVOKER
 
@@ -208,6 +213,12 @@ qdeclarative booster:
 The reason for this that the methods get the path from the /proc file system,
 so they return the path to the booster rather than the path to the launched
 application. This is unlikely to be fixed for Qt 4.7.
+
+The MDeclarativeCache class provides the replacements
+MDeclarativeCache::applicationDirPath() and
+MDeclarativeCache::applicationFilePath(), which are identical to the
+QCoreApplication counterparts, except that in the boosted case they use argv[0]
+of the boosted application.
 
 5. COMMAND-LINE PARAMETERS
 
