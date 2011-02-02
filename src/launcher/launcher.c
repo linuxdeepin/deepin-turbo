@@ -123,6 +123,14 @@ static int invokeLauncherLib(int argc, char ** argv)
 //! Entry point
 int main(int argc, char ** argv)
 {
+    // Exit if DISPLAY is missing. This would result in dying
+    // boosters and applauncherd would keep on re-starting them.
+    if (!getenv("DISPLAY"))
+    {
+        fprintf(stderr, "FATAL!!: DISPLAY environment variable not set.\n");
+        return EXIT_FAILURE;
+    }
+
     // Parse command line
     g_debugPrinting = 0;
 
