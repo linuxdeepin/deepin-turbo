@@ -1,5 +1,6 @@
 applauncherd (0.18.0) unstable; urgency=low
-  
+
+  * Changes: Check that DISPLAY exists in launcher.c
   * New: QML booster added
   
  -- Antti Kervinen <antti.kervinen@nokia.com>  Thu, 26 Jan 2011 17:00:00 +0200
