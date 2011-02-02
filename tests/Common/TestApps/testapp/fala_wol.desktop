@@ -3,6 +3,5 @@ Type=Application
 Name=fala_wol
 Icon=icon-l-video
 Exec=/usr/bin/fala_wol.sh
-X-Maemo-Service=com.nokia.fala_wol
 Categories=X-MeeGo;Demos;
 OnlyShowIn=X-MeeGo;

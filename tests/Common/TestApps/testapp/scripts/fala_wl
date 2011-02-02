@@ -1,4 +1,2 @@
 #!/bin/sh
-TIME=`/usr/bin/fala_gettime`
-echo $TIME > /tmp/testapp.log
 exec /usr/bin/invoker --type=m $0.launch $@

@@ -44,6 +44,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
  
 
   $path = string = `echo $PATH `
+  def print_debug(msg)
+      message = "[INFO]  #{msg}\n"
+      puts message
+  end
+
   
   # method called before any test case
   def setup
@@ -72,16 +77,19 @@ class TC_PerformanceTests < Test::Unit::TestCase
       options[:startup] = nil
       opts.on( '-s', '--startup MILLISECONDS', 'Time limit in milliseconds. Slower startup will make test to fail.' ) do|milliseconds|
         options[:startup] = milliseconds.to_i
+      print_debug("The Startup limit is : #{options[:startup]}")
       end
 
       options[:appCache] = nil
       opts.on( '-t', '--appCache MILLISECONDS', 'Time limit in milliseconds for application from cache.' ) do|milliseconds|
         options[:appCache] = milliseconds.to_i
+      print_debug("The limit for MApplication from cache is : #{options[:appCache]}")
       end
 
       options[:winCache] = nil
       opts.on( '-w', '--winCache MILLISECONDS', 'Time limit in milliseconds for window from cache.' ) do|milliseconds|
         options[:winCache] = milliseconds.to_i
+      print_debug("The limit for MApplicationWindow from cache is : #{options[:winCache]}")
       end
 
       options[:pre_step] = nil
@@ -101,33 +109,39 @@ class TC_PerformanceTests < Test::Unit::TestCase
  
 
     if @options[:application] == nil &&  @options[:command] == nil
-      puts "Application not defined!" 
+      print_debug ("Application not defined!")
       exit 1
     end
 
     if @options[:binary] == nil
-      puts "Binary of the application not defined!" 
+      print_debug ("Binary of the application not defined!")
       exit 1
     end
 
 
     if @options[:command] != nil
-      puts "#{@options[:command]}" 
+      print_debug ("The command to launch is #{@options[:command]}")
     end
 
     if @options[:pre_step] != nil
-      puts "#{@options[:pre_step]}" 
+      print_debug ("The Pre-steps is :#{@options[:pre_step]}" )
     end
 
     if $path.include?("scratchbox")
-      puts "Inside SB, Do Nothing to unlock"
+      print_debug ("Inside SB, Do Nothing to unlock")
     else
+      print_debug("Unlocking device")
       system "mcetool --set-tklock-mode=unlocked"
       system "mcetool --set-inhibit-mode=stay-on"
     end        
 
+    print_debug("restart mthome")
     system("initctl restart xsession/mthome")
+
+    print_debug("move #{MATTI_LOCATION} to #{TEMPORARY_MATTI_LOCATION}")
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
+
+    print_debug("restart applauncherd")
     system("initctl restart xsession/applauncherd")
     sleep(10)
   end
@@ -136,9 +150,12 @@ class TC_PerformanceTests < Test::Unit::TestCase
         
   # method called after any test case for cleanup purposes
   def teardown
-    puts "exit from teardown"
+    print_debug ("exit from teardown")
+    print_debug("move #{TEMPORARY_MATTI_LOCATION} to #{MATTI_LOCATION}")
     system "mv #{TEMPORARY_MATTI_LOCATION} #{MATTI_LOCATION}"
+
     if @options[:application] != nil     
+      print_debug("restart mthome")
       system("initctl restart xsession/mthome")
       sleep(10)
     end
@@ -148,52 +165,61 @@ class TC_PerformanceTests < Test::Unit::TestCase
     
     #Remove the Log file if it exists
     if FileTest.exists?(PIXELCHANGED_LOG)
+      print_debug("remove #{PIXELCHANGED_LOG}")
       system "rm #{PIXELCHANGED_LOG}"
     end
     if FileTest.exists?(TESTAPP_LOG)
+      print_debug("remove #{TESTAPP_LOG}")
       system "rm #{TESTAPP_LOG}"
     end
     # Kill the binary if alive
+    print_debug("Kill #{@options[:binary]}")
     system "pkill #{@options[:binary]}"
     sleep(2)
 
     if @options[:command] != nil
       # execute the optional command if available
       if @options[:pre_step] != nil 
-        puts "pre_step: #{@options[:pre_step]}"
+        print_debug ("pre_step: #{@options[:pre_step]}")
         system "#{@options[:pre_step]}"
       end
 
 
       # Check the avarage system load is under 0.3
+      print_debug("Check the avarage system load is under 0.3")
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
+
       start_command ="`#{PIXELCHANGED_BINARY} -t 20x20 -t 840x466 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
-      puts "start command: #{start_command}"
+      print_debug ("start command: #{start_command}")
       system "#{start_command}"
       sleep (4)
-      puts "pkill \"#{@options[:binary]}\""
+      print_debug ("pkill #{@options[:binary]}")
       system "pkill \"#{@options[:binary]}\""
 
     else
      # execute the optional command if available
       if @options[:pre_step] != nil 
-        puts "pre_step: #{@options[:pre_step]}"
+        print_debug ("pre_step: #{@options[:pre_step]}")
         system "#{@options[:pre_step]}"
       end
         
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
-      puts "original: #{@pos}"
       @pos = @pos.split("\n")[-1]
+      print_debug ("Co-ordinates: #{@pos}")
  
+      print_debug("Check the avarage system load is under 0.3")
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 50 -d"
+
       cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 20x20 -t 840x466 -f #{PIXELCHANGED_LOG} -q"
-      puts cmd
+      print_debug("pixel changed command is : #{cmd}")
       system cmd
       sleep (4)
       # Raise meegotouchhome to the top.
       #Workaround for keeping the window stack in shape.
+      print_debug("#{GET_COORDINATES_SCRIPT} -g")
       system "#{GET_COORDINATES_SCRIPT} -g"
 
+      print_debug("pkill :#{@options[:binary]}")
       system "pkill #{@options[:binary]}"
     end
 
@@ -201,21 +227,22 @@ class TC_PerformanceTests < Test::Unit::TestCase
   
   def read_file(appName)
     #Reading the log file to get the time
-    
     lines = File.open(PIXELCHANGED_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
     lines_app = File.open(TESTAPP_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
     
     #app_from_cache value
-    @app_from_cache = lines_app[2] - lines_app[1]   
-    puts "App from cache #{@app_from_cache}\n"
-    @win_from_cache = lines_app[3] - lines_app[2]   
-    puts "Window from cache #{@win_from_cache}\n"
+    @app_from_cache = lines_app[1] - lines_app[0]   
+    print_debug ("App from cache #{@app_from_cache}")
+
+    @win_from_cache = lines_app[2] - lines_app[1]   
+    print_debug ("Window from cache #{@win_from_cache}")
+
     # First line tells when the button is released
     @start_time = lines[0]
-    puts "Started: #{lines[0]}"
+    print_debug ("Started at : #{lines[0]}")
     # Second one when the first pixel has changed its color
     @end_time = lines[1]
-    puts "Pixel changed: #{lines[1]}"
+    print_debug ("Pixel changed: #{lines[1]}")
     return @app_from_cache, @win_from_cache
   end
   
@@ -223,6 +250,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   def measure_time
     #Measuring the Startup Time for applications
     app_t = @end_time - @start_time
+    print_debug ("Startup time : #{app_t}")
     return app_t
   end
   
@@ -234,7 +262,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
     win_cache_sum = 0 
     #Run Application with invoker
     for i in 1..COUNT
-      print "Now Launching  #{@options[:application]} %d times\n" %i
+      print_debug ("Now Launching  #{@options[:application]} #{i} times" )
+      print_debug("Kill #{PIXELCHANGED_BINARY} if any before launching ")
+      system("pkill #{PIXELCHANGED_BINARY}")
       open_Apps(@options[:application])
       sleep (5)
       list.push(read_file(@options[:application]))
@@ -242,10 +272,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end
     
     
-    print "\n\nStartup time in milliseconds\n"
-    print "Application: #{@options[:application]} \n"
+    print_debug ("Startup time in milliseconds\n")
+    print_debug ("Application: #{@options[:application]} \n")
     if @options[:startup] != nil
-      print "Time startup: #{@options[:startup]} \n"
+      print_debug ("Time startup: #{@options[:startup]} ")
     end 
     
     #Printing the data
@@ -255,22 +285,22 @@ class TC_PerformanceTests < Test::Unit::TestCase
       app_cache_sum = app_cache_sum + list[i][0]
       win_cache_sum = win_cache_sum + list[i][1]
     end
-    print "\nAverage: \n"
-    print "%d\n" %[wLsum/COUNT]
-    print "\nAverage: Application from cache \n"
-    print "%d\n" %[app_cache_sum/COUNT]
-    print "\nAverage: Window from cache \n"
-    print "%d\n" %[win_cache_sum/COUNT]
+    print_debug ("Average Startup : #{wLsum/COUNT}")
+    print_debug ("MAppliacation from cache: #{app_cache_sum/COUNT}")
+    print_debug ("MApplicationWindow from cache #{win_cache_sum/COUNT}")
 
     if @options[:startup] != nil
+      print_debug("Check that startup time is less than #{@options[:startup]} ms")
       assert((wLsum/COUNT) < @options[:startup], "Application: #{@options[:application]} avarage startup was slower than #{@options[:startup]} ms")
     end
 
     if @options[:appCache] != nil
+      print_debug("Check that MApplication from cache takes less than #{@options[:appCache]} ms")
       assert((app_cache_sum/COUNT) < @options[:appCache], "Application: #{@options[:application]} avarage app-cache was slower than #{@options[:appCache]} ms")
     end
 
     if @options[:winCache] != nil
+      print_debug("Check that MApplicationWindow from cache takes less than #{@options[:winCache]} ms")
       assert((win_cache_sum/COUNT) < @options[:winCache], "Application: #{@options[:application]} avarage window-cache was slower than #{@options[:winCache]} ms")
     end
     
