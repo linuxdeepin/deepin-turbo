@@ -113,6 +113,10 @@ endif (EXISTS ${Doxygen})
 # Install README
 install(FILES README DESTINATION /usr/share/doc/applauncherd)
 
+# Install examples
+install(DIRECTORY examples
+        DESTINATION /usr/share/doc/applauncherd)
+
 # Install startup script
 install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
 
