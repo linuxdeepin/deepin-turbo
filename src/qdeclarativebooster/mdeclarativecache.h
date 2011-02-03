@@ -46,12 +46,14 @@ public:
     //! Returns QApplication instance from cache or creates a new one.
     /*!
      * Ownership of the returned object is passed to the caller.
+     * NOTE: This is subject to change.
      */
     static QApplication *qApplication(int &argc, char **argv);
 
     //! Returns QDeclarativeView instance from cache or creates a new one.
     /*!
      * Ownership of the returned object is passed to the caller.
+     * NOTE: This is subject to change.
      */
     static QDeclarativeView *qDeclarativeView();
 

@@ -115,6 +115,10 @@ you need to pick up instances of QApplication and QDeclarativeView from a cache:
      QApplication *app = MDeclarativeCache::qApplication(argc, argv);
      QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
 
+The ownership of the instances is currently transferred from the cache to the
+application code, but this is subject to change if there is a need to align
+the API with Symbian.
+
 If you plan to use QCoreApplication::applicationDirPath() or
 QCoreApplication::applicationFilePath(), please see KNOWN ISSUES below.
 
