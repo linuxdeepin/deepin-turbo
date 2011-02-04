@@ -218,6 +218,10 @@ private:
     //! True, if being run in boot mode.
     bool m_bootMode;
 
+    //! Group ID to flip to and back to generate an event for policy
+    //! (re)classification.
+    gid_t m_boosted_gid;
+
 #ifdef HAVE_CREDS
     //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
     void convertStringsToCreds(const char * const strings[], unsigned int numStrings);

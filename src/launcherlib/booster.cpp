@@ -34,6 +34,9 @@
 #include <fcntl.h>
 #include <cstring>
 
+#include <sys/types.h>
+#include <grp.h>
+
 #ifdef HAVE_CREDS
 #include <sys/creds.h>
 
@@ -49,6 +52,20 @@ namespace
 }
 #endif // HAVE_CREDS
 
+static const int FALLBACK_GID = 126;
+
+static gid_t getGroupId(const char *name, gid_t fallback)
+{
+    struct group group, *grpptr;
+    size_t size = sysconf(_SC_GETGR_R_SIZE_MAX);
+    char buf[size];
+
+    if (getgrnam_r(name, &group, buf, size, &grpptr) == 0 && grpptr != NULL)
+        return group.gr_gid;
+    else
+        return fallback;
+}
+
 Booster::Booster() :
     m_appData(new AppData),
     m_connection(NULL),
@@ -61,6 +78,8 @@ Booster::Booster() :
     // initialize credentials to be filtered out from boosted applications
     convertStringsToCreds(g_strCreds, sizeof(g_strCreds) / sizeof(char*));
 #endif
+
+    m_boosted_gid = getGroupId("boosted", FALLBACK_GID);
 }
 
 Booster::~Booster()
@@ -300,6 +319,13 @@ int Booster::launchProcess()
     if (getgid() != m_appData->groupId())
         setgid(m_appData->groupId());
 
+    // Flip the effective group ID forth and back to a dedicated group
+    // id to generate an event for policy (re-)classification.
+    gid_t orig = getegid();
+      
+    setegid(m_boosted_gid);
+    setegid(orig);
+    
     // Reset out-of-memory killer adjustment
     resetOomAdj();
 
