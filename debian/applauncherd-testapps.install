@@ -12,6 +12,9 @@ usr/bin/fala_ft_creds2.launch
 usr/bin/fala_multi-instance
 usr/bin/fala_testapp
 usr/bin/fala_qml_helloworld.launch
+usr/bin/fala_qml_wl.launch
+usr/bin/fala_qml_wol
+usr/bin/fala_qml_wl
 usr/bin/fala_qml_helloworld
 usr/bin/fala_qml_helloworld1.launch
 usr/bin/fala_qml_helloworld2.launch
@@ -35,5 +38,5 @@ usr/share/themes/base/meegotouch/fala_ft_themetest/*
 usr/share/applications/fala_wl.desktop
 usr/share/applications/fala_wol.desktop
 usr/share/fala_qml_helloworld/main.qml
-usr/share/applications/fala_qml_helloworld_wl.desktop
-usr/share/applications/fala_qml_helloworld_wol.desktop
+usr/share/applications/fala_qml_wl.desktop
+usr/share/applications/fala_qml_wol.desktop

@@ -29,9 +29,11 @@
 #include <QFile>
 #include <sys/time.h>
 
+QString log_file = "/tmp/fala_testapp.log";
+
 void FANGORNLOG(const char* s)
 {
-    QFile f("/tmp/testapp.log");
+    QFile f(log_file);
     f.open(QIODevice::Append);
     f.write(s, qstrlen(s));
     f.write("\n", 1);
@@ -61,8 +63,16 @@ public:
 M_EXPORT int main(int, char**);
 
 int main(int argc, char **argv) {
+    QString appName(argv[0]); 
+    if (appName.endsWith("fala_wl.launch"))
+    {
+	log_file = "/tmp/fala_wl.log";
+    }
+    else if (appName.endsWith("fala_wol"))
+    {
+	log_file = "/tmp/fala_wol.log";
+    }
     timestamp("application main");
-    
 #ifdef HAVE_MCOMPONENTCACHE   
     MApplication* app = MComponentCache::mApplication(argc, argv);
     timestamp("app from cache");
@@ -76,7 +86,7 @@ int main(int argc, char **argv) {
     MApplicationWindow* w = new MApplicationWindow;
     timestamp("win created without cache");
 #endif
-    
+	
     MyApplicationPage p;
     timestamp("page created");
 

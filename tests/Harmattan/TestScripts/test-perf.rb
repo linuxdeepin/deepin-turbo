@@ -33,7 +33,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   FALA_GETTIME_BINARY = '/usr/bin/fala_gettime_ms'
   MATTI_LOCATION='/usr/lib/qt4/plugins/testability/libtestability.so'
   TEMPORARY_MATTI_LOCATION='/root/libtestability.so'
-  TESTAPP_LOG = '/tmp/testapp.log'
+   
 
   @start_time = 0
   @end_time = 0
@@ -92,11 +92,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("The limit for MApplicationWindow from cache is : #{options[:winCache]}")
       end
 
+      options[:logFile] = nil
+      opts.on( '-f', '--logFile LOG_FILE', 'Log file which stores the timestamps' ) do|logFile|
+        options[:logFile] = logFile
+      end
+      
       options[:pre_step] = nil
       opts.on( '-p', '--pre_step PRE_STEP', 'Command to be executed everytime before starting the application' ) do|pre_step|
         options[:pre_step] = pre_step
       end
-      
+
       opts.on( '-h', '--help', 'Display this screen' ) do
         puts opts
         exit 0
@@ -118,6 +123,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
       exit 1
     end
 
+    if @options[:logFile] != nil
+      print_debug ("The logFile is: #{@options[:logFile]}")
+    end
 
     if @options[:command] != nil
       print_debug ("The command to launch is #{@options[:command]}")
@@ -168,9 +176,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("remove #{PIXELCHANGED_LOG}")
       system "rm #{PIXELCHANGED_LOG}"
     end
-    if FileTest.exists?(TESTAPP_LOG)
-      print_debug("remove #{TESTAPP_LOG}")
-      system "rm #{TESTAPP_LOG}"
+    if FileTest.exists?(@options[:logFile])
+      print_debug("remove #{@options[:logFile]}")
+      system "rm #{@options[:logFile]}"
     end
     # Kill the binary if alive
     print_debug("Kill #{@options[:binary]}")
@@ -228,8 +236,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   def read_file(appName)
     #Reading the log file to get the time
     lines = File.open(PIXELCHANGED_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
-    lines_app = File.open(TESTAPP_LOG).readlines().collect { |x| x.split(" ")[0].to_i }
-    
+    lines_app = File.open(@options[:logFile]).readlines().collect { |x| x.split(" ")[0].to_i }
     #app_from_cache value
     @app_from_cache = lines_app[1] - lines_app[0]   
     print_debug ("App from cache #{@app_from_cache}")

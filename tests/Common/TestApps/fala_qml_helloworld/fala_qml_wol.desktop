@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=qml_wol_helloworld
+Name=fala_qml_wol
 Icon=icon-l-video
-Exec=single-instance /usr/bin/fala_qml_helloworld.launch
+Exec=single-instance /usr/bin/fala_qml_wol
 Categories=X-MeeGo;Demos;
 OnlyShowIn=X-MeeGo;

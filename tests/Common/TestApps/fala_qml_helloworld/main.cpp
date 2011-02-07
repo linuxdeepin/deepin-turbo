@@ -22,9 +22,11 @@
 #include <sys/time.h>
 #include "mdeclarativecache.h"
 
+QString log_file = "/tmp/fala_qml_helloworld.log";
+
 void FANGORNLOG(const char* s)
 {
-    QFile f("/tmp/testapp.log");
+    QFile f(log_file);
     f.open(QIODevice::Append);
     f.write(s, qstrlen(s));
     f.write("\n", 1);
@@ -36,13 +38,22 @@ void timestamp(const char *s)
     timeval tim;
     char msg[80];
     gettimeofday(&tim, NULL);
-    snprintf(msg, 80, "%d%03d %s\n", 
+    snprintf(msg, 80, "%d%03d %s", 
              static_cast<int>(tim.tv_sec), static_cast<int>(tim.tv_usec/1000), s);
     FANGORNLOG(msg);
 }
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
+    QString appName(argv[0]); 
+    if (appName.endsWith("fala_qml_wl.launch"))
+    {
+	log_file = "/tmp/fala_qml_wl.log";
+    }
+    else if (appName.endsWith("fala_qml_wol"))
+    {
+	log_file = "/tmp/fala_qml_wol.log";
+    }
     timestamp("application main");
 
     QApplication *app = MDeclarativeCache::qApplication(argc, argv);
