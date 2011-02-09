@@ -1,3 +1,10 @@
+applauncherd (0.18.1) stable; urgency=low
+
+  * Fixes: NB#211246 - Policy framework cannot detect the launch of a boosted applications
+  * Fixes: NB#226224 - applauncherd-dev is missing a dependency to applauncherd
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 09 Feb 2011 11:48:51 +0200
+
 applauncherd (0.18.0) unstable; urgency=low
 
   * Changes: Check that DISPLAY exists in launcher.c
