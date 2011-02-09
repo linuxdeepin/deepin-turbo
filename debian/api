@@ -1,0 +1,7 @@
+interface: libmdeclarativecache
+type: library
+scope: Platform
+state: unstable
+libs-pkg: applauncherd-launcher
+dev-pkg: applauncherd-dev
+headers: /usr/include/applauncherd/mdeclarativecache.h
