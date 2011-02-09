@@ -3,5 +3,5 @@ Type=Application
 Name=fala_qml_wol
 Icon=icon-l-video
 Exec=single-instance /usr/bin/fala_qml_wol
-Categories=X-MeeGo;Demos;
+Categories=X-MeeGo;X-Demos;
 OnlyShowIn=X-MeeGo;
