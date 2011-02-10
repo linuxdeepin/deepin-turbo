@@ -2,18 +2,20 @@
 include(${QT_USE_FILE})
 
 set(LAUNCHER "${CMAKE_HOME_DIRECTORY}/src/launcherlib")
+set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER})
 
 # Hide all symbols except the ones explicitly exported in the code (like main())
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC mbooster.cpp pluginfactory.cpp eventhandler.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
+set(SRC mbooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
 ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
-${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
+${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp
+${COMMON}/eventhandler.cpp)
 
-set(MOC_HDRS eventhandler.h)
+set(MOC_HDRS ${COMMON}/eventhandler.h)
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Set libraries to be linked.

@@ -20,7 +20,6 @@
 #include "mbooster.h"
 #include "logger.h"
 #include "connection.h"
-#include <sys/socket.h>
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>

@@ -1,14 +1,15 @@
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 set(DBOOSTER ${CMAKE_HOME_DIRECTORY}/src/qdeclarativebooster)
+set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 
 # Set sources
 set(SRC ut_dbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
-${LAUNCHER}/connection.cpp
+${LAUNCHER}/connection.cpp ${COMMON}/eventhandler.cpp
 ${LAUNCHER}/logger.cpp ${DBOOSTER}/qdeclarativebooster.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_dbooster.h)
+set(MOC_HDRS ut_dbooster.h ${COMMON}/eventhandler.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})

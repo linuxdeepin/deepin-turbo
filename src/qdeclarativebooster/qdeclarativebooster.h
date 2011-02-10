@@ -21,6 +21,7 @@
 #define QDECLARATIVEBOOSTER_H
 
 #include "booster.h"
+#include "eventhandler.h"
 
 /*!
  * \class QDeclarativeBooster.
@@ -65,6 +66,9 @@ protected:
 
     //! \reimp
     virtual const string & socketId() const;
+
+    //! \reimp
+    virtual bool receiveDataFromInvoker(int socketFd);
 
 private:
 

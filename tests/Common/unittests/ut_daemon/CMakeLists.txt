@@ -1,5 +1,7 @@
 # Set sources
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
+set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
+
 set(SRC ut_daemon.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp ${LAUNCHER}/boosterfactory.cpp ${LAUNCHER}/boosterpluginregistry.cpp ${LAUNCHER}/daemon.cpp
 ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
