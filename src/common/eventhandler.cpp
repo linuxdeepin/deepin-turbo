@@ -18,8 +18,8 @@ void EventHandler::runEventLoop()
     Logger::logError(" EventHandler::runEventLoop() ");
 
     // Exit from event loop when invoker is ready to connect
-    connect(this, SIGNAL(connectionAccepted()), MApplication::instance() , SLOT(quit()));
-    connect(this, SIGNAL(connectionRejected()), MApplication::instance() , SLOT(quit()));
+    connect(this, SIGNAL(connectionAccepted()), QApplication::instance() , SLOT(quit()));
+    connect(this, SIGNAL(connectionRejected()), QApplication::instance() , SLOT(quit()));
 
     // Enable theme change handler
     m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
