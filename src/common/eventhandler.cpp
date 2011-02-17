@@ -4,12 +4,13 @@
 #include "booster.h"
 #include <sys/socket.h>
 #include <QtConcurrentRun>
+#include <QApplication>
 #include <MApplication>
 
 int EventHandler::m_sighupFd[2];
 struct sigaction EventHandler::m_oldSigAction;
 
-EventHandler::EventHandler(Booster* parent) : m_item(0), m_parent(parent)
+EventHandler::EventHandler(Booster* parent,  EventHandlerType type) : m_item(0), m_parent(parent), m_type(type)
 {
 }
 
@@ -17,13 +18,22 @@ void EventHandler::runEventLoop()
 {
     Logger::logError(" EventHandler::runEventLoop() ");
 
-    // Exit from event loop when invoker is ready to connect
-    connect(this, SIGNAL(connectionAccepted()), QApplication::instance() , SLOT(quit()));
-    connect(this, SIGNAL(connectionRejected()), QApplication::instance() , SLOT(quit()));
+    if (m_type == MEventHandler)
+    {
+        // Exit from event loop when invoker is ready to connect
+        connect(this, SIGNAL(connectionAccepted()), MApplication::instance(), SLOT(quit()));
+        connect(this, SIGNAL(connectionRejected()), MApplication::instance(), SLOT(quit()));
 
-    // Enable theme change handler
-    m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
-    connect(m_item, SIGNAL(valueChanged()), this, SLOT(notifyThemeChange()));
+        // Enable theme change handler
+        m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
+        connect(m_item, SIGNAL(valueChanged()), this, SLOT(notifyThemeChange()));
+    }
+    else if (m_type == QEventHandler)
+    {
+        // Exit from event loop when invoker is ready to connect
+        connect(this, SIGNAL(connectionAccepted()), QApplication::instance(), SLOT(quit()));
+        connect(this, SIGNAL(connectionRejected()), QApplication::instance(), SLOT(quit()));
+    }
 
     // Start another thread to listen connection from invoker
     QtConcurrent::run(this, &EventHandler::accept);
@@ -47,8 +57,11 @@ void EventHandler::runEventLoop()
         handlerIsSet = true;
     }
 
-    // Run event loop so MApplication and MApplicationWindow objects can receive notifications
-    MApplication::exec();
+    // Run event loop so application instance can receive notifications
+    if (m_type == MEventHandler)
+        MApplication::exec();
+    else if (m_type == QEventHandler)
+        QApplication::exec();
 
     // Disable theme change handler
     disconnect(m_item, 0, this, 0);
@@ -72,11 +85,11 @@ void EventHandler::accept()
     {
         emit connectionRejected();
     }
-
 }
 
 void EventHandler::notifyThemeChange()
 {
+    // only MApplication is connected to this signal
     MApplication::quit();
     ::_exit(EXIT_SUCCESS);
 }
@@ -96,7 +109,11 @@ void EventHandler::hupSignalHandler(int)
 
 void EventHandler::handleSigHup()
 {
-    MApplication::quit();
+    if (m_type == MEventHandler)
+        MApplication::quit();
+    else if (m_type == QEventHandler)
+        QApplication::quit();
+
     ::_exit(EXIT_SUCCESS);
 }
 

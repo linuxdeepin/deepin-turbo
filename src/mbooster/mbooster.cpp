@@ -78,7 +78,7 @@ bool MBooster::receiveDataFromInvoker(int socketFd)
         // Setup the conversation channel with the invoker.
         setConnection(new Connection(socketFd));
 
-        EventHandler handler(this);
+        EventHandler handler(this, EventHandler::MEventHandler);
         handler.runEventLoop();
 
         if (!connection()->connected())

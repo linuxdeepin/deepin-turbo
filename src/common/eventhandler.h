@@ -15,8 +15,14 @@ class EventHandler : public QObject
 
 public:
 
+    enum EventHandlerType 
+    {
+        QEventHandler,
+        MEventHandler
+    };
+
     //! \brief Constructor
-    EventHandler(Booster* parent);
+    EventHandler(Booster* parent, EventHandlerType type);
 
     //! \brief Destructor
     virtual ~EventHandler() {}
@@ -51,6 +57,9 @@ private:
 
     // Parent object
     Booster* m_parent;
+
+    // type of application's event loop
+    const EventHandlerType m_type;
 
 private slots:
 
