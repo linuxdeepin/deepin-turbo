@@ -103,15 +103,17 @@ class SecurityTests(unittest.TestCase):
             st, op = commands.getstatusoutput("creds-test %s" % cred)
             return op.split()[3]
 
-        return [cred2str(cred) for cred in creds]
+        creds = [cred2str(cred) for cred in creds]
+
+        return self.filter_creds(creds)
         
     def test_correct_creds(self):
         """
         Test that the fala_ft_creds* applications have the correct
         credentials set (check aegis file included in the debian package)
         """
-        creds1 = launch_and_get_creds('/usr/bin/fala_ft_creds1')
-        creds2 = launch_and_get_creds('/usr/bin/fala_ft_creds2')
+        creds1 = self.filter_creds(launch_and_get_creds('/usr/bin/fala_ft_creds1'))
+        creds2 = self.filter_creds(launch_and_get_creds('/usr/bin/fala_ft_creds2'))
 
         self.assert_(creds1 != None, "couldn't get credentials")
         self.assert_(creds2 != None, "couldn't get credentials")
