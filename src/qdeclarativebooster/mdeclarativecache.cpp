@@ -69,11 +69,6 @@ void MDeclarativeCachePrivate::populate()
     }
 
     if (qApplicationInstance == 0) {
-#ifdef __arm__
-        QApplication::setGraphicsSystem("meego");
-#else
-        QApplication::setGraphicsSystem("raster");
-#endif
         qApplicationInstance = new QApplication(initialArgc, initialArgv);
     }
 
