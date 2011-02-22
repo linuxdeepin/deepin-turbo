@@ -1,3 +1,11 @@
+applauncherd (0.18.3) stable; urgency=low
+
+  * Fixes: NB#228729 - MDeclarativeBooster does [not] launch applications with meego-graphicssystem support
+  * Changes: Remove tcb token from a testapp and fix credential test
+  * Changes: Perf tests splitted into different packages. Fixed the co-ordinate problem
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 22 Feb 2011 12:21:06 +0200
+
 applauncherd (0.18.2) stable; urgency=low
 
   * Changes: add event loop to qdeclarative booster
