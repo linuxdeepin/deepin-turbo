@@ -22,14 +22,20 @@ add_subdirectory(Harmattan/TestScripts)
 # Sub build: Harmattan/art-tests
 add_subdirectory(Harmattan/art-tests)
 
-# Sub build: Harmattan/bug-tests
-add_subdirectory(Harmattan/bug-tests)
+# Sub build: Harmattan/red-tests
+add_subdirectory(Harmattan/red-tests)
 
 # Sub build: Harmattan/functests
 add_subdirectory(Harmattan/functests)
 
-# Sub build: Harmattan/perftests
-add_subdirectory(Harmattan/perftests)
+# Sub build: Harmattan/perftests/qml
+add_subdirectory(Harmattan/perftests/qml)
+
+# Sub build: Harmattan/perftests/qml
+add_subdirectory(Harmattan/perftests/lmt)
+
+# Sub build: Harmattan/perftests/qml
+add_subdirectory(Harmattan/perftests/reference)
 
 # Sub build: Common/unittests
 add_subdirectory(Common/unittests)

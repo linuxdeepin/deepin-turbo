@@ -151,7 +151,9 @@ if @meegoHome.test_object_exists?("LauncherButton", :text => appName)
     icon.refresh
   end
   xpos = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('x')
+  xpos = xpos.to_i + 59
   ypos = @meegoHome.LauncherButton(:name => "LauncherButton", :text => appName).attribute('y')
+  ypos = ypos.to_i + 58
   @pos = "#{xpos}x#{ypos}"
   
   puts @pos

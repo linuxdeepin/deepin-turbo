@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-libmeegotouch-perf-tests" domain="Application framework"> 
+
+    <set name="test-command-line" description="Application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="Perf-Test-Command-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="500" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_wl -b "fala_wl" -s 600 -t 50 -w 10 -f "/tmp/fala_wl.log" &gt; /tmp/perf_commandline_with_launcher.txt</step>
+      </case>
+
+      <post_steps>
+          <step>cp /tmp/fala_wl.log /tmp/cmdline_fala_wl.log</step>
+      </post_steps>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <get>
+          <file>/tmp/perf_commandline_with_launcher.txt</file>
+          <file>/tmp/cmdline_fala_wl.log</file>
+      </get>
+    </set>
+
+    <set name="test-applicationGrid" description="Application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+
+      <case name="Perf-Test-Grid-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="840" level="System" insignificant="true">
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wl -b "fala_wl" -s 750 -t 50 -w 10 -f "/tmp/fala_wl.log" &gt; /tmp/perf_grid_with_launcher.txt</step>
+      </case>
+
+      <post_steps>
+          <step>cp /tmp/fala_wl.log /tmp/grid_fala_wl.log</step>
+      </post_steps>
+
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <get>
+          <file>/tmp/perf_grid_with_launcher.txt</file>
+          <file>/tmp/grid_fala_wl.log</file>
+      </get>
+
+    </set>
+
+  </suite>
+</testdefinition>
+
+

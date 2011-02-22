@@ -101,23 +101,37 @@ XB-Maemo-CI-Stage:acceptance, validation
 Description: applauncherd art tests
  Art tests for testing applauncherd.
 
-Package: applauncherd-bug-tests
+Package: applauncherd-red-tests
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast, staging
-Description: applauncherd bug tests
- Tests related to bugs for testing applauncherd.
+Description: Tests related to bugs and new features for applauncherd 
 
-Package: applauncherd-performance-tests
+Package: applauncherd-libmeegotouch-perf-tests
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast, staging
-Description: applauncherd performance tests
- Performance testing binaries and shellscripts for testing applauncherd. 
+Description: applauncherd performance tests for libmeegotouch applications
+
+Package: applauncherd-qml-perf-tests
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging
+Description: applauncherd performance tests for qml applications
+
+Package: applauncherd-reference-perf-tests
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging
+Description: applauncherd performance tests for libmeegotouch applications without launcher
 
 Package: applauncherd-doc
 Depends: ${misc:Depends}
