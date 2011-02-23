@@ -147,3 +147,10 @@ Description: Single instance binary for applauncherd
  executes new instance if not already running.
  Allows command line parameter --single-instance for invoker.
 
+Package: applauncherd-single-instance-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: applauncherd-single-instance (= ${binary:Version}), ${misc:Depends}
+Description: applauncherd single-instance debug package
+ Debug symbols for single-instance binary
