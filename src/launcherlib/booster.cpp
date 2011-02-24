@@ -298,7 +298,7 @@ void Booster::renameProcess(int parentArgc, char** parentArgv,
     }
 }
 
-int Booster::launchProcess()
+void Booster::setEnvironmentBeforeLaunch()
 {
     // Possibly restore process priority
     errno = 0;
@@ -342,9 +342,6 @@ int Booster::launchProcess()
     }
 #endif
 
-    // Load the application and find out the address of main()
-    void* handle = loadMain();
-
     // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_appData->ioDescriptors().size(); i++)
     {
@@ -369,6 +366,17 @@ int Booster::launchProcess()
         char * launch = const_cast<char *>(strstr(m_appData->argv()[0], ".launch"));
         *launch = '\0';
     }
+}
+
+int Booster::launchProcess()
+{
+    setEnvironmentBeforeLaunch();
+
+    // Load the application and find out the address of main()
+    void* handle = loadMain();
+
+    // Set dumpable flag
+    prctl(PR_SET_DUMPABLE, 1);
 
     // Set dumpable flag
     prctl(PR_SET_DUMPABLE, 1);

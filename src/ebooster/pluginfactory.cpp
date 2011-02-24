@@ -17,20 +17,29 @@
 **
 ****************************************************************************/
 
-#ifndef INVOKELIB_H
-#define INVOKELIB_H
+#include "ebooster.h"
+#include <QtCore>
 
-#include <stdbool.h>
-#include <stdint.h>
+extern "C" 
+{
+    // Create a new plugin instance.
+    Q_DECL_EXPORT void * create()
+    {
+        return new EBooster;
+    }    
 
-void invoke_send_msg(int fd, uint32_t msg);
-void invoke_recv_msg(int fd, uint32_t *msg);
+    Q_DECL_EXPORT char type()
+    {
+        return EBooster::type();
+    }
 
-void invoke_send_str(int fd, char *str);
+    Q_DECL_EXPORT const char * socketName()
+    {
+        return EBooster::socketName().c_str();
+    }
 
-#define INVOKER_M_SOCK     "/tmp/boostm"
-#define INVOKER_QT_SOCK    "/tmp/boostq"
-#define INVOKER_QDECL_SOCK "/tmp/boostd"
-#define INVOKER_EXEC_SOCK  "/tmp/booste"
-
-#endif
+    Q_DECL_EXPORT const char * temporaryProcessName()
+    {
+        return EBooster::temporaryProcessName().c_str();
+    }
+}

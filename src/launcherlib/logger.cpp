@@ -26,7 +26,7 @@
 
 
 bool Logger::m_isOpened  = false;
-bool Logger::m_debugMode  = false;
+bool Logger::m_debugMode = false;
 
 void Logger::openLog(const char * progName)
 {
@@ -46,15 +46,15 @@ void Logger::closeLog()
 
 void Logger::writeLog(const int priority, const char * format, va_list ap) 
 {
+    // In debug mode everything is printed also to stdout
+    if (m_debugMode)
+    {
+        vprintf(format, ap);
+        printf("\n");
+    }
+
     if (Logger::m_isOpened)
     {
-        // In debug mode everything is printed also to stdout
-        if (m_debugMode)
-        {
-            vprintf(format, ap);
-            printf("\n");
-        }
-
         // Print to syslog
         vsyslog(priority, format, ap);
     }

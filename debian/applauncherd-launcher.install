@@ -1,6 +1,7 @@
 usr/bin/applauncherd.bin
 usr/lib/applauncherd/libapplauncherd.so
 usr/bin/applauncherd
+usr/lib/applauncherd/libebooster.so
 usr/lib/applauncherd/libmbooster.so
 usr/lib/applauncherd/libqtbooster.so
 usr/lib/applauncherd/libqdeclarativebooster.so

@@ -17,8 +17,8 @@
 **
 ****************************************************************************/
 
-#ifndef MBOOSTER_H
-#define MBOOSTER_H
+#ifndef EBOOSTER_H
+#define EBOOSTER_H
 
 #include "booster.h"
 #include "eventhandler.h"
@@ -29,26 +29,23 @@ using std::tr1::shared_ptr;
 #include <signal.h>
 
 /*!
-    \class MBooster
-    \brief MeeGo Touch -specific version of the Booster.
+    \class EBooster
+    \brief EBooster is a "booster" that only exec()'s the given binary.
 
-    MBooster effectively fills MComponentCache with fresh objects.
-    MeeGo Touch applications can then try to use already initialized objects 
-    from MComponentCache. This can significantly reduce the startup time of a 
-    MeeGo Touch application.
+    This can be used with e.g. splash screen to launch any application.
  */
-class MBooster : public Booster
+class EBooster : public Booster
 {
 public:
 
     //! \brief Constructor
-    MBooster() {}
+    EBooster() {}
 
     //! \brief Destructor
-    virtual ~MBooster() {}
+    virtual ~EBooster() {}
 
     /*!
-     * \brief Return the socket name common to all MBooster objects.
+     * \brief Return the socket name common to all EBooster objects.
      * \return Path to the socket file.
      */
     static const string & socketName();
@@ -64,7 +61,7 @@ public:
     virtual char boosterType() const { return type(); }
 
     /*!
-     * \brief Return a unique character ('m') represtenting the type of MBoosters.
+     * \brief Return a unique character ('e') represtenting the type of EBoosters.
      * \return Type character.
      */
     static char type();
@@ -75,18 +72,18 @@ public:
 protected:
 
     //! \reimp
-    virtual bool preload();
+    virtual int launchProcess();
 
     //! \reimp
-    virtual bool receiveDataFromInvoker(int socketFd);
+    virtual bool preload();
 
 private:
 
     //! Disable copy-constructor
-    MBooster(const MBooster & r);
+    EBooster(const EBooster & r);
 
     //! Disable assignment operator
-    MBooster & operator= (const MBooster & r);
+    EBooster & operator= (const EBooster & r);
 
     static const string m_socketId;
 
@@ -107,8 +104,8 @@ private slots:
 
 
 #ifdef UNIT_TEST
-    friend class Ut_MBooster;
+    friend class Ut_EBooster;
 #endif
 };
 
-#endif // MBOOSTER_H
+#endif // EBooster_H

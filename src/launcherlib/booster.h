@@ -81,7 +81,7 @@ public:
 
     /*!
      * \brief Run the application to be invoked.
-     * This method causes the application binary to be loaded
+     * By default, this method causes the application binary to be loaded
      * using dlopen(). Program execution jumps to the address of
      * "main()" found in the newly loaded library. The Booster process
      * exits with corresponding exit-code after the execution of
@@ -147,6 +147,18 @@ public:
 protected:
 
     /*!
+     * Set process environment (UID, GID..) before launch.
+     * Re-implement if needed. This is automatically called by
+     * launchProcess().
+     */
+    virtual void setEnvironmentBeforeLaunch();
+
+    /*! Load the library and jump to main.
+     * Re-implement if needed.
+     */
+    virtual int launchProcess();
+
+    /*!
      * \brief Preload libraries / initialize cache etc.
      * Called from initialize if not in the boot mode.
      * Re-implement in the custom Booster.
@@ -189,9 +201,6 @@ private:
     //! Send data to the parent process (invokers pid, respwan delay)
     //! and signal that a new booster can be created.
     void sendDataToParent();
-
-    //! Load the library and jump to main
-    int launchProcess();
 
     //! Helper method: load the library and find out address for "main".
     void* loadMain();

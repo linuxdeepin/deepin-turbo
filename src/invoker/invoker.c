@@ -56,11 +56,12 @@ static const unsigned char EXIT_STATUS_APPLICATION_CONNECTION_LOST = 0xfa;
 static const unsigned char EXIT_STATUS_APPLICATION_NOT_FOUND = 0x7f;
 
 // Enumeration of possible application types:
-// M_APP    : MeeGo Touch application
-// QT_APP   : Qt/generic application
-// QDECL_APP: QDeclarative (QML) application
+// M_APP     : MeeGo Touch application
+// QT_APP    : Qt/generic application
+// QDECL_APP : QDeclarative (QML) application
+// EXEC_APP  : Executable generic application (can be used with splash screen)
 //
-enum APP_TYPE { M_APP, QT_APP, QDECL_APP, UNKNOWN_APP };
+enum APP_TYPE { M_APP, QT_APP, QDECL_APP, EXEC_APP, UNKNOWN_APP };
 
 // Environment
 extern char ** environ;
@@ -209,6 +210,10 @@ static int invoker_init(enum APP_TYPE app_type)
     else if (app_type == QDECL_APP)
     {
       strncpy(sun.sun_path, INVOKER_QDECL_SOCK, maxSize);
+    }
+    else if (app_type == EXEC_APP)
+    {
+      strncpy(sun.sun_path, INVOKER_EXEC_SOCK, maxSize);
     }
     else
     {
@@ -402,8 +407,10 @@ static void usage(int status)
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
            "  m                      Launch a MeeGo Touch application.\n"
-           "  qt                     Launch a Qt application.\n"
-           "  d                      Launch a Qt Declarative (QML) application.\n\n"
+           "  q (or qt)              Launch a Qt application.\n"
+           "  d                      Launch a Qt Declarative (QML) application.\n"
+           "  e                      Launch any application, even if it's not a library.\n"
+           "                         Can be used if only splash screen is wanted.\n\n"
            "Options:\n"
            "  -c, --creds            Print Aegis security credentials (if enabled).\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
@@ -650,6 +657,8 @@ int main(int argc, char *argv[])
                 app_type = QT_APP;
             else if (strcmp(optarg, "d") == 0)
                 app_type = QDECL_APP;
+            else if (strcmp(optarg, "e") == 0)
+                app_type = EXEC_APP;
             else
             {
                 report(report_error, "Unknown application type: %s \n", optarg);
