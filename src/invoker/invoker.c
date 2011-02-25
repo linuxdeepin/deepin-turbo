@@ -278,14 +278,18 @@ static void invoker_send_magic(int fd, uint32_t options)
 // Sends the process name to be invoked.
 static void invoker_send_name(int fd, char *name)
 {
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_NAME);
     invoke_send_str(fd, name);
 }
 
+static void invoker_send_splash_file(int fd, char *filename)
+{
+    invoke_send_msg(fd, INVOKER_MSG_SPLASH);
+    invoke_send_str(fd, filename);
+}
+
 static void invoker_send_exec(int fd, char *exec)
 {
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_EXEC);
     invoke_send_str(fd, exec);
 }
@@ -294,7 +298,6 @@ static void invoker_send_args(int fd, int argc, char **argv)
 {
     int i;
 
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_ARGS);
     invoke_send_msg(fd, argc);
     for (i = 0; i < argc; i++)
@@ -306,7 +309,6 @@ static void invoker_send_args(int fd, int argc, char **argv)
 
 static void invoker_send_prio(int fd, int prio)
 {
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_PRIO);
     invoke_send_msg(fd, prio);
 }
@@ -314,7 +316,6 @@ static void invoker_send_prio(int fd, int prio)
 // Sends booster respawn delay
 static void invoker_send_delay(int fd, int delay)
 {
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_DELAY);
     invoke_send_msg(fd, delay);
 }
@@ -322,7 +323,6 @@ static void invoker_send_delay(int fd, int delay)
 // Sends UID and GID
 static void invoker_send_ids(int fd, int uid, int gid)
 {
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_IDS);
     invoke_send_msg(fd, uid);
     invoke_send_msg(fd, gid);
@@ -336,7 +336,6 @@ static void invoker_send_env(int fd)
     // Count environment variables.
     for (n_vars = 0; environ[n_vars] != NULL; n_vars++) ;
 
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_ENV);
     invoke_send_msg(fd, n_vars);
 
@@ -389,7 +388,6 @@ static void invoker_send_io(int fd)
 // Sends the END message
 static void invoker_send_end(int fd)
 {
-    // Send action.
     invoke_send_msg(fd, INVOKER_MSG_END);
     invoke_recv_ack(fd);
 
@@ -420,6 +418,11 @@ static void usage(int status)
            "  -s, --single-instance  Launch the application as a single instance.\n"
            "                         The existing application window will be activated\n"
            "                         if already launched.\n"
+           "  -S, --splash FILE      Show splash screen from the FILE.\n"
+           "  -L, --splash-landscape LANDSCAPE-FILE\n"
+           "                         Show splash screen from the LANDSCAPE-FILE\n"
+           "                         in case the device is in landscape orientation.\n"
+           "                         (To be implemented)\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
@@ -482,7 +485,8 @@ void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 
 // "normal" invoke through a socket connection
 int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
-                  uint32_t magic_options, bool wait_term, unsigned int respawn_delay)
+                  uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
+                  char *splash_file)
 {
     int status = 0;
 
@@ -503,6 +507,8 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
     invoker_send_prio(fd, prog_prio);
     invoker_send_delay(fd, respawn_delay);
     invoker_send_ids(fd, getuid(), getgid());
+    if (( magic_options & INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN ) != 0)
+        invoker_send_splash_file(fd, splash_file);
     invoker_send_io(fd);
     invoker_send_env(fd);
     invoker_send_end(fd);
@@ -533,7 +539,8 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
 
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
-                  enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay)
+                  enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
+                  char *splash_file)
 {
     int status = 0;
 
@@ -551,7 +558,8 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         else
         {
             status = invoke_remote(fd, prog_argc, prog_argv, prog_name,
-                                   magic_options, wait_term, respawn_delay);
+                                   magic_options, wait_term, respawn_delay,
+                                   splash_file);
             close(fd);
         }
     }
@@ -569,6 +577,7 @@ int main(int argc, char *argv[])
     unsigned int  respawn_delay = RESPAWN_DELAY;
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
+    char         *splash_file   = NULL;
     struct stat   file_stat;
 
     // wait-term parameter by default
@@ -597,13 +606,15 @@ int main(int argc, char *argv[])
         {"type",      required_argument, NULL, 't'},
         {"delay",     required_argument, NULL, 'd'},
         {"respawn",   required_argument, NULL, 'r'},
+        {"splash",    required_argument, NULL, 'S'},
+        {"splash-landscape", required_argument, NULL, 'L'},
         {0, 0, 0, 0}
     };
 
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwnGDsd:t:r:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwnGDsd:t:r:S:L:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -663,6 +674,16 @@ int main(int argc, char *argv[])
             magic_options |= INVOKER_MSG_MAGIC_OPTION_SINGLE_INSTANCE;
             break;
 
+        case 'S':
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN;
+            splash_file = optarg;
+            break;
+
+        case 'L':
+            // Just a placeholder for future development
+            // of landscape splash screen
+            break;
+
         case '?':
             usage(1);
         }
@@ -712,7 +733,7 @@ int main(int argc, char *argv[])
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file);
 
     // Sleep for delay before exiting
     if (delay)

@@ -36,7 +36,6 @@
 
 #include <sys/types.h>
 #include <grp.h>
-
 #ifdef HAVE_CREDS
 #include <sys/creds.h>
 

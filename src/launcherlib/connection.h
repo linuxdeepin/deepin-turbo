@@ -125,6 +125,9 @@ private:
     //! Receive booster respawn delay
     bool receiveDelay();
 
+    //! Receive filename used as splash screen image
+    bool receiveSplash();
+
     //! Send process pid
     bool sendPid(pid_t pid);
 
@@ -156,6 +159,7 @@ private:
     uint32_t m_priority;
     uint32_t m_delay;
     bool     m_sendPid;
+    string   m_splashFileName;
     gid_t    m_gid;
     uid_t    m_uid;
 

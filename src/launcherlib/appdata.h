@@ -86,6 +86,12 @@ public:
     //! Return file name
     const string & fileName() const;
 
+    //! Set file name of the image shown as splash screen
+    void setSplashFileName(const string & fileName);
+
+    //! Return file name of the image shown as splash screen
+    const string & splashFileName() const;
+
     //! Set priority
     void setPriority(int priority);
 
@@ -149,6 +155,7 @@ private:
     vector<int> m_ioDescriptors;
     gid_t       m_gid;
     uid_t       m_uid;
+    string      m_splashFileName;
 
 #if defined (HAVE_CREDS)
     creds_t     m_peerCreds;

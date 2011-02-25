@@ -36,7 +36,8 @@ AppData::AppData() :
     m_entry(NULL),
     m_ioDescriptors(),
     m_gid(0),
-    m_uid(0)
+    m_uid(0),
+    m_splashFileName("")
 #if defined (HAVE_CREDS)
   , m_peerCreds(NULL)
 #endif
@@ -105,6 +106,16 @@ void AppData::setFileName(const string & newFileName)
 const string & AppData::fileName() const
 {
     return m_fileName;
+}
+
+void AppData::setSplashFileName(const string & fileName)
+{
+    m_splashFileName = fileName;
+}
+
+const string & AppData::splashFileName() const
+{
+    return m_splashFileName;
 }
 
 void AppData::setPriority(int newPriority)
