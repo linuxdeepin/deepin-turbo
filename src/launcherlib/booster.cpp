@@ -159,9 +159,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
 
     // Don't care about fate of parent applauncherd process any more
     prctl(PR_SET_PDEATHSIG, 0);
-
-    // Set dumpable flag
-    prctl(PR_SET_DUMPABLE, 1);
 }
 
 bool Booster::bootMode() const
@@ -372,6 +369,9 @@ int Booster::launchProcess()
         char * launch = const_cast<char *>(strstr(m_appData->argv()[0], ".launch"));
         *launch = '\0';
     }
+
+    // Set dumpable flag
+    prctl(PR_SET_DUMPABLE, 1);
 
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
