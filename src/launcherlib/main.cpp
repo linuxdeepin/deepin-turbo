@@ -28,25 +28,30 @@
 
 #define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 
-int  g_sigChldPipeFd = -1;
-int  g_sigTermPipeFd = -1;
-int  g_sigUsr1PipeFd = -1;
-
-char g_dummyPipeData =  0;
+int  g_sigPipeFd       = -1;
+char g_pipeDataSigChld = SIGCHLD;
+char g_pipeDataSigTerm = SIGTERM;
+char g_pipeDataSigUsr1 = SIGUSR1;
+char g_pipeDataSigUsr2 = SIGUSR2;
 
 static void sigChldHandler(int)
 {
-    write(g_sigChldPipeFd, &g_dummyPipeData, 1);
+    write(g_sigPipeFd, &g_pipeDataSigChld, 1);
 }
 
 static void sigTermHandler(int)
 {
-    write(g_sigTermPipeFd, &g_dummyPipeData, 1);
+    write(g_sigPipeFd, &g_pipeDataSigTerm, 1);
 }
 
 static void sigUsr1Handler(int)
 {
-    write(g_sigUsr1PipeFd, &g_dummyPipeData, 1);
+    write(g_sigPipeFd, &g_pipeDataSigUsr1, 1);
+}
+
+static void sigUsr2Handler(int)
+{
+    write(g_sigPipeFd, &g_pipeDataSigUsr2, 1);
 }
 
 //! Main function
@@ -65,15 +70,14 @@ DECL_EXPORT int main(int argc, char * argv[])
     // Create main daemon instance
     Daemon myDaemon(argc, argv);
 
-    // Get fd's for signal pipes.
-    g_sigChldPipeFd = myDaemon.sigChldPipeFd();
-    g_sigTermPipeFd = myDaemon.sigTermPipeFd();
-    g_sigUsr1PipeFd = myDaemon.sigUsr1PipeFd();
+    // Get fd for signal pipe.
+    g_sigPipeFd = myDaemon.sigPipeFd();
 
     // Install signal handlers
     signal(SIGCHLD, sigChldHandler); // reap zombies
     signal(SIGTERM, sigTermHandler); // exit launcher
-    signal(SIGUSR1, sigUsr1Handler); // restore normal mode
+    signal(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
+    signal(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
 
     // Run the main loop
     myDaemon.run();

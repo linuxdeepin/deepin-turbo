@@ -90,14 +90,11 @@ public:
     //! Unlock file (lock is not needed in boosters)
     static void unlock();
 
-    //! Get fd to write when SIGCHLD arrives
-    int sigChldPipeFd() const;
-
-    //! Get fd to write when SIGTERM arrives
-    int sigTermPipeFd() const;
-
-    //! Get fd to write when SIGUSR1 arrives
-    int sigUsr1PipeFd() const;
+    /*!
+     * Get fd to which signal handler writes the number
+     * of an arriving Unix signal.
+     */
+    int sigPipeFd() const;
 
 private:
 
@@ -156,6 +153,9 @@ private:
     //! Enter normal mode (restart boosters with cache enabled)
     void enterNormalMode();
 
+    //! Enter boot mode (restart boosters with cache disabled)
+    void enterBootMode();
+
     //! Kill all active boosters with -9
     void killBoosters();
 
@@ -192,14 +192,8 @@ private:
     //! some parameters.
     int m_boosterPipeFd[2];
 
-    //! Pipe used to safely catch SIGCHLD
-    int m_sigChldPipeFd[2];
-
-    //! Pipe used to safely catch SIGTERM
-    int m_sigTermPipeFd[2];
-
-    //! Pipe used to safely catch SIGUSR1
-    int m_sigUsr1PipeFd[2];
+    //! Pipe used to safely catch Unix signals
+    int m_sigPipeFd[2];
 
     //! Argument vector initially given to the launcher process
     int m_initialArgc;

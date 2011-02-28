@@ -75,19 +75,9 @@ Daemon::Daemon(int & argc, char * argv[]) :
         Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for boosters failed!\n");
     }
 
-    if (pipe(m_sigChldPipeFd) == -1)
+    if (pipe(m_sigPipeFd) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for SIGCHLD failed!\n");
-    }
-
-    if (pipe(m_sigTermPipeFd) == -1)
-    {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for SIGTERM failed!\n");
-    }
-
-    if (pipe(m_sigUsr1PipeFd) == -1)
-    {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for SIGUSR1 failed!\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for Unix signals failed!\n");
     }
 
     // Daemonize if desired
@@ -202,16 +192,8 @@ void Daemon::run()
         FD_SET(m_boosterPipeFd[0], &rfds);
         ndfs = std::max(ndfs, m_boosterPipeFd[0]);
 
-        FD_SET(m_sigChldPipeFd[0], &rfds);
-        ndfs = std::max(ndfs, m_sigChldPipeFd[0]);
-
-        FD_SET(m_sigTermPipeFd[0], &rfds);
-        ndfs = std::max(ndfs, m_sigTermPipeFd[0]);
-
-        FD_SET(m_sigUsr1PipeFd[0], &rfds);
-        ndfs = std::max(ndfs, m_sigUsr1PipeFd[0]);
-
-        char buffer;
+        FD_SET(m_sigPipeFd[0], &rfds);
+        ndfs = std::max(ndfs, m_sigPipeFd[0]);
 
         // Wait for something appearing in the pipes.
         if (select(ndfs + 1, &rfds, NULL, NULL, NULL) > 0)
@@ -225,28 +207,38 @@ void Daemon::run()
                 readFromBoosterPipe(m_boosterPipeFd[0]);
             }
 
-            // Check if we got SIGCHLD
-            if (FD_ISSET(m_sigChldPipeFd[0], &rfds))
+            // Check if we got SIGCHLD, SIGTERM, SIGUSR1 or SIGUSR2
+            if (FD_ISSET(m_sigPipeFd[0], &rfds))
             {
-                Logger::logDebug("FD_ISSET(m_sigChldPipeFd[0])");
-                read(m_sigChldPipeFd[0], &buffer, 1);
-                reapZombies();
-            }
+                Logger::logDebug("FD_ISSET(m_sigPipeFd[0])");
+                char dataReceived;
+                read(m_sigPipeFd[0], &dataReceived, 1);
 
-            // Check if we got SIGTERM
-            if (FD_ISSET(m_sigTermPipeFd[0], &rfds))
-            {
-                Logger::logDebug("FD_ISSET(m_sigTermPipeFd[0])");
-                read(m_sigTermPipeFd[0], &buffer, 1);
-                exit(EXIT_SUCCESS);
-            }
+                switch (dataReceived)
+                {
+                case SIGCHLD:
+                    Logger::logDebug("SIGCHLD received.");
+                    reapZombies();
+                    break;
 
-            // Check if we got SIGUSR1
-            if (FD_ISSET(m_sigUsr1PipeFd[0], &rfds))
-            {
-                Logger::logDebug("FD_ISSET(m_sigUsr1PipeFd[0])");
-                read(m_sigUsr1PipeFd[0], &buffer, 1);
-                enterNormalMode();
+                case SIGTERM:
+                    Logger::logDebug("SIGTERM received.");
+                    exit(EXIT_SUCCESS);
+                    break;
+
+                case SIGUSR1:
+                    Logger::logDebug("SIGUSR1 received.");
+                    enterNormalMode();
+                    break;
+
+                case SIGUSR2:
+                    Logger::logDebug("SIGUSR2 received.");
+                    enterBootMode();
+                    break;
+
+                default:
+                    break;
+                }
             }
         }
     }
@@ -418,17 +410,9 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Close unused read end of the booster pipe
         close(m_boosterPipeFd[0]);
 
-        // Close SIGCHLD pipe
-        close(m_sigChldPipeFd[0]);
-        close(m_sigChldPipeFd[1]);
-
-        // Close SIGTERM pipe
-        close(m_sigTermPipeFd[0]);
-        close(m_sigTermPipeFd[1]);
-
-        // Close SIGUSR1 pipe
-        close(m_sigUsr1PipeFd[0]);
-        close(m_sigUsr1PipeFd[1]);
+        // Close signal pipe
+        close(m_sigPipeFd[0]);
+        close(m_sigPipeFd[1]);
 
         // Close unused sockets inherited from daemon
         closeUnusedSockets(type);
@@ -690,7 +674,9 @@ void Daemon::usage(int status)
            "  -b, --boot-mode  Start %s in the boot mode. This means that\n"
            "                   boosters will not initialize caches and booster\n"
            "                   respawn delay is set to zero.\n"
-           "                   The normal mode is restored by sending SIGUSR1\n"
+           "                   Normal mode is restored by sending SIGUSR1\n"
+           "                   to the launcher.\n"
+           "                   Boot mode can be activated also by sending SIGUSR2\n"
            "                   to the launcher.\n"
            "  -d, --daemon     Run as %s a daemon.\n"
            "  --debug          Enable debug messages and log everything also to stdout.\n"
@@ -701,19 +687,9 @@ void Daemon::usage(int status)
     exit(status);
 }
 
-int Daemon::sigChldPipeFd() const
+int Daemon::sigPipeFd() const
 {
-    return m_sigChldPipeFd[1];
-}
-
-int Daemon::sigTermPipeFd() const
-{
-    return m_sigTermPipeFd[1];
-}
-
-int Daemon::sigUsr1PipeFd() const
-{
-    return m_sigUsr1PipeFd[1];
+    return m_sigPipeFd[1];
 }
 
 void Daemon::enterNormalMode()
@@ -726,6 +702,27 @@ void Daemon::enterNormalMode()
         killBoosters();
 
         Logger::logInfo("Daemon: Exited boot mode.");
+    }
+    else
+    {
+        Logger::logInfo("Daemon: Already in normal mode.");
+    }
+}
+
+void Daemon::enterBootMode()
+{
+    if (!m_bootMode)
+    {
+        m_bootMode = true;
+
+        // Kill current boosters
+        killBoosters();
+
+        Logger::logInfo("Daemon: Entered boot mode.");
+    }
+    else
+    {
+        Logger::logInfo("Daemon: Already in boot mode.");
     }
 }
 

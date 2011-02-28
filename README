@@ -357,8 +357,11 @@ set to zero to ensure quick booster restarts after launches.
 The boot mode is activated by starting applauncherd with --boot-mode. Normal mode
 can be entered again by sending SIGUSR1 Unix signal to the launcher.
 
+Boot mode can be activated also by sending SIGUSR2 Unix signal to the launcher.
+
 3.2 Debug info
 
+Applauncherd logs to syslog.
 Additional debug messages and logging also to stdout can be enabled with --debug.
 
 
