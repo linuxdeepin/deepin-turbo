@@ -153,13 +153,13 @@ private:
     int m_curSocket;
 
     string   m_fileName;
+    string   m_splashFileName;
     uint32_t m_argc;
     const char **  m_argv;
     int      m_io[IO_DESCRIPTOR_COUNT];
     uint32_t m_priority;
     uint32_t m_delay;
     bool     m_sendPid;
-    string   m_splashFileName;
     gid_t    m_gid;
     uid_t    m_uid;
 
