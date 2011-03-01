@@ -33,6 +33,11 @@
 #include <sys/resource.h>
 #include <fcntl.h>
 #include <cstring>
+#include <sstream>
+
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
 
 #include <sys/types.h>
 #include <grp.h>
@@ -298,6 +303,68 @@ void Booster::renameProcess(int parentArgc, char** parentArgv,
     }
 }
 
+void Booster::requestSplash(const int pid, const std::string &wmclass, 
+			    const std::string &portraitSplash, const std::string &landscapeSplash,
+			    const std::string &pixmapId)
+{
+    std::stringstream st;
+    st << getpid();
+    std::string pidStr = st.str();
+
+    Display * dpy = XOpenDisplay(NULL);
+    if (dpy) {
+	const char *compositorWindowIdProperty =  "_NET_SUPPORTING_WM_CHECK";
+	Atom compositorWindowIdAtom = XInternAtom(dpy, compositorWindowIdProperty, False);
+	Atom type;
+	int format;
+	unsigned long nItems;
+	unsigned long bytesAfter;
+	unsigned char *prop = 0;
+
+	// Get the compositor window id
+	Window rootWin = XDefaultRootWindow(dpy);
+	int retval = XGetWindowProperty(dpy, rootWin, compositorWindowIdAtom,
+					0, 0x7fffffff, False, XA_WINDOW,
+					&type, &format, &nItems, &bytesAfter, &prop);
+	if(retval == Success) {
+
+	    // Package up the data and set the property
+	    int len = pidStr.length() + 1
+		+ wmclass.length() + 1
+		+ portraitSplash.length() + 1
+		+ landscapeSplash.length() + 1
+		+ pixmapId.length() + 1;
+	    char *data = new char[len];
+	    char *d = data;
+
+	    strcpy(d, pidStr.c_str());
+	    d = d + pidStr.length() + 1;
+	    strcpy(d, wmclass.c_str());
+	    d = d + wmclass.length() + 1;
+	    strcpy(d, portraitSplash.c_str());
+	    d = d + portraitSplash.length() + 1;
+	    strcpy(d, landscapeSplash.c_str());
+	    d = d + landscapeSplash.length() + 1;
+	    strcpy(d, pixmapId.c_str());
+
+	    Window compositorWindow = *reinterpret_cast<Window *>(prop);
+	    const char* splashProperty =  "_MEEGO_SPLASH_SCREEN";
+	    Atom splashPropertyAtom = XInternAtom(dpy, splashProperty, False);
+	    Atom stringAtom = XInternAtom(dpy, "STRING", False);
+
+	    XChangeProperty(dpy, compositorWindow, splashPropertyAtom, stringAtom,
+			    8, PropModeReplace, (unsigned char *)data,
+			    len);
+
+	    // Without flushing, the change seems to loiter in X's queue
+	    XFlush(dpy);
+	    delete[] data;
+	    XFree(prop);
+	}
+    }
+}
+
+
 void Booster::setEnvironmentBeforeLaunch()
 {
     // Possibly restore process priority
@@ -342,6 +409,28 @@ void Booster::setEnvironmentBeforeLaunch()
         Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Failed to setup credentials for launching application: %d\n", err);
     }
 #endif
+
+    // Request splash screen from mcompositor if needed
+    if (m_appData->splashFileName().length() > 0 || m_appData->landscapeSplashFileName().length() > 0) {
+
+	// Construct WM_CLASS from the app absolute path
+	std::string wmclass(m_appData->appName());
+	size_t pos = wmclass.rfind('/');
+	wmclass.erase(0, pos+1);
+	wmclass[0] = toupper(wmclass[0]);
+
+	// Communicate splash data to compositor
+	requestSplash(getpid(), wmclass,
+		      m_appData->splashFileName(),
+		      m_appData->landscapeSplashFileName(),
+
+		      // Compositor can also show an X pixmap as splash,
+		      // but this feature is currently not used.
+		      std::string(""));
+    }
+
+    // Load the application and find out the address of main()
+    void* handle = loadMain();
 
     // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_appData->ioDescriptors().size(); i++)

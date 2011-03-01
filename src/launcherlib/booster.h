@@ -175,6 +175,25 @@ protected:
      */
     virtual bool receiveDataFromInvoker(int socketFd);
 
+    /*!
+     * \brief Request splash from mcompositor
+     * Sets a property in the mcompositor window so that the compositor
+     * knows to present a splash screen. The paths to the splash image
+     * can be either absolute or relative. If they are relative, the
+     * compositor uses a default prefix to turn them into absolute
+     * paths. The splash screen content can also come from a pixmap in
+     * the X server. 
+     *
+     * \param pid The pid of the launched application
+     * \param wmclass The wmclass of the launched application
+     * \param portraitSplash Path to the portrait mode splash image
+     * \param landscapeSplash Path to the landscape mode splash image
+     * \param pixmapId A pixmap id to be used as the splash screen content
+     */
+    void requestSplash(const int pid, const string &wmclass, 
+		       const string &portraitSplash, const string &landscapeSplash, 
+		       const string &pixmapId);
+
     //! Set nice value and store the old priority. Return true on success.
     bool pushPriority(int nice);
 

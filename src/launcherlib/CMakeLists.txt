@@ -15,7 +15,7 @@ qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.
-link_libraries(${LIBDL} )
+link_libraries(${LIBDL} ${X11_LIBRARIES})
 
 # Set executable
 add_library(applauncherd MODULE ${SRC} ${MOC_SRC})

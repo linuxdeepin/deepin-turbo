@@ -16,7 +16,7 @@ set(QT_USE_QTTEST TRUE)
 # Set include paths
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER})
 
-link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBCREDS})
+link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBCREDS} ${X11_LIBRARIES})
 
 # Enable Qt (may not be needed, because already defined on higher level)
 include(${QT_USE_FILE})
