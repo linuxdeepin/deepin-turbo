@@ -193,6 +193,33 @@ Note, that in this case the launcher is not used.
 Consider using --single-instance instead of the single instance functionality
 provided by D-Bus, because it very likely is much faster.
 
+2.4 Splash screen
+
+Applauncherd supports showing a splash screen if there is mcompositor
+(the MeeGo window manager) running.
+
+The splash screen is not shown by default. If an application wants it
+to be shown, it must pass --splash, and optionally --splash-landscape
+arguments to the invoker.
+
+For instance,
+
+/usr/bin/invoker --splash=/usr/share/application_name/splash.jpg \
+		 --splash-landscape=/usr/share/application_name/splash-l.jpg \
+		 --type=d \
+		 /usr/bin/application_name
+
+shows the splash screen with splash.jpg as its content when the device
+is in the portrait orientation. Otherwise splash-l.jpg is shown. If
+only --splash is given, that image is shown in both orientations.
+
+Invoker passes the splash request to the booster. The booster sends
+the splash request to the window manager by setting a window property
+to window manager's window.
+
+If the filenames do not include absolute paths, the window manager
+looks for the files from a default location.
+
 3. PACKAGE DEPENDENCIES
 
 Applications using the launcher must depend on the applauncherd Debian package.

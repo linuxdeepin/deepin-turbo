@@ -102,6 +102,10 @@ rm -rf %{buildroot}
 # move them elsewhere and leave a symlink in place.
 mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 (cd %{buildroot}/usr/share; ln -s ../lib/applauncherd-tests)
+
+# applauncherd expects the theme daemon socket in /var/tmp in Harmattan,
+# but it is in /tmp in MeeGo. Drop in a symbolic link as an interim solution.
+(cd %{buildroot}/var/tmp; ln -s ../../tmp/m.mthemedaemon)
 # << install post
 
 
