@@ -49,6 +49,11 @@
       <case name="applauncherd__test_launch_prestarted_app" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb --name test_launch_prestarted_app</step>
       </case>
+
+      <case name="applauncherd__test_core_dump" type="Functional" description="Test that core dumps are generated with boosted applications" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-core-dump.py test_core_dumps</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
