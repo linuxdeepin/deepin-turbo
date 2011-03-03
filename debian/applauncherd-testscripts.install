@@ -12,3 +12,4 @@ usr/share/applauncherd-testscripts/fala_xres_wl
 usr/share/applauncherd-testscripts/fala_xres_wol
 usr/share/applauncherd-testscripts/signal-forward/*
 usr/share/applauncherd-testscripts/test-single-instance.py
+usr/share/applauncherd-testscripts/test-core-dump.py

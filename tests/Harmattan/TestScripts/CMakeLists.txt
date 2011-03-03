@@ -10,6 +10,7 @@ if ($ENV{HARMATTAN})
         utils.py
         test-security.py
         test-single-instance.py
+        test-core-dump.py
         DESTINATION /usr/share/applauncherd-testscripts)
 
     install(PROGRAMS
