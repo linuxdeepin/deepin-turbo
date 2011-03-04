@@ -46,6 +46,10 @@
           <step expected_result="0">/usr/share/applauncherd-tests/ut_qtbooster</step>
       </case>
 
+      <case name="EBooster" type="Functional" description="Unit tests for EBooster class" level="Component" timeout="20">
+          <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_ebooster'</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

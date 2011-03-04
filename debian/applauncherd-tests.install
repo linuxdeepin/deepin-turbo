@@ -4,7 +4,7 @@ usr/share/applauncherd-tests/ut_boosterfactory
 usr/share/applauncherd-tests/ut_daemon
 usr/share/applauncherd-tests/ut_connection
 usr/share/applauncherd-tests/ut_dbooster
+usr/share/applauncherd-tests/ut_ebooster
 usr/share/applauncherd-tests/ut_mbooster
 usr/share/applauncherd-tests/ut_qtbooster
 usr/share/applauncherd-tests/ut_socketmanager
-

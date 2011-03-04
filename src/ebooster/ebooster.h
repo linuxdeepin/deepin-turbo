@@ -21,12 +21,9 @@
 #define EBOOSTER_H
 
 #include "booster.h"
-#include "eventhandler.h"
 #include <tr1/memory>
 
 using std::tr1::shared_ptr;
-
-#include <signal.h>
 
 /*!
     \class EBooster
@@ -93,15 +90,6 @@ private:
 
     //! wait for socket connection
     void accept();
-
-private slots:
-
-    //! Qt signal handler for SIGHUP.
-    void handleSigHup();
-
-    //! Qt signal handler for theme change
-    void notifyThemeChange();
-
 
 #ifdef UNIT_TEST
     friend class Ut_EBooster;

@@ -12,11 +12,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 # Set sources
 set(SRC ebooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
 ${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
-${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp
-${COMMON}/eventhandler.cpp)
-
-set(MOC_HDRS ${COMMON}/eventhandler.h)
-qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
+${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set libraries to be linked.
 link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY})
