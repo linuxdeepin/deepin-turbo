@@ -61,7 +61,7 @@ class CoreDumpTests(unittest.TestCase):
     def test_core_dumps(self):
         self.assert_(get_pid('booster-m') != None, "applauncherd is not running!")
         
-        run_app_as_user(APP)
+        run_app_as_user_with_invoker(APP, arg = '--no-wait')
 
         time.sleep(3)
 

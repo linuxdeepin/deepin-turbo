@@ -177,24 +177,24 @@ class SecurityTests(unittest.TestCase):
         FAKE_INVOKER_BINARY='/usr/bin/faulty_inv'
         
         #test application used for testing invoker
-        Testapp = '/usr/bin/fala_ft_hello.launch'
+        Testapp = '/usr/bin/fala_ft_hello'
 
         #launching the testapp with actual invoker
         debug("launching the testapp with actual invoker")
         
         st = os.system('%s --type=m --no-wait %s'%(INVOKER_BINARY, Testapp))
-        pid = get_pid(Testapp.replace('.launch', ''))
+        pid = get_pid(Testapp)
         self.assert_((st == 0), "Application was not launched using launcher")
         self.assert_(not (pid == None), "Application was not launched using launcher: actual pid%s" %pid)
 
         kill_process(apppid=pid)  
-        pid = get_pid(Testapp.replace('.launch', '')) 
+        pid = get_pid(Testapp) 
         self.assert_((pid == None), "Application still running")        
         
         #launching the testapp with fake invoker
         debug("launching the testapp with fake invoker")
         st = os.system('%s --type=m --no-wait %s'%(FAKE_INVOKER_BINARY, Testapp)) 
-        pid = get_pid(Testapp.replace('.launch', ''))
+        pid = get_pid(Testapp)
         self.assert_(not (st == 0), "Application was launched using fake launcher")
         self.assert_((pid == None), "Application was launched using fake launcher")
 
@@ -215,8 +215,7 @@ class SecurityTests(unittest.TestCase):
 
             # launch an application, leave invoker running
             print "launching application"
-            invoker = run_app_as_user('/usr/bin/invoker --type=m --wait-term ' +
-                                      'fala_ft_hello.launch')
+            invoker = run_app_as_user_with_invoker('/usr/bin/fala_ft_hello', booster = 'm', arg = '--wait-term')
 
             time.sleep(2)
 

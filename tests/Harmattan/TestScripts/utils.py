@@ -65,23 +65,43 @@ def restart_applauncherd():
     stop_applauncherd()
     start_applauncherd()
 
-def run_app_as_user(appname, out = DEV_NULL, err = DEV_NULL):
+def run_app_as_user_with_invoker(appname, booster = 'm', arg = "", out = DEV_NULL, err = DEV_NULL):
+    """
+    Runs the specified app as a user.
+    """
+    inv_cmd = "/usr/bin/invoker --type=%s %s %s" %(booster,arg, appname)
+    debug ("INVOKER COMMAND : %s" %inv_cmd)
+    debug("run %s as user" %appname)
+    cmd = ['su', '-', 'user', '-c']
+    debug("When flag is true ")
+    if type(appname) == list:
+        cmd += inv_cmd
+        debug("The List command is :%s" %cmd)
+    elif type(appname) == str:
+        cmd.append(inv_cmd)
+        debug("The command is :%s" %cmd)
+    else:
+        raise TypeError("List or string expected")
+    p = subprocess.Popen(cmd, shell = False, 
+            stdout = out, stderr = err)
+    return p
+
+def run_cmd_as_user(cmnd, out = DEV_NULL, err = DEV_NULL):
     """
     Runs the specified command as a user.
     """
-
-    debug("run %s as user" %appname)
+    debug("run %s as user" %cmnd)
     cmd = ['su', '-', 'user', '-c']
-
-    if type(appname) == list:
-        cmd += appname
-    elif type(appname) == str:
-        cmd.append(appname)
+    if type(cmnd) == list:
+        cmd += cmnd 
+        debug("The List command is :%s" %cmd)
+    elif type(cmnd) == str:
+        cmd.append(cmnd)
+        debug("The command is :%s" %cmd)
     else:
         raise TypeError("List or string expected")
-
     p = subprocess.Popen(cmd, shell = False, 
-                         stdout = out, stderr = err)
+            stdout = out, stderr = err)
     return p
 
 def get_pid(appname):
@@ -189,7 +209,7 @@ def launch_and_get_creds(path):
     """
 
     # try launch the specified application
-    handle = run_app_as_user(path)
+    handle = run_app_as_user_with_invoker(path,arg = '--no-wait')
 
     # sleep for a moment to allow applauncherd to start the process
     time.sleep(3)
@@ -228,7 +248,7 @@ def get_file_descriptor(booster, type, app_name):
 
     #launch application using booster
     debug("launch %s using booster" % app_name)
-    st = os.system('invoker --type=%s --no-wait /usr/bin/%s.launch' % (type, app_name))
+    st = os.system('invoker --type=%s --no-wait /usr/bin/%s' % (type, app_name))
     time.sleep(2)
 
     #get fd of booster after launching the application
@@ -259,7 +279,7 @@ def get_file_descriptor(booster, type, app_name):
 def get_groups_for_user():
     # get supplementary groups user belongs to (doesn't return
     # the gid group)
-    p = run_app_as_user('id -Gn', out = subprocess.PIPE)
+    p = run_cmd_as_user('id -Gn', out = subprocess.PIPE)
     groups = p.communicate()[0].split()
     debug("The groups for users is :%s" %groups)
     p.wait()

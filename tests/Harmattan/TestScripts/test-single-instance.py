@@ -86,7 +86,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         # minimize all window id's reported
         for w in wid:
-            run_app_as_user('xsendevent iconify %s' % w)
+            run_cmd_as_user('xsendevent iconify %s' % w)
 
         time.sleep(2)
 
@@ -106,7 +106,7 @@ class SingleInstanceTests(unittest.TestCase):
         kill_process(app)
 
         # start for the first time
-        p1 = run_app_as_user('%s %s foo' % (si_cmd, app))
+        p1 = run_cmd_as_user('%s %s foo' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -118,7 +118,7 @@ class SingleInstanceTests(unittest.TestCase):
         self.minimize(pid1)
 
         # start for the second time
-        p2 = run_app_as_user('%s %s bar' % (si_cmd, app))
+        p2 = run_cmd_as_user('%s %s bar' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -134,7 +134,7 @@ class SingleInstanceTests(unittest.TestCase):
         kill_process(app, signum = 15)
 
         # start for the third time and see that the pid has changed
-        run_app_as_user('%s %s baz' % (si_cmd, app))
+        run_cmd_as_user('%s %s baz' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -155,10 +155,10 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app)
 
-        run_app_as_user(app + " foo")
+        run_cmd_as_user(app + " foo")
         time.sleep(2)
 
-        run_app_as_user("%s %s bar" % (si_cmd, app))
+        run_cmd_as_user("%s %s bar" % (si_cmd, app))
         time.sleep(2)
 
         pids = get_pid(app)
@@ -187,7 +187,7 @@ class SingleInstanceTests(unittest.TestCase):
         except:
             pass
 
-        run_app_as_user("%s %s foo" % (si_cmd, app))
+        run_cmd_as_user("%s %s foo" % (si_cmd, app))
 
         time.sleep(2)
 
@@ -198,7 +198,7 @@ class SingleInstanceTests(unittest.TestCase):
         self.minimize(pid1)
 
         for i in range(20):
-            p = run_app_as_user("%s %s bar%d" % (si_cmd, app, i))
+            p = run_cmd_as_user("%s %s bar%d" % (si_cmd, app, i))
             rc = p.wait()
             self.assert_(rc == 0 or rc == 250,
                          "[%d] return code was %d, should have been 0" % (i, p.returncode))
@@ -235,7 +235,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app)
 
-        run_app_as_user('%s %s foo' % (si_cmd, app))
+        run_cmd_as_user('%s %s foo' % (si_cmd, app))
 
         time.sleep(2)
 
@@ -245,7 +245,7 @@ class SingleInstanceTests(unittest.TestCase):
 
         kill_process(app, signum = 9)
 
-        run_app_as_user('%s %s bar' % (si_cmd, app))
+        run_cmd_as_user('%s %s bar' % (si_cmd, app))
 
         time.sleep(2)
 

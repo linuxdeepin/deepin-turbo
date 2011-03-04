@@ -131,7 +131,7 @@ class TC_Theming < Test::Unit::TestCase
     def test_application_specific_theming
 
         app_with_launcher = 'fala_ft_themetest'
-        app_without_launcher = "#{app_with_launcher}.launch"
+        app_without_launcher = "#{app_with_launcher}"
 
         # start app and take screenshots of the themed widgets
         system("pkill #{app_without_launcher}")

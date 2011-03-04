@@ -55,7 +55,7 @@ class TC_PRESTARTLAUNCHTESTS < Test::Unit::TestCase
 
     def test_launch_prestarted_app
         #Test that a prestarted application can be launched
-	@appname = 'fala_wl.launch'
+	@appname = 'fala_wl'
 	if system("pgrep #{@appname}") == true
 	    system("kill -9 `pgrep #{@appname}`")
 	end

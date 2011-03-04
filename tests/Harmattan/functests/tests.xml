@@ -50,7 +50,7 @@
 
     <set name="TC_Invoker" description="Tests for invoker" feature="AF Basic Launcher daemon support" requirement="300168">
 
-      <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="false">
+      <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_forwarding</step>
       </case>
 

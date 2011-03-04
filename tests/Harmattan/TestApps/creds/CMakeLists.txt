@@ -32,12 +32,9 @@ if ($ENV{HARMATTAN})
     add_executable(creds_test ${SRC})
 
     # max creds
-    install(PROGRAMS creds_test DESTINATION /usr/bin RENAME fala_ft_creds1.launch)
-    install(PROGRAMS fala_ft_creds DESTINATION /usr/bin RENAME fala_ft_creds1)
-
+    install(PROGRAMS creds_test DESTINATION /usr/bin RENAME fala_ft_creds1)
     # "normal" creds
-    install(PROGRAMS creds_test DESTINATION /usr/bin RENAME fala_ft_creds2.launch)
-    install(PROGRAMS fala_ft_creds DESTINATION /usr/bin RENAME fala_ft_creds2)
+    install(PROGRAMS creds_test DESTINATION /usr/bin RENAME fala_ft_creds2)
 
 endif ($ENV{HARMATTAN})
 

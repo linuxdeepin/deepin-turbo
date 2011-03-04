@@ -25,12 +25,8 @@ execute_process(COMMAND "env"
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${booster_cflags}")
 set(CMAKE_EXE_LINKER_FLAGS ${booster_libs})
 
-add_executable(helloworld ${SRC})
+add_executable(fala_hello ${SRC})
 
-# Install
-install(PROGRAMS helloworld DESTINATION /usr/bin RENAME fala_ft_hello.launch)
-install(PROGRAMS scripts/fala_ft_hello DESTINATION /usr/bin/)
-
-# Install symlinks so that /usr/bin/helloworldX launches /usr/bin/helloworldX.launch
+install(PROGRAMS fala_hello DESTINATION /usr/bin/ RENAME fala_ft_hello)
 install(SCRIPT scripts/create_links.cmake)
 

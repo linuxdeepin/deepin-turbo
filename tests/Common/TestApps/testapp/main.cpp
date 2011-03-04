@@ -64,7 +64,7 @@ M_EXPORT int main(int, char**);
 
 int main(int argc, char **argv) {
     QString appName(argv[0]); 
-    if (appName.endsWith("fala_wl.launch"))
+    if (appName.endsWith("fala_wl"))
     {
 	log_file = "/tmp/fala_wl.log";
     }

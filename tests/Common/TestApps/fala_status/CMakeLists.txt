@@ -28,5 +28,5 @@ set(CMAKE_EXE_LINKER_FLAGS ${booster_libs})
 add_executable(fala_status ${SRC})
 
 # Install
-install(PROGRAMS fala_status DESTINATION /usr/bin RENAME fala_status.launch)
+install(PROGRAMS fala_status DESTINATION /usr/bin/ )
 

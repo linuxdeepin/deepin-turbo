@@ -26,17 +26,13 @@ include_directories(${CMAKE_SOURCE_DIR}/src/qdeclarativebooster)
 include(${QT_USE_FILE})
 
 link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} "-L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster ${booster_libs}")
-add_executable(fala_qml_helloworld.launch ${SRC})
+add_executable(fala_qml ${SRC})
 
 # Install
-install(PROGRAMS fala_qml_helloworld.launch DESTINATION /usr/bin/)
-install(PROGRAMS fala_qml_helloworld.launch DESTINATION /usr/bin/ RENAME fala_qml_wl.launch)
-install(PROGRAMS fala_qml_helloworld.launch DESTINATION /usr/bin/ RENAME fala_qml_wol)
-install(PROGRAMS scripts/fala_qml_helloworld DESTINATION /usr/bin/)
-install(PROGRAMS scripts/fala_qml_helloworld DESTINATION /usr/bin/ RENAME fala_qml_wl)
+install(PROGRAMS fala_qml DESTINATION /usr/bin/ RENAME fala_qml_wol)
+install(PROGRAMS fala_qml DESTINATION /usr/bin/ RENAME fala_qml_helloworld)
+install(PROGRAMS fala_qml DESTINATION /usr/bin/ RENAME fala_qml_wl)
 install(FILES main.qml DESTINATION /usr/share/fala_qml_helloworld)
 install(FILES fala_qml_wl.desktop DESTINATION /usr/share/applications)
 install(FILES fala_qml_wol.desktop DESTINATION /usr/share/applications)
-
-# Install symlinks so that /usr/bin/fala_qml_helloworldX launches /usr/bin/fala_qml_helloworldX.launch
 install(SCRIPT scripts/create_links.cmake)

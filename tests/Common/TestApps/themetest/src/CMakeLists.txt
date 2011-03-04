@@ -25,8 +25,7 @@ execute_process(COMMAND "env"
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${booster_cflags}")
 set(CMAKE_EXE_LINKER_FLAGS ${booster_libs})
 
-add_executable(themetest ${SRC})
+add_executable(fala_themetest ${SRC})
 
 # Install
-install(PROGRAMS themetest DESTINATION /usr/bin RENAME fala_ft_themetest.launch)
-install(PROGRAMS fala_ft_themetest DESTINATION /usr/bin/)
+install(PROGRAMS fala_themetest DESTINATION /usr/bin/ RENAME fala_ft_themetest )

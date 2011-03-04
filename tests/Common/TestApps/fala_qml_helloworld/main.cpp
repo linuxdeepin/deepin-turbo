@@ -46,7 +46,7 @@ void timestamp(const char *s)
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
     QString appName(argv[0]); 
-    if (appName.endsWith("fala_qml_wl.launch"))
+    if (appName.endsWith("fala_qml_wl"))
     {
 	log_file = "/tmp/fala_qml_wl.log";
     }
