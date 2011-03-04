@@ -53,7 +53,15 @@ void Ut_DBooster::testPreload()
     const char * argv[] = {"foo"};
     int argc = 1;
 
-    QVERIFY(MDeclarativeCache::qApplication(argc, const_cast<char **>(argv)));
+    // TODO: Somehow make sure that MDeclarativeCache really returns the cached
+    //       QApplication instead of creating a new one here.
+    QApplication * app = MDeclarativeCache::qApplication(argc, const_cast<char **>(argv));
+    QVERIFY(app);
+
+    QStringList args = app->arguments();
+    QVERIFY(args.length() == 1);
+    QVERIFY(args[0] == "foo");
+
     QVERIFY(MDeclarativeCache::qDeclarativeView());
 }
 

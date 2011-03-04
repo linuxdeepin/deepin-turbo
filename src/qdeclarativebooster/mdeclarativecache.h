@@ -71,8 +71,7 @@ public:
      */
     static QString applicationFilePath();
 
-
- protected:
+protected:
 
     static MDeclarativeCachePrivate* const d_ptr;
 
@@ -83,7 +82,6 @@ private:
 
     //! Disable assignment operator
     MDeclarativeCache & operator= (const MDeclarativeCache & r);
-
 
 #ifdef UNIT_TEST
     friend class Ut_MDeclarativeCache;

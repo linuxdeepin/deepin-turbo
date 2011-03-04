@@ -53,17 +53,17 @@ void MDeclarativeCachePrivate::populate()
     cachePopulated = true;
     
     static const char *const emptyString = "";
-    static const char *const appNameFormat = "mdeclarativecache_pre_initialized_qapplication%d";
-    static char appName[strlen(appNameFormat) + 8];
+    static const QString appNameFormat = "mdeclarativecache_pre_initialized_qapplication-%1";
+    static QByteArray appName;
 
     // Append pid to appName to make it unique. This is required because the
     // libminputcontext.so instantiates MComponentData, which in turn registers
     // a dbus service with the application's name.
-    sprintf(appName, appNameFormat, getpid());
+    appName = appNameFormat.arg(getpid()).toLatin1();
 
     // We support at most ARGV_LIMIT arguments in QCoreApplication. These will be set when real
     // arguments are known (in MDeclarativeCachePrivate::qApplication). 
-    initialArgv[0] = const_cast<char *>(appName);
+    initialArgv[0] = const_cast<char *>(appName.constData());
     for (int i = 1; i < initialArgc; i++) {
         initialArgv[i] = const_cast<char *>(emptyString);
     }
