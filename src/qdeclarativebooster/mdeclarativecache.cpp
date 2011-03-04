@@ -100,33 +100,33 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
                 XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
 
                 // set correct WM_CLASS properties
-		QString appName = QFileInfo(argv[0]).fileName();
-		QString appClass = appName.left(1).toUpper();
-		if (appName.length() > 1)
+                QString appName = QFileInfo(argv[0]).fileName();
+                QString appClass = appName.left(1).toUpper();
+                if (appName.length() > 1)
                     appClass += appName.right(appName.length() - 1);
-		
-		// reserve memory for C strings
-		QByteArray arrName(appName.toLatin1());
-		QByteArray arrClass(appClass.toLatin1());
-		
-		XClassHint class_hint;
-		class_hint.res_name = arrName.data();
-		class_hint.res_class = arrClass.data();
-		
-		XSetClassHint(display, qDeclarativeViewInstance->effectiveWinId(), &class_hint);
+
+                // reserve memory for C strings
+                QByteArray arrName(appName.toLatin1());
+                QByteArray arrClass(appClass.toLatin1());
+
+                XClassHint class_hint;
+                class_hint.res_name = arrName.data();
+                class_hint.res_class = arrClass.data();
+
+                XSetClassHint(display, qDeclarativeViewInstance->effectiveWinId(), &class_hint);
             }
         }
 #endif
-	if (cachePopulated) {
-	    // In Qt 4.7, QCoreApplication::applicationDirPath() and
-	    // QCoreApplication::applicationFilePath() look up the paths in /proc,
-	    // which does not work when the booster is used. As a workaround, we
-	    // use argv[0] to provide the correct values in the cache class.
-	    appFilePath = QString(argv[0]);
-	    appDirPath = QString(argv[0]);
-	    appDirPath.chop(appDirPath.size() - appDirPath.lastIndexOf("/"));
-	}
-	
+        if (cachePopulated) {
+            // In Qt 4.7, QCoreApplication::applicationDirPath() and
+            // QCoreApplication::applicationFilePath() look up the paths in /proc,
+            // which does not work when the booster is used. As a workaround, we
+            // use argv[0] to provide the correct values in the cache class.
+            appFilePath = QString(argv[0]);
+            appDirPath = QString(argv[0]);
+            appDirPath.chop(appDirPath.size() - appDirPath.lastIndexOf("/"));
+        }
+
     }
     return qApplicationInstance;
 }
@@ -146,21 +146,21 @@ QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
 QString MDeclarativeCachePrivate::applicationDirPath()
 {
     if (cachePopulated) {
-	// In the booster case use the workaround
-	return appDirPath;
+        // In the booster case use the workaround
+        return appDirPath;
     } else {
-	return QCoreApplication::applicationDirPath();
+        return QCoreApplication::applicationDirPath();
     }
 }
 
 QString MDeclarativeCachePrivate::applicationFilePath()
 {
     if (cachePopulated) {
-	// In the booster case use the workaround
-	return appFilePath;
+        // In the booster case use the workaround
+        return appFilePath;
     } else {
-	return QCoreApplication::applicationFilePath();
-    }	    
+        return QCoreApplication::applicationFilePath();
+    }
 }
 
 void MDeclarativeCache::populate()
