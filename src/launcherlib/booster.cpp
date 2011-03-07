@@ -388,7 +388,7 @@ void Booster::setEnvironmentBeforeLaunch()
       
     setegid(m_boosted_gid);
     setegid(orig);
-    
+
     // Reset out-of-memory killer adjustment
     if (!m_appData->disableOutOfMemAdj())
         resetOomAdj();
@@ -411,7 +411,8 @@ void Booster::setEnvironmentBeforeLaunch()
 #endif
 
     // Request splash screen from mcompositor if needed
-    if (m_appData->splashFileName().length() > 0 || m_appData->landscapeSplashFileName().length() > 0) {
+    if (m_appData->splashFileName().length() > 0 || m_appData->landscapeSplashFileName().length() > 0)
+    {
 
 	// Construct WM_CLASS from the app absolute path
 	std::string wmclass(m_appData->appName());
@@ -431,6 +432,10 @@ void Booster::setEnvironmentBeforeLaunch()
 
     // Load the application and find out the address of main()
     void* handle = loadMain();
+
+    // Make sure that boosted application can dump core. This must be
+    // done after set[ug]id().
+    prctl(PR_SET_DUMPABLE, 1);
 
     // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_appData->ioDescriptors().size(); i++)
@@ -464,12 +469,6 @@ int Booster::launchProcess()
 
     // Load the application and find out the address of main()
     void* handle = loadMain();
-
-    // Set dumpable flag
-    prctl(PR_SET_DUMPABLE, 1);
-
-    // Set dumpable flag
-    prctl(PR_SET_DUMPABLE, 1);
 
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
