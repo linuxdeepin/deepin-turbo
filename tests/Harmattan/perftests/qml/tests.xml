@@ -11,7 +11,7 @@
       </pre_steps>
 
       <case name="Perf-Test-Command-QML-launcher" type="Performance" description="Measure startup time of the QML application using launcher" timeout="500" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_qml_wl -b fala_qml_wl -s 600 -f "/tmp/fala_qml_wl.log" &gt; /tmp/perf_commandline_qml_with_launcher.txt</step>
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c "invoker --type=d /usr/bin/fala_qml_wl" -b fala_qml_wl -s 600 -f "/tmp/fala_qml_wl.log" &gt; /tmp/perf_commandline_qml_with_launcher.txt</step>
       </case>
 
       <post_steps>

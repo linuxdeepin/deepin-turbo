@@ -70,16 +70,12 @@ def run_app_as_user_with_invoker(appname, booster = 'm', arg = "", out = DEV_NUL
     Runs the specified app as a user.
     """
     inv_cmd = "/usr/bin/invoker --type=%s %s %s" %(booster,arg, appname)
-    debug ("INVOKER COMMAND : %s" %inv_cmd)
     debug("run %s as user" %appname)
     cmd = ['su', '-', 'user', '-c']
-    debug("When flag is true ")
     if type(appname) == list:
         cmd += inv_cmd
-        debug("The List command is :%s" %cmd)
     elif type(appname) == str:
         cmd.append(inv_cmd)
-        debug("The command is :%s" %cmd)
     else:
         raise TypeError("List or string expected")
     p = subprocess.Popen(cmd, shell = False, 
@@ -94,10 +90,8 @@ def run_cmd_as_user(cmnd, out = DEV_NULL, err = DEV_NULL):
     cmd = ['su', '-', 'user', '-c']
     if type(cmnd) == list:
         cmd += cmnd 
-        debug("The List command is :%s" %cmd)
     elif type(cmnd) == str:
         cmd.append(cmnd)
-        debug("The command is :%s" %cmd)
     else:
         raise TypeError("List or string expected")
     p = subprocess.Popen(cmd, shell = False, 
