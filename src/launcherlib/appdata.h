@@ -95,6 +95,12 @@ public:
     //! Return file name of the image shown as splash screen
     const string & splashFileName() const;
 
+    //! Set file name of the image shown as landscape splash screen
+    void setLandscapeSplashFileName(const string & fileName);
+
+    //! Return file name of the image shown as landscape splash screen
+    const string & landscapeSplashFileName() const;
+
     //! Set priority
     void setPriority(int priority);
 
@@ -159,6 +165,7 @@ private:
     gid_t       m_gid;
     uid_t       m_uid;
     string      m_splashFileName;
+    string      m_landscapeSplashFileName;
 
 #if defined (HAVE_CREDS)
     creds_t     m_peerCreds;

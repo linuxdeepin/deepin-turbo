@@ -2,8 +2,9 @@ applauncherd (0.21.0) stable; urgency=low
 
   * Changes: Disable out of memory adjustments command line parameter added to invoker
   * Changes: AppData code refactoring 
+  * Landscape splash-message implemented to protocol between invoker and launcher
 
- -- Jussi Lind <jussi.lind@nokia.com>  Tue, 08 Mar 2011 14:08:07 +0200
+ -- Juha Lintula <juha.lintula@nokia.com>  Fri, 08 Mar 2011 10:16:05 +0200
 
 applauncherd (0.20.0) stable; urgency=low
 

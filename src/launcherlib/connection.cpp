@@ -38,6 +38,7 @@ Connection::Connection(int socketFd, bool testMode) :
         m_curSocket(socketFd),
         m_fileName(""),
         m_splashFileName(""),
+        m_landscapeSplashFileName(""),
         m_argc(0),
         m_argv(NULL),
         m_priority(0),
@@ -307,6 +308,17 @@ bool Connection::receiveSplash()
     return true;
 }
 
+bool Connection::receiveLandscapeSplash()
+{
+    const char* filename = recvStr();
+    if (!filename)
+        return false;
+
+    m_landscapeSplashFileName = filename;
+    delete [] filename;
+    return true;
+}
+
 bool Connection::receivePriority()
 {
     recvMsg(&m_priority);
@@ -519,6 +531,10 @@ bool Connection::receiveActions()
             receiveSplash();
             break;
 
+        case INVOKER_MSG_LANDSCAPE_SPLASH:
+            receiveLandscapeSplash();
+            break;
+
         case INVOKER_MSG_END:
             sendMsg(INVOKER_MSG_ACK);
 
@@ -561,6 +577,7 @@ bool Connection::receiveApplicationData(AppData* appData)
         appData->setArgc(m_argc);
         appData->setArgv(m_argv);
         appData->setSplashFileName(m_splashFileName);
+        appData->setLandscapeSplashFileName(m_landscapeSplashFileName);
         appData->setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
         appData->setIDs(m_uid, m_gid);
     }

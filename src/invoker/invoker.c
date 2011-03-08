@@ -293,6 +293,12 @@ static void invoker_send_splash_file(int fd, char *filename)
     invoke_send_str(fd, filename);
 }
 
+static void invoker_send_landscape_splash_file(int fd, char *filename)
+{
+    invoke_send_msg(fd, INVOKER_MSG_LANDSCAPE_SPLASH);
+    invoke_send_str(fd, filename);
+}
+
 static void invoker_send_exec(int fd, char *exec)
 {
     invoke_send_msg(fd, INVOKER_MSG_EXEC);
@@ -429,7 +435,6 @@ static void usage(int status)
            "  -L, --splash-landscape LANDSCAPE-FILE\n"
            "                         Show splash screen from the LANDSCAPE-FILE\n"
            "                         in case the device is in landscape orientation.\n"
-           "                         (To be implemented)\n"
            "  -o, --oom-adj-disable  Disable default out of memory killing adjustments \n"
            "                         for launched process. \n"
            "  -h, --help             Print this help.\n\n"
@@ -495,7 +500,7 @@ void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 // "normal" invoke through a socket connection
 int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
                   uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
-                  char *splash_file)
+                  char *splash_file, char *landscape_splash_file)
 {
     int status = 0;
 
@@ -518,6 +523,8 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
     invoker_send_ids(fd, getuid(), getgid());
     if (( magic_options & INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN ) != 0)
         invoker_send_splash_file(fd, splash_file);
+    if (( magic_options & INVOKER_MSG_MAGIC_OPTION_LANDSCAPE_SPLASH_SCREEN ) != 0)
+        invoker_send_landscape_splash_file(fd, landscape_splash_file);
     invoker_send_io(fd);
     invoker_send_env(fd);
     invoker_send_end(fd);
@@ -549,7 +556,7 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                   enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
-                  char *splash_file)
+                  char *splash_file, char *landscape_splash_file)
 {
     int status = 0;
 
@@ -568,7 +575,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         {
             status = invoke_remote(fd, prog_argc, prog_argv, prog_name,
                                    magic_options, wait_term, respawn_delay,
-                                   splash_file);
+                                   splash_file, landscape_splash_file);
             close(fd);
         }
     }
@@ -587,6 +594,7 @@ int main(int argc, char *argv[])
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
     char         *splash_file   = NULL;
+    char         *landscape_splash_file = NULL;
     struct stat   file_stat;
 
     // wait-term parameter by default
@@ -696,8 +704,8 @@ int main(int argc, char *argv[])
             break;
 
         case 'L':
-            // Just a placeholder for future development
-            // of landscape splash screen
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_LANDSCAPE_SPLASH_SCREEN;
+            landscape_splash_file = optarg;
             break;
 
         case '?':
@@ -749,7 +757,7 @@ int main(int argc, char *argv[])
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file);
 
     // Sleep for delay before exiting
     if (delay)

@@ -37,7 +37,8 @@ AppData::AppData() :
     m_ioDescriptors(),
     m_gid(0),
     m_uid(0),
-    m_splashFileName("")
+    m_splashFileName(""),
+    m_landscapeSplashFileName("")
 #if defined (HAVE_CREDS)
   , m_peerCreds(NULL)
 #endif
@@ -121,6 +122,16 @@ void AppData::setSplashFileName(const string & fileName)
 const string & AppData::splashFileName() const
 {
     return m_splashFileName;
+}
+
+void AppData::setLandscapeSplashFileName(const string & fileName)
+{
+    m_landscapeSplashFileName = fileName;
+}
+
+const string & AppData::landscapeSplashFileName() const
+{
+    return m_landscapeSplashFileName;
 }
 
 void AppData::setPriority(int newPriority)

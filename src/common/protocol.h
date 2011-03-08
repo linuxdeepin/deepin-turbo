@@ -32,9 +32,11 @@ const uint32_t INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP       = 0x00000004;
 const uint32_t INVOKER_MSG_MAGIC_OPTION_SINGLE_INSTANCE   = 0x00000008;
 const uint32_t INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN     = 0x00000010;
 const uint32_t INVOKER_MSG_MAGIC_OPTION_OOM_ADJ_DISABLE   = 0x00000020;
+const uint32_t INVOKER_MSG_MAGIC_OPTION_LANDSCAPE_SPLASH_SCREEN  = 0x00000040;
 
 
 const uint32_t INVOKER_MSG_MASK               = 0xffff0000;
+
 const uint32_t INVOKER_MSG_NAME               = 0x5a5e0000;
 const uint32_t INVOKER_MSG_EXEC               = 0xe8ec0000;
 const uint32_t INVOKER_MSG_ARGS               = 0xa4650000;
@@ -46,6 +48,7 @@ const uint32_t INVOKER_MSG_IO                 = 0x10fd0000;
 const uint32_t INVOKER_MSG_END                = 0xdead0000;
 const uint32_t INVOKER_MSG_PID                = 0x1d1d0000;
 const uint32_t INVOKER_MSG_SPLASH             = 0x5b1a0000;
+const uint32_t INVOKER_MSG_LANDSCAPE_SPLASH   = 0x5b120000;
 const uint32_t INVOKER_MSG_EXIT               = 0xe4170000;
 const uint32_t INVOKER_MSG_ACK                = 0x600d0000;
 const uint32_t INVOKER_MSG_BAD_CREDS          = 0x60035800;
