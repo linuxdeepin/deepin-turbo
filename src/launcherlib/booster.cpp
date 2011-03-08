@@ -323,7 +323,8 @@ void Booster::setEnvironmentBeforeLaunch()
     setegid(orig);
     
     // Reset out-of-memory killer adjustment
-    resetOomAdj();
+    if (!m_appData->disableOutOfMemAdj())
+        resetOomAdj();
 
 #ifdef HAVE_CREDS
     // filter out invoker-specific credentials

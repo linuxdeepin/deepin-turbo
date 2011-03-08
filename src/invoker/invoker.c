@@ -430,6 +430,8 @@ static void usage(int status)
            "                         Show splash screen from the LANDSCAPE-FILE\n"
            "                         in case the device is in landscape orientation.\n"
            "                         (To be implemented)\n"
+           "  -o, --oom-adj-disable  Disable default out of memory killing adjustments \n"
+           "                         for launched process. \n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
@@ -603,17 +605,18 @@ int main(int argc, char *argv[])
 
     // Options recognized
     struct option longopts[] = {
-        {"help",      no_argument,       NULL, 'h'},
-        {"creds",     no_argument,       NULL, 'c'},
-        {"wait-term", no_argument,       NULL, 'w'},
-        {"no-wait",   no_argument,       NULL, 'n'},
-        {"global-syms", no_argument,     NULL, 'G'},
-        {"deep-syms", no_argument,       NULL, 'D'},
-        {"single-instance", no_argument, NULL, 's'},
-        {"type",      required_argument, NULL, 't'},
-        {"delay",     required_argument, NULL, 'd'},
-        {"respawn",   required_argument, NULL, 'r'},
-        {"splash",    required_argument, NULL, 'S'},
+        {"help",             no_argument,       NULL, 'h'},
+        {"creds",            no_argument,       NULL, 'c'},
+        {"wait-term",        no_argument,       NULL, 'w'},
+        {"no-wait",          no_argument,       NULL, 'n'},
+        {"global-syms",      no_argument,       NULL, 'G'},
+        {"deep-syms",        no_argument,       NULL, 'D'},
+        {"single-instance",  no_argument,       NULL, 's'},
+        {"oom-adj-disable",  no_argument,       NULL, 'o'},
+        {"type",             required_argument, NULL, 't'},
+        {"delay",            required_argument, NULL, 'd'},
+        {"respawn",          required_argument, NULL, 'r'},
+        {"splash",           required_argument, NULL, 'S'},
         {"splash-landscape", required_argument, NULL, 'L'},
         {0, 0, 0, 0}
     };
@@ -621,7 +624,7 @@ int main(int argc, char *argv[])
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwnGDsd:t:r:S:L:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwnGDsod:t:r:S:L:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -635,6 +638,10 @@ int main(int argc, char *argv[])
 
         case 'w':
             // nothing to do, it's by default now
+            break;
+
+        case 'o':
+            magic_options |= INVOKER_MSG_MAGIC_OPTION_OOM_ADJ_DISABLE;
             break;
 
         case 'n':

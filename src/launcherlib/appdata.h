@@ -54,13 +54,16 @@ public:
     int options() const;
 
     //! Return whether or not RTLD_GLOBAL should be used in dlopen
-    bool dlopenGlobal();
+    bool dlopenGlobal() const;
 
     //! Return whether or not RTLD_DEEPBIND should be used in dlopen
-    bool dlopenDeep();
+    bool dlopenDeep() const;
 
     //! Return whether or not application should be launched as a single instance application
-    bool singleInstance();
+    bool singleInstance() const;
+
+    //! Return whether or not disable default out of memory killing adjustments for application process 
+    bool disableOutOfMemAdj() const;
 
     //! Set argument count
     void setArgc(int argc);
@@ -102,7 +105,7 @@ public:
     void setDelay(int delay);
 
     //!Return respawn delay
-    int delay();
+    int delay() const;
 
     //! Set entry point for the application
     void setEntry(entry_t entry);

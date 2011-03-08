@@ -53,19 +53,24 @@ int AppData::options() const
     return m_options;
 }
 
-bool AppData::dlopenGlobal()
+bool AppData::dlopenGlobal() const
 {
     return (m_options & INVOKER_MSG_MAGIC_OPTION_DLOPEN_GLOBAL) != 0;
 }
 
-bool AppData::dlopenDeep()
+bool AppData::dlopenDeep() const
 {
     return (m_options & INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP) != 0;
 }
 
-bool AppData::singleInstance()
+bool AppData::singleInstance() const
 {
     return (m_options & INVOKER_MSG_MAGIC_OPTION_SINGLE_INSTANCE) != 0;
+}
+
+bool AppData::disableOutOfMemAdj() const
+{
+    return (m_options & INVOKER_MSG_MAGIC_OPTION_OOM_ADJ_DISABLE) != 0;
 }
 
 void AppData::setArgc(int newArgc)
@@ -133,7 +138,7 @@ void AppData::setDelay(int newDelay)
     m_delay = newDelay;
 }
 
-int AppData::delay()
+int AppData::delay() const
 {
     return m_delay;
 }
