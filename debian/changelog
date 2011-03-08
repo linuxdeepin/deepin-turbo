@@ -1,3 +1,10 @@
+applauncherd (0.22.0) unstable; urgency=low
+
+  * 
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 08 Mar 2011 17:02:14 +0200
+
+
 applauncherd (0.21.0) stable; urgency=low
 
   * Changes: Disable out of memory adjustments command line parameter added to invoker
