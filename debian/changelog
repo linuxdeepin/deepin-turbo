@@ -1,6 +1,8 @@
-applauncherd (0.22.0) unstable; urgency=low
+applauncherd (0.22.0) stable; urgency=low
 
-  * 
+  * Landscape splash-message implemented to protocol between invoker and launcher
+  * Splash parameters communicated to mcompositor
+  * Implemented: SWP#DUI-5052
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 08 Mar 2011 17:02:14 +0200
 
@@ -9,8 +11,6 @@ applauncherd (0.21.0) stable; urgency=low
 
   * Changes: Disable out of memory adjustments command line parameter added to invoker
   * Changes: AppData code refactoring 
-  * Landscape splash-message implemented to protocol between invoker and launcher
-  * Splash parameters communicated to mcompositor
 
  -- Juha Lintula <juha.lintula@nokia.com>  Fri, 08 Mar 2011 10:16:05 +0200
 
