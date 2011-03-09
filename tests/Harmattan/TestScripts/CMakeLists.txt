@@ -16,6 +16,7 @@ if ($ENV{HARMATTAN})
     install(PROGRAMS
         ts_prestartapp.rb
         tc_theming.rb
+        tc_splash.rb
         get-coordinates.rb
         test-perf.rb
         fala_xres_wl

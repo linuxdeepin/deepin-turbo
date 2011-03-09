@@ -3,6 +3,7 @@ usr/share/applauncherd-testscripts/ts_prestartapp.rb
 usr/share/applauncherd-testscripts/check_pipes.py
 usr/share/applauncherd-testscripts/test-perf-mbooster.py
 usr/share/applauncherd-testscripts/tc_theming.rb
+usr/share/applauncherd-testscripts/tc_splash.rb
 usr/share/applauncherd-testscripts/test-perf.rb
 usr/share/applauncherd-testscripts/get-coordinates.rb
 usr/share/applauncherd-testscripts/utils.py

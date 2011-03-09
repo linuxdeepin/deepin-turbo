@@ -31,4 +31,6 @@ install(PROGRAMS fala_testapp DESTINATION /usr/bin RENAME fala_wol)
 install(PROGRAMS fala_testapp DESTINATION /usr/bin RENAME fala_wl)
 install(FILES com.nokia.fala_testapp.service com.nokia.fala_wl.service com.nokia.fala_wol.service DESTINATION /usr/share/dbus-1/services)
 install(FILES fala_wl.desktop fala_wol.desktop DESTINATION /usr/share/applications/)
+install(FILES images/landscape.jpg DESTINATION /usr/share/fala_images/)
+install(FILES images/portrait.jpg DESTINATION /usr/share/fala_images/)
 

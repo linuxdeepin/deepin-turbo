@@ -187,6 +187,28 @@
           <hardware>true</hardware>    
       </environments>
     </set>
+    <set name="TC_Splash" description="functional tests for splash" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_splash" type="Functional" description="To test --splash functionality" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_splash</step>
+      </case>
+
+      <case name="applauncherd__test_splash_landscape" type="Functional" description="To test --splash-landscape functionality" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_splash_landscape</step>
+      </case>
+
+      <case name="applauncherd__test_no_splash" type="Functional" description="To test splash parameters is not reset " timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_no_splash</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
   </suite>
 </testdefinition>
 
