@@ -1,3 +1,9 @@
+applauncherd (0.23.0) unstable; urgency=low
+
+  * Changes: Removed extra prctl(PR_SET_DUMPABLE, ...)
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 10 Mar 2011 14:52:40 +0200
+
 applauncherd (0.22.0) stable; urgency=low
 
   * Landscape splash-message implemented to protocol between invoker and launcher
