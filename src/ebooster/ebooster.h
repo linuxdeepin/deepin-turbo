@@ -21,9 +21,6 @@
 #define EBOOSTER_H
 
 #include "booster.h"
-#include <tr1/memory>
-
-using std::tr1::shared_ptr;
 
 /*!
     \class EBooster

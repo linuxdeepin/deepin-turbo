@@ -65,23 +65,20 @@ int EBooster::launchProcess()
 
     // Ensure a NULL-terminated argv
     char ** dummyArgv = new char * [appData()->argc() + 1];
-    const int i2 = appData()->argc();
-    for (int i = 0; i < i2; i++)
+    const int argc = appData()->argc();
+    for (int i = 0; i < argc; i++)
         dummyArgv[i] = strdup(appData()->argv()[i]);
-    dummyArgv[i2] = NULL;
+
+    dummyArgv[argc] = NULL;
 
     // Exec the binary (execv returns only in case of an error).
-    if (execv(appData()->fileName().c_str(),
-              dummyArgv))
-    {
-        Logger::logError("EBooster: Couldn't execv '%s': %s",
-                         appData()->fileName().c_str(),
-                         strerror(errno));
-    }
+    execv(appData()->fileName().c_str(), dummyArgv);
 
     // Delete dummy argv if execv failed
-    for (int i = 0; i < i2; i++)
-        delete dummyArgv[i];
+    for (int i = 0; i < argc; i++)
+        free(dummyArgv[i]);
+
+    delete [] dummyArgv;
 
     return EXIT_FAILURE;
 }
