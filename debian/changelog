@@ -2,6 +2,7 @@ applauncherd (0.23.0) unstable; urgency=low
 
   * Changes: Removed extra prctl(PR_SET_DUMPABLE, ...)
   * Changes: e-booster refactoring
+  * Changes: removed compilation warnings
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 10 Mar 2011 14:52:40 +0200
 
