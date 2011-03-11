@@ -22,9 +22,6 @@
 
 #include "booster.h"
 #include "eventhandler.h"
-#include <tr1/memory>
-
-using std::tr1::shared_ptr;
 
 #include <signal.h>
 
