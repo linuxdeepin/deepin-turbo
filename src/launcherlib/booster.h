@@ -191,8 +191,8 @@ protected:
      * \param pixmapId A pixmap id to be used as the splash screen content
      */
     void requestSplash(const int pid, const string &wmclass, 
-		       const string &portraitSplash, const string &landscapeSplash, 
-		       const string &pixmapId);
+                       const string &portraitSplash, const string &landscapeSplash,
+                       const string &pixmapId);
 
     //! Set nice value and store the old priority. Return true on success.
     bool pushPriority(int nice);

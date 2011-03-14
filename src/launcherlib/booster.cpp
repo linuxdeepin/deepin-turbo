@@ -304,8 +304,8 @@ void Booster::renameProcess(int parentArgc, char** parentArgv,
 }
 
 void Booster::requestSplash(const int pid, const std::string &wmclass, 
-			    const std::string &portraitSplash, const std::string &landscapeSplash,
-			    const std::string &pixmapId)
+                            const std::string &portraitSplash, const std::string &landscapeSplash,
+                            const std::string &pixmapId)
 {
     std::stringstream st;
     st << pid;
@@ -329,13 +329,13 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
                                         &type, &format, &nItems, &bytesAfter, &prop);
         if (retval == Success) 
         {
-
             // Package up the data and set the property
             int len = pidStr.length() + 1
                 + wmclass.length() + 1
                 + portraitSplash.length() + 1
                 + landscapeSplash.length() + 1
                 + pixmapId.length() + 1;
+
             char *data = new char[len];
             char *d = data;
 
@@ -365,7 +365,6 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
         }
     }
 }
-
 
 void Booster::setEnvironmentBeforeLaunch()
 {
@@ -415,21 +414,20 @@ void Booster::setEnvironmentBeforeLaunch()
     // Request splash screen from mcompositor if needed
     if (m_appData->splashFileName().length() > 0 || m_appData->landscapeSplashFileName().length() > 0)
     {
+        // Construct WM_CLASS from the app absolute path
+        std::string wmclass(m_appData->appName());
+        size_t pos = wmclass.rfind('/');
+        wmclass.erase(0, pos + 1);
+        wmclass[0] = toupper(wmclass[0]);
 
-	// Construct WM_CLASS from the app absolute path
-	std::string wmclass(m_appData->appName());
-	size_t pos = wmclass.rfind('/');
-	wmclass.erase(0, pos+1);
-	wmclass[0] = toupper(wmclass[0]);
+        // Communicate splash data to compositor
+        requestSplash(getpid(), wmclass,
+                      m_appData->splashFileName(),
+                      m_appData->landscapeSplashFileName(),
 
-	// Communicate splash data to compositor
-	requestSplash(getpid(), wmclass,
-		      m_appData->splashFileName(),
-		      m_appData->landscapeSplashFileName(),
-
-		      // Compositor can also show an X pixmap as splash,
-		      // but this feature is currently not used.
-		      std::string(""));
+                      // Compositor can also show an X pixmap as splash,
+                      // but this feature is currently not used.
+                      std::string(""));
     }
 
     // Load the application and find out the address of main()
