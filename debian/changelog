@@ -3,6 +3,7 @@ applauncherd (0.23.0) unstable; urgency=low
   * Changes: Removed extra prctl(PR_SET_DUMPABLE, ...)
   * Changes: e-booster refactoring
   * Changes: removed compilation warnings
+  * Fixes: NB#236033 - applauncherd does not build with gcc-4.5
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 10 Mar 2011 14:52:40 +0200
 

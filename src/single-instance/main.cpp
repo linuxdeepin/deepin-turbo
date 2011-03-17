@@ -29,6 +29,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h> 
 
 #define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 
@@ -337,7 +338,7 @@ int main(int argc, char **argv)
             if (execve(argv[1], argv + 1, environ) == -1)
             {
                 std::cerr << "ERROR!!: Failed to exec binary '" <<
-                    argv[1] << "̈́' : " << strerror(errno) << std::endl;
+                    argv[1] << "' : " << strerror(errno) << std::endl;
                 unlock();
                 
                 return EXIT_FAILURE;
