@@ -197,41 +197,41 @@ void Daemon::run()
         // Wait for something appearing in the pipes.
         if (select(ndfs + 1, &rfds, NULL, NULL, NULL) > 0)
         {
-            Logger::logDebug("select done.");
+            Logger::logDebug("Daemon: select done.");
 
             // Check if a booster died
             if (FD_ISSET(m_boosterLauncherSocket[0], &rfds))
             {
-                Logger::logDebug("FD_ISSET(m_boosterLauncherSocket[0])");
+                Logger::logDebug("Daemon: FD_ISSET(m_boosterLauncherSocket[0])");
                 readFromBoosterSocket(m_boosterLauncherSocket[0]);
             }
 
             // Check if we got SIGCHLD, SIGTERM, SIGUSR1 or SIGUSR2
             if (FD_ISSET(m_sigPipeFd[0], &rfds))
             {
-                Logger::logDebug("FD_ISSET(m_sigPipeFd[0])");
+                Logger::logDebug("Daemon: FD_ISSET(m_sigPipeFd[0])");
                 char dataReceived;
                 read(m_sigPipeFd[0], &dataReceived, 1);
 
                 switch (dataReceived)
                 {
                 case SIGCHLD:
-                    Logger::logDebug("SIGCHLD received.");
+                    Logger::logDebug("Daemon: SIGCHLD received.");
                     reapZombies();
                     break;
 
                 case SIGTERM:
-                    Logger::logDebug("SIGTERM received.");
+                    Logger::logDebug("Daemon: SIGTERM received.");
                     exit(EXIT_SUCCESS);
                     break;
 
                 case SIGUSR1:
-                    Logger::logDebug("SIGUSR1 received.");
+                    Logger::logDebug("Daemon: SIGUSR1 received.");
                     enterNormalMode();
                     break;
 
                 case SIGUSR2:
-                    Logger::logDebug("SIGUSR2 received.");
+                    Logger::logDebug("Daemon: SIGUSR2 received.");
                     enterBootMode();
                     break;
 
@@ -289,7 +289,7 @@ void Daemon::readFromBoosterSocket(int fd)
     }
     else
     {
-        Logger::logWarning("Daemon: Nothing read from the pipe\n");
+        Logger::logWarning("Daemon: Nothing read from the socket\n");
     }
 
     // Fork a new booster of the given type
