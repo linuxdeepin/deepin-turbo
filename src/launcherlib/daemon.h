@@ -38,6 +38,7 @@ using std::vector;
 using std::map;
 
 #include <signal.h>
+#include <sys/socket.h>
 
 class Booster;
 class SocketManager;
@@ -148,7 +149,7 @@ private:
     void closeUnusedSockets(char type);
 
     //! Read and process data from a booster pipe
-    void readFromBoosterPipe(int fd);
+    void readFromBoosterSocket(int fd);
 
     //! Enter normal mode (restart boosters with cache enabled)
     void enterNormalMode();
@@ -184,13 +185,17 @@ private:
     typedef map<pid_t, pid_t> PidMap;
     PidMap m_boosterPidToInvokerPid;
 
+    //! Storage of booster <-> invoker socket file descriptor pairs
+    typedef map<pid_t, pid_t> FdMap;
+    FdMap m_boosterPidToInvokerFd;
+
     //! Mapping for booster type <-> pid
     typedef map<char, pid_t> TypeMap;
     TypeMap m_boosterTypeToPid;
 
-    //! Pipe used to tell the parent that a new booster is needed +
+    //! Socket pair used to tell the parent that a new booster is needed +
     //! some parameters.
-    int m_boosterPipeFd[2];
+    int m_boosterLauncherSocket[2];
 
     //! Pipe used to safely catch Unix signals
     int m_sigPipeFd[2];

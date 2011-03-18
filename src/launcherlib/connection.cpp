@@ -66,6 +66,11 @@ Connection::Connection(int socketFd, bool testMode) :
 #endif
 }
 
+int Connection::getFd() const
+{
+    return m_fd;
+}
+
 bool Connection::accept(AppData* appData)
 {
     if (!m_testMode)
@@ -230,14 +235,6 @@ bool Connection::sendPid(pid_t pid)
 {
     sendMsg(INVOKER_MSG_PID);
     sendMsg(pid);
-
-    return true;
-}
-
-bool Connection::sendAppExitStatus(int status)
-{
-    sendMsg(INVOKER_MSG_EXIT);
-    sendMsg(status);
 
     return true;
 }

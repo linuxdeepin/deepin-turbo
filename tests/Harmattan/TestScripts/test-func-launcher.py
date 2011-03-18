@@ -448,13 +448,20 @@ class launcher_tests (unittest.TestCase):
         app_st_wo_inv = os.WEXITSTATUS(st)
         debug("The exit status of app without invoker is : %d" %app_st_wo_inv)
     
-        #Run application with invoker and get the exit status
+        #Run application with invoker and get the exit status - booster-m case
         debug("Run application with invoker and get the exit status")
         st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status')
         app_st_w_inv = os.WEXITSTATUS(st)
-        debug("The exit status of app with invoker is : %d" %app_st_w_inv)
+        debug("The exit status of app with invoker (booster-m) is : %d" %app_st_w_inv)
         
-        self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status")
+        #Run application with invoker and get the exit status - booster-e case
+        debug("Run application with invoker and get the exit status")
+        st, op = commands.getstatusoutput('invoker --type=e --wait-term /usr/bin/fala_status')
+        app_st_we_inv = os.WEXITSTATUS(st)
+        debug("The exit status of app with invoker (booster-e) is : %d" %app_st_we_inv)
+        
+        self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status for booster-m")
+        self.assert_(app_st_wo_inv == app_st_we_inv, "The invoker returns a wrong exit status for booster-e")
 
     def test_invoker_gid_uid(self):
         """

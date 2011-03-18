@@ -28,7 +28,6 @@
 
 #include <cstdlib>
 #include <cerrno>
-#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -70,9 +69,9 @@ Daemon::Daemon(int & argc, char * argv[]) :
     m_initialArgv = argv;
     m_initialArgc = argc;
 
-    if (pipe(m_boosterPipeFd) == -1)
+    if (socketpair(AF_UNIX, SOCK_DGRAM, 0, m_boosterLauncherSocket) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for boosters failed!\n");
+        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a socket pair for boosters failed!\n");
     }
 
     if (pipe(m_sigPipeFd) == -1)
@@ -189,8 +188,8 @@ void Daemon::run()
         // Init data for select
         FD_ZERO(&rfds);
 
-        FD_SET(m_boosterPipeFd[0], &rfds);
-        ndfs = std::max(ndfs, m_boosterPipeFd[0]);
+        FD_SET(m_boosterLauncherSocket[0], &rfds);
+        ndfs = std::max(ndfs, m_boosterLauncherSocket[0]);
 
         FD_SET(m_sigPipeFd[0], &rfds);
         ndfs = std::max(ndfs, m_sigPipeFd[0]);
@@ -201,10 +200,10 @@ void Daemon::run()
             Logger::logDebug("select done.");
 
             // Check if a booster died
-            if (FD_ISSET(m_boosterPipeFd[0], &rfds))
+            if (FD_ISSET(m_boosterLauncherSocket[0], &rfds))
             {
-                Logger::logDebug("FD_ISSET(m_boosterPipeFd[0])");
-                readFromBoosterPipe(m_boosterPipeFd[0]);
+                Logger::logDebug("FD_ISSET(m_boosterLauncherSocket[0])");
+                readFromBoosterSocket(m_boosterLauncherSocket[0]);
             }
 
             // Check if we got SIGCHLD, SIGTERM, SIGUSR1 or SIGUSR2
@@ -244,63 +243,62 @@ void Daemon::run()
     }
 }
 
-void Daemon::readFromBoosterPipe(int fd)
+void Daemon::readFromBoosterSocket(int fd)
 {
-    // There should first appear a character representing the type of a
-    // booster and then pid of the invoker process that communicated with
-    // that booster.
-    char msg;
-    ssize_t count = read(fd, static_cast<void *>(&msg), 1);
-    if (count)
+    char booster     = 0;
+    pid_t invokerPid = 0;
+    int delay        = 0;
+    struct msghdr   msg;
+    struct cmsghdr *cmsg;
+    struct iovec    iov[3];
+    char buf[CMSG_SPACE(sizeof(int))];
+
+    iov[0].iov_base = &booster;
+    iov[0].iov_len  = sizeof(char);
+    iov[1].iov_base = &invokerPid;
+    iov[1].iov_len  = sizeof(pid_t);
+    iov[2].iov_base = &delay;
+    iov[2].iov_len  = sizeof(int);
+
+    msg.msg_iov        = iov;
+    msg.msg_iovlen     = 3;
+    msg.msg_name       = NULL;
+    msg.msg_namelen    = 0;
+    msg.msg_control    = buf;
+    msg.msg_controllen = sizeof(buf);
+
+    if (recvmsg(fd, &msg, 0) >= 0)
     {
-        // Read pid of peer invoker
-        pid_t invokerPid;
-        count = read(fd, static_cast<void *>(&invokerPid), sizeof(pid_t));
-
-        if (count < static_cast<ssize_t>(sizeof(pid_t)))
-        {
-            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
-        }
-        else
-        {
-            Logger::logDebug("Daemon: invoker's pid: %d \n", invokerPid);
-        }
-
+        Logger::logDebug("Daemon: booster type: %c\n", booster);
+        Logger::logDebug("Daemon: invoker's pid: %d\n", invokerPid);
+        Logger::logDebug("Daemon: respawn delay: %d \n", delay);
         if (invokerPid != 0)
         {
             // Store booster - invoker pid pair
-            pid_t boosterPid = boosterPidForType(msg);
+            // Store booster - invoker socket pair
+            pid_t boosterPid = boosterPidForType(booster);
             if (boosterPid)
             {
+                cmsg = CMSG_FIRSTHDR(&msg);
+                int newFd = *reinterpret_cast<int *>(CMSG_DATA(cmsg));
+                Logger::logDebug("Daemon: socket file descriptor: %d\n", newFd);
                 m_boosterPidToInvokerPid[boosterPid] = invokerPid;
+                m_boosterPidToInvokerFd[boosterPid] = newFd;
             }
         }
-
-        // Read booster respawn delay
-        int delay;
-        count = read(fd, static_cast<void *>(&delay), sizeof(int));
-
-        if (count < static_cast<ssize_t>(sizeof(int)))
-        {
-            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: pipe connection with booster failed");
-        }
-        else
-        {
-            Logger::logDebug("Daemon: respawn delay received: %d \n", delay);
-        }
-
-        // Fork a new booster of the given type
-
-        // 2nd param guarantees some time for the just launched application
-        // to start up before forking new booster. Not doing this would
-        // slow down the start-up significantly on single core CPUs.
-
-        forkBooster(msg, delay);
     }
     else
     {
         Logger::logWarning("Daemon: Nothing read from the pipe\n");
     }
+
+    // Fork a new booster of the given type
+
+    // 2nd param guarantees some time for the just launched application
+    // to start up before forking new booster. Not doing this would
+    // slow down the start-up significantly on single core CPUs.
+
+    forkBooster(booster, delay);
 }
 
 void Daemon::killProcess(pid_t pid, int signal) const
@@ -407,8 +405,8 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Will get this signal if applauncherd dies
         prctl(PR_SET_PDEATHSIG, SIGHUP);
 
-        // Close unused read end of the booster pipe
-        close(m_boosterPipeFd[0]);
+        // Close unused read end of the booster socket
+        close(m_boosterLauncherSocket[0]);
 
         // Close signal pipe
         close(m_sigPipeFd[0]);
@@ -420,6 +418,16 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Close lock file, it's not needed in the booster
         Daemon::unlock();
 
+        // Close socket file descriptors
+        FdMap::iterator i(m_boosterPidToInvokerFd.begin());
+        while (i != m_boosterPidToInvokerFd.end())
+        {
+            if ((*i).second != -1) {
+                close((*i).second);
+                (*i).second = -1;
+            }
+            i++;
+        }
         // Set session id
         if (setsid() < 0)
             Logger::logError("Daemon: Couldn't set session id\n");
@@ -437,19 +445,19 @@ void Daemon::forkBooster(char type, int sleepTime)
         if (booster)
         {
             // Initialize and wait for commands from invoker
-            booster->initialize(m_initialArgc, m_initialArgv, m_boosterPipeFd,
+            booster->initialize(m_initialArgc, m_initialArgv, m_boosterLauncherSocket[1],
                                 m_socketManager->findSocket(booster->socketId().c_str()),
                                 m_singleInstance, m_bootMode);
 
             // Run the current Booster
-            booster->run(m_socketManager);
+            int retval = booster->run(m_socketManager);
 
             // Finish
             delete booster;
 
             // _exit() instead of exit() to avoid situation when destructors
             // for static objects may be run incorrectly
-            _exit(EXIT_SUCCESS);
+            _exit(retval);
         }
         else
         {
@@ -489,7 +497,21 @@ void Daemon::reapZombies()
             {
                 Logger::logDebug("Daemon: Terminated process had a mapping to an invoker pid");
 
-                if (WIFSIGNALED(status))
+                if (WIFEXITED(status))
+                {
+                    Logger::logDebug("child exited by exit(x), _exit(x) or return x\n");
+                    Logger::logDebug("x == %d\n", WEXITSTATUS(status));
+                    FdMap::iterator fd = m_boosterPidToInvokerFd.find(pid);
+                    if (fd != m_boosterPidToInvokerFd.end())
+                    {
+                        write((*fd).second, &INVOKER_MSG_EXIT, sizeof(uint32_t));
+                        int exitStatus = WEXITSTATUS(status);
+                        write((*fd).second, &exitStatus, sizeof(int));
+                        close((*fd).second);
+                        m_boosterPidToInvokerFd.erase(fd);
+                    }
+                }
+                else if (WIFSIGNALED(status))
                 {
                     int signal = WTERMSIG(status);
                     pid_t invokerPid = (*it).second;

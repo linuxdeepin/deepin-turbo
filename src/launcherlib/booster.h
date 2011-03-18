@@ -70,12 +70,12 @@ public:
      * \brief Initializes the booster process.
      * \param initialArgc argc of the parent process.
      * \param initialArgv argv of the parent process.
-     * \param pipefd pipe used to communicate with the parent process.
-     * \param socketFd File socket used to get commands from the invoker.
+     * \param boosterLauncherSocket socket connection to the parent process.
+     * \param socketFd socket used to get commands from the invoker.
      * \param singleInstance Pointer to a valid SingleInstance object.
      * \param bootMode Booster-specific preloads are not executed if true.
      */
-    virtual void initialize(int initialArgc, char ** initialArgv, int pipefd[2],
+    virtual void initialize(int initialArgc, char ** initialArgv, int boosterLauncherSocket,
                             int socketFd, SingleInstance * singleInstance,
                             bool bootMode);
 
@@ -85,12 +85,13 @@ public:
      * using dlopen(). Program execution jumps to the address of
      * "main()" found in the newly loaded library. The Booster process
      * exits with corresponding exit-code after the execution of
-     * main() has finished.
+     * main() has finished. run() returns the return value of the main()
+     * function.
      *
      * \param socketManager Pointer to the SocketManager so that
      * we can close all needless sockets in the application process.
      */
-    virtual void run(SocketManager * socketManager);
+    virtual int run(SocketManager * socketManager);
 
     /*!
      * \brief Rename process.
@@ -200,11 +201,11 @@ protected:
     //! Restore the old priority stored by the previous successful setPriority().
     bool popPriority();
 
-    //! Sets pipe fd's used to communicate with the parent process
-    void setPipeFd(int pipeFd[2]);
+    //! Sets socket fd's used to communicate with the parent process
+    void setBoosterLauncherSocket(int boosterLauncherSocket);
 
-    //! Returns the given pipe fd (0 = read end, 1 = write end)
-    int pipeFd(bool whichEnd) const;
+    //! Returns the given socket
+    int boosterLauncherSocket() const;
 
     //! Reset out-of-memory killer adjustment
     void resetOomAdj();
@@ -237,8 +238,8 @@ private:
     //! it can be restored later.
     bool m_oldPriorityOk;
 
-    //! Pipe used to tell the parent that a new booster is needed
-    int m_pipeFd[2];
+    //! Socket used to tell the parent that a new booster is needed
+    int m_boosterLauncherSocket;
 
     //! Original space available for arguments
     int m_spaceAvailable;

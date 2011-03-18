@@ -67,14 +67,14 @@ public:
     //! \brief Check connection state.
     bool connected() const;
 
+    //! \brief Get invoker socket file descriptor
+    int getFd() const;
+
     //! \brief Receive application data to appData.
     bool receiveApplicationData(AppData* appData);
 
     //! \brief Return true if invoker wait for process exit status
     bool isReportAppExitStatusNeeded() const;
-
-    //! \brief Send application exit status to invoker
-    bool sendAppExitStatus(int status);
 
     //! \brief Get pid of the process on the other end of socket connection
     pid_t peerPid();
