@@ -280,7 +280,8 @@ void Daemon::readFromBoosterSocket(int fd)
             if (boosterPid)
             {
                 cmsg = CMSG_FIRSTHDR(&msg);
-                int newFd = *reinterpret_cast<int *>(CMSG_DATA(cmsg));
+                int newFd;                 
+                memcpy(&newFd, CMSG_DATA(cmsg), sizeof(int));
                 Logger::logDebug("Daemon: socket file descriptor: %d\n", newFd);
                 m_boosterPidToInvokerPid[boosterPid] = invokerPid;
                 m_boosterPidToInvokerFd[boosterPid] = newFd;
