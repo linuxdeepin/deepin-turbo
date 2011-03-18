@@ -27,6 +27,7 @@ build: build-stamp
 build-stamp: configure-stamp
 	dh_testdir
 	make
+	make doc
 	touch build-stamp
     
 clean:

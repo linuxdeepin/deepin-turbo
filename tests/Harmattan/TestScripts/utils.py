@@ -144,7 +144,7 @@ def wait_for_app(app = None, timeout = 5, sleep = 0.5):
     return pid
 
 
-def kill_process(appname=None, apppid=None, signum=9):
+def kill_process(appname=None, apppid=None, signum=15):
     if apppid and appname: 
         return None
     else:

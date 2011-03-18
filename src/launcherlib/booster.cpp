@@ -40,6 +40,7 @@
 #include <X11/Xutil.h>
 
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <grp.h>
 #ifdef HAVE_CREDS
 #include <sys/creds.h>
@@ -95,13 +96,13 @@ Booster::~Booster()
     m_appData = NULL;
 }
 
-void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
+void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLauncherSocket,
                          int socketFd, SingleInstance * singleInstance,
                          bool newBootMode)
 {
     m_bootMode = newBootMode;
 
-    setPipeFd(newPipeFd);
+    setBoosterLauncherSocket(newBoosterLauncherSocket);
 
     // Drop priority (nice = 10)
     pushPriority(10);
@@ -156,11 +157,13 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newPipeFd[2],
     renameProcess(initialArgc, initialArgv, m_appData->argc(), m_appData->argv());
 
     // Send parent process a message that it can create a new booster,
-    // send pid of invoker, send booster respawn value
+    // send pid of invoker, booster respawn value and invoker socket connection
     sendDataToParent();
 
-    // close pipe
-    close(pipeFd(1));
+    close(boosterLauncherSocket());
+
+    // close invoker socket connection
+    m_connection->close();
 
     // Don't care about fate of parent applauncherd process any more
     prctl(PR_SET_PDEATHSIG, 0);
@@ -173,23 +176,52 @@ bool Booster::bootMode() const
 
 void Booster::sendDataToParent()
 {
+    struct iovec    iov[3];
+    struct msghdr   msg;
+    struct cmsghdr *cmsg;
+    char buf[CMSG_SPACE(sizeof(int))];
+
     // Signal the parent process that it can create a new
     // waiting booster process and close write end
-    const char msg = boosterType();
-    if (write(pipeFd(1), static_cast<const void *>(&msg), 1) == -1) {
-        Logger::logError("Booster: Couldn't send type message to launcher process\n");
-    }
+    const char booster = boosterType();
+    iov[0].iov_base = const_cast<char *>(&booster);
+    iov[0].iov_len  = sizeof(char);
 
     // Send to the parent process pid of invoker for tracking
     pid_t pid = invokersPid();
-    if (write(pipeFd(1), static_cast<const void *>(&pid), sizeof(pid_t)) == -1) {
-        Logger::logError("Booster: Couldn't send invoker's pid to launcher process\n");
-    }
+    iov[1].iov_base = &pid;
+    iov[1].iov_len  = sizeof(pid_t);
 
     // Send to the parent process booster respawn delay value
     int delay = m_appData->delay();
-    if (write(pipeFd(1), static_cast<const void *>(&delay), sizeof(int)) == -1) {
-        Logger::logError("Booster: Couldn't send respawn delay value to launcher process\n");
+    iov[2].iov_base = &delay;
+    iov[2].iov_len  = sizeof(int);
+
+    msg.msg_iov            = iov;
+    msg.msg_iovlen         = 3;
+    msg.msg_name           = NULL;
+    msg.msg_namelen        = 0;
+    if (m_connection->isReportAppExitStatusNeeded())
+    {
+        // Send socket file descriptor to parent
+        int fd = m_connection->getFd();
+        msg.msg_control    = buf;
+        msg.msg_controllen = sizeof(buf);
+        cmsg               = CMSG_FIRSTHDR(&msg);
+        cmsg->cmsg_level   = SOL_SOCKET;
+        cmsg->cmsg_type    = SCM_RIGHTS;
+        cmsg->cmsg_len     = CMSG_LEN(sizeof(int));
+        memcpy(CMSG_DATA(cmsg), &fd, sizeof(int));
+    }
+    else
+    {
+        msg.msg_control    = NULL;
+        msg.msg_controllen = 0;
+    }
+
+    if (sendmsg(boosterLauncherSocket(), &msg, 0) < 0)
+    {
+        Logger::logError("Booster: Couldn't send data to launcher process\n");
     }
 }
 
@@ -221,38 +253,25 @@ bool Booster::receiveDataFromInvoker(int socketFd)
     return false;
 }
 
-void Booster::run(SocketManager * socketManager)
+int Booster::run(SocketManager * socketManager)
 {
     if (!m_appData->fileName().empty())
     {
-        // Check if can close sockets already here
-        if (!m_connection->isReportAppExitStatusNeeded())
+        // We can close sockets here because
+        // socket FD is passed to daemon already
+        if (socketManager)
         {
-            if (socketManager)
-            {
-                socketManager->closeAllSockets();
-            }
+            socketManager->closeAllSockets();
         }
 
         // Execute the binary
         Logger::logDebug("Booster: invoking '%s' ", m_appData->fileName().c_str());
-        int ret_val = launchProcess();
-
-        // Send exit status to invoker, if needed
-        if (m_connection->isReportAppExitStatusNeeded())
-        {
-            m_connection->sendAppExitStatus(ret_val);
-            m_connection->close();
-
-            if (socketManager)
-            {
-                socketManager->closeAllSockets();
-            }
-        }
+        return launchProcess();
     }
     else
     {
         Logger::logError("Booster: nothing to invoke\n");
+        return EXIT_FAILURE;
     }
 }
 
@@ -553,15 +572,14 @@ pid_t Booster::invokersPid()
     }
 }
 
-void Booster::setPipeFd(int newPipeFd[2])
+void Booster::setBoosterLauncherSocket(int newBoosterLauncherSocket)
 {
-    m_pipeFd[0] = newPipeFd[0];
-    m_pipeFd[1] = newPipeFd[1];
+    m_boosterLauncherSocket = newBoosterLauncherSocket;
 }
 
-int Booster::pipeFd(bool whichEnd) const
+int Booster::boosterLauncherSocket() const
 {
-    return m_pipeFd[whichEnd];
+    return m_boosterLauncherSocket;
 }
 
 Connection* Booster::connection() const

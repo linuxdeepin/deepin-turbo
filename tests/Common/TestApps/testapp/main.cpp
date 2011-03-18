@@ -21,7 +21,7 @@
 #include <MApplicationWindow>
 #include <MApplicationPage>
 
-#ifdef HAVE_MCOMPONENTCACHE   
+#ifdef HAVE_MCOMPONENTCACHE
     #include <MComponentCache>
 #endif
 
@@ -63,7 +63,7 @@ public:
 M_EXPORT int main(int, char**);
 
 int main(int argc, char **argv) {
-    QString appName(argv[0]); 
+    QString appName(argv[0]);
     if (appName.endsWith("fala_wl"))
     {
 	log_file = "/tmp/fala_wl.log";
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 	log_file = "/tmp/fala_wol.log";
     }
     timestamp("application main");
-#ifdef HAVE_MCOMPONENTCACHE   
+#ifdef HAVE_MCOMPONENTCACHE
     MApplication* app = MComponentCache::mApplication(argc, argv);
     timestamp("app from cache");
     MApplicationWindow* w = MComponentCache::mApplicationWindow();
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     MApplicationWindow* w = new MApplicationWindow;
     timestamp("win created without cache");
 #endif
-	
+
     MyApplicationPage p;
     timestamp("page created");
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     p.appear();
     timestamp("page.appear() called");
 
-    w->show(); 
+    w->show();
     timestamp("w->show() called");
 
     return app->exec();

@@ -448,13 +448,20 @@ class launcher_tests (unittest.TestCase):
         app_st_wo_inv = os.WEXITSTATUS(st)
         debug("The exit status of app without invoker is : %d" %app_st_wo_inv)
     
-        #Run application with invoker and get the exit status
+        #Run application with invoker and get the exit status - booster-m case
         debug("Run application with invoker and get the exit status")
         st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status')
         app_st_w_inv = os.WEXITSTATUS(st)
-        debug("The exit status of app with invoker is : %d" %app_st_w_inv)
+        debug("The exit status of app with invoker (booster-m) is : %d" %app_st_w_inv)
         
-        self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status")
+        #Run application with invoker and get the exit status - booster-e case
+        debug("Run application with invoker and get the exit status")
+        st, op = commands.getstatusoutput('invoker --type=e --wait-term /usr/bin/fala_status')
+        app_st_we_inv = os.WEXITSTATUS(st)
+        debug("The exit status of app with invoker (booster-e) is : %d" %app_st_we_inv)
+        
+        self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status for booster-m")
+        self.assert_(app_st_wo_inv == app_st_we_inv, "The invoker returns a wrong exit status for booster-e")
 
     def test_invoker_gid_uid(self):
         """
@@ -878,7 +885,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op1.split(",")[0] == '"fala_wl"','Application name is incorrect')   
         kill_process('fala_wl') 
 
-    def test_oom_adj(self):
+    def test_oom_adj_zero(self):
         """
         Test that oom.adj is 0 for launched application process 
         """
@@ -887,6 +894,24 @@ class launcher_tests (unittest.TestCase):
         pid = get_pid(PREFERED_APP)
         st, op = commands.getstatusoutput('cat /proc/%s/oom_adj' %pid)
         self.assert_(op == '0',"oom.adj of the launched process is not 0")
+        kill_process(PREFERED_APP) 
+
+    def test_oom_adj_minus_one(self):
+        """
+        Test that oom.adj is -1 for launched application process when using
+        invokers -o param
+        """
+
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm',
+                                         arg = '-o')
+        time.sleep(2)
+
+        pid = get_pid(PREFERED_APP)
+
+        st, op = commands.getstatusoutput('cat /proc/%s/oom_adj' % pid)
+
+        self.assert_(op == '-1', "oom.adj of the launched process is not -1")
+
         kill_process(PREFERED_APP) 
 
 # main

@@ -40,6 +40,5 @@ M_EXPORT int main(int argc, char ** argv)
     std::cerr << "uid=" << usr_id <<"\n";
     std::cerr << "gid=" << grp_id <<"\n";
     app->exec();
-    return 29;
-    
+    _exit(29);
 }

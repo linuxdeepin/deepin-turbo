@@ -34,7 +34,7 @@ class TC_Splash < Test::Unit::TestCase
         apps = ['fala_wl', 'fala_ft_hello']
         for app in apps
             if system("pgrep #{app}") == true
-                system("kill -9 `pgrep #{app}`")
+                system("kill -15 `pgrep #{app}`")
             end
         end
     end
@@ -43,7 +43,7 @@ class TC_Splash < Test::Unit::TestCase
         apps = ['fala_wl', 'fala_ft_hello']
         for app in apps
             if system("pgrep #{app}") == true
-                system("kill -9 `pgrep #{app}`")
+                system("kill -15 `pgrep #{app}`")
             end
         end
         print_debug("Exiting teardown")
@@ -134,7 +134,7 @@ class TC_Splash < Test::Unit::TestCase
         system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --type=m #{TestApp} &"
         sleep(2)
         p = get_pid(TestApp)
-        system "kill -9 #{p}"
+        system "kill -15 #{p}"
         sleep(2)
         system "invoker --type=m #{No_Splash_App} &" 
         sleep(2)
@@ -157,7 +157,7 @@ class TC_Splash < Test::Unit::TestCase
         verify_equal("Fala_wl", 2, "Wrong Application Name"){prop2.split('"')[1]}
         verify_equal(PortraitImg, 2, "Wrong splash image"){prop3.split('"')[1]}
         verify_equal(LandscapeImg, 2, "Wrong splash image"){prop4.split('"')[1]}
-        system ("kill -9 #{pid}")
+        system ("kill -15 #{pid}")
     end
 
 
