@@ -435,8 +435,7 @@ static void usage(int status)
            "  -L, --splash-landscape LANDSCAPE-FILE\n"
            "                         Show splash screen from the LANDSCAPE-FILE\n"
            "                         in case the device is in landscape orientation.\n"
-           "  -o, --oom-adj-disable  Disable default out of memory killing adjustments \n"
-           "                         for launched process. \n"
+           "  -o, --daemon-mode      Notify invoker that launched process is daemon.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
@@ -620,7 +619,7 @@ int main(int argc, char *argv[])
         {"global-syms",      no_argument,       NULL, 'G'},
         {"deep-syms",        no_argument,       NULL, 'D'},
         {"single-instance",  no_argument,       NULL, 's'},
-        {"oom-adj-disable",  no_argument,       NULL, 'o'},
+        {"daemon-mode",      no_argument,       NULL, 'o'},
         {"type",             required_argument, NULL, 't'},
         {"delay",            required_argument, NULL, 'd'},
         {"respawn",          required_argument, NULL, 'r'},
