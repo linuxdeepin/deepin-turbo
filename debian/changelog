@@ -1,5 +1,13 @@
-applauncherd (0.23.0) unstable; urgency=low
+applauncherd (0.24.0) unstable; urgency=low
+   
+  *
 
+ -- Juha Lintula <juha.lintula@nokia.com>  Fri, 18 Mar 2011 13:17:52 +0200
+
+applauncherd (0.23.0) stable; urgency=low
+
+  * Changes: invoker returns e-booster exit value
+  * Changes: pipe between applauncher and boosters replaced by socket pair
   * Changes: Removed extra prctl(PR_SET_DUMPABLE, ...)
   * Changes: e-booster refactoring
   * Changes: removed compilation warnings
