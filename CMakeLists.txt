@@ -105,13 +105,18 @@ endif ($ENV{BUILD_TESTS})
 # Target for documentation (make doc)
 find_program(Doxygen NAMES doxygen)
 if (EXISTS ${Doxygen})
-    add_custom_target(doc COMMAND ${Doxygen} doc/Doxyfile)
+    add_custom_target(doc COMMAND ${Doxygen} doc/doxygen-impldoc.conf COMMAND ${Doxygen} doc/doxygen-userdoc.conf)
 else (EXISTS ${Doxygen})
     message(STATUS "Doxygen not found: you're not able to build documentation.")
 endif (EXISTS ${Doxygen})
 
-# Install README
-install(FILES README DESTINATION /usr/share/doc/applauncherd)
+# Install README.dox
+install(FILES README.dox DESTINATION /usr/share/doc/applauncherd)
+
+# Install html documentation
+install(DIRECTORY doc/implementation-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
+install(DIRECTORY doc/user-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
+
 
 # Install examples
 install(DIRECTORY examples
