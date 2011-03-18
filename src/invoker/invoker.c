@@ -49,7 +49,10 @@
 
 // Delay before exit
 static const unsigned int DEFAULT_DELAY     = 0;
+static const unsigned int MIN_DELAY         = 1;
+static const unsigned int MAX_DELAY         = 86400;
 static const unsigned int RESPAWN_DELAY     = 3;
+static const unsigned int MIN_RESPAWN_DELAY = 0;
 static const unsigned int MAX_RESPAWN_DELAY = 10;
 
 static const unsigned char EXIT_STATUS_APPLICATION_CONNECTION_LOST = 0xfa;
@@ -444,7 +447,8 @@ static void usage(int status)
 }
 
 // Return delay as integer 
-static unsigned int get_delay(char *delay_arg, char *param_name)
+static unsigned int get_delay(char *delay_arg, char *param_name,
+                              int min_value, int max_value)
 {
     unsigned int delay = DEFAULT_DELAY;
 
@@ -454,7 +458,9 @@ static unsigned int get_delay(char *delay_arg, char *param_name)
         delay = strtoul(delay_arg, NULL, 10);
 
         // Check for various possible errors
-        if ((errno == ERANGE && delay == ULONG_MAX) || delay == 0)
+        if ((errno == ERANGE && delay == ULONG_MAX)
+            || delay < min_value
+            || delay > max_value)
         {
             report(report_error, "Wrong value of %s parameter: %s\n", param_name, delay_arg);
             usage(1);
@@ -681,16 +687,12 @@ int main(int argc, char *argv[])
             break;
 
         case 'd':
-            delay = get_delay(optarg, "delay");
+            delay = get_delay(optarg, "delay", MIN_DELAY, MAX_DELAY);
             break;
 
         case 'r':
-            respawn_delay = get_delay(optarg, "respawn delay");
-            if (respawn_delay > MAX_RESPAWN_DELAY)
-            {
-                report(report_error, "Booster respawn delay exceeds max possible time.\n");
-                usage(1);
-            }
+            respawn_delay = get_delay(optarg, "respawn delay",
+                                      MIN_RESPAWN_DELAY, MAX_RESPAWN_DELAY);
             break;
 
         case 's':
