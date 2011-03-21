@@ -500,8 +500,8 @@ void Daemon::reapZombies()
 
                 if (WIFEXITED(status))
                 {
-                    Logger::logDebug("child exited by exit(x), _exit(x) or return x\n");
-                    Logger::logDebug("x == %d\n", WEXITSTATUS(status));
+                    Logger::logDebug("Daemon: child exited by exit(x), _exit(x) or return x\n");
+                    Logger::logDebug("Daemon: x == %d\n", WEXITSTATUS(status));
                     FdMap::iterator fd = m_boosterPidToInvokerFd.find(pid);
                     if (fd != m_boosterPidToInvokerFd.end())
                     {
