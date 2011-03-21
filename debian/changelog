@@ -1,6 +1,6 @@
 applauncherd (0.24.0) unstable; urgency=low
    
-  *
+  * Fixes: NB#234196 - QML Booster should be part of Nokia MeeGo in the API
 
  -- Juha Lintula <juha.lintula@nokia.com>  Fri, 18 Mar 2011 13:17:52 +0200
 
