@@ -472,14 +472,6 @@ void Booster::setEnvironmentBeforeLaunch()
 
     Logger::logDebug("Booster: launching process: '%s' ", m_appData->fileName().c_str());
     Logger::closeLog();
-
-    // Workaround skype account plugin bug #218766.
-    // TODO: remove this when the bug fix for skype plugin is released.
-    if (strstr(m_appData->argv()[0], "skypeplugin.launch"))
-    {
-        char * launch = const_cast<char *>(strstr(m_appData->argv()[0], ".launch"));
-        *launch = '\0';
-    }
 }
 
 int Booster::launchProcess()
