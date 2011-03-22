@@ -1,4 +1,4 @@
-applauncherd (0.24.0) unstable; urgency=low
+applauncherd (0.24.0) stable; urgency=low
  
   * Fixes: NB#234196 - QML Booster should be part of Nokia MeeGo in the API
   * Fixes: NB#231306 - Launcher slows down boot by loading irrelevant libs and not loading relevant ones
