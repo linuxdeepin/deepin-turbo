@@ -1,6 +1,7 @@
-/***************************************************************************
+/*!
 **
-** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
+** @copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
+** @license GNU Lesser General Public License version 2.1
 ** All rights reserved.
 ** Contact: Nokia Corporation (directui@nokia.com)
 **
