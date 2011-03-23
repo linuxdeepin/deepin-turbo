@@ -398,6 +398,10 @@ to window manager's window.
 
 If the filenames do not include absolute paths, the window manager
 looks for the files from a default location.
+
+The file should be in a format recognized by QPixmap, preferably JPEG
+as it is fast to load. The size of the image should not be larger than
+the screen. If it is smaller, it will be stretched.
  
 \page usingboosters Using boosters
 
