@@ -1,3 +1,9 @@
+applauncherd (0.25.0) unstable; urgency=low
+
+  *
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Thu, 24 Mar 2011 08:45:43 +0200
+
 applauncherd (0.24.1) stable; urgency=low
 
   * Changes: Removed temporary workaround for skype account plugin bug #218766.
