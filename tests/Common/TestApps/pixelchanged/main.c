@@ -214,6 +214,7 @@ int main(int argc, char **argv)
             quit_when_found = 1;
         } else {
             fprintf(stderr, "Unrecognized option %s\n", argv[arg]);
+            return EXIT_FAILURE;
         }
         ++arg;
     }
