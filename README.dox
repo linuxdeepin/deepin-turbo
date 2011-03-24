@@ -381,6 +381,8 @@ Applauncherd supports showing a splash screen if there is mcompositor
 The splash screen is not shown by default. If an application wants it
 to be shown, it must pass --splash, and optionally --splash-landscape
 arguments to the invoker.
+System default splash images can be obtained by giving \c default or
+\c default-landscape in place of image file names.
 
 For instance,
 
@@ -402,7 +404,7 @@ looks for the files from a default location.
 The file should be in a format recognized by QPixmap, preferably JPEG
 as it is fast to load. The size of the image should not be larger than
 the screen. If it is smaller, it will be stretched.
- 
+
 \page usingboosters Using boosters
 
 The booster processes can speed up application startup by doing some
