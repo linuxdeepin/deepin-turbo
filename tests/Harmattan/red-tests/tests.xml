@@ -22,9 +22,9 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_global_theming</step>
       </case-->
 
-      <case name="applauncherd__test_oom_adj_zero" type="Functional" description="Test that oom.adj is 0 for launched application process" timeout="360" level="System" insignificant="true">
+      <!--case name="applauncherd__test_oom_adj_zero" type="Functional" description="Test that oom.adj is 0 for launched application process" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_oom_adj_zero</step>
-      </case>
+      </case-->
 
       <case name="applauncherd__test_oom_adj_minus_one" type="Functional" description="Test that oom.adj is -1 for launched application process when using invokers -o parameter" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_oom_adj_minus_one</step>
@@ -34,9 +34,9 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_name</step>
       </case>
 
-      <case name="applauncherd__test_stress_boosted_apps" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
+      <!--case name="applauncherd__test_stress_boosted_apps" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>
-      </case>
+      </case-->
 
       <case name="applauncherd__test_invoker_param_creds" type="Functional" description="test invoker --creds" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_param_creds</step>
@@ -50,9 +50,9 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_bogus_apptype</step>
       </case>
 
-      <case name="applauncherd__test_launch_prestarted_app" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb --name test_launch_prestarted_app</step>
-      </case>
+      <!--case name="applauncherd__test_launch_prestarted_app" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb dash-dash-name test_launch_prestarted_app</step>
+      </case-->
 
       <case name="applauncherd__test_core_dump" type="Functional" description="Test that core dumps are generated with boosted applications" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-core-dump.py test_core_dumps</step>
