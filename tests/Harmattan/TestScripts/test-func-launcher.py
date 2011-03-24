@@ -534,9 +534,9 @@ class launcher_tests (unittest.TestCase):
         #Test for m-booster
         debug("Test for m-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py")
-        debug("The Invoker killed by : %s" %op)
+        debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
     
-        self.assert_(op == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
          
         #Test for d-booster
