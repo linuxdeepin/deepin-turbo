@@ -47,10 +47,13 @@
     #include <sys/creds.h>
 #endif
 
-// Delay before exit
-static const unsigned int DEFAULT_DELAY     = 0;
-static const unsigned int MIN_DELAY         = 1;
-static const unsigned int MAX_DELAY         = 86400;
+// Delay before exit.
+static const unsigned int EXIT_DELAY     = 0;
+static const unsigned int MIN_EXIT_DELAY = 1;
+static const unsigned int MAX_EXIT_DELAY = 86400;
+
+// Delay before a new booster is started. This will
+// be sent to the launcher daemon.
 static const unsigned int RESPAWN_DELAY     = 3;
 static const unsigned int MIN_RESPAWN_DELAY = 0;
 static const unsigned int MAX_RESPAWN_DELAY = 10;
@@ -441,16 +444,16 @@ static void usage(int status)
            "  -o, --daemon-mode      Notify invoker that launched process is daemon.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
-           PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, DEFAULT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
+           PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
 }
 
 // Return delay as integer 
 static unsigned int get_delay(char *delay_arg, char *param_name,
-                              int min_value, int max_value)
+                              unsigned int min_value, unsigned int max_value)
 {
-    unsigned int delay = DEFAULT_DELAY;
+    unsigned int delay = EXIT_DELAY;
 
     if (delay_arg)
     {
@@ -594,7 +597,7 @@ int main(int argc, char *argv[])
     int           prog_argc     = 0;
     uint32_t      magic_options = 0;
     bool          wait_term     = true;
-    unsigned int  delay         = DEFAULT_DELAY;
+    unsigned int  delay         = EXIT_DELAY;
     unsigned int  respawn_delay = RESPAWN_DELAY;
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
@@ -687,7 +690,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'd':
-            delay = get_delay(optarg, "delay", MIN_DELAY, MAX_DELAY);
+            delay = get_delay(optarg, "delay", MIN_EXIT_DELAY, MAX_EXIT_DELAY);
             break;
 
         case 'r':
