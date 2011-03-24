@@ -29,7 +29,7 @@
 
       </get>
     </set>
-
+    <!--
     <set name="test-applicationGrid" description="Application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
@@ -42,9 +42,9 @@
       <post_steps>
           <step>cp /tmp/fala_qml_wl.log /tmp/grid_fala_qml_wl.log</step>
       </post_steps>
-
+    -->
 <!-- /QML -->
-
+    <!--  
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    
@@ -56,6 +56,7 @@
       </get>
 
     </set>
+    -->
 
   </suite>
 </testdefinition>

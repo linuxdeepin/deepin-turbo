@@ -1,4 +1,4 @@
-applauncherd (0.25.0) unstable; urgency=low
+applauncherd (0.24.1) stable; urgency=low
 
   * Changes: Removed temporary workaround for skype account plugin bug #218766.
   * Fixes: NB#238955 - Copyright tag not defined in applauncherd
