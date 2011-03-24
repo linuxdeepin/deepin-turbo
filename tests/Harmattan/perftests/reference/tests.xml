@@ -37,27 +37,27 @@
 
       </get>
     </set>
-
+    <!--
     <set name="test-applicationGrid" description="Application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
       <case name="Perf-Test-Grid-plain" type="Performance" description="Measure startup time of the application without launcher" timeout="840" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wol -b "fala_wol" -f "/tmp/fala_wol.log" &gt; /tmp/perf_grid_without_launcher.txt</step>
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance dash-dash- -a fala_wol -b "fala_wol" -f "/tmp/fala_wol.log" &gt; /tmp/perf_grid_without_launcher.txt</step>
       </case>
 
       <case name="Perf-Test-Grid-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="840" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_qml_wol -b fala_qml_wol -f "/tmp/fala_qml_wol.log" &gt; /tmp/perf_grid_qml_without_launcher.txt</step>
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance dash-dash- -a fala_qml_wol -b fala_qml_wol -f "/tmp/fala_qml_wol.log" &gt; /tmp/perf_grid_qml_without_launcher.txt</step>
       </case>
 
       <post_steps>
           <step>cp /tmp/fala_wol.log /tmp/grid_fala_wol.log</step>
           <step>cp /tmp/fala_qml_wol.log /tmp/grid_fala_qml_wol.log</step>
       </post_steps>
-
+    -->
 <!-- /QML -->
-
+    <!--
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    
@@ -71,6 +71,7 @@
       </get>
 
     </set>
+    -->
 
   </suite>
 </testdefinition>
