@@ -1,4 +1,10 @@
-applauncherd (0.24.4) unstable; urgency=low
+applauncherd (0.24.5) stable; urgency=low
+
+  * Fixes: NB#240045 - Not able to open bluetooth menu from settings application
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Thu, 24 Mar 2011 11:30:48 +0200
+
+applauncherd (0.24.4) stable; urgency=low
 
   * Changes: library list update reverted. Reopens NB#231306.
 
