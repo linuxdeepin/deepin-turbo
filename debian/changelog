@@ -1,3 +1,9 @@
+applauncherd (0.24.4) unstable; urgency=low
+
+  * Changes: library list update reverted. Reopens NB#231306.
+
+ -- Antti Kervinen <antti.kervinen@nokia.com>  Thu, 24 Mar 2011 10:55:43 +0200
+  
 applauncherd (0.24.3) stable; urgency=low
 
   * Changes: Removed more failing insignificant tests which might prevent integration
@@ -19,8 +25,8 @@ applauncherd (0.24.1) stable; urgency=low
 
 applauncherd (0.24.0) stable; urgency=low
  
-  * Fixes: NB#234196 - QML Booster should be part of Nokia MeeGo in the API
   * Fixes: NB#231306 - Launcher slows down boot by loading irrelevant libs and not loading relevant ones
+  * Fixes: NB#234196 - QML Booster should be part of Nokia MeeGo in the API
 
  -- Juha Lintula <juha.lintula@nokia.com>  Fri, 18 Mar 2011 13:17:52 +0200
 
