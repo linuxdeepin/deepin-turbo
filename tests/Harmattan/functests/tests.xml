@@ -170,6 +170,63 @@
       <-get>
       </get>
     </set-->
+
+      <!-- Single Instance Tests (without invoker) -->
+    <set name="TC_SingleInstance_No_Invoker" description="functional tests for single instance without invoker" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+
+      <case name="applauncherd__test_single_instance_window_raise_wo_invoker" type="Functional" description="Test basic single instance functionality and window raising" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_without_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_and_non_single_instance_wo_invoker" type="Functional" description="Test that there's multiple instances when starting app w/o single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_and_non_single_instance_without_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_stress_test_wo_invoker" type="Functional" description="Try starting apps fast with single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_stress_test_without_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_abnormal_lock_release_wo_invoker" type="Functional" description="Try starting an app, killing it and starting it again checking that the pid has changed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_abnormal_lock_release_without_invoker</step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+      <!-- Single Instance Tests (with invoker) -->
+    <set name="TC_SingleInstance_Invoker" description="functional tests for single instance with invoker" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+
+      <case name="applauncherd__test_single_instance_window_raise_w_invoker" type="Functional" description="Test basic single instance functionality and window raising" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_with_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_and_non_single_instance_w_invoker" type="Functional" description="Test that there's multiple instances when starting app w/o single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_and_non_single_instance_with_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_stress_test_w_invoker" type="Functional" description="Try starting apps fast with single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_stress_test_with_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_abnormal_lock_release_w_invoker" type="Functional" description="Try starting an app, killing it and starting it again checking that the pid has changed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_abnormal_lock_release_with_invoker</step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
   </suite>
 </testdefinition>
 
