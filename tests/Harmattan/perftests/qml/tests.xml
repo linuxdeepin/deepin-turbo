@@ -29,22 +29,22 @@
 
       </get>
     </set>
-    <!--
+    
     <set name="test-applicationGrid" description="Application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
       <case name="Perf-Test-Grid-QML-launcher" type="Performance" description="Measure startup time of the QML application using launcher" timeout="840" level="System" insignificant="true">
-	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance dash-dash- -a fala_qml_wl -b fala_qml_wl -s 750 -f "/tmp/fala_qml_wl.log" &gt; /tmp/perf_grid_qml_with_launcher.txt</step>
+	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_qml_wl -b fala_qml_wl -s 750 -f "/tmp/fala_qml_wl.log" &gt; /tmp/perf_grid_qml_with_launcher.txt</step>
       </case>
 
       <post_steps>
           <step>cp /tmp/fala_qml_wl.log /tmp/grid_fala_qml_wl.log</step>
       </post_steps>
-    -->
+    
 <!-- /QML -->
-    <!--  
+    
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    
@@ -56,7 +56,7 @@
       </get>
 
     </set>
-    -->
+    
 
   </suite>
 </testdefinition>
