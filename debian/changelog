@@ -1,8 +1,16 @@
 applauncherd (0.25.0) unstable; urgency=low
 
-  * Partial preloaded library list optimization
+  * Fixes: NB#241755 - Booster-e doesn't work with executables
+  * Fixes: NB#239608 - invoker doesn't forward ^C always
+  * Changes: Directory naming in the source tree made consistent => all lower case.
+  * Changes: Partially fixes bug 231306 - Launcher slows down boot by loading irrelevant libraries
+  * Changes: New main page for the documentation
+  * Changes: moved e-booster tests to functests and marked them as significant
+  * Changes: moved single instance tests to functests and made them significant
+  * Changes: moved qml booster tests to functests and made them significant
+  * Changes: Remove comments from performance tests.xml files
 
- -- Juha Lintula <juha.lintula@nokia.com>  Tue, 29 Mar 2011 14:21:21 +0200
+ -- Jussi Lind <jussi.lind@nokia.com>  Wed, 30 Mar 2011 15:58:08 +0300
 
 applauncherd (0.24.5) stable; urgency=low
 
