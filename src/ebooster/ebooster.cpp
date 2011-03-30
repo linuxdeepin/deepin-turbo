@@ -26,6 +26,8 @@
 #include <mcomponentcache.h>
 #endif
 
+#include "coverage.h"
+
 const string EBooster::m_socketId  = "/tmp/booste";
 const string EBooster::m_temporaryProcessName = "booster-e";
 

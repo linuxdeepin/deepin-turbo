@@ -6,6 +6,7 @@
 #include <QtConcurrentRun>
 #include <QApplication>
 #include <MApplication>
+#include "coverage.h"
 
 int EventHandler::m_sighupFd[2];
 struct sigaction EventHandler::m_oldSigAction;
@@ -89,9 +90,13 @@ void EventHandler::accept()
 
 void EventHandler::notifyThemeChange()
 {
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
+
     // only MApplication is connected to this signal
     MApplication::quit();
-    ::_exit(EXIT_SUCCESS);
+    _exit(EXIT_SUCCESS);
 }
 
 //
@@ -109,12 +114,16 @@ void EventHandler::hupSignalHandler(int)
 
 void EventHandler::handleSigHup()
 {
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
+
     if (m_type == MEventHandler)
         MApplication::quit();
     else if (m_type == QEventHandler)
         QApplication::quit();
 
-    ::_exit(EXIT_SUCCESS);
+    _exit(EXIT_SUCCESS);
 }
 
 bool EventHandler::setupUnixSignalHandlers()
