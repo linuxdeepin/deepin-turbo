@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-bug-tests" domain="Application framework"> 
+
+    <set name="TC_Bug" description="functional tests for bugs and new features" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_correct_creds" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_correct_creds</step>
+      </case>
+
+      <!--case name="applauncherd__test_application_specific_theming" type="Functional" description="Application specific theming tests" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_application_specific_theming</step>
+      </case>
+
+      <case name="applauncherd__test_global_theming" type="Functional" description="Tests that global theming changes affect launched applications" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_global_theming</step>
+      </case-->
+
+      <!--case name="applauncherd__test_oom_adj_zero" type="Functional" description="Test that oom.adj is 0 for launched application process" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_oom_adj_zero</step>
+      </case-->
+
+      <case name="applauncherd__test_oom_adj_minus_one" type="Functional" description="Test that oom.adj is -1 for launched application process when using invokers -o parameter" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_oom_adj_minus_one</step>
+      </case>
+
+      <case name="applauncherd__test_launched_app_name" type="Functional" description="Test that launched application name  have .launch at the end" timeout="460" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_name</step>
+      </case>
+
+      <!--case name="applauncherd__test_stress_boosted_apps" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>
+      </case-->
+
+      <case name="applauncherd__test_invoker_param_creds" type="Functional" description="test invoker --creds" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_param_creds</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_param_respawn_delay" type="Functional" description="test invoker --respawn" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_param_respawn_delay</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_bogus_apptype" type="Functional" description="test giving bogus apptype to invoker" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_bogus_apptype</step>
+      </case>
+
+      <!--case name="applauncherd__test_launch_prestarted_app" type="Functional" description="To test that prestarted application is launched" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/ts_prestartapp.rb dash-dash-name test_launch_prestarted_app</step>
+      </case-->
+
+      <case name="applauncherd__test_core_dump" type="Functional" description="Test that core dumps are generated with boosted applications" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-core-dump.py test_core_dumps</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+    <set name="TC_Splash" description="functional tests for splash" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_splash" type="Functional" description="To test --splash functionality" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_splash</step>
+      </case>
+
+      <case name="applauncherd__test_splash_landscape" type="Functional" description="To test --splash-landscape functionality" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_splash_landscape</step>
+      </case>
+
+      <case name="applauncherd__test_no_splash" type="Functional" description="To test splash parameters is not reset " timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_no_splash</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+  </suite>
+</testdefinition>
+
+

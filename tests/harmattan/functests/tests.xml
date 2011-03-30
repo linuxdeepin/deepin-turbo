@@ -5,8 +5,6 @@
   <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
   <suite name="applauncherd-functional-tests" domain="Application framework"> 
 
-
-
     <set name="TC_Launcher" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
@@ -170,6 +168,135 @@
       <-get>
       </get>
     </set-->
+
+      <!-- Single Instance Tests (without invoker) -->
+    <set name="TC_SingleInstance_No_Invoker" description="functional tests for single instance without invoker" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+
+      <case name="applauncherd__test_single_instance_window_raise_wo_invoker" type="Functional" description="Test basic single instance functionality and window raising" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_without_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_and_non_single_instance_wo_invoker" type="Functional" description="Test that there's multiple instances when starting app w/o single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_and_non_single_instance_without_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_stress_test_wo_invoker" type="Functional" description="Try starting apps fast with single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_stress_test_without_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_abnormal_lock_release_wo_invoker" type="Functional" description="Try starting an app, killing it and starting it again checking that the pid has changed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_abnormal_lock_release_without_invoker</step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+      <!-- Single Instance Tests (with invoker) -->
+    <set name="TC_SingleInstance_Invoker" description="functional tests for single instance with invoker" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+
+      <case name="applauncherd__test_single_instance_window_raise_w_invoker" type="Functional" description="Test basic single instance functionality and window raising" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_with_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_and_non_single_instance_w_invoker" type="Functional" description="Test that there's multiple instances when starting app w/o single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_and_non_single_instance_with_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_stress_test_w_invoker" type="Functional" description="Try starting apps fast with single-instance" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_stress_test_with_invoker</step>
+      </case>
+
+      <case name="applauncherd__test_single_instance_abnormal_lock_release_w_invoker" type="Functional" description="Try starting an app, killing it and starting it again checking that the pid has changed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_abnormal_lock_release_with_invoker</step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+      <!-- Test for qml booster -->
+    <set name="TC_Qml_Booster" description="functional tests for qml boosters" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+
+      <case name="applauncherd__test_zombie_state_qml" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state_qml</step>
+      </case>
+
+      <case name="applauncherd__test_launch_multiple_apps_qml" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_qml</step>
+      </case>
+
+      <case name="applauncherd__test_one_instance_qml" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance_qml</step>
+      </case>
+
+      <case name="applauncherd__test_launch_multiple_apps_cont_qml" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont_qml</step>
+      </case>
+
+      <case name="applauncherd__test_wait_term_qml" type="Functional" description="When calling invoker with --wait-term and killing invoker,the launched application should die too." timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_wait_term_qml</step>
+      </case>
+
+      <case name="applauncherd__test_fd_booster_d" type="Functional" description="File descriptor test for booster-d" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_d</step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+      <!-- Test for e booster -->
+    <set name="TC_e_Booster" description="functional tests for qml boosters" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_zombie_state_e" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state_e</step>
+      </case>
+
+      <case name="applauncherd__test_launch_multiple_apps_e" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_e</step>
+      </case>
+
+      <case name="applauncherd__test_one_instance_e" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance_e</step>
+      </case>
+
+      <case name="applauncherd__test_launch_multiple_apps_cont_e" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont_e</step>
+      </case>
+
+      <case name="applauncherd__test_wait_term_e" type="Functional" description="When calling invoker with --wait-term and killing invoker,the launched application should die too." timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_wait_term_e</step>
+      </case>
+
+      <case name="applauncherd__test_fd_booster_e" type="Functional" description="File descriptor test for booster-d" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_e</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
   </suite>
 </testdefinition>
 

@@ -1,74 +1,74 @@
-# Sub build: Meego/TestScripts 
-add_subdirectory(Meego/TestScripts)
+# Sub build: meego/testscripts 
+add_subdirectory(meego/testscripts)
 
-# Sub build: Meego/art-tests
-add_subdirectory(Meego/art-tests)
+# Sub build: meego/art-tests
+add_subdirectory(meego/art-tests)
 
-# Sub build: Meego/bug-tests
-add_subdirectory(Meego/bug-tests)
+# Sub build: meego/bug-tests
+add_subdirectory(meego/bug-tests)
 
-# Sub build: Meego/functests
-add_subdirectory(Meego/functests)
+# Sub build: meego/functests
+add_subdirectory(meego/functests)
 
-# Sub build: Meego/perftests
-add_subdirectory(Meego/perftests)
+# Sub build: meego/perftests
+add_subdirectory(meego/perftests)
 
-# Sub build: Harmattan/TestApps/creds 
-add_subdirectory(Harmattan/TestApps/creds)
+# Sub build: harmattan/testapps/creds 
+add_subdirectory(harmattan/testapps/creds)
 
-# Sub build: Harmattan/TestScripts
-add_subdirectory(Harmattan/TestScripts)
+# Sub build: harmattan/testscripts
+add_subdirectory(harmattan/testscripts)
 
-# Sub build: Harmattan/art-tests
-add_subdirectory(Harmattan/art-tests)
+# Sub build: harmattan/art-tests
+add_subdirectory(harmattan/art-tests)
 
-# Sub build: Harmattan/red-tests
-add_subdirectory(Harmattan/red-tests)
+# Sub build: harmattan/red-tests
+add_subdirectory(harmattan/red-tests)
 
-# Sub build: Harmattan/functests
-add_subdirectory(Harmattan/functests)
+# Sub build: harmattan/functests
+add_subdirectory(harmattan/functests)
 
-# Sub build: Harmattan/perftests/qml
-add_subdirectory(Harmattan/perftests/qml)
+# Sub build: harmattan/perftests/qml
+add_subdirectory(harmattan/perftests/qml)
 
-# Sub build: Harmattan/perftests/qml
-add_subdirectory(Harmattan/perftests/lmt)
+# Sub build: harmattan/perftests/qml
+add_subdirectory(harmattan/perftests/lmt)
 
-# Sub build: Harmattan/perftests/qml
-add_subdirectory(Harmattan/perftests/reference)
+# Sub build: harmattan/perftests/qml
+add_subdirectory(harmattan/perftests/reference)
 
-# Sub build: Common/unittests
-add_subdirectory(Common/unittests)
+# Sub build: common/unittests
+add_subdirectory(common/unittests)
 
-# Sub build: Common/TestApps/fala_status
-add_subdirectory(Common/TestApps/fala_status)
+# Sub build: common/testapps/fala_status
+add_subdirectory(common/testapps/fala_status)
 
-# Sub build: Common/TestApps/testapp
-add_subdirectory(Common/TestApps/testapp)
+# Sub build: common/testapps/testapp
+add_subdirectory(common/testapps/testapp)
 
-# Sub build: Common/TestApps/themetest
-add_subdirectory(Common/TestApps/themetest)
+# Sub build: common/testapps/themetest
+add_subdirectory(common/testapps/themetest)
 
-# Sub build: Common/TestApps/fala_gettime
-add_subdirectory(Common/TestApps/fala_gettime)
+# Sub build: common/testapps/fala_gettime
+add_subdirectory(common/testapps/fala_gettime)
 
-# Sub build: Common/TestApps/fala_gettime_ms
-add_subdirectory(Common/TestApps/fala_gettime_ms)
+# Sub build: common/testapps/fala_gettime_ms
+add_subdirectory(common/testapps/fala_gettime_ms)
 
-# Sub build: Common/TestApps/fala_multi-instance
-add_subdirectory(Common/TestApps/fala_multi-instance)
+# Sub build: common/testapps/fala_multi-instance
+add_subdirectory(common/testapps/fala_multi-instance)
 
-# Sub build: Common/TestApps/helloworld
-add_subdirectory(Common/TestApps/helloworld)
+# Sub build: common/testapps/helloworld
+add_subdirectory(common/testapps/helloworld)
 
-# Sub build: Common/TestApps/pixelchanged
-add_subdirectory(Common/TestApps/pixelchanged)
+# Sub build: common/testapps/pixelchanged
+add_subdirectory(common/testapps/pixelchanged)
 
-# Sub build: Common/TestApps/fala_windowid
-add_subdirectory(Common/TestApps/fala_windowid)
+# Sub build: common/testapps/fala_windowid
+add_subdirectory(common/testapps/fala_windowid)
 
-# Sub build: Common/TestApps/xsendevent
-add_subdirectory(Common/TestApps/xsendevent)
+# Sub build: common/testapps/xsendevent
+add_subdirectory(common/testapps/xsendevent)
 
-# Sub build: Common/TestApps/fala_qml_helloworld
-add_subdirectory(Common/TestApps/fala_qml_helloworld)
+# Sub build: common/testapps/fala_qml_helloworld
+add_subdirectory(common/testapps/fala_qml_helloworld)
