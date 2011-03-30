@@ -449,9 +449,6 @@ void Booster::setEnvironmentBeforeLaunch()
                       std::string(""));
     }
 
-    // Load the application and find out the address of main()
-    loadMain();
-
     // Make sure that boosted application can dump core. This must be
     // done after set[ug]id().
     prctl(PR_SET_DUMPABLE, 1);
