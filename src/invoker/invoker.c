@@ -76,6 +76,10 @@ extern char ** environ;
 static pid_t g_invoked_pid = -1;
 
 static void sigs_restore(void);
+static void sigs_init(void);
+
+//! Pipe used to safely catch Unix signals
+static int g_sigPipe[2];
 
 // Forwards Unix signals from invoker to the invoked process
 static void sig_forwarder(int sig)
@@ -87,6 +91,11 @@ static void sig_forwarder(int sig)
             report(report_error, "Can't send signal to application: %s \n", strerror(errno));
         }
         sigs_restore();
+
+        char signal_id = (char) sig;
+        write(g_sigPipe[1], &signal_id, 1);
+
+        // send a signal itself for default handler
         raise(sig);
     }
 }
@@ -551,9 +560,40 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
         // Forward signals to the invoked process
         sigs_init();
 
-        // Wait for exit status from the invoked application
-        status = invoker_recv_exit(fd);
+        while(1)
+        {
+            fd_set readfds;
+            int ndfs = 0;
 
+            FD_ZERO(&readfds);
+
+            FD_SET(fd, &readfds);
+            ndfs = (fd > ndfs) ? fd : ndfs;
+
+            FD_SET(g_sigPipe[0], &readfds);
+            ndfs = (fd > ndfs) ? fd : ndfs;
+
+            // Wait for something appearing in the pipes.
+            if (select(ndfs + 1, &readfds, NULL, NULL, NULL) > 0)
+            {
+                // Check if an exit status from the invoked application
+                if (FD_ISSET(fd, &readfds))
+                {
+                    status = invoker_recv_exit(fd);
+                    break;
+                }
+                // Check if an exit status from the invoked application
+                else if (FD_ISSET(g_sigPipe[0], &readfds))
+                {
+                    // clean up pipe
+                    char signal_id;
+                    read(g_sigPipe[0], &signal_id, sizeof(signal_id));
+  
+                    // set signals forwarding to the invoked process
+                    sigs_init();
+                }
+            }
+        }
         // Restore default signal handlers
         sigs_restore();
     }
@@ -758,6 +798,13 @@ int main(int argc, char *argv[])
         report(report_error, "Application's type is unknown.\n");
         usage(1);
     }
+
+    if (pipe(g_sigPipe) == -1) 
+    { 
+        report(report_error, "Creating a pipe for Unix signals failed!\n"); 
+        exit(EXIT_FAILURE); 
+    }
+
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
