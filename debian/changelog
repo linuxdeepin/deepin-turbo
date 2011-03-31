@@ -1,3 +1,9 @@
+applauncherd (0.25.1) unstable; urgency=low
+
+  * 
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Thu, 31 Mar 2011 17:11:28 +0300
+
 applauncherd (0.25.0) stable; urgency=low
 
   * Fixes: NB#241755 - Booster-e doesn't work with executables
