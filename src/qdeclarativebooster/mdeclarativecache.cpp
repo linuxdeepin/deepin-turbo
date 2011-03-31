@@ -91,7 +91,13 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
         
         // This changes argc in QCoreApplication
         initialArgc = qMin(argc, ARGV_LIMIT);
-        
+
+        // Take application name from argv
+        QString appName = QFileInfo(argv[0]).fileName();
+
+        // Set object name
+        qApp->setObjectName(appName);
+
 #ifdef Q_WS_X11
         // reinit WM_COMMAND X11 property
         if (qDeclarativeViewInstance) {
@@ -100,7 +106,6 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
                 XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
 
                 // set correct WM_CLASS properties
-                QString appName = QFileInfo(argv[0]).fileName();
                 QString appClass = appName.left(1).toUpper();
                 if (appName.length() > 1)
                     appClass += appName.right(appName.length() - 1);
@@ -187,4 +192,3 @@ QString MDeclarativeCache::applicationFilePath()
 {
     return d_ptr->applicationFilePath();
 }
-
