@@ -1,7 +1,7 @@
 # Set sources
 set(SRC main.cpp)
 
-# Use the compiler and linker flags given in meegotouch-boostable.pc
+# Use the compiler and linker flags given in qdeclarative-boostable.pc
 # in the source tree.
 execute_process(COMMAND "env" 
                          "PKG_CONFIG_PATH=${CMAKE_SOURCE_DIR}/data/pkgconfig" 
