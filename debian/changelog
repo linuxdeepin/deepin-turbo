@@ -1,4 +1,4 @@
-applauncherd (0.25.0) unstable; urgency=low
+applauncherd (0.25.0) stable; urgency=low
 
   * Fixes: NB#241755 - Booster-e doesn't work with executables
   * Fixes: NB#239608 - invoker doesn't forward ^C always
