@@ -32,7 +32,7 @@ add_dependencies(qdeclarativebooster mdeclarativecache)
 # Add install rule
 install(TARGETS qdeclarativebooster DESTINATION /usr/lib/applauncherd/)
 install(TARGETS mdeclarativecache DESTINATION /usr/lib)
-install(FILES mdeclarativecache.h DESTINATION /usr/include/applauncherd
+install(FILES mdeclarativecache.h MDeclarativeCache DESTINATION /usr/include/applauncherd
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 install(FILES README-QDECLARATIVEBOOSTER DESTINATION /usr/share/doc/applauncherd)
 
