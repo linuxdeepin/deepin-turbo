@@ -28,7 +28,7 @@ def remove_applauncherd_runtime_files():
     Removes files that applauncherd leaves behind after it has been stopped
     """
 
-    files = ['/tmp/applauncherd.lock']
+    files = ['/var/run/applauncherd.lock']
     files += glob.glob('/tmp/boost*')
 
     for f in files:

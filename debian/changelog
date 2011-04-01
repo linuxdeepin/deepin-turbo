@@ -1,6 +1,7 @@
 applauncherd (0.25.1) unstable; urgency=low
 
-  * Fixes: NB#241927 - QML boosted applications have incorrect MApplication::objectName 
+  * Fixes: NB#241927 - QML boosted applications have incorrect MApplication::objectName
+  * Lock file moved to /var/run
 
  -- Jussi Lind <jussi.lind@nokia.com>  Thu, 31 Mar 2011 17:13:21 +0300
 

@@ -36,7 +36,7 @@
 namespace
 {
     int g_lockFd = -1;
-    const std::string LOCK_PATH_BASE("/tmp/single-instance-locks/");
+    const std::string LOCK_PATH_BASE("/var/run/single-instance-locks/");
     const std::string LOCK_FILE_NAME("instance.lock");
 }
 
@@ -238,7 +238,7 @@ extern "C"
      * \brief Try to acquire a lock file.
      *
      * Tries to acquire a lock currently at
-     * /tmp/single-instance-locks/[binaryName]/instance.lock
+     * /var/run/single-instance-locks/[binaryName]/instance.lock
      *
      * \param binaryName Full path to the binary.
      * \return true if succeeded, false on failure.

@@ -114,7 +114,7 @@ bool Daemon::lock()
     fl.l_start = 0;
     fl.l_len = 1;
 
-    if((m_lockFd = open("/tmp/applauncherd.lock", O_WRONLY | O_CREAT, 0666)) == -1)
+    if((m_lockFd = open("/var/run/applauncherd.lock", O_WRONLY | O_CREAT, 0666)) == -1)
         return false;
 
     if(fcntl(m_lockFd, F_SETLK, &fl) == -1)
