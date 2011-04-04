@@ -18,7 +18,7 @@
 ****************************************************************************/
 
 #include <Qt/QtDeclarative>
-#include <applauncherd/mdeclarativecache.h>
+#include <MDeclarativeCache>
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
