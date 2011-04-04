@@ -1,3 +1,9 @@
+applauncherd (0.25.2) unstable; urgency=low
+
+  * 
+
+ -- Jussi Lind <jussi.lind@nokia.com>  Mon, 04 Apr 2011 16:24:15 +0300
+
 applauncherd (0.25.1) stable; urgency=low
 
   * Fixes: NB#241927 - QML boosted applications have incorrect MApplication::objectName
