@@ -235,6 +235,10 @@ void Daemon::run()
                     enterBootMode();
                     break;
 
+                case SIGPIPE:
+                    Logger::logDebug("Daemon: SIGPIPE received.");
+                    break;
+
                 default:
                     break;
                 }
@@ -402,6 +406,8 @@ void Daemon::forkBooster(char type, int sleepTime)
         signal(SIGCHLD, SIG_DFL);
         signal(SIGTERM, SIG_DFL);
         signal(SIGUSR1, SIG_DFL);
+        signal(SIGUSR2, SIG_DFL);
+        signal(SIGPIPE, SIG_DFL);
 
         // Will get this signal if applauncherd dies
         prctl(PR_SET_PDEATHSIG, SIGHUP);

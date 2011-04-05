@@ -33,6 +33,7 @@ char g_pipeDataSigChld = SIGCHLD;
 char g_pipeDataSigTerm = SIGTERM;
 char g_pipeDataSigUsr1 = SIGUSR1;
 char g_pipeDataSigUsr2 = SIGUSR2;
+char g_pipeDataSigPipe = SIGPIPE;
 
 static void sigChldHandler(int)
 {
@@ -52,6 +53,11 @@ static void sigUsr1Handler(int)
 static void sigUsr2Handler(int)
 {
     write(g_sigPipeFd, &g_pipeDataSigUsr2, 1);
+}
+
+static void sigPipeHandler(int)
+{
+    write(g_sigPipeFd, &g_pipeDataSigPipe, 1);
 }
 
 //! Main function
@@ -78,6 +84,7 @@ DECL_EXPORT int main(int argc, char * argv[])
     signal(SIGTERM, sigTermHandler); // exit launcher
     signal(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
     signal(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
+    signal(SIGPIPE, sigPipeHandler); // broken invoker's pipe 
 
     // Run the main loop
     myDaemon.run();
