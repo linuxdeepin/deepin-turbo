@@ -1,8 +1,9 @@
-applauncherd (0.25.2) unstable; urgency=low
+applauncherd (0.26.0) unstable; urgency=low
 
   * Fixes: NB#240051 - applauncherd-launcher: please remove requests of DRM related token
   * Fixes: NB#242533 - applauncherd.bin is terminated by SIGPIPE
-
+  * Changes: Added QML booster user documentation into doc package
+	
  -- Jussi Lind <jussi.lind@nokia.com>  Mon, 04 Apr 2011 16:24:15 +0300
 
 applauncherd (0.25.1) stable; urgency=low

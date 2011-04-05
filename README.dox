@@ -512,4 +512,187 @@ applauncherd --help
 \page moreinformation More information
 
 See MeeGo Touch documentation for fast application startup.
+
+\page qmlboost Using the QML booster
+
+This is a step by step guide to using \c applauncherd to boost your QML application.
+
+\section qmlboostprereq Prerequisites
+
+  - The application uses a C++ based runner.
+  - The runner uses \c QApplication and \c QDeclarativeView directly, i.e. does not inherit from the classes.
+
+\section qmlboostcompiling 1. Compiling and linking for launcher
+
+Binaries intended to be run with \c applauncherd should be compiled
+with \c -fPIC option to produce position independent code. They should
+then be linked either as shared libraries, or better yet as position
+independent executables, which can be executed both traditionally and
+with the launcher. The \c -pie and \c -rdynamic linker flags
+accomplish this.
+
+To improve linking and loading times of shared object libraries it is
+encouraged to hide any unnecessary symbols from the resulting binary
+by using \c -fvisibility=hidden and \c -fvisibility-inlines-hidden
+flags as well.  However, \c applauncherd needs to find the entry point
+for your application, so the symbol \c main needs to be explicitly made
+visible. This can be done as follows:
+
+\code
+  #include <QtCore/QtGlobal>
+  
+  Q_DECL_EXPORT int main(int argc, char **argv)
+  {
+  ...
+  }
+\endcode
+
+Normally you should not need to worry about the compiler and linker
+flags, as the \c applauncherd-dev package provides configuration
+options for \c QMake, \c cmake, and \c pkg-config. If you are building
+a Debian package, make your package build-depend on \c
+applauncherd-dev.
+
+\subsection qmlboostqmake Using QMake
+
+If you are using \c QMake, obtaining the correct compiler and linker
+flags is just a matter of adding a suitable configuration option:
+
+\code
+    CONFIG += qdeclarative-boostable
+\endcode
+
+If you want to use \c pkg-config directly for some reason (like getting
+error messages), you can add explicit \c pkg-config calls in the appropriate
+flags:
+
+\code
+    QMAKE_CXXFLAGS += `pkg-config --cflags qdeclarative-boostable`
+    QMAKE_LFLAGS += `pkg-config --libs qdeclarative-boostable`
+\endcode
+
+You can also manually set the options in your .pro file like this:
+
+\code
+    QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
+    QMAKE_LFLAGS += -pie -rdynamic
+\endcode
+
+Note that you have to update the flags manually if there are any changes in
+the required flags.
+
+\subsection qmlboostcmake Using CMake
+
+You can utilize \c pkg-config in \c CMake by including \c FindPkgConfig in \c CMakeLists.txt:
+
+\code
+  include(FindPkgConfig) 
+\endcode
+
+To obtain the compiler and linker flags, add the following lines in \c CMakeLists.txt:
+
+\code
+  pkg_check_modules(QDECLARATIVE_BOOSTABLE REQUIRED qdeclarative-boostable)
+  add_definitions(${QDECLARATIVE_BOOSTABLE_CFLAGS})
+  link_libraries(${QDECLARATIVE_BOOSTABLE_LDFLAGS})
+\endcode
+  
+If you do not want to use \c pkg-config for some reason, you can manually add the
+compiler and linker flags like this:
+
+\code
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden 
+      -fvisibility-inlines-hidden")
+  set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
+\endcode
+  
+Again, this requires you to update the flags if something changes.
+
+\subsection qmlboostpkgconfig Automatic settings with pkg-config (any build system)
+
+The correct flags can be automatically obtained with:
+
+\code
+    pkg-config --cflags qdeclarative-boostable
+    pkg-config --libs qdeclarative-boostable
+\endcode
+
+\section qmlboostcache 2. Utilizing the booster cache
+
+Instantiating \c QApplication and \c QDeclarativeView is a relatively
+expensive operation. The QML booster helps reduce application startup
+latency by creating instances of the classes in MDeclarativeCache. In
+order to make use of this functionality, the applications needs to
+pick up the instances from the cache. Thus, if the application code
+instantiates the classes as
+
+\code
+      QApplication app;
+      QDeclarativeView view;
+\endcode
+
+it needs to be modified into
+
+\code
+     QApplication *app = MDeclarativeCache::qApplication(argc, argv);
+     QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
+\endcode
+
+The cache class works both with the booster and without it. In the
+non-boosted case there are no pre-created instances, so the cache
+class simply creates the instances on the fly.
+
+The ownership of the instances is transferred from the cache to the
+application code. The instances need to be deleted in the correct
+order, deleting the \c QApplication instance before the \c
+QDeclarativeView instance is known to cause crashes.
+
+\section qmlboostinvoker 3. Launching the application
+
+Now everything should be in place for launching the application. The
+linker flags create a Position Independent Binary (PIE), so the
+application can still be invoked from the command line. In order to
+verify that the modifications done to the application and the build
+scripts have not broken anything, it is a good idea at this point to
+check that the application still starts and functions normally from
+the command line:
+
+\code
+$ ./myApp
+\endcode
+
+The next step is to use the \c invoker to launch the application. In
+order for this to work, you need to have \c applauncherd and \c
+booster-d (the QML booster process) running. To check that this is the
+case, you can do:
+
+\code
+$ ps ax | grep booster-d
+\endcode
+
+If you don't see the booster process, you need to start \c
+applauncherd manually. In Harmattan and MeeGo, \c applauncherd should
+be running as part of the UI session.
+
+Once you have verified that the booster process is running, you can
+use the following command line to ask the booster process to turn into
+your application:
+
+\code
+/usr/bin/invoker --type=d ./myApp
+\endcode
+
+Your application should start exactly as if it had been invoked from
+the command line, just a little bit faster. You can now proceed to
+change the \c .desktop file or \c .service file that launches the
+application to use the invoker command.
+
+\section qmlboostsplas 4. Adding a splash screen
+
+The invoker can also provide a splash screen for you application as follows. For more details on splash screen, see \subpage splash "the splash screen documentation."
+
+\code
+/usr/bin/invoker --splash=/usr/share/myApp/splash.jpg --type=d /usr/bin/myApp
+\endcode
+
 */
