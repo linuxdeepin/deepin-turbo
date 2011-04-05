@@ -2,16 +2,10 @@
 
 \section intro Introduction
 
-Invoker (binary) and applauncherd (daemon) are tools that help to give a user a better
-application startup experience. This is achieved by means of actually launching applications
-faster by preloading dynamically linked libraries and caching stuff
-(MComponentCache, MDeclarativeCache), providing possibility to application developer
-to configure application spesific splash screen which is shown before application is
-started and providing single instance support for application so that only one instance of
-application can be started at a time. It also saves memory, because
-all launched applications share certain resources. 
+Invoker (front-end binary) and applauncherd (daemon) are tools that helps applications launch faster and save memory via shared resources. This is achieved by preloading a set of dynamically linked libraries and caching stuff
+(MComponentCache, MDeclarativeCache). There's a also a possibility to configure an application-specific splash screen, which is shown before the application is started. Also a single-instance support is provided to allow only one instance of an application at a time. 
 
-This documentation describes the idea behind these functionalities. It also explains 
+This documentation describes the idea behind this functionality. It also explains 
 some of the \subpage technical "Technical details" of the implementation.
 
 With invoker and applauncherd you can achieve:
@@ -28,7 +22,7 @@ With invoker and applauncherd you can achieve:
 - \subpage ownboosterplugin "Write your own booster for other application types"
 
 \section gettingstarted Getting started
-If you are interested how quickly enable splash screen, single instance and boosting for your
+If you are interested in quickly enabling splash screen, single instance and boosting for your
 QML application, please take a look at \subpage getstarted "Getting started" documentation
 
 \section tipsandtricks Tips and tricks
