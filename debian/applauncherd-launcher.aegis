@@ -5,7 +5,6 @@
    
     <request>
         <credential match="CAP::*"/>
-        <credential name="drm"/>
         <credential name="Cellular"/>
         <for path="/usr/bin/applauncherd.bin"/>
     </request>

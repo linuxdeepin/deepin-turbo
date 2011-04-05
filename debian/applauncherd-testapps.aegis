@@ -1,6 +1,5 @@
 <aegis>
     <request>
-	<credential name="drm" />
 	<credential name="CAP::setuid" />
 	<credential name="CAP::setgid" />
 	<credential name="CAP::setfcap" />

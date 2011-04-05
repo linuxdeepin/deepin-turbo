@@ -1,6 +1,6 @@
 applauncherd (0.25.2) unstable; urgency=low
 
-  * 
+  * Fixes: NB#240051 - applauncherd-launcher: please remove requests of DRM related token
 
  -- Jussi Lind <jussi.lind@nokia.com>  Mon, 04 Apr 2011 16:24:15 +0300
 
