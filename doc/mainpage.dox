@@ -625,11 +625,16 @@ instantiates the classes as
       QDeclarativeView view;
 \endcode
 
-it needs to be modified into
+It needs to be modified into:
 
 \code
      QApplication *app = MDeclarativeCache::qApplication(argc, argv);
      QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
+\endcode
+
+You also need to:
+\code
+    #include <MDeclarativeCache>
 \endcode
 
 The cache class works both with the booster and without it. In the
