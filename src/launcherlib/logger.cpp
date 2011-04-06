@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <unistd.h>
 
+#include "coverage.h"
 
 bool Logger::m_isOpened  = false;
 bool Logger::m_debugMode = false;

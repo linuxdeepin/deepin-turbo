@@ -38,6 +38,8 @@
 #include <cstring>
 #include <cstdio>
 
+#include "coverage.h"
+
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
 const int Daemon::m_boosterSleepTime = 2;
@@ -772,4 +774,8 @@ Daemon::~Daemon()
 {
     delete m_socketManager;
     delete m_singleInstance;
+
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
 }

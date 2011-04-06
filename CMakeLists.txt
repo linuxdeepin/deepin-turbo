@@ -86,9 +86,9 @@ add_definitions(-DDEBUG_LOGGING_DISABLED)
 
 # Build with test coverage switch if BUILD_COVERAGE environment variable is set
 if ($ENV{BUILD_COVERAGE})
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs")
-    set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} -ftest-coverage -fprofile-arcs")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage -DWITH_COVERAGE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -DWITH_COVERAGE")
+    set(CMAKE_LD_FLAGS "${CMAKE_LD_FLAGS} --coverage")
 endif ($ENV{BUILD_COVERAGE})
 
 # Sub build: applauncherd

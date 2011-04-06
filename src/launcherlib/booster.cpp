@@ -57,6 +57,8 @@ namespace
 }
 #endif // HAVE_CREDS
 
+#include "coverage.h"
+
 static const int FALLBACK_GID = 126;
 
 static gid_t getGroupId(const char *name, gid_t fallback)
@@ -477,6 +479,10 @@ int Booster::launchProcess()
 
     // Load the application and find out the address of main()
     void* handle = loadMain();
+
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
 
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));

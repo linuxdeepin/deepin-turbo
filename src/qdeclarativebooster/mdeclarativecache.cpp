@@ -27,6 +27,8 @@
 #include <X11/Xutil.h>
 #endif
 
+#include "coverage.h"
+
 MDeclarativeCachePrivate * const MDeclarativeCache::d_ptr = new MDeclarativeCachePrivate;
 const int MDeclarativeCachePrivate::ARGV_LIMIT = 32;
 
@@ -45,6 +47,10 @@ MDeclarativeCachePrivate::~MDeclarativeCachePrivate()
 {
     delete qDeclarativeViewInstance;
     delete[] initialArgv;
+
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
 }
 
 void MDeclarativeCachePrivate::populate()
@@ -133,6 +139,11 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
         }
 
     }
+
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
+
     return qApplicationInstance;
 }
 
@@ -145,6 +156,11 @@ QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
     } else {
         returnValue = new QDeclarativeView();
     }
+
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
+
     return returnValue;
 }
 
@@ -171,6 +187,10 @@ QString MDeclarativeCachePrivate::applicationFilePath()
 void MDeclarativeCache::populate()
 {
     d_ptr->populate();
+
+#ifdef WITH_COVERAGE
+    __gcov_flush();
+#endif
 }
 
 QApplication* MDeclarativeCache::qApplication(int &argc, char **argv)
