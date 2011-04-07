@@ -298,7 +298,7 @@ class launcher_tests (unittest.TestCase):
 
         p = run_cmd_as_user('/usr/bin/applauncherd.bin --daemon')
 
-        time.sleep(5)
+        time.sleep(15)
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
         debug("The pid of applauncherd --daemon is %s" %op)
