@@ -21,6 +21,9 @@
 #include "logger.h"
 
 #include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
 #include <cstdlib>
 #include <signal.h>
 #include <fcntl.h>
@@ -67,10 +70,17 @@ DECL_EXPORT int main(int argc, char * argv[])
     Logger::openLog(PROG_NAME_LAUNCHER);
     Logger::logDebug("%s starting..", PROG_NAME_LAUNCHER);
 
-    // Check that an instance of launcher is not already running
-    if(!Daemon::lock())
+    // Check that an instance of launcher is not already running already
+    // here if we are not going to fork. In that case the lock should be
+    // checked after fork() is done in Daemon::daemonize
+    std::vector<std::string> args(argv, argv + argc);
+    if (find(args.begin(), args.end(), "-d") == args.end() &&
+        find(args.begin(), args.end(), "--daemon") == args.end())
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
+        if(!Daemon::lock())
+        {
+            Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
+        }
     }
 
     // Create main daemon instance

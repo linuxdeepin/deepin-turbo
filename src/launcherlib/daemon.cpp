@@ -625,6 +625,12 @@ void Daemon::daemonize()
         exit(EXIT_SUCCESS);
     }
 
+    // Check the lock
+    if(!Daemon::lock())
+    {
+        Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
+    }
+
     // Change the file mode mask
     umask(0);
 
