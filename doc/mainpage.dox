@@ -5,25 +5,35 @@
 Invoker (front-end binary) and applauncherd (daemon) are tools that helps applications launch faster and save memory via shared resources. This is achieved by preloading a set of dynamically linked libraries and caching stuff
 (MComponentCache, MDeclarativeCache). There's a also a possibility to configure an application-specific splash screen, which is shown before the application is started. Also a single-instance support is provided to allow only one instance of an application at a time. 
 
-This documentation describes the idea behind this functionality. It also explains 
-some of the \subpage technical "Technical details" of the implementation.
+This documentation describes the idea behind this functionality and how to utilize it. It also explains some of the \subpage technical "Technical details" of the implementation.
 
-With invoker and applauncherd you can achieve:
+\section contents Contents
 
-- \subpage splash "Splash screen for the application"
+- \subpage howdoesitwork "How does it work?"
 
-- \subpage singleinstance "Single instance support for the application"
-
-- Boosted startup for different types of applications: 
+- How to enable boosted startup for different types of applications: 
   - \subpage qmlboost "QML"
   - \subpage qtboost "Qt"
-  - \subpage libmeegotouchboost "Libmeegotouch"
+  - \subpage libmeegotouchboost "MeeGo Touch"
+
+- \subpage splash "How to enable splash screen for the application"
+
+- \subpage singleinstance "How to enable single instance support for the application"
+
+- \subpage tipsandtricks "Tips and tricks"
+
+- \subpage technical "Technical overview"
 
 - \subpage ownboosterplugin "Write your own booster for other application types"
 
-\section gettingstarted Getting started
-If you are interested in quickly enabling splash screen, single instance and boosting for your
-QML application, please take a look at \subpage getstarted "Getting started" documentation
+\section howdoesitwork How does it work?
+
+In a nutshell, applauncherd is a daemon that forks \c booster processes, which in turn are transformed into real applications when user launches a boosted application.
+
+Booster processes do application-type specific initializations. For instance, the MeeGo Touch booster instantiates MApplication and MApplicationWindow objects and stores them to MComponentCache. Then the booster process waits for a connection from the \c invoker.
+
+An application is always launched by using the \c invoker program. The invoker sends the name and location of the application binary and
+data on its running environment to the desired booster process. This makes the booster process to load the binary, initialize its environment, and finally call the \c main() function in the binary.
 
 \section tipsandtricks Tips and tricks
 
@@ -513,8 +523,9 @@ This is a step by step guide to using \c applauncherd to boost your QML applicat
 
 \section qmlboostprereq Prerequisites
 
-  - The application uses a C++ based runner.
+  - The QML-application uses a C++-based runner.
   - The runner uses \c QApplication and \c QDeclarativeView directly, i.e. does not inherit from the classes.
+  - \c applauncherd-dev package is installed.
 
 \section qmlboostcompiling 1. Compiling and linking for launcher
 
