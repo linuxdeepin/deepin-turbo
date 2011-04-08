@@ -271,7 +271,7 @@ int main(int argc, char **argv)
 
         if ( 
             pixel2_x != -1 &&
-            ((!pixel_value_defined && pixel2 != previous_pixel) 
+            ((!pixel_value_defined && pixel2 != previous_pixel2) 
                 || (pixel_value_defined && pixel2 == pixel_value)) ) {
             snprintf(txtbuffer, 80, "pixel2 changed to value 0x%lx", pixel2);
             timestamp(txtbuffer);
