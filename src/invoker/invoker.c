@@ -37,6 +37,7 @@
 #include <sys/wait.h>
 #include <limits.h>
 #include <getopt.h>
+#include <fcntl.h>
 
 #include "report.h"
 #include "protocol.h"
@@ -579,6 +580,24 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
                 // Check if an exit status from the invoked application
                 if (FD_ISSET(fd, &readfds))
                 {
+                    //check if we've got application exit status or process on the other side of socket just exited 
+
+                    char filename[50];
+                    snprintf(filename, sizeof(filename), "/proc/%d/cmdline", g_invoked_pid);
+
+                    //Open filename for reading only
+                    fd = open(filename, O_RDONLY);
+                    if (fd != -1)
+                    {
+                        // application is still running, so applauncherd is dead
+                        close(fd);
+
+                        // send a signal to kill application and exit
+                        sleep(10);
+                        kill(g_invoked_pid, SIGKILL); 
+                        raise(SIGKILL);
+                    }
+
                     status = invoker_recv_exit(fd);
                     break;
                 }
