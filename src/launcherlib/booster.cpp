@@ -35,9 +35,11 @@
 #include <cstring>
 #include <sstream>
 
+#ifdef Q_WS_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#endif //Q_WS_X11
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -338,9 +340,14 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
                             const std::string &portraitSplash, const std::string &landscapeSplash,
                             const std::string &pixmapId)
 {
+#ifdef Q_WS_X11
+
     std::stringstream st;
     st << pid;
     std::string pidStr = st.str();
+
+    // set error handler for all Xlib calls
+    XErrorHandler oldHandler = XSetErrorHandler(Booster::handleXError);
 
     Display * dpy = XOpenDisplay(NULL);
     if (dpy) 
@@ -383,19 +390,35 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
             Window compositorWindow = *reinterpret_cast<Window *>(prop);
             const char* splashProperty =  "_MEEGO_SPLASH_SCREEN";
             Atom splashPropertyAtom = XInternAtom(dpy, splashProperty, False);
-            Atom stringAtom = XInternAtom(dpy, "STRING", False);
-
-            XChangeProperty(dpy, compositorWindow, splashPropertyAtom, stringAtom,
-                            8, PropModeReplace, (unsigned char *)data,
-                            len);
+ 
+            XChangeProperty(dpy, compositorWindow, splashPropertyAtom, XA_STRING,
+                            8, PropModeReplace, (unsigned char*) data, len);
 
             // Without flushing, the change seems to loiter in X's queue
             XFlush(dpy);
             delete[] data;
             XFree(prop);
         }
+        // close connection to X server
+        XCloseDisplay(dpy);
+        XSetErrorHandler(oldHandler);
     }
+#else //Q_WS_X11
+    // prevent compilation warnings
+    (void) pid;                                                                                     
+    (void) wmclass;
+    (void) portraitSplash;
+    (void) landscapeSplash;
+    (void) pixmapId;
+#endif //Q_WS_X11
 }
+
+#ifdef Q_WS_X11
+int Booster::handleXError(Display *, XErrorEvent *)
+{
+    return 0;
+}
+#endif //Q_WS_X11
 
 void Booster::setEnvironmentBeforeLaunch()
 {

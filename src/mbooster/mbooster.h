@@ -20,8 +20,8 @@
 #ifndef MBOOSTER_H
 #define MBOOSTER_H
 
-#include "booster.h"
 #include "eventhandler.h"
+#include "booster.h"
 
 #include <signal.h>
 

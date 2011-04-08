@@ -1,8 +1,8 @@
 #include <QObject>
-#include <MGConfItem>
+#include <QSocketNotifier>
 #include <signal.h>
 #include <tr1/memory>
-#include <QSocketNotifier>
+#include <MGConfItem>
 
 using std::tr1::shared_ptr;
 

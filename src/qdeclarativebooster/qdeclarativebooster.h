@@ -20,8 +20,8 @@
 #ifndef QDECLARATIVEBOOSTER_H
 #define QDECLARATIVEBOOSTER_H
 
-#include "booster.h"
 #include "eventhandler.h"
+#include "booster.h"
 
 /*!
  * \class QDeclarativeBooster.

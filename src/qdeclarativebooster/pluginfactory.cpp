@@ -17,8 +17,8 @@
 **
 ****************************************************************************/
 
-#include "qdeclarativebooster.h"
 #include <QtCore>
+#include "qdeclarativebooster.h"
 
 extern "C" 
 {

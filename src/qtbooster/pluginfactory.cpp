@@ -17,8 +17,8 @@
 **
 ****************************************************************************/
 
-#include "qtbooster.h"
 #include <QtCore>
+#include "qtbooster.h"
 
 extern "C" 
 {
