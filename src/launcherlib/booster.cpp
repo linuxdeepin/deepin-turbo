@@ -178,7 +178,11 @@ bool Booster::bootMode() const
 
 void Booster::sendDataToParent()
 {
-    struct iovec    iov[3];
+    // Number of data items to be sent to
+    // the parent (launcher) process
+    const unsigned int NUM_DATA_ITEMS = 3;
+
+    struct iovec    iov[NUM_DATA_ITEMS];
     struct msghdr   msg;
     struct cmsghdr *cmsg;
     char buf[CMSG_SPACE(sizeof(int))];
@@ -199,10 +203,16 @@ void Booster::sendDataToParent()
     iov[2].iov_base = &delay;
     iov[2].iov_len  = sizeof(int);
 
-    msg.msg_iov            = iov;
-    msg.msg_iovlen         = 3;
-    msg.msg_name           = NULL;
-    msg.msg_namelen        = 0;
+    msg.msg_iov     = iov;
+    msg.msg_iovlen  = NUM_DATA_ITEMS;
+    msg.msg_name    = NULL;
+    msg.msg_namelen = 0;
+
+    // Set special control fields if exit status of the launched
+    // application is needed. In this case we want to give the fd of the
+    // invoker <-> booster socket connection to the parent process (launcher)
+    // so that it can send the exit status back to invoker. It'd be impossible
+    // from the booster process if exec() was used.
     if (m_connection->isReportAppExitStatusNeeded())
     {
         // Send socket file descriptor to parent

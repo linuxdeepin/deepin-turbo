@@ -201,10 +201,11 @@ protected:
     //! Restore the old priority stored by the previous successful setPriority().
     bool popPriority();
 
-    //! Sets socket fd's used to communicate with the parent process
+    //! Sets the socket fd used in the communication between
+    //! the booster and launcher.
     void setBoosterLauncherSocket(int boosterLauncherSocket);
 
-    //! Returns the given socket
+    //! Returns the socket fd between the booster and launcher.
     int boosterLauncherSocket() const;
 
     //! Reset out-of-memory killer adjustment
