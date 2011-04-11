@@ -5,7 +5,7 @@ applauncherd (0.27.0) unstable; urgency=low
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Fri, 08 Apr 2011 15:08:24 +0300
 
-applauncherd (0.26.og0) stable; urgency=low
+applauncherd (0.26.0) stable; urgency=low
 
   * Fixes: NB#240051 - applauncherd-launcher: please remove requests of DRM related token
   * Fixes: NB#242533 - applauncherd.bin is terminated by SIGPIPE
