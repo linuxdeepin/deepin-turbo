@@ -80,7 +80,7 @@ static void sigs_restore(void);
 static void sigs_init(void);
 
 //! Pipe used to safely catch Unix signals
-static int g_sigPipe[2];
+static int g_signal_pipe[2];
 
 // Forwards Unix signals from invoker to the invoked process
 static void sig_forwarder(int sig)
@@ -91,12 +91,15 @@ static void sig_forwarder(int sig)
         {
             report(report_error, "Can't send signal to application: %s \n", strerror(errno));
         }
+
+        // Restore signal handlers
         sigs_restore();
 
+        // Write signal number to the self-pipe
         char signal_id = (char) sig;
-        write(g_sigPipe[1], &signal_id, 1);
+        write(g_signal_pipe[1], &signal_id, 1);
 
-        // send a signal itself for default handler
+        // Send the signal to itself using the default handler
         raise(sig);
     }
 }
@@ -483,45 +486,94 @@ static unsigned int get_delay(char *delay_arg, char *param_name,
     return delay;
 }
 
-// Fallback for invoke if connection to the launcher is broken.
-// Forks a new process if wait term is not used.
-void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
-{
-    // Connection with launcher is broken,
-    // try to launch application via execve
-    warning("Connection with launcher process is broken. \n");
-    warning("Trying to start application as a binary executable without launcher...\n");
-
-    // Fork if wait_term not set
-    if(!wait_term)
-    {
-        // Fork a new process
-        pid_t newPid = fork();
-
-        if (newPid == -1)
-        {
-            report(report_error, "Invoker failed to fork\n");
-            exit(EXIT_FAILURE);
-        }
-        else if (newPid != 0) /* parent process */
-        {
-            return;
-        }
-    }
-
-    // Exec the process image
-    execve(prog_name, prog_argv, environ);
-    perror("execve");   /* execve() only returns on error */
-    exit(EXIT_FAILURE);
-}
-
-// "normal" invoke through a socket connection
-int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
-                  uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
-                  char *splash_file, char *landscape_splash_file)
+static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
 {
     int status = 0;
 
+    // Wait for launched process to exit
+    if (wait_term)
+    {
+        g_invoked_pid = invoker_recv_pid(socket_fd);
+        debug("Booster's pid is %d \n ", g_invoked_pid);
+
+        // Forward UNIX signals to the invoked process
+        sigs_init();
+
+        while(1)
+        {
+            // Setup things for select()
+            fd_set readfds;
+            int ndfs = 0;
+
+            FD_ZERO(&readfds);
+
+            FD_SET(socket_fd, &readfds);
+            ndfs = (socket_fd > ndfs) ? socket_fd : ndfs;
+
+            FD_SET(g_signal_pipe[0], &readfds);
+            ndfs = (socket_fd > ndfs) ? socket_fd : ndfs;
+
+            // Wait for something appearing in the pipes.
+            if (select(ndfs + 1, &readfds, NULL, NULL, NULL) > 0)
+            {
+                // Check if an exit status from the invoked application
+                if (FD_ISSET(socket_fd, &readfds))
+                {
+                    // Check if we've got application exit status or if the process
+                    // on the other side of socket just died / was killed.
+                    // We check from /proc whether the launched program is still
+                    // running.
+                    char filename[50];
+                    snprintf(filename, sizeof(filename), "/proc/%d/cmdline", g_invoked_pid);
+
+                    // Open filename for reading only
+                    int fd = open(filename, O_RDONLY);
+                    if (fd != -1)
+                    {
+                        // Application is still running, so applauncherd must be dead,
+                        // because the blocking read on the socket returned.
+                        close(fd);
+
+                        // Send a signal to kill the application too and exit.
+                        // We must do this, because the invoker<->application
+                        // mapping is lost. Sleep for some time to give
+                        // the new applauncherd some time to load its boosters and
+                        // the restart of g_invoked_pid succeeds.
+
+                        sleep(10);
+                        kill(g_invoked_pid, SIGKILL);
+                        raise(SIGKILL);
+                    }
+
+                    status = invoker_recv_exit(socket_fd);
+                    break;
+                }
+                // Check if we got a UNIX signal.
+                else if (FD_ISSET(g_signal_pipe[0], &readfds))
+                {
+                    // Clean up the pipe
+                    char signal_id;
+                    read(g_signal_pipe[0], &signal_id, sizeof(signal_id));
+
+                    // Set signals forwarding to the invoked process again
+                    // (they were reset by the signal forwarder).
+                    sigs_init();
+                }
+            }
+        }
+
+        // Restore default signal handlers
+        sigs_restore();
+    }
+
+    return status;
+}
+
+// "normal" invoke through a socket connection
+static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *prog_name,
+                         uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
+                         char *splash_file, char *landscape_splash_file)
+{
     // Get process priority
     errno = 0;
     int prog_prio = getpriority(PRIO_PROCESS, 0);
@@ -532,92 +584,28 @@ int invoke_remote(int fd, int prog_argc, char **prog_argv, char *prog_name,
 
     // Connection with launcher process is established,
     // send the data.
-    invoker_send_magic(fd, magic_options);
-    invoker_send_name(fd, prog_argv[0]);
-    invoker_send_exec(fd, prog_name);
-    invoker_send_args(fd, prog_argc, prog_argv);
-    invoker_send_prio(fd, prog_prio);
-    invoker_send_delay(fd, respawn_delay);
-    invoker_send_ids(fd, getuid(), getgid());
+    invoker_send_magic(socket_fd, magic_options);
+    invoker_send_name(socket_fd, prog_argv[0]);
+    invoker_send_exec(socket_fd, prog_name);
+    invoker_send_args(socket_fd, prog_argc, prog_argv);
+    invoker_send_prio(socket_fd, prog_prio);
+    invoker_send_delay(socket_fd, respawn_delay);
+    invoker_send_ids(socket_fd, getuid(), getgid());
     if (( magic_options & INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN ) != 0)
-        invoker_send_splash_file(fd, splash_file);
+        invoker_send_splash_file(socket_fd, splash_file);
     if (( magic_options & INVOKER_MSG_MAGIC_OPTION_LANDSCAPE_SPLASH_SCREEN ) != 0)
-        invoker_send_landscape_splash_file(fd, landscape_splash_file);
-    invoker_send_io(fd);
-    invoker_send_env(fd);
-    invoker_send_end(fd);
+        invoker_send_landscape_splash_file(socket_fd, landscape_splash_file);
+    invoker_send_io(socket_fd);
+    invoker_send_env(socket_fd);
+    invoker_send_end(socket_fd);
 
     if (prog_name)
     {
         free(prog_name);
     }
 
-    // Wait for launched process to exit
-    if (wait_term)
-    {
-        g_invoked_pid = invoker_recv_pid(fd);
-        debug("Booster's pid is %d \n ", g_invoked_pid);
-
-        // Forward signals to the invoked process
-        sigs_init();
-
-        while(1)
-        {
-            fd_set readfds;
-            int ndfs = 0;
-
-            FD_ZERO(&readfds);
-
-            FD_SET(fd, &readfds);
-            ndfs = (fd > ndfs) ? fd : ndfs;
-
-            FD_SET(g_sigPipe[0], &readfds);
-            ndfs = (fd > ndfs) ? fd : ndfs;
-
-            // Wait for something appearing in the pipes.
-            if (select(ndfs + 1, &readfds, NULL, NULL, NULL) > 0)
-            {
-                // Check if an exit status from the invoked application
-                if (FD_ISSET(fd, &readfds))
-                {
-                    //check if we've got application exit status or process on the other side of socket just exited 
-
-                    char filename[50];
-                    snprintf(filename, sizeof(filename), "/proc/%d/cmdline", g_invoked_pid);
-
-                    //Open filename for reading only
-                    fd = open(filename, O_RDONLY);
-                    if (fd != -1)
-                    {
-                        // application is still running, so applauncherd is dead
-                        close(fd);
-
-                        // send a signal to kill application and exit
-                        sleep(10);
-                        kill(g_invoked_pid, SIGKILL); 
-                        raise(SIGKILL);
-                    }
-
-                    status = invoker_recv_exit(fd);
-                    break;
-                }
-                // Check if an exit status from the invoked application
-                else if (FD_ISSET(g_sigPipe[0], &readfds))
-                {
-                    // clean up pipe
-                    char signal_id;
-                    read(g_sigPipe[0], &signal_id, sizeof(signal_id));
-  
-                    // set signals forwarding to the invoked process
-                    sigs_init();
-                }
-            }
-        }
-        // Restore default signal handlers
-        sigs_restore();
-    }
-
-    return status;
+    int exit_status = wait_for_launched_process_to_exit(socket_fd, wait_term);
+    return exit_status;
 }
 
 // Invokes the given application
@@ -818,7 +806,7 @@ int main(int argc, char *argv[])
         usage(1);
     }
 
-    if (pipe(g_sigPipe) == -1) 
+    if (pipe(g_signal_pipe) == -1)
     { 
         report(report_error, "Creating a pipe for Unix signals failed!\n"); 
         exit(EXIT_FAILURE); 
