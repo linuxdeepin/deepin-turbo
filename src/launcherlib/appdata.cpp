@@ -196,7 +196,7 @@ void AppData::deleteArgv()
     {
         for (int i = 0; i < m_argc; i++)
         {
-            delete m_argv[i];
+            delete [] m_argv[i];
             m_argv[i] = NULL;
         }
 
