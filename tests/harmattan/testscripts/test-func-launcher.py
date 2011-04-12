@@ -74,6 +74,7 @@ def check_prerequisites():
 
 class launcher_tests (unittest.TestCase):
     def setUp(self):
+        os.system('initctl stop xsession/applifed')
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
@@ -86,6 +87,7 @@ class launcher_tests (unittest.TestCase):
     def tearDown(self):
         #teardown here
         debug("Executing TearDown")
+        os.system('initctl start xsession/applifed')
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
