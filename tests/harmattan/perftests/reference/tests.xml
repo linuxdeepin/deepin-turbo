@@ -10,11 +10,11 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="Perf-Test-Command-plain" type="Performance" description="Measure startup time of the application without launcher" timeout="500" level="System" insignificant="true">
+      <case name="Perf-Test-Command-plain" type="Performance" description="Measure startup time of the application without launcher" timeout="500" level="System" insignificant="false">
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_wol -b "fala_wol" -f "/tmp/fala_wol.log" &gt; /tmp/perf_commandline_without_launcher.txt</step>
       </case>
 
-      <case name="Perf-Test-Command-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="500" level="System" insignificant="true">
+      <case name="Perf-Test-Command-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="500" level="System" insignificant="false">
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -c /usr/bin/fala_qml_wol -b fala_qml_wol -f "/tmp/fala_qml_wol.log" &gt; /tmp/perf_commandline_qml_without_launcher.txt</step>
 
       </case>
@@ -47,7 +47,7 @@
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_wol -b "fala_wol" -f "/tmp/fala_wol.log" &gt; /tmp/perf_grid_without_launcher.txt</step>
       </case>
 
-      <case name="Perf-Test-Grid-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="840" level="System" insignificant="true">
+      <case name="Perf-Test-Grid-QML-plain" type="Performance" description="Measure startup time of the qml application without launcher" timeout="840" level="System" insignificant="false">
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_qml_wol -b fala_qml_wol -f "/tmp/fala_qml_wol.log" &gt; /tmp/perf_grid_qml_without_launcher.txt</step>
       </case>
 

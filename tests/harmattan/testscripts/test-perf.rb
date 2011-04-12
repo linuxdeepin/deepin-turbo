@@ -80,6 +80,12 @@ class TC_PerformanceTests < Test::Unit::TestCase
         print_debug("The Startup limit is : #{options[:startup]}")
       end
 
+      options[:minstartup] = nil
+      opts.on( '-m', '--minstartup MILLISECONDS', 'Time limit in milliseconds. Slower startup will make test to fail.' ) do|milliseconds|
+        options[:minstartup] = milliseconds.to_i
+        print_debug("The Minimum Startup limit is : #{options[:minstartup]}")
+      end
+
       options[:appCache] = nil
       opts.on( '-t', '--appCache MILLISECONDS', 'Time limit in milliseconds for application from cache.' ) do|milliseconds|
         options[:appCache] = milliseconds.to_i
@@ -164,6 +170,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("restart mthome")
       system("initctl restart xsession/mthome")
       sleep(10)
+    end
+    if not system "pgrep applauncherd"
+        system("initctl start xsession/applauncherd")
+        sleep(5)
     end
   end
   
@@ -313,7 +323,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     if @options[:startup] != nil
       print_debug("Check that startup time is less than #{@options[:startup]} ms")
-      assert((start_time_sum/COUNT) < @options[:startup], "Application: #{@options[:application]} avarage startup was slower than #{@options[:startup]} ms")
+      assert((start_time_sum/COUNT) < @options[:startup], "Application: #{@options[:application]} avarage startup was higher than #{@options[:startup]} ms")
+    end
+    if @options[:minstartup] != nil
+      print_debug("Check that startup time is more than #{@options[:minstartup]} ms")
+      assert((start_time_sum/COUNT) > @options[:minstartup], "Application: #{@options[:application]} avarage startup was slower than #{@options[:minstartup]} ms")
     end
 
     if @options[:appCache] != nil
