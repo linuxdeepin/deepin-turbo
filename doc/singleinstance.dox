@@ -1,0 +1,34 @@
+/*! \page singleinstance How to enable single instance support for the application
+
+Usually user wants his application to be run as a single instance. This means,
+that if the launched application is already running, the existing application
+window is activated and no new application processes are started.
+
+This can be achieved by adding --single-instance to the invoker command:
+
+\verbatim
+  [D-BUS Service]
+  Name=com.nokia.<application_name>
+  Exec=/usr/bin/invoker --single-instance --type=m /usr/bin/<application_name>
+\endverbatim
+
+As a result, a lock file 
+\c /var/run/single-instance-locks/\<application_name\>/instance.lock is created. 
+If applauncherd cannot acquire the lock, it tries to find the corresponding
+window and activates it.
+
+This functionality is implemented in a position-independent executable called
+single-instance. Applauncherd uses this executable as a library, but it can be
+used as an ordinary program to start anything as a single instance:
+
+\verbatim
+  /usr/bin/single-instance <application_name>
+\endverbatim
+
+Note, that in this case the launcher is not used.
+
+Consider using --single-instance instead of the single instance functionality
+provided by D-Bus, because it very likely is much faster.
+
+*/
+

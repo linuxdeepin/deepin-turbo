@@ -1,107 +1,41 @@
-/*! \mainpage Applauncherd usage UNDER CONSTRUCTION!
+/*! \mainpage Applauncherd Usage UNDER CONSTRUCTION!
 
 \section intro Introduction
 
 Invoker (front-end binary) and applauncherd (daemon) are tools that helps applications launch faster and save memory via shared resources. This is achieved by preloading a set of dynamically linked libraries and caching stuff
 (MComponentCache, MDeclarativeCache). There's a also a possibility to configure an application-specific splash screen, which is shown before the application is started. Also a single-instance support is provided to allow only one instance of an application at a time. 
 
-This documentation describes the idea behind this functionality and how to utilize it. It also explains some of the \subpage technical "Technical details" of the implementation.
+This documentation describes the idea behind this functionality and how to utilize it.
 
 \section contents Contents
 
-- \subpage howdoesitwork "How does it work?"
+- \ref howdoesitwork "How does it work?"
 
 - How to enable boosted startup for different types of applications: 
-  - \subpage qmlboost "QML"
-  - \subpage qtboost "Qt"
-  - \subpage libmeegotouchboost "MeeGo Touch"
+  - \ref qmlboost "QML"
+  - \ref qtboost "Qt"
+  - \ref libmeegotouchboost "MeeGo Touch"
+  - \ref eboost "Generic booster for all applications"
 
-- \subpage splash "How to enable splash screen for the application"
+- \ref splash "How to enable splash screen for the application"
 
-- \subpage singleinstance "How to enable single instance support for the application"
+- \ref singleinstance "How to enable single instance support for the application"
 
-- \subpage tipsandtricks "Tips and tricks"
+- \ref debug "How to debug boosted applications"
 
-- \subpage technical "Technical overview"
+- \ref dbus "How to use applauncherd with D-Bus"
 
-- \subpage ownboosterplugin "Write your own booster for other application types"
+- \ref aegis "Aegis platform security and applauncherd"
 
-\section howdoesitwork How does it work?
+- \ref limitations "Limitations and known issues"
 
-In a nutshell, applauncherd is a daemon that forks \c booster processes, which in turn are transformed into real applications when user launches a boosted application.
+- \ref invokerparameters "Advanced invoker command line parameters"
 
-Booster processes do application-type specific initializations. For instance, the MeeGo Touch booster instantiates MApplication and MApplicationWindow objects and stores them to MComponentCache. Then the booster process waits for a connection from the \c invoker.
+- \ref customboosters "How to write custom boosters"
 
-An application is always launched by using the \c invoker program. The invoker sends the name and location of the application binary and
-data on its running environment to the desired booster process. This makes the booster process to load the binary, initialize its environment, and finally call the \c main() function in the binary.
+- \ref technical "Technical overview"
 
-\section tipsandtricks Tips and tricks
-
-- \subpage debug "Debugging boosted applications"
-
-- \subpage security "Security issues"
-
-- \subpage platform "Platform spesific limitations"
-
-- \subpage invokercommandline "Advanced invoker command line parameters"
-
-\page technical Technical overview
-
-In Harmattan, the applauncherd daemon is started by UpStart as part of
-XSession, that is, at the same level as the desktop (MeeGo Touch
-homescreen). In MeeGo, applaucherd is started by uxlaunch which is the
-program that brings up X and the ui.
-
-Applauncherd forks will-be-application processes, "boosters", before knowing
-which application is going to be launched next. Different boosters are
-optimized for different kinds of applications, e.g. Qt, Meego Touch, Qt
-Declarative.  Boosters are loaded as plugins. Applauncherd searches for plugin
-libraries in /usr/lib/applaucherd/lib*booster.so and forks a new process for
-each booster to wait for launch commands from the user.
-
-The user uses the launcher always through a special invoker program. The
-invoker (/usr/bin/invoker) uses a socket connection to tell a booster process
-to load an application binary.
-
-In addition to possible source code changes, an application which is to be used
-with applauncherd must be compiled as a shared library or a position
-independent executable (-pie) and it must always export main().
-
-
-\section techdetails Technical details
-
-Before loading an application binary, a booster process changes its security
-credentials so that the code in the application binary will be executed with
-the correct credentials. The process also sets environment variables to the
-values sent by the invoker. Loading the binary is done with dlopen(), and
-therefore the application needs to be compiled and linked as a shared library
-or a position independent executable. Finally, the booster process finds the
-main function in the application binary with dlsym() and calls the main() with
-the command line arguments given by the invoker.
-
-The launcher itself is a library that is loaded by a small C-program (/usr/bin/applauncherd.bin).
-The idea behind this is to avoid linking the launcher binary to any
-libraries. This gives full control over the flags with which the preloaded
-libraries are opened with dlopen(). 
-
-In Harmattan, Aegis platform security is used to protect the socket connection
-between the invoker and boosters. This works only for ARM target. It is
-automatically disabled by the build scripts when compiling on x86.
-
-Each application type (currently Qt, Qt Declarative and MeeGo Touch) has its own booster process.
-When booster launches the application by calling the "main()" function,
-applauncherd will create new booster process of that type.
-
-Booster processes do some initializations that cannot be shared among other
-processes and therefore have to be done after forking. This allows, for instance,
-instantiating an MApplication (QApplication) before knowing the name of the
-application. Then the booster process waits for a connection from the invoker with
-the information about which application should be launched. 
-
-With MeeGo Touch booster and Qt Declarative booster, applications can fetch certain objects from a cache. 
-This will significantly reduce the startup time of an application. 
-
-\page compilinglinking Compiling and linking you application
+\page compilinglinking Compiling and linking your application
 
 Binaries intended to be run with applauncherd should be compiled with -fPIC option
 to produce position independent code. In order to produce a position independent
@@ -313,103 +247,6 @@ Here is a launch example for a MeeGo Touch application:
   /usr/bin/invoker --type=m <application_name>
 \endverbatim
 
-\section dbus D-Bus launch
-
-If you are using D-Bus to launch your application, it can be done
-straightly in the .service-file and without any wrapper scripts slowing
-things down:
-
-\verbatim
-  [D-BUS Service]
-  Name=com.nokia.<application_name>
-  Exec=/usr/bin/invoker --type=m /usr/bin/<application_name>
-\endverbatim
-
-By default, invoker waits for the application to terminate and exits with
-the same exit code. Unix signals are also forwarded.
-  
-Note 1: If --no-wait and --delay is used, it is important to add enough delay to
-invoker so that it won't exit before the launched application gets its
-(possible) D-Bus service registered. Otherwise D-Bus daemon may think that the
-application just died. 
-
-Note 2: There is a slight difference in the application start-up time if you use a
-wrapper script instead of the actual binary in Exec-field of .desktop and .service files. 
-Therefore, it is recommended that you always use the actual invoker call with the 
-binary name as presented above. 
-
-Note 3: When .desktop file contains the X-Maemo-Service field, the application
-is started by default through D-Bus. This might cause some delay for
-application start-up time. Therefore for simple applications that do not
-provide D-Bus services, it is not recommended to have the X-Maemo-Service field
-inside .desktop. Singe instance launch should be used instead (see below).
-
-See invoker --help for all possible command-line parameters.
-
-\page singleinstance Single instance launch
-
-Usually user wants his application to be run as a single instance. This means,
-that if the launched application is already running, the existing application
-window is activated and no new application processes are started.
-
-This can be achieved by adding --single-instance to the invoker command:
-
-\verbatim
-  [D-BUS Service]
-  Name=com.nokia.<application_name>
-  Exec=/usr/bin/invoker --single-instance --type=m /usr/bin/<application_name>
-\endverbatim
-
-As a result, a lock file 
-\c /var/run/single-instance-locks/\<application_name\>/instance.lock is created. 
-If applauncherd cannot acquire the lock, it tries to find the corresponding
-window and activates it.
-
-This functionality is implemented in a position-independent executable called
-single-instance. Applauncherd uses this executable as a library, but it can be
-used as an ordinary program to start anything as a single instance:
-
-\verbatim
-  /usr/bin/single-instance <application_name>
-\endverbatim
-
-Note, that in this case the launcher is not used.
-
-Consider using --single-instance instead of the single instance functionality
-provided by D-Bus, because it very likely is much faster.
-
-\page splash Splash screen
-
-Applauncherd supports showing a splash screen if there is mcompositor
-(the MeeGo window manager) running.
-
-The splash screen is not shown by default. If an application wants it
-to be shown, it must pass --splash, and optionally --splash-landscape
-arguments to the invoker.
-System default splash images can be obtained by giving \c default or
-\c default-landscape in place of image file names.
-
-For instance,
-
-\verbatim
-/usr/bin/invoker --splash=/usr/share/application_name/splash.jpg --splash-landscape=/usr/share/application_name/splash-l.jpg --type=m /usr/bin/application_name
-\endverbatim
-
-shows the splash screen with splash.jpg as its content when the device
-is in the portrait orientation. Otherwise splash-l.jpg is shown. If
-only --splash is given, that image is shown in both orientations.
-
-Invoker passes the splash request to the booster. The booster sends
-the splash request to the window manager by setting a window property
-to window manager's window.
-
-If the filenames do not include absolute paths, the window manager
-looks for the files from a default location.
-
-The file should be in a format recognized by QPixmap, preferably JPEG
-as it is fast to load. The size of the image should not be larger than
-the screen. If it is smaller, it will be stretched.
-
 \page usingboosters Using boosters
 
 The booster processes can speed up application startup by doing some
@@ -461,34 +298,9 @@ Boot mode can be activated also by sending SIGUSR2 Unix signal to the launcher.
 Applauncherd logs to syslog.
 Additional debug messages and logging also to stdout can be enabled with --debug.
 
-
-\page security Platform security (Aegis)
-
-If your application does not have an Aegis manifest file, no actions are required.
-
-All security tokens requested for the application must be requested also for 
-applauncherd.bin in the application's Aegis manifest file.
-
-
 \page dependencies Package Dependencies
 
 Applications using the launcher must depend on the applauncherd package.
-
-\page knownissues Current known issues
-
-\section forking Forking
-
-It's not possible to use MComponentCache or MDeclarativeCache in the child
-process if you fork() in your application. This is just due to the fact that
-X11 connections get messed up after fork().
-
-\section crashes Crashes after application's main()
-
-If an application is launched with invoker, there may be some
-destructors of MeeGo Touch classes executed after application's
-main(). This can cause crashes, if the application has installed a
-custom debug message handler and didn't uninstall it before exit.
-
 
 \page otherboosters Other boosters
 
@@ -516,193 +328,5 @@ applauncherd --help
 \page moreinformation More information
 
 See MeeGo Touch documentation for fast application startup.
-
-\page qmlboost Using the QML booster
-
-This is a step by step guide to using \c applauncherd to boost your QML application.
-
-\section qmlboostprereq Prerequisites
-
-  - The QML-application uses a C++-based runner.
-  - The runner uses \c QApplication and \c QDeclarativeView directly, i.e. does not inherit from the classes.
-  - \c applauncherd-dev package is installed.
-
-\section qmlboostcompiling 1. Compiling and linking for launcher
-
-Binaries intended to be run with \c applauncherd should be compiled
-with \c -fPIC option to produce position independent code. They should
-then be linked either as shared libraries, or better yet as position
-independent executables, which can be executed both traditionally and
-with the launcher. The \c -pie and \c -rdynamic linker flags
-accomplish this.
-
-To improve linking and loading times of shared object libraries it is
-encouraged to hide any unnecessary symbols from the resulting binary
-by using \c -fvisibility=hidden and \c -fvisibility-inlines-hidden
-flags as well.  However, \c applauncherd needs to find the entry point
-for your application, so the symbol \c main needs to be explicitly made
-visible. This can be done as follows:
-
-\code
-  #include <QtCore/QtGlobal>
-  
-  Q_DECL_EXPORT int main(int argc, char **argv)
-  {
-  ...
-  }
-\endcode
-
-Normally you should not need to worry about the compiler and linker
-flags, as the \c applauncherd-dev package provides configuration
-options for \c QMake, \c cmake, and \c pkg-config. If you are building
-a Debian package, make your package build-depend on \c
-applauncherd-dev.
-
-\subsection qmlboostqmake Using QMake
-
-If you are using \c QMake, obtaining the correct compiler and linker
-flags is just a matter of adding a suitable configuration option:
-
-\code
-    CONFIG += qdeclarative-boostable
-\endcode
-
-If you want to use \c pkg-config directly for some reason (like getting
-error messages), you can add explicit \c pkg-config calls in the appropriate
-flags:
-
-\code
-    QMAKE_CXXFLAGS += `pkg-config --cflags qdeclarative-boostable`
-    QMAKE_LFLAGS += `pkg-config --libs qdeclarative-boostable`
-\endcode
-
-You can also manually set the options in your .pro file like this:
-
-\code
-    QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
-    QMAKE_LFLAGS += -pie -rdynamic
-\endcode
-
-Note that you have to update the flags manually if there are any changes in
-the required flags.
-
-\subsection qmlboostcmake Using CMake
-
-You can utilize \c pkg-config in \c CMake by including \c FindPkgConfig in \c CMakeLists.txt:
-
-\code
-  include(FindPkgConfig) 
-\endcode
-
-To obtain the compiler and linker flags, add the following lines in \c CMakeLists.txt:
-
-\code
-  pkg_check_modules(QDECLARATIVE_BOOSTABLE REQUIRED qdeclarative-boostable)
-  add_definitions(${QDECLARATIVE_BOOSTABLE_CFLAGS})
-  link_libraries(${QDECLARATIVE_BOOSTABLE_LDFLAGS})
-\endcode
-  
-If you do not want to use \c pkg-config for some reason, you can manually add the
-compiler and linker flags like this:
-
-\code
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden 
-      -fvisibility-inlines-hidden")
-  set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
-\endcode
-  
-Again, this requires you to update the flags if something changes.
-
-\subsection qmlboostpkgconfig Automatic settings with pkg-config (any build system)
-
-The correct flags can be automatically obtained with:
-
-\code
-    pkg-config --cflags qdeclarative-boostable
-    pkg-config --libs qdeclarative-boostable
-\endcode
-
-\section qmlboostcache 2. Utilizing the booster cache
-
-Instantiating \c QApplication and \c QDeclarativeView is a relatively
-expensive operation. The QML booster helps reduce application startup
-latency by creating instances of the classes in MDeclarativeCache. In
-order to make use of this functionality, the applications needs to
-pick up the instances from the cache. Thus, if the application code
-instantiates the classes as
-
-\code
-      QApplication app;
-      QDeclarativeView view;
-\endcode
-
-It needs to be modified into:
-
-\code
-     QApplication *app = MDeclarativeCache::qApplication(argc, argv);
-     QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
-\endcode
-
-You also need to:
-\code
-    #include <MDeclarativeCache>
-\endcode
-
-The cache class works both with the booster and without it. In the
-non-boosted case there are no pre-created instances, so the cache
-class simply creates the instances on the fly.
-
-The ownership of the instances is transferred from the cache to the
-application code. The instances need to be deleted in the correct
-order, deleting the \c QApplication instance before the \c
-QDeclarativeView instance is known to cause crashes.
-
-\section qmlboostinvoker 3. Launching the application
-
-Now everything should be in place for launching the application. The
-linker flags create a Position Independent Binary (PIE), so the
-application can still be invoked from the command line. In order to
-verify that the modifications done to the application and the build
-scripts have not broken anything, it is a good idea at this point to
-check that the application still starts and functions normally from
-the command line:
-
-\code
-$ ./myApp
-\endcode
-
-The next step is to use the \c invoker to launch the application. In
-order for this to work, you need to have \c applauncherd and \c
-booster-d (the QML booster process) running. To check that this is the
-case, you can do:
-
-\code
-$ ps ax | grep booster-d
-\endcode
-
-If you don't see the booster process, you need to start \c
-applauncherd manually. In Harmattan and MeeGo, \c applauncherd should
-be running as part of the UI session.
-
-Once you have verified that the booster process is running, you can
-use the following command line to ask the booster process to turn into
-your application:
-
-\code
-/usr/bin/invoker --type=d ./myApp
-\endcode
-
-Your application should start exactly as if it had been invoked from
-the command line, just a little bit faster. You can now proceed to
-change the \c .desktop file or \c .service file that launches the
-application to use the invoker command.
-
-\section qmlboostsplas 4. Adding a splash screen
-
-The invoker can also provide a splash screen for you application as follows. For more details on splash screen, see \subpage splash "the splash screen documentation."
-
-\code
-/usr/bin/invoker --splash=/usr/share/myApp/splash.jpg --type=d /usr/bin/myApp
-\endcode
 
 */

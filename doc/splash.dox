@@ -1,0 +1,34 @@
+/*! \page splash How To Enable Splash Screen For The Application
+
+Applauncherd supports showing a splash screen if there is mcompositor
+(the MeeGo window manager) running.
+
+The splash screen is not shown by default. If an application wants it
+to be shown, it must pass --splash, and optionally --splash-landscape
+arguments to the invoker.
+System default splash images can be obtained by giving \c default or
+\c default-landscape in place of image file names.
+
+For instance,
+
+\verbatim
+/usr/bin/invoker --splash=/usr/share/application_name/splash.jpg --splash-landscape=/usr/share/application_name/splash-l.jpg --type=m /usr/bin/application_name
+\endverbatim
+
+shows the splash screen with splash.jpg as its content when the device
+is in the portrait orientation. Otherwise splash-l.jpg is shown. If
+only --splash is given, that image is shown in both orientations.
+
+Invoker passes the splash request to the booster. The booster sends
+the splash request to the window manager by setting a window property
+to window manager's window.
+
+If the filenames do not include absolute paths, the window manager
+looks for the files from a default location.
+
+The file should be in a format recognized by QPixmap, preferably JPEG
+as it is fast to load. The size of the image should not be larger than
+the screen. If it is smaller, it will be stretched.
+
+*/
+

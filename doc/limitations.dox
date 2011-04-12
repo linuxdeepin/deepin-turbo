@@ -1,0 +1,80 @@
+/*! \page limitations Limitations and known issues
+
+\section issue-cmdline Issues with command line arguments
+
+Current launcher implementation does not support following Qt and
+MeeGo Touch command line options (see QApplication and MApplication
+docs for more information about command options usage):
+
+\li  \c -style
+\li  \c -stylesheet
+\li  \c -session
+\li  \c -widgetcount
+\li  \c -reverse
+\li  \c -graphicssystem
+\li  \c -display
+\li  \c -geometry
+\li  \c -fn
+\li  \c -font
+\li  \c -bg
+\li  \c -background
+\li  \c -fg
+\li  \c -foreground
+\li  \c -btn
+\li  \c -button
+\li  \c -name
+\li  \c -title
+\li  \c -visual
+\li  \c -ncols
+\li  \c -cmap
+\li  \c -im
+\li  \c -inputstyle
+\li  \c -genimglist
+\li  \c -remote-theme
+\li  \c -fullscreen
+\li  \c -disable-m-input-context
+
+QCoreApplication::arguments() returns a QStringList that containing at
+most 32 arguments and drops the rest. The full list of arguments is
+accessible through \c argc and \c argv. They can be converted into
+QStringList similar to returned by QCoreApplication::arguments() as
+follows:
+
+\code
+M_EXPORT int main(int argc, char **argv) {
+    QStringList arguments;
+    for (int a = 0; a < argc; ++a) {
+        arguments << QString::fromLocal8Bit(argv[a]);
+    }
+    ...
+\endcode
+
+\section issue-watchdog Issues with scripts, D-Bus, and process monitoring
+
+By default, invoker processes terminate before or right after booster
+processes have called main(). This may confuse shell scripts and
+process monitoring in D-Bus daemon and Upstart, for instance. To help
+solving these issues invoker accepts parameters
+
+\li \c --delay \c 10 invoker waits for 10 seconds before terminating
+\li \c --wait-term invoker will not terminate until the launched
+application terminates. Invoker will return the same return value as
+the application did, or it will be terminated by the same signal as
+the launched application. Signals received by the invoker process will
+be forwarded to the launched application.
+
+\section forking Forking
+
+It's not possible to use MComponentCache or MDeclarativeCache in the child
+process if you fork() in your application. This is just due to the fact that
+X11 connections get messed up after fork().
+
+\section crashes Crashes after application's main()
+
+If an application is launched with invoker, there may be some
+destructors of MeeGo Touch classes executed after application's
+main(). This can cause crashes, if the application has installed a
+custom debug message handler and didn't uninstall it before exit.
+
+*/
+

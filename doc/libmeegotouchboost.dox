@@ -1,0 +1,173 @@
+/*! \page libmeegotouchboost Using the MeeGo Touch Booster
+
+Launcher makes it possible to start up various types of applications very
+quickly. Launcher uses a different <em>booster</em> for each of the
+application types. This section concentrates on launching MeeGo Touch
+applications with the MeeGo Touch booster.
+
+\section intro Introduction
+
+The launcher can start an application if the following pre-requisites are met:
+
+\li MApplication and MApplicationWindow instances are taken into use from
+MComponentCache
+
+\li application is compiled and linked to a position independent binary
+(executable or library)
+
+\li application is started with the \c invoker command instead of executing the
+executable file.
+
+\section howitworks How the launcher can help MeeGo Touch applications
+
+Applauncherd daemon makes it possible to launch applications faster. First of all, it preloads a number of 
+libraries, including MeeGo Touch and Qt libraries. This makes it faster to load application binaries
+when needed. Secondly, it initialises certain components before an
+application is loaded and makes the results available to applications
+when they start.
+
+Boosted MeeGo Touch applications pick up and use the already
+instantiated MApplication and MApplicationWindow objects from
+MComponentCache instead of creating new ones.
+
+
+\section source Modifying source code
+
+MApplication instance must be taken from the MComponentCache. It is
+recommended to take MApplicationWindow from the cache as well. Thus, the main program should have:
+
+\code
+MApplication* application = MComponentCache::mApplication(argc, argv);
+MApplicationWindow* window = MComponentCache::mApplicationWindow();
+\endcode
+
+Note: Applications that use MComponentCache can be run without the
+launcher/invoker as well. In that case, MComponentCache 
+instantiates new MApplication and MApplicationWindow objects on the
+fly.
+
+The launcher needs to find the symbol \c main in an application binary
+in order to start executing the application. However, unnecessary
+symbols in the application binary cause unnecessary overhead, so the
+recommended flags for compiling for the launcher hide symbols 
+by default. When the flags are used, the main function must be
+explicitly exported as follows:
+
+\code
+#include <MExport>
+
+M_EXPORT int main(int argc, char **argv)
+{
+...
+}
+\endcode
+
+
+\section compilation Compiling and linking
+
+To compile binaries that can be run with applauncherd, use
+\c -fPIC option to produce position-independent code. To
+produce a position-independent executable, \c -pie option and \c
+-rdynamic options can be used in linking. This makes it possible to execute the result both 
+traditionally and with the invoker.
+
+To improve linking and load times of shared object libraries the size
+of dynamic export table it is encouraged to hide the unnecessary
+symbols from the resulting binary by using \c -fvisibility=hidden and
+\c -fvisibility-inlines-hidden flags in compilation as well.
+
+\subsection qmaketips Building with QMake
+
+\subsubsection qmakepreferred Building in the preferred way
+
+Once you have installed the \c libmeegotouch-dev package, simply use QMake configuration option 
+\c meegotouch-boostable:
+
+\code
+CONFIG += meegotouch-boostable
+\endcode
+
+This tells qmake to use the \c meegotouch-boostable feature, which
+includes the \c meegotouch feature and ultimately uses \c pkg-config for the
+flags. Unfortunately qmake does not complain if you add the line but
+have not installed \c libmeegotouch-dev, so if the QMake magic does
+not seem to work, double-check that the package is indeed installed.
+
+\subsubsection qmakeother Building with pkg-config
+
+Use the \c pkg-config to get the correct flags:
+
+\code
+QMAKE_CXXFLAGS += `pkg-config --cflags meegotouch-boostable`
+QMAKE_LFLAGS += `pkg-config --libs meegotouch-boostable`
+\endcode
+
+If \c libmeegotouch-dev is not installed, \c pkg-config 
+complains when you run \c make.
+
+\subsubsection qmakelastresort The last resort
+
+Manually define the following variables in the .pro file:
+
+\code
+QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
+QMAKE_LFLAGS += -pie -rdynamic
+\endcode
+
+It is then up to you to modify the .pro file if there are changes to the
+required compiler and linker flags.
+
+\subsection cmaketips Building with CMake
+
+1. Use \c pkg-config in CMake by including \c FindPkgConfig in \c CMakeLists.txt:
+
+\code
+include(FindPkgConfig) 
+\endcode
+
+2. To obtain the compiler and linker flags, add the following lines:
+
+\code
+pkg_check_modules(MEEGOTOUCH_BOOSTABLE REQUIRED meegotouch-boostable)
+add_definitions(${MEEGOTOUCH_BOOSTABLE_CFLAGS})
+link_libraries(${MEEGOTOUCH_BOOSTABLE_LDFLAGS})
+\endcode  
+
+If you do not want to use \c pkg-config for some reason, you can manually add the
+compiler and linker flags as follows:
+
+\code
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
+set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
+\endcode  
+
+Again, you need to update the flags if something changes.
+
+\subsection pkgconfig Obtaining flags with pkg-config
+
+The package \c libmeegotouch-dev provides the necessary files for
+\c pkg-config to get the appropriate compiler and linker flags.
+
+1. To get the compiler flags, use the following:
+
+\code
+pkg-config --cflags meegotouch-boostable
+\endcode
+
+2. To get the linker flags, use the following:
+
+\code
+pkg-config --libs meegotouch-boostable
+\endcode
+
+\section running Running boosted application
+
+Check that applauncherd package is installed and applancherd daemon is
+running. You can now run your application as usual as
+/usr/bin/application_binary, or use the mboosted launching by running:
+
+\code
+invoker --type=m /usr/bin/application_binary
+\endcode
+*/
+

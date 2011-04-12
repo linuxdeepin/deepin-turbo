@@ -1,0 +1,57 @@
+/*! \page technical Technical Overview
+
+!! TODO: Do something to this mess !!
+
+In Harmattan, the applauncherd daemon is started by UpStart as part of
+XSession, that is, at the same level as the desktop (MeeGo Touch
+homescreen). In MeeGo, applaucherd is started by uxlaunch which is the
+program that brings up X and the ui.
+
+Applauncherd forks will-be-application processes, "boosters", before knowing
+which application is going to be launched next. Different boosters are
+optimized for different kinds of applications, e.g. Qt, Meego Touch, Qt
+Declarative.  Boosters are loaded as plugins. Applauncherd searches for plugin
+libraries in /usr/lib/applaucherd/lib*booster.so and forks a new process for
+each booster to wait for launch commands from the user.
+
+The user uses the launcher always through a special invoker program. The
+invoker (/usr/bin/invoker) uses a socket connection to tell a booster process
+to load an application binary.
+
+In addition to possible source code changes, an application which is to be used
+with applauncherd must be compiled as a shared library or a position
+independent executable (-pie) and it must always export main().
+
+Before loading an application binary, a booster process changes its security
+credentials so that the code in the application binary will be executed with
+the correct credentials. The process also sets environment variables to the
+values sent by the invoker. Loading the binary is done with dlopen(), and
+therefore the application needs to be compiled and linked as a shared library
+or a position independent executable. Finally, the booster process finds the
+main function in the application binary with dlsym() and calls the main() with
+the command line arguments given by the invoker.
+
+The launcher itself is a library that is loaded by a small C-program (/usr/bin/applauncherd.bin).
+The idea behind this is to avoid linking the launcher binary to any
+libraries. This gives full control over the flags with which the preloaded
+libraries are opened with dlopen(). 
+
+In Harmattan, Aegis platform security is used to protect the socket connection
+between the invoker and boosters. This works only for ARM target. It is
+automatically disabled by the build scripts when compiling on x86.
+
+Each application type (currently Qt, Qt Declarative and MeeGo Touch) has its own booster process.
+When booster launches the application by calling the "main()" function,
+applauncherd will create new booster process of that type.
+
+Booster processes do some initializations that cannot be shared among other
+processes and therefore have to be done after forking. This allows, for instance,
+instantiating an MApplication (QApplication) before knowing the name of the
+application. Then the booster process waits for a connection from the invoker with
+the information about which application should be launched. 
+
+With MeeGo Touch booster and Qt Declarative booster, applications can fetch certain objects from a cache. 
+This will significantly reduce the startup time of an application. 
+
+*/
+
