@@ -6,6 +6,7 @@ applauncherd (0.27.0) unstable; urgency=low
   * Fixes: NB#244103 - Device hangs on closing application in connecting view while configuring MFE account
   * Fixes: NB#243857 - Mismatched new[] - delete in applauncherd
   * Fixes: NB#238937 - minor splash-screen bugs
+  * Fixes: NB#246767 - Invoker is killed when used to maximize already running single-instance application
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Fri, 08 Apr 2011 15:08:24 +0300
 

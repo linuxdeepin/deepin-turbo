@@ -128,6 +128,11 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
         Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Couldn't read command\n");
     }
 
+    // Send parent process a message that it can create a new booster,
+    // send pid of invoker, booster respawn value and invoker socket connection.
+    // Must be called before possible exit during single instatance check.
+    sendDataToParent();
+
     // Run process as single instance if requested
     if (m_appData->singleInstance())
     {  
@@ -159,10 +164,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
     // Give the process the real application name now that it
     // has been read from invoker in receiveDataFromInvoker().
     renameProcess(initialArgc, initialArgv, m_appData->argc(), m_appData->argv());
-
-    // Send parent process a message that it can create a new booster,
-    // send pid of invoker, booster respawn value and invoker socket connection
-    sendDataToParent();
 
     close(boosterLauncherSocket());
 
