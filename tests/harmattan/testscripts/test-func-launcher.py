@@ -325,16 +325,14 @@ class launcher_tests (unittest.TestCase):
 
         stop_applauncherd()
 
-        # and for the fun of it let's do it again
-        commands.getstatusoutput("pkill applauncherd")
-
         remove_applauncherd_runtime_files()
 
         p = run_cmd_as_user('/usr/bin/applauncherd.bin --daemon')
 
-        time.sleep(10)
+        time.sleep(5)
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
+        p_id = op.split(" ")[0]
         debug("The pid of applauncherd --daemon is %s" %op)
 
         # filter some cruft out from the output and see how many
@@ -358,7 +356,8 @@ class launcher_tests (unittest.TestCase):
             self.assert_(False, "fala_ft_hello was not launched!")
 
         # only the daemonized applauncherd should be running now
-        commands.getstatusoutput('pkill applauncherd')
+        kill_process(apppid = p_id)
+        #commands.getstatusoutput('pkill applauncherd')
 
         remove_applauncherd_runtime_files()
 
