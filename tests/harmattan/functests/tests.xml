@@ -126,7 +126,7 @@
       </case-->
 
       <post_steps>
-	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
       </post_steps>
 
       <environments>
@@ -140,6 +140,7 @@
 
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
       <case name="applauncherd__test_no_aegis" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="360" level="System" insignificant="false" >
@@ -159,7 +160,10 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_dont_pass_invoker_creds</step>
       </case>
 
-      
+      <post_steps>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
+     
       <environments>
         <scratchbox>false</scratchbox>
         <hardware>true</hardware>    

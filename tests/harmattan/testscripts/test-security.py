@@ -21,6 +21,12 @@ from utils import *
 class SecurityTests(unittest.TestCase):
 
     def setUp(self):
+        if daemons_running():
+            stop_daemons()
+            self.START_DAEMONS_AT_TEARDOWN = True
+        else:
+            self.START_DAEMONS_AT_TEARDOWN = False
+
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
@@ -36,6 +42,10 @@ class SecurityTests(unittest.TestCase):
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
+
+        if self.START_DAEMONS_AT_TEARDOWN:
+            start_daemons()
+
         get_pid('booster-m')
         get_pid('booster-q')
         get_pid('booster-d')

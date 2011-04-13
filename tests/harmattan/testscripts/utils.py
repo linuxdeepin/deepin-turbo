@@ -8,6 +8,23 @@ from subprocess import Popen
 from os.path import basename
 
 DEV_NULL = file("/dev/null","w")
+DAEMONS_TO_BE_STOPPED = ['xsession/applifed', 'xsession/conndlgs']
+
+# Function to stop desired daemons. This is also done in setup function
+# if stop_daemons is not called before.
+def stop_daemons():
+    for daemon in DAEMONS_TO_BE_STOPPED:
+        os.system('initctl stop %s'%(daemon))
+
+# Function to start desired daemons. This is also done in teardown function
+# if start_daemons is not called before.
+def start_daemons():
+    for daemon in DAEMONS_TO_BE_STOPPED:
+        os.system('initctl start %s'%(daemon))
+
+def daemons_running():
+     st, op = commands.getstatusoutput('pgrep %s'%DAEMONS_TO_BE_STOPPED[0].split("/")[1])        
+     return not(st)
 
 def debug(*msg):
     """
