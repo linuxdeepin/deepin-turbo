@@ -51,6 +51,7 @@ LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin
 LAUNCHABLE_APPS_QML = ['/usr/bin/fala_qml_helloworld','/usr/bin/fala_qml_helloworld1', '/usr/bin/fala_qml_helloworld2']
 PREFERED_APP = '/usr/bin/fala_ft_hello'
 PREFERED_APP_QML = '/usr/bin/fala_qml_helloworld'
+DAEMONS_TO_BE_STOPPED = ['xsession/applifed', 'xsession/conndlgs']
 
 using_scratchbox = False
 
@@ -72,9 +73,38 @@ def check_prerequisites():
     for app in LAUNCHABLE_APPS: 
         assert len(basename(app)) <= 15, "For app: %s , base name !<= 14" %app
 
+# Function to stop desired daemons. This is also done in setup function
+# if stop_daemons is not called before.
+def stop_daemons():
+    for daemon in DAEMONS_TO_BE_STOPPED:
+        os.system('initctl stop %s'%(daemon))
+
+# Function to start desired daemons. This is also done in teardown function
+# if start_daemons is not called before.
+def start_daemons():
+    for daemon in DAEMONS_TO_BE_STOPPED:
+        os.system('initctl start %s'%(daemon))
+
+
+class daemon_handling (unittest.TestCase):
+
+    def stop_daemons(self):
+        stop_daemons()
+
+    def start_daemons(self):
+        start_daemons()
+
 class launcher_tests (unittest.TestCase):
     def setUp(self):
-        os.system('initctl stop xsession/applifed')
+        
+        # Check if first of the desired daemons is running, and if so, start those all
+        st, op = commands.getstatusoutput('pgrep %s'%DAEMONS_TO_BE_STOPPED[0].split("/")[1])        
+        
+        if st == 0:
+            stop_daemons()
+            self.START_DAEMONS_AT_TEARDOWN = True
+        else:
+            self.START_DAEMONS_AT_TEARDOWN = False
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
@@ -87,14 +117,16 @@ class launcher_tests (unittest.TestCase):
     def tearDown(self):
         #teardown here
         debug("Executing TearDown")
-        os.system('initctl start xsession/applifed')
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
+        debug ("START_DAEMONS_AT_TEARDOWN: %s"%self.START_DAEMONS_AT_TEARDOWN)
+        if self.START_DAEMONS_AT_TEARDOWN:
+            start_daemons()
         get_pid('booster-m')
         get_pid('booster-q')
         get_pid('booster-d')
-
+    
     #Testcases
     def test_launcher_exist(self):
         """
@@ -927,7 +959,10 @@ if __name__ == '__main__':
     check_prerequisites()
     start_launcher_daemon()
     tests = sys.argv[1:]
-    mysuite = unittest.TestSuite(map(launcher_tests, tests))
+    try:
+        mysuite = unittest.TestSuite(map(launcher_tests, tests))
+    except:
+        mysuite = unittest.TestSuite(map(daemon_handling, tests))
     result = unittest.TextTestRunner(verbosity=2).run(mysuite)
     if not result.wasSuccessful():
         sys.exit(1)

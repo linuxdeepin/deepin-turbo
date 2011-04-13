@@ -8,6 +8,7 @@
     <set name="TC_Launcher" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
       <case name="applauncherd__test_launcher_exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="360" level="System" insignificant="false">
@@ -37,7 +38,9 @@
       <case name="applauncherd__test_launch_multiple_apps_cont" type="Functional" description="Test that launcher can launch multiple applications continously" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont</step>
       </case>
-
+      <post_steps>
+	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
@@ -47,6 +50,9 @@
 
 
     <set name="TC_Invoker" description="Tests for invoker" feature="AF Basic Launcher daemon support" requirement="300168">
+      <pre_steps>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+      </pre_steps>
 
       <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_forwarding</step>
@@ -77,6 +83,10 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_wo_applauncherd</step>
       </case>
 
+      <post_steps>
+	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
@@ -87,6 +97,7 @@
     <set name="TC_Booster" description="Functional tests for applauncherd boosters" feature="AF Basic Launcher daemon support" requirement="300168">
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
       <case name="applauncherd__test_booster_pid_change" type="Functional" description="Test that application pid changes to the booster 'x' when application is launched using booster 'x' " timeout="360" level="System" insignificant="false">
@@ -114,6 +125,9 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_theme_change_booster_restart</step>
       </case-->
 
+      <post_steps>
+	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
 
       <environments>
           <scratchbox>true</scratchbox>
@@ -229,6 +243,7 @@
     <set name="TC_Qml_Booster" description="functional tests for qml boosters" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
 
@@ -255,6 +270,11 @@
       <case name="applauncherd__test_fd_booster_d" type="Functional" description="File descriptor test for booster-d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_d</step>
       </case>
+
+      <post_steps>
+	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
@@ -265,6 +285,7 @@
     <set name="TC_e_Booster" description="functional tests for qml boosters" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
       <case name="applauncherd__test_zombie_state_e" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">
@@ -290,6 +311,10 @@
       <case name="applauncherd__test_fd_booster_e" type="Functional" description="File descriptor test for booster-d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_e</step>
       </case>
+
+      <post_steps>
+	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
 
       <environments>
           <scratchbox>true</scratchbox>

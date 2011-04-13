@@ -1,7 +1,8 @@
 applauncherd (0.27.0) unstable; urgency=low
 
   * Changes: Fixed misbehaving pixelchanged application
-  * Implemented: SWP#DUI-5199
+  * Changes: Added stopping all daemons which are using invoker before functional tests
+  * Implemented: SWP#DUI-5199, SWP#DUI-5180, SWP#DUI-5162
   * Fixes: NB#244103 - Device hangs on closing application in connecting view while configuring MFE account
   * Fixes: NB#243857 - Mismatched new[] - delete in applauncherd
   * Fixes: NB#238937 - minor splash-screen bugs
