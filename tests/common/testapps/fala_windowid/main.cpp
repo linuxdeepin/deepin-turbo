@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     // Print the resulting window id's
     const list<Window> &result = match.result();
     for(list<Window>::const_iterator it = result.begin(); it != result.end(); it++)
-        cout << "0x" << std::hex << (unsigned long)(*it) << endl;
+        cout << "0x" << std::hex << (unsigned long)(*it) << std::dec << endl;
 
     return EXIT_SUCCESS;
 }

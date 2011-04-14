@@ -61,13 +61,13 @@ bool MainWindow::event(QEvent *event)
         if (isMinimized()) 
         {
             std::cerr << "Minimized" << std::endl;
-            sprintf(message, "%i Minimized", getpid());
+            snprintf(message, 32, "%i Minimized", getpid());
             timestamp(message);
         }
         else
         {
             std::cerr << "Maximized"  << std::endl;
-            sprintf(message, "%i Maximized", getpid());
+            snprintf(message, 32, "%i Maximized", getpid());
             timestamp(message);
         }
     }

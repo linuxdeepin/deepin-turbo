@@ -68,14 +68,20 @@ int main (int argc, char **argv)
 
         if (QString(argv[i]) == "close") {
             Window window;
+
+            // coverity[secure_coding]
             sscanf(argv[++i], "%lx", &window);
+
             sendCloseEvent(window);
             return 0;
         }
 
         if (QString(argv[i]) == "iconify") {
             Window window;
+
+            // coverity[secure_coding]
             sscanf(argv[++i], "%lx", &window);
+
             iconifyWindow(window);
             return 0;
         }

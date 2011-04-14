@@ -193,22 +193,28 @@ int main(int argc, char **argv)
 
     while (arg < argc) {
         if (0 == strcmp("-c", argv[arg])) {
+            // coverity[secure_coding]
             sscanf(argv[++arg], "%ux%u", &click_x, &click_y);
         } else if (0 == strcmp("-p", argv[arg])) {
+            // coverity[secure_coding]
             sscanf(argv[++arg], "%lx", &pixel_value);
             pixel_value_defined = True;
         } else if (0 == strcmp("-r", argv[arg])) {
+            // coverity[secure_coding]
             sscanf(argv[++arg], "%x", &window_id);
             raise_window(dpy, window_id);
             return EXIT_SUCCESS;
         } else if (0 == strcmp("-t", argv[arg])) { /* tracked pixel coordinates */
             if (i == 0) {
+                // coverity[secure_coding]
                 sscanf(argv[++arg], "%ux%u", &pixel_x, &pixel_y);
             } else {
+                // coverity[secure_coding]
                 sscanf(argv[++arg], "%ux%u", &pixel2_x, &pixel2_y);
             }
             i++;
         } else if (0 == strcmp("-f", argv[arg])) {
+            // coverity[secure_coding]
             sscanf(argv[++arg], "%s", g_output_filename);
         } else if (0 == strcmp("-q", argv[arg])) {
             quit_when_found = 1;
@@ -266,7 +272,8 @@ int main(int argc, char **argv)
             timestamp(txtbuffer);
             previous_pixel = pixel;
             
-            if (quit_when_found) return EXIT_SUCCESS;
+            if (quit_when_found) 
+                break;
         }
 
         if ( 
@@ -277,7 +284,8 @@ int main(int argc, char **argv)
             timestamp(txtbuffer);
             previous_pixel2 = pixel2;
             
-            if (quit_when_found) return EXIT_SUCCESS;
+            if (quit_when_found) 
+                break;
         }
 
     }
