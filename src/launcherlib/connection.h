@@ -164,14 +164,16 @@ private:
     uint32_t m_priority;
     uint32_t m_delay;
     bool     m_sendPid;
-    gid_t    m_gid;
-    uid_t    m_uid;
 
 #if defined (HAVE_CREDS)
     static const char * m_credsStr;
     creds_value_t m_credsValue;
     creds_type_t  m_credsType;
 #endif
+
+    gid_t    m_gid;
+    uid_t    m_uid;
+
 
 #ifdef UNIT_TEST
     friend class Ut_Connection;

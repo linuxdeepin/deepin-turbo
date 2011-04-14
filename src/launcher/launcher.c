@@ -103,6 +103,7 @@ static int invokeLauncherLib(int argc, char ** argv)
         if ((error = dlerror()) != NULL)
         {
             fprintf(stderr, "%s\n", error);
+            dlclose(handle);
             return 0;
         }
 

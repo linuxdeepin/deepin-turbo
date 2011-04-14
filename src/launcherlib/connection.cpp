@@ -43,7 +43,14 @@ Connection::Connection(int socketFd, bool testMode) :
         m_argv(NULL),
         m_priority(0),
         m_delay(0),
-        m_sendPid(false)
+        m_sendPid(false),
+
+#if defined (HAVE_CREDS)
+        m_credsValue(0),
+        m_credsType(0),
+#endif
+        m_gid(0),
+        m_uid(0)
 {
     m_io[0] = -1;
     m_io[1] = -1;
@@ -248,7 +255,7 @@ uint32_t Connection::receiveMagic()
 
     if ((magic & INVOKER_MSG_MASK) == INVOKER_MSG_MAGIC)
     {
-        if (!(magic & INVOKER_MSG_MAGIC_VERSION_MASK) == INVOKER_MSG_MAGIC_VERSION)
+        if (!((magic & INVOKER_MSG_MAGIC_VERSION_MASK) == INVOKER_MSG_MAGIC_VERSION))
         {
             Logger::logError("Connection: receiving bad magic version (%08x)\n", magic);
             return -1;
