@@ -21,6 +21,11 @@ def stop_daemons():
 def start_daemons():
     for daemon in DAEMONS_TO_BE_STOPPED:
         os.system('initctl start %s'%(daemon))
+    time.sleep(5)
+    wait_for_app('booster-m')
+    wait_for_app('booster-e')
+    wait_for_app('booster-d')
+    wait_for_app('booster-q')
 
 def daemons_running():
      st, op = commands.getstatusoutput('pgrep %s'%DAEMONS_TO_BE_STOPPED[0].split("/")[1])        
@@ -136,7 +141,7 @@ def get_newest_pid(app):
     
     return None
 
-def wait_for_app(app = None, timeout = 5, sleep = 0.5):
+def wait_for_app(app = None, timeout = 5, sleep = 1):
     """
     Waits for an application to start. Checks periodically if
     the app is running for a maximum wait set in timeout.

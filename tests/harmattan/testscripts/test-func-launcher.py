@@ -108,10 +108,6 @@ class launcher_tests (unittest.TestCase):
 
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
-
-        get_pid('booster-m')
-        get_pid('booster-q')
-        get_pid('booster-d')
     
     #Testcases
     def test_launcher_exist(self):

@@ -46,10 +46,6 @@ class SecurityTests(unittest.TestCase):
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
 
-        get_pid('booster-m')
-        get_pid('booster-q')
-        get_pid('booster-d')
-
     #Testcases
     def filter_creds(self, creds):
         """

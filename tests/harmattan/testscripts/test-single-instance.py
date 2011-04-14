@@ -57,6 +57,12 @@ def check_prerequisites():
 class SingleInstanceTests(unittest.TestCase):
 
     def setUp(self):
+        if daemons_running():
+            stop_daemons()
+            self.START_DAEMONS_AT_TEARDOWN = True
+        else:
+            self.START_DAEMONS_AT_TEARDOWN = False
+
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
@@ -72,9 +78,9 @@ class SingleInstanceTests(unittest.TestCase):
         if get_pid('applauncherd') == None:
             os.system('initctl start xsession/applauncherd')
         time.sleep(5)
-        get_pid('booster-m')
-        get_pid('booster-q')
-        get_pid('booster-d')
+
+        if self.START_DAEMONS_AT_TEARDOWN:
+            start_daemons()
 
     #Testcases
     def minimize(self, pid):
