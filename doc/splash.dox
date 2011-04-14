@@ -1,5 +1,7 @@
 /*! \page splash How To Enable Splash Screen For The Application
 
+\section splashsec Enabling splash screen
+
 Applauncherd supports showing a splash screen if there is mcompositor
 (the MeeGo window manager) running.
 
@@ -29,6 +31,68 @@ looks for the files from a default location.
 The file should be in a format recognized by QPixmap, preferably JPEG
 as it is fast to load. The size of the image should not be larger than
 the screen. If it is smaller, it will be stretched.
+
+\subsection splashndbus Splash and D-Bus interaction
+
+Some care needs to be taken if the application is to be invoked via
+D-Bus as well as from the application grid. The single instance
+behavior provided by \c MApplication falls under this category as
+well, so you may be using D-Bus even if there is no D-Bus related code
+in your application.
+
+If splash is not used, the \c Exec line in the application's \c
+.desktop file may contain the invoker command line for starting the
+application. One of the first things that D-Bus enabled applications
+do is to register a service with the session D-Bus, which fails if
+another instance of the application is already running.  In this case,
+an \c MApplication based application by default first calls the \c
+launch() D-Bus method of the existing application instance and then
+exits. The end result is that the existing instance is brought to the
+foreground and there is just one instance of the application running.
+
+Things change when the \c --splash option is used in an invoker command
+in the \c Exec line of the \c .desktop file. When the application is
+started from the grid and there is already an instance of the
+application running, the following sequence of events takes place:
+
+\li The path to the splash image and the pid of the new application 
+    instance are passed to the compositor.
+\li The application's \c main() is called and the application starts to execute
+\li The compositor shows the splash image and starts to wait for the
+    application with the specified pid to map a window.
+\li The freshly started application attempts to register the D-Bus service, 
+    fails, calls the \c launch() D-Bus method of the existing instance, and exits.
+\li The window of the already running application instance is mapped.
+\li The compositor ignores this window, because it has a different pid
+    from the one specified in the splash request.
+\li The compositor finally gives up waiting for the specified pid to
+    map a window, and fades away the splash screen, revealing the
+    application window.
+
+It would be nice if the invoker/applauncherd could skip requesting the
+splash screen in case another instance of the application is running.
+Unfortunately this would require knowing \a in \a advance whether the
+application is going to execute the code that attempts D-Bus registration.
+This reduces to the Halting Problem, so if invoker/applauncherd could
+achieve it, much of theoretical computer science would disappear in
+a puff of smoke.
+
+\subsection splashndbusdeploy Deployment with splash and D-Bus on Harmattan
+
+In order to avoid the problems with D-Bus and splash screen, the
+following setup can be used.
+
+\li The application's \c .service file contains an \c Exec line with 
+    an invoker command with \c --splash parameter. This way the splash 
+    screen is shown if the application is not running and D-Bus decides 
+    to start it. Subsequent invocations via D-Bus do not show the splash
+    while the application is running.
+
+\li The application's \c .desktop file contains a \c X-Maemo-Service line 
+    that specifies the application's D-Bus service. When this line is present,
+    the home screen calls the \c launch() method of the specified D-Bus service 
+    to start the application, and consequently the splash screen is shown as
+    appropriate. 
 
 */
 
