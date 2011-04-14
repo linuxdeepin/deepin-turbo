@@ -1,3 +1,9 @@
+applauncherd (0.28.0) unstable; urgency=low
+
+  * 
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Thu, 14 Apr 2011 13:49:24 +0300
+
 applauncherd (0.27.0) stable; urgency=low
 
   * Changes: Fixed misbehaving pixelchanged application
