@@ -1,4 +1,4 @@
-applauncherd (0.27.0) unstable; urgency=low
+applauncherd (0.27.0) stable; urgency=low
 
   * Changes: Fixed misbehaving pixelchanged application
   * Changes: Added stopping all daemons which are using invoker before functional tests
