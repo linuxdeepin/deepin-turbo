@@ -1,9 +1,10 @@
 applauncherd (0.28.0) unstable; urgency=low
 
+  * Changes: Stuff to the README added.
   * Changes: Some coverity tool defects are fixed
   * Changes: Coverity tool defect fixes for tests
 
- -- Olli Leppanen <olli.leppanen@nokia.com>  Thu, 14 Apr 2011 13:49:24 +0300
+ -- Jussi Lind <jussi.lind@nokia.com>  Thu, 14 Apr 2011 15:44:45 +0300
 
 applauncherd (0.27.0) stable; urgency=low
 
