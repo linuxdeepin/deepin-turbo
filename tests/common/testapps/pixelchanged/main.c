@@ -254,7 +254,8 @@ int main(int argc, char **argv)
 
     if (click_x > -1) fake_event(dpy, click_x, click_y);
 
-    while (1) {
+    int repeat = 1;
+    while (repeat) {
         usleep(50000);
 
         image = XGetImage(dpy, rootw, pixel_x, pixel_y, 1, 1, AllPlanes, ZPixmap);
@@ -273,7 +274,7 @@ int main(int argc, char **argv)
             previous_pixel = pixel;
             
             if (quit_when_found) 
-                break;
+                repeat = 0;
         }
 
         if ( 
@@ -285,7 +286,7 @@ int main(int argc, char **argv)
             previous_pixel2 = pixel2;
             
             if (quit_when_found) 
-                break;
+                repeat = 0;
         }
 
     }

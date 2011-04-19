@@ -67,6 +67,8 @@ static void loadLibraries(const char * const libs[], unsigned int numLibs)
 
             // Open the library. Print possible errors only in debug mode.
             dlerror();
+
+            // coverity[leaked_storage : FALSE]
             if (!dlopen(lib + skipChar, flags) && g_debugPrinting)
             {
                 fprintf(stderr, "Warning: can't preload %s\n", lib + skipChar);

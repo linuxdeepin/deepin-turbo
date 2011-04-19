@@ -1,6 +1,7 @@
 applauncherd (0.29.0) unstable; urgency=low
 
   * Changes: New test added to check the daemons running after boot that uses invoker
+  * Changes: More Coverity tool defect fixes
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 19 Apr 2011 10:43:29 +0300
 

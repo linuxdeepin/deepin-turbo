@@ -255,16 +255,18 @@ static int invoker_init(enum APP_TYPE app_type)
 // is the one who forks.
 static uint32_t invoker_recv_pid(int fd)
 {
-  uint32_t action, pid;
-
-   // Receive action.
+  // Receive action.
+  uint32_t action;
   invoke_recv_msg(fd, &action);
-
   if (action != INVOKER_MSG_PID)
-      die(1, "Received a bad pid (%08x)\n", action);
+      die(1, "Received a bad message id (%08x)\n", action);
 
   // Receive pid.
+  uint32_t pid = 0;
   invoke_recv_msg(fd, &pid);
+  if (pid == 0)
+      die(1, "Received a zero pid \n");
+
   return pid;
 }
 
