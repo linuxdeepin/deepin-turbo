@@ -69,30 +69,52 @@ application running, the following sequence of events takes place:
     map a window, and fades away the splash screen, revealing the
     application window.
 
-It would be nice if the invoker/applauncherd could skip requesting the
-splash screen in case another instance of the application is running.
-Unfortunately this would require knowing \a in \a advance whether the
-application is going to execute the code that attempts D-Bus registration.
-This reduces to the Halting Problem, so if invoker/applauncherd could
-achieve it, much of theoretical computer science would disappear in
-a puff of smoke.
-
 \subsection splashndbusdeploy Deployment with splash and D-Bus on Harmattan
 
-In order to avoid the problems with D-Bus and splash screen, the
-following setup can be used.
+There are basically two ways around the D-Bus related problem outlined
+above. One is to use the single instance support of the invoker, and
+the other one is to use a D-Bus service in the \c .desktop file. The
+following examples demonstrate how to do this with the \c clock application.
 
-\li The application's \c .service file contains an \c Exec line with 
-    an invoker command with \c --splash parameter. This way the splash 
-    screen is shown if the application is not running and D-Bus decides 
-    to start it. Subsequent invocations via D-Bus do not show the splash
-    while the application is running.
+In the first approach, there is an \c Exec line with \c invoker
+command in both the \c .desktop file and the \c .service file. Both
+lines use both the \c --single-instance flag and the \c --splash
+flag:
 
-\li The application's \c .desktop file contains a \c X-Maemo-Service line 
-    that specifies the application's D-Bus service. When this line is present,
-    the home screen calls the \c launch() method of the specified D-Bus service 
-    to start the application, and consequently the splash screen is shown as
-    appropriate. 
+\code
+[Desktop Entry]
+Type=Application
+Name=Clock
+Icon=icon-l-clock
+Exec=/usr/bin/invoker --single-instance --splash /usr/share/themes/blanco/meegotouch/images/splash/meegotouch-clock-splash.jpg --type=m /usr/bin/clock
+\endcode
+
+\code
+[D-BUS Service]
+Name=com.nokia.clock
+Exec=/usr/bin/invoker --single-instance --splash /usr/share/themes/blanco/meegotouch/images/splash/meegotouch-clock-splash.jpg --type=m /usr/bin/clock
+\endcode
+
+In the second approach, the \c .desktop file specifies the D-Bus
+service, and the invoker command is in the \c Exec line of the \c
+.service file. In this case there is no need for the \c
+--single-instance flag. A small wrinkle is that the \c Exec line seems
+to be required even if it is not used.
+
+\code
+[Desktop Entry]
+Type=Application
+Name=Clock
+Icon=icon-l-clock
+Exec=/path/not/used
+X-Maemo-Service=com.nokia.clock
+\endcode
+
+\code
+[D-BUS Service]
+Name=com.nokia.clock
+Exec=/usr/bin/invoker --splash /usr/share/themes/blanco/meegotouch/images/splash/meegotouch-clock-splash.jpg --type=m /usr/bin/clock
+\endcode
 
 */
 
