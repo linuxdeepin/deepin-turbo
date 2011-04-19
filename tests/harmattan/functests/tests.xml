@@ -5,6 +5,20 @@
   <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
   <suite name="applauncherd-functional-tests" domain="Application framework"> 
 
+    <set name="TC_Daemon" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_001_daemon_list" type="Functional" description="To list the running daemons using invoker after boot" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_001_daemon_list</step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
     <set name="TC_Launcher" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>

@@ -1,10 +1,16 @@
+applauncherd (0.29.0) unstable; urgency=low
+
+  * Changes: New test added to check the daemons running after boot that uses invoker
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 19 Apr 2011 10:43:29 +0300
+
 applauncherd (0.28.0) stable; urgency=low
 
   * Changes: Stuff to the README added.
   * Changes: Some coverity tool defects are fixed
   * Changes: Coverity tool defect fixes for tests
   * Fixes: NB#247253 - Invoker should not show splash-screen if app is already running
-	
+
  -- Jussi Lind <jussi.lind@nokia.com>  Thu, 14 Apr 2011 15:44:45 +0300
 
 applauncherd (0.27.0) stable; urgency=low
