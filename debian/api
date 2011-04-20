@@ -3,7 +3,7 @@ type: library
 scope: Nokia MeeGo
 state: unstable
 doc-type: doxygen
-doxygen-conf: doc/doxygen-userdoc.conf
+doxygen-conf: doc/doxygen-mdeclarativecache.conf
 libs-pkg: applauncherd-launcher
 dev-pkg: applauncherd-dev
 headers: /usr/include/applauncherd/mdeclarativecache.h
