@@ -20,11 +20,10 @@
 #ifndef INVOKELIB_H
 #define INVOKELIB_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 void invoke_send_msg(int fd, uint32_t msg);
-void invoke_recv_msg(int fd, uint32_t *msg);
+bool invoke_recv_msg(int fd, uint32_t *msg);
 
 void invoke_send_str(int fd, char *str);
 
