@@ -1,3 +1,31 @@
 /*! \page eboost Using the Exec Booster
-*/
 
+Exec Booster is a generic booster for all kinds of applications. Unlike 
+the other boosters (Meegotouch, QML and QT boosters) this booster does
+not help in quick startup of the application. It is basically a booster
+that only exec()'s the given binary. It can be used to launch any application 
+even if the application is not a library.
+
+\section eboosterpurpose Purpose of Exec Booster
+
+Applauncherd supports showing of a splash screen for applications. All 
+those applications which can be boosted using the other boosters can show
+splash screen as described \subpage splash "here". For those applications
+which cannot be boosted and require to have a splash screen can use the 
+Exec Booster. Hence for launching a splash screen for any application the Exec 
+Booster can be used. Also the non boosted applications can be launched as a 
+\subpage singleinstance "Single Instance" application using the Exec Booster.
+
+\section runebooster Running application using Exec Booster
+
+One can launch any application binary using the Exec Booster. Before launching 
+any application one should check that applauncherd package is installed and
+applauncherd daemon and the booster-e is running. Now one can launch the application
+using Exec Booster as:
+
+\code
+    
+    invoker --type=e /usr/bin/application_binary
+\endcode
+
+*/                     
