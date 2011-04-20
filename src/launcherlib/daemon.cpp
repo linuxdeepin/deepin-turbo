@@ -310,7 +310,7 @@ void Daemon::readFromBoosterSocket(int fd)
 
 void Daemon::killProcess(pid_t pid, int signal) const
 {
-    if (pid)
+    if (pid > 0)
     {
         Logger::logDebug("Daemon: Killing pid %d with %d", pid, signal);
         if (kill(pid, signal) != 0)
@@ -528,10 +528,7 @@ void Daemon::reapZombies()
                     Logger::logDebug("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
                     Logger::logDebug("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
 
-                    if (kill(invokerPid, signal) != 0)
-                    {
-                        Logger::logError("Daemon: Failed to send signal %d to invoker: %s\n", signal, strerror(errno));
-                    }
+                    killProcess(invokerPid, signal);
                 }
 
                 // Remove a dead booster
