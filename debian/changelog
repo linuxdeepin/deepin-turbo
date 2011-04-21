@@ -5,9 +5,10 @@ applauncherd (0.29.0) unstable; urgency=low
   * Changes: Exec Booster documentation added
   * Changes: Created a separate documentationpage config for MDeclarativeCache interface
   * Changes: Changed relative paths to start from righ level in doxygen conf files
+  * Changes: Preloading of libcontactswidgets.so and libmeegocontrol.so added
   * Fixes: NB#238947 - The API documentation main page for QML Booster needs to be updated
   * Fixes: NB#249220 - Applauncherd doxygen INPUT/OUTPUT paths should be relative	
-	
+
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 19 Apr 2011 10:43:29 +0300
 
 applauncherd (0.28.0) stable; urgency=low
