@@ -34,9 +34,9 @@ void invoke_send_msg(int fd, uint32_t msg)
 
 bool invoke_recv_msg(int fd, uint32_t *msg)
 {
-    ssize_t   numRead;
-    uint32_t  readBuf;
-    numRead = read(fd, &readBuf, sizeof(readBuf));
+    uint32_t  readBuf = 0;
+    int len = sizeof(readBuf);
+    ssize_t numRead = read(fd, &readBuf, len);
 
     if (numRead == -1)
     {
@@ -44,7 +44,7 @@ bool invoke_recv_msg(int fd, uint32_t *msg)
         *msg = 0;
         return false;
     }
-    else if (numRead == 0)
+    else if (numRead < len)
     {
         debug("%s: Error: unexpected end-of-file \n", __FUNCTION__);
         *msg = 0;
