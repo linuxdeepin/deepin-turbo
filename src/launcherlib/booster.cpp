@@ -34,6 +34,7 @@
 #include <fcntl.h>
 #include <cstring>
 #include <sstream>
+#include <stdexcept>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -124,9 +125,8 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
 
     // Wait and read commands from the invoker
     Logger::logDebug("Booster: Wait for message from invoker");
-    if (!receiveDataFromInvoker(socketFd)) {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Couldn't read command\n");
-    }
+    if (!receiveDataFromInvoker(socketFd))
+        throw std::runtime_error("Booster: Couldn't read command\n");
 
     // Send parent process a message that it can create a new booster,
     // send pid of invoker, booster respawn value and invoker socket connection.
@@ -462,7 +462,11 @@ void Booster::setEnvironmentBeforeLaunch()
     if (err < 0)
     {
         // Credential setup has failed, abort.
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Failed to setup credentials for launching application: %d\n", err);
+        std::string msg("Booster: Failed to setup credentials for launching application: ");
+        std::stringstream ss;
+        ss << err;
+        msg += ss.str();
+        throw std::runtime_error(msg);
     }
 #endif
 
@@ -545,7 +549,8 @@ void* Booster::loadMain()
     void * module = dlopen(m_appData->fileName().c_str(), dlopenFlags);
 
     if (!module)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading invoked application failed: '%s'\n", dlerror());
+        throw std::runtime_error(std::string("Booster: Loading invoked application failed: '") +
+                                 dlerror() + "'\n");
 
     // Find out the address for symbol "main". dlerror() is first used to clear any old error conditions,
     // then dlsym() is called, and then dlerror() is checked again. This procedure is documented
@@ -556,7 +561,8 @@ void* Booster::loadMain()
 
     const char * error_s = dlerror();
     if (error_s != NULL)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Booster: Loading symbol 'main' failed: '%s'\n", error_s);
+        throw std::runtime_error(std::string("Booster: Loading symbol 'main' failed: '") +
+                                 error_s + "'\n");
 
     return module;
 }

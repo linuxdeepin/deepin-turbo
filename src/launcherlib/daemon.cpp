@@ -37,6 +37,7 @@
 #include <glob.h>
 #include <cstring>
 #include <cstdio>
+#include <stdexcept>
 
 #include "coverage.h"
 
@@ -57,7 +58,7 @@ Daemon::Daemon(int & argc, char * argv[]) :
     }
     else
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Daemon already created!\n");
+        throw std::runtime_error("Daemon: Daemon already created!\n");
     }
 
     // Parse arguments
@@ -73,12 +74,12 @@ Daemon::Daemon(int & argc, char * argv[]) :
 
     if (socketpair(AF_UNIX, SOCK_DGRAM, 0, m_boosterLauncherSocket) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a socket pair for boosters failed!\n");
+        throw std::runtime_error("Daemon: Creating a socket pair for boosters failed!\n");
     }
 
     if (pipe(m_sigPipeFd) == -1)
     {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Creating a pipe for Unix signals failed!\n");
+        throw std::runtime_error("Daemon: Creating a pipe for Unix signals failed!\n");
     }
 
     // Daemonize if desired
@@ -95,11 +96,11 @@ void Daemon::consoleQuiet()
     close(2);
 
     if (open("/dev/null", O_RDONLY) < 0)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Failed to open /dev/null as read-only");
+        throw std::runtime_error("Daemon: Failed to open /dev/null as read-only");
 
     int fd = open("/dev/null", O_WRONLY);
     if ((fd == -1) || (dup(fd) < 0))
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Failed to open /dev/null as write-only");
+        throw std::runtime_error("Daemon: Failed to open /dev/null as write-only");
 }
 
 Daemon * Daemon::instance()
@@ -400,7 +401,7 @@ void Daemon::forkBooster(char type, int sleepTime)
     pid_t newPid = fork();
 
     if (newPid == -1)
-        Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Forking while invoking");
+        throw std::runtime_error("Daemon: Forking while invoking");
 
     if (newPid == 0) /* Child process */
     {
@@ -470,7 +471,7 @@ void Daemon::forkBooster(char type, int sleepTime)
         }
         else
         {
-            Logger::logErrorAndDie(EXIT_FAILURE, "Daemon: Unknown booster type '%c'\n", type);
+            throw std::runtime_error(std::string("Daemon: Unknown booster type '") + type + "'");
         }
     }
     else /* Parent process */
@@ -597,10 +598,7 @@ void Daemon::daemonize()
     // Fork off the parent process: first fork
     pid = fork();
     if (pid < 0)
-    {
-        Logger::logError("Daemon: Unable to fork daemon, code %d (%s)", errno, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Daemon: Unable to fork daemon");
 
     // If we got a good PID, then we can exit the parent process.
     if (pid > 0)
@@ -611,10 +609,7 @@ void Daemon::daemonize()
     // Fork off the parent process: second fork
     pid = fork();
     if (pid < 0)
-    {
-        Logger::logError("Daemon: Unable to fork daemon, code %d (%s)", errno, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Daemon: Unable to fork daemon");
 
     // If we got a good PID, then we can exit the parent process.
     if (pid > 0)
@@ -624,9 +619,7 @@ void Daemon::daemonize()
 
     // Check the lock
     if(!Daemon::lock())
-    {
-        Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
-    }
+        throw std::runtime_error(std::string(PROG_NAME_LAUNCHER) + " is already running\n");
 
     // Change the file mode mask
     umask(0);
@@ -636,17 +629,11 @@ void Daemon::daemonize()
     // Create a new SID for the child process
     sid = setsid();
     if (sid < 0)
-    {
-        Logger::logError("Daemon: Unable to create a new session, code %d (%s)", errno, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Daemon: Unable to setsid.");
 
     // Change the current working directory
     if ((chdir("/")) < 0)
-    {
-        Logger::logError("Daemon: Unable to change directory to %s, code %d (%s)", "/", errno, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
+        throw std::runtime_error("Daemon: Unable to chdir to '/'");
 
     // Open file descriptors pointing to /dev/null
     // Redirect standard file descriptors to /dev/null

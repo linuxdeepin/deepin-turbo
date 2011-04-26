@@ -22,9 +22,13 @@
 
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <cstdlib>
 #include <cstring>
+#include <stdexcept>
+#include <errno.h>
+#include <sstream>
 
 void SocketManager::initSocket(const string & socketId)
 {
@@ -37,14 +41,23 @@ void SocketManager::initSocket(const string & socketId)
         // Create a new local socket
         int socketFd = socket(PF_UNIX, SOCK_STREAM, 0);
         if (socketFd < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "SocketManager: Failed to open socket\n");
+            throw std::runtime_error("SocketManager: Failed to open socket\n");
 
         // TODO: Error if socketId >= maxLen. Also unlink() here may
         // try to remove a different file than is passed to sun.sa_data.
 
         // Remove the previous socket file
-        if (unlink(socketId.c_str()))
-            Logger::logError("SocketManager: Failed to unlink existing socket file '%s'", socketId.c_str());
+        struct stat sb;
+        stat(socketId.c_str(), &sb);
+        if (S_ISSOCK(sb.st_mode))
+        {
+            if (unlink(socketId.c_str()) == -1)
+            {
+                std::string msg("SocketManager: Failed to unlink existing socket file '");
+                msg += socketId + "': " + strerror(errno);
+                Logger::logWarning(msg.c_str());
+            }
+        }
 
         // Initialize the socket struct
         struct sockaddr sun;
@@ -55,11 +68,23 @@ void SocketManager::initSocket(const string & socketId)
 
         // Bind the socket
         if (bind(socketFd, &sun, sizeof(sun)) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "SocketManager: Failed to bind to socket (fd=%d)\n", socketFd);
+        {
+            std::string msg("SocketManager: Failed to bind to socket (fd=");
+            std::stringstream ss;
+            ss << socketFd;
+            msg += ss.str() + ")";
+            throw std::runtime_error(msg);
+        }
 
         // Listen to the socket
         if (listen(socketFd, 10) < 0)
-            Logger::logErrorAndDie(EXIT_FAILURE, "SocketManager: Failed to listen to socket (fd=%d)\n", socketFd);
+        {
+            std::string msg("SocketManager: Failed to listen to socket (fd=");
+            std::stringstream ss;
+            ss << socketFd;
+            msg += ss.str() + ")";
+            throw std::runtime_error(msg);
+        }
 
         // Set permissions
         chmod(socketId.c_str(), S_IRUSR | S_IWUSR | S_IXUSR |

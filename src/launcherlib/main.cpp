@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/file.h>
+#include <stdexcept>
 
 #define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 
@@ -79,28 +80,38 @@ DECL_EXPORT int main(int argc, char * argv[])
     {
         if(!Daemon::lock())
         {
-            Logger::logErrorAndDie(EXIT_FAILURE, "%s is already running \n", PROG_NAME_LAUNCHER);
+            Logger::logError("%s is already running \n", PROG_NAME_LAUNCHER);
+            return EXIT_FAILURE;
         }
     }
 
-    // Create main daemon instance
-    Daemon myDaemon(argc, argv);
+    try
+    {
+        // Create main daemon instance
+        Daemon myDaemon(argc, argv);
 
-    // Get fd for signal pipe.
-    g_sigPipeFd = myDaemon.sigPipeFd();
+        // Get fd for signal pipe.
+        g_sigPipeFd = myDaemon.sigPipeFd();
 
-    // Install signal handlers
-    signal(SIGCHLD, sigChldHandler); // reap zombies
-    signal(SIGTERM, sigTermHandler); // exit launcher
-    signal(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
-    signal(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
-    signal(SIGPIPE, sigPipeHandler); // broken invoker's pipe 
+        // Install signal handlers
+        signal(SIGCHLD, sigChldHandler); // reap zombies
+        signal(SIGTERM, sigTermHandler); // exit launcher
+        signal(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
+        signal(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
+        signal(SIGPIPE, sigPipeHandler); // broken invoker's pipe
 
-    // Run the main loop
-    myDaemon.run();
+        // Run the main loop
+        myDaemon.run();
 
-    // Close the log
-    Logger::closeLog();
+        // Close the log
+        Logger::closeLog();
+    }
+    catch (std::runtime_error & e)
+    {
+        Logger::logError(e.what());
+        std::cout << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }

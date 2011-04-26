@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include <unistd.h>
+#include <stdexcept>
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
     const char * Connection::m_credsStr = "applauncherd-launcher::access";
@@ -57,9 +58,7 @@ Connection::Connection(int socketFd, bool testMode) :
     m_io[2] = -1;
 
     if (!m_testMode && m_curSocket == -1)
-    {
-        Logger::logErrorAndDie(EXIT_FAILURE, "Connection: Socket isn't initialized!\n");
-    }
+        throw std::runtime_error("Connection: Socket isn't initialized!\n");
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
 

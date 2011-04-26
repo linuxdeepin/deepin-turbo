@@ -80,15 +80,6 @@ public:
     static void logInfo(const char * format, ...);
 
     /*!
-     * \brief Log an error to the system message logger and exit
-     * \param format String identical to a printf format string
-     * \param additionalArgs Depending on the format string, the function may expect a
-     *        sequence of additional arguments, each containing one value to be inserted
-     *        in the format parameter, if any.
-     */
-    static void logErrorAndDie(int code, const char * format, ...);
-
-    /*!
      * \brief Forces Logger to log everything and echo to stdout if set to true.
      */
     static void setDebugMode(bool enable);
