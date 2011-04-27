@@ -51,6 +51,7 @@ void SocketManager::initSocket(const string & socketId)
         stat(socketId.c_str(), &sb);
         if (S_ISSOCK(sb.st_mode))
         {
+            // coverity[toctou]
             if (unlink(socketId.c_str()) == -1)
             {
                 std::string msg("SocketManager: Failed to unlink existing socket file '");

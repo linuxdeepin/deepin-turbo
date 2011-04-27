@@ -495,6 +495,7 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
     // Wait for launched process to exit
     if (wait_term)
     {
+        // coverity[tainted_string_return_content]
         g_invoked_pid = invoker_recv_pid(socket_fd);
         debug("Booster's pid is %d \n ", g_invoked_pid);
 
