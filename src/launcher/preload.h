@@ -33,7 +33,6 @@ const char * const gLibs[] =
     "/usr/lib/libvideo-widget-meegotouch.so.1",
     "/usr/lib/libvideo-renderer-gst-playbin2.so.1",
     "/usr/lib/libAccountPlugin.so.1",
-    "/usr/lib/libcreds2-qt.so.1",
     "/usr/lib/libmaemomeegotouchcontactsinterface.so.1",
     "/usr/lib/libgeoengine-mapwidget.so.1",
     "/usr/lib/libmcontentwidgets.so.0",
