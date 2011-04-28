@@ -456,7 +456,8 @@ static void usage(int status)
            "  -L, --splash-landscape LANDSCAPE-FILE\n"
            "                         Show splash screen from the LANDSCAPE-FILE\n"
            "                         in case the device is in landscape orientation.\n"
-           "  -o, --daemon-mode      Notify invoker that launched process is daemon.\n"
+           "  -o, --daemon-mode      Notify invoker that the launched process is a daemon.\n"
+           "                         This resets the oom_adj of the process.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);

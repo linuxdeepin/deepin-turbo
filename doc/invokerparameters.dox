@@ -1,6 +1,57 @@
 /*! \page invokerparameters Advanced Invoker Command Line Parameters
 
-See invoker --help for all possible command-line parameters.
+Invoker recognizes over 10 different command line parameters. All the parameters are listed here.
 
+\section type --type TYPE
+
+TYPE chooses the type of booster used. Qt-booster may be used to     launch anything. Possible values for TYPE:
+- m = Launch a MeeGo Touch application.
+- q = Launch a Qt application.
+- d = Launch a Qt Declarative (QML) application.
+- e = Launch any application, even if it's not a library.
+
+\section creds -c, --creds
+
+Print Aegis security credentials (if enabled).
+
+\section delay -d, --delay SECS
+
+After invoking sleep for SECS seconds (default 0).
+
+\section respawn -r, --respawn SECS
+
+After invoking respawn new booster after SECS seconds (default 3, max 10).
+
+\section waitterm -w, --wait-term
+
+Wait for launched process to terminate (default).
+
+\section nowait -n, --no-wait
+
+Do not wait for launched process to terminate.
+
+\section globalsyms -G, --global-syms
+
+Places symbols in the application binary and its libraries to the global scope. See RTLD_GLOBAL in the dlopen manual page.
+
+\section singleinstanceparam -s, --single-instance
+
+Launch the application as a single instance. The existing application window will be activated if already launched.
+
+\section splashparam -S, --splash FILE
+
+Show splash screen from the FILE.
+
+\section splashlandscape -L, --splash-landscape FILE
+
+Show splash screen from the FILE in case the device is in landscape orientation.
+
+\section daemonmode -o, --daemon-mode
+
+Notify invoker that the launched process is a daemon. This resets the oom_adj of the process.
+
+\section help -h, --help
+
+Print help.
 */
 
