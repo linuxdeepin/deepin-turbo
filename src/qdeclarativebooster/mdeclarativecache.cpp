@@ -19,6 +19,10 @@
 
 #include <Qt/QtDeclarative>
 #include <QX11Info>
+#include <QtPlugin>
+#include <QPluginLoader>
+#include <QLibraryInfo>
+
 #include "mdeclarativecache.h"
 #include "mdeclarativecache_p.h"
 
@@ -104,6 +108,8 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
         // Set object name
         qApp->setObjectName(appName);
 
+        testabilityInit();
+
 #ifdef Q_WS_X11
         // reinit WM_COMMAND X11 property
         if (qDeclarativeViewInstance) {
@@ -146,6 +152,29 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
 
     return qApplicationInstance;
 }
+
+void MDeclarativeCachePrivate::testabilityInit()
+{
+    // Activate testability plugin if exists
+    QString testabilityPluginPostfix = ".so";
+    QString testabilityPlugin = "testability/libtestability";
+
+    testabilityPlugin = QLibraryInfo::location(QLibraryInfo::PluginsPath) + QDir::separator() + testabilityPlugin + testabilityPluginPostfix;
+    QPluginLoader loader(testabilityPlugin.toLatin1().data());
+
+    QObject *plugin = loader.instance();
+    
+    if (plugin) 
+    {
+        testabilityInterface = qobject_cast<TestabilityInterface *>(plugin);
+
+        if (testabilityInterface) 
+        {
+            testabilityInterface->Initialize();
+        }
+    }
+}
+
 
 QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
 {

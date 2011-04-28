@@ -21,10 +21,12 @@
 #define MDECLARATIVECACHE_P_H
 
 #include <QString>
+#include "testabilityinterface.h"
 
 class MDeclarativeCache;
 class QApplication;
 class QDeclarativeView;
+
 
 class MDeclarativeCachePrivate
 {
@@ -36,6 +38,7 @@ public:
     QDeclarativeView* qDeclarativeView();
     QString applicationDirPath();
     QString applicationFilePath();
+    void testabilityInit();
 
     static const int ARGV_LIMIT;
     QApplication *qApplicationInstance;
@@ -45,10 +48,14 @@ public:
     QString appDirPath;
     QString appFilePath;
     bool cachePopulated;
+    TestabilityInterface *testabilityInterface;
+
+
 
 #ifdef UNIT_TEST
     friend class Ut_MDeclarativeCache;
 #endif
 };
+
 
 #endif // MDECLARATIVECACHE_P_H

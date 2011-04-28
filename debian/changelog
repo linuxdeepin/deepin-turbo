@@ -1,6 +1,7 @@
 applauncherd (0.29.3) stable; urgency=low
 
   * Fixes: NB#249151 - applauncher: security issue: memory area marked as writable and executable
+  * Fixes: NB#247707 - Invoker interferes with qttas plugin loading for qml applications
 
  -- Juha Lintula <juha.lintula@nokia.com>  Tue, 03 Apr 2011 11:11:24 +0200
 
@@ -10,7 +11,6 @@ applauncherd (0.29.2) stable; urgency=low
   * Fixes: NB#250976 - User Documentation for applauncherd still "Under Construction"
   * New: Content added to invokerparameters.dox
   * Changes: Added a note about splash screen to limitations.dox
-
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 02 May 2011 11:40:27 +0300
 
