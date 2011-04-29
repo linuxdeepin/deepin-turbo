@@ -1,0 +1,143 @@
+Name: meegotouch-applauncherd
+Summary: Application launcher for fast startup
+Version: 0.29.1
+Release: 1
+Group: System/Daemons
+License: LGPLv2+
+URL: http://meego.gitorious.com/meegotouch/meegotouch-applauncherd
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+Patches:
+Description: |
+    Application invoker and launcher daemon that speed up
+    application startup time and share memory. Provides also
+    functionality to launch applications as single instances.
+PkgConfigBR:
+    - QtCore
+    - meegotouch
+    - x11
+    - xtst
+    - xextproto
+    - xi
+    - xext
+PkgBR:
+    - cmake
+Builder: make
+SubPackages:
+    - Name: devel
+      Group: Development/Tools
+      Summary: Development files for launchable applications
+      Description: |
+         Development files for creating applications that can be launched 
+         using meegotouch-applauncherd.
+      Files:
+        - "%{_libdir}/pkgconfig/meegotouch-boostable.pc"
+        - "%{_libdir}/pkgconfig/qdeclarative-boostable.pc"
+        - "%{_libdir}/pkgconfig/qt-boostable.pc"
+        - "%{_includedir}/applauncherd/mdeclarativecache.h"
+        - "%{_includedir}/applauncherd/MDeclarativeCache"
+        - "%{_datadir}/qt4/mkspecs/features/meegotouch-boostable.prf"
+        - "%{_datadir}/qt4/mkspecs/features/qt-boostable.prf"
+        - "%{_datadir}/qt4/mkspecs/features/qdeclarative-boostable.prf"
+        - "%{_libdir}/libmdeclarativecache.so"
+
+    - Name: doc 
+      Group: Development/Tools
+      Summary: Instructions for application developer 
+      Description: |
+         Documentation files for application developer. 
+      Files:
+        - "%doc %{_docdir}/applauncherd/*"
+
+    - Name: testapps
+      Group: Development/Tools
+      Summary: Test applications for launchable applications
+      Description: |
+         Test applications used for testing meegotouch-applauncherd.
+      Files:
+        - "%{_bindir}/fala_ft_hello"
+        - "%{_bindir}/fala_status"
+        - "%{_bindir}/fala_ft_hello1"
+        - "%{_bindir}/fala_ft_hello2"
+        - "%{_bindir}/fala_ft_creds1"
+        - "%{_bindir}/fala_ft_creds2"
+        - "%{_bindir}/fala_multi-instance"
+        - "%{_bindir}/fala_qml_wol"
+        - "%{_bindir}/fala_qml_wl"
+        - "%{_bindir}/fala_qml_helloworld"
+        - "%{_bindir}/fala_qml_helloworld1"
+        - "%{_bindir}/fala_qml_helloworld2"
+        - "%{_bindir}/fala_wl"
+        - "%{_bindir}/fala_wol"
+        - "%{_bindir}/fala_gettime"
+        - "%{_bindir}/fala_gettime_ms"
+        - "%{_bindir}/fala_pixelchanged"
+        - "%{_bindir}/fala_windowid"
+        - "%{_bindir}/xsendevent"
+        - "%{_datadir}/dbus-1/services/com.nokia.fala_testapp.service"
+        - "%{_datadir}/dbus-1/services/com.nokia.fala_wl.service"
+        - "%{_datadir}/dbus-1/services/com.nokia.fala_wol.service"
+        - "%{_bindir}/fala_ft_themetest"
+        - "%{_datadir}/themes/base/meegotouch/fala_ft_themetest/*"
+        - "%{_datadir}/applications/fala_wl.desktop"
+        - "%{_datadir}/applications/fala_wol.desktop"
+        - "%{_datadir}/fala_qml_helloworld/main.qml"
+        - "%{_datadir}/applications/fala_qml_wl.desktop"
+        - "%{_datadir}/applications/fala_qml_wol.desktop"
+        - "%{_datadir}/fala_images/*"
+
+    - Name: tests
+      Group: Development/Tools
+      Summary: Test scripts for launchable applications
+      Description: |
+         Test scripts used for testing meegotouch-applauncherd.
+      Requires: "%{name}-testapps = %{version}-%{release}"
+      Files:
+      
+      - "%{_datadir}/applauncherd-testscripts/test-func-launcher.py"
+      - "%{_datadir}/applauncherd-testscripts/ts_prestartapp.rb"
+      - "%{_datadir}/applauncherd-testscripts/check_pipes.py"
+      - "%{_datadir}/applauncherd-testscripts/test-perf-mbooster.py"
+      - "%{_datadir}/applauncherd-testscripts/tc_theming.rb"
+      - "%{_datadir}/applauncherd-testscripts/tc_splash.rb"
+      - "%{_datadir}/applauncherd-testscripts/test-perf.rb"
+      - "%{_datadir}/applauncherd-testscripts/get-coordinates.rb"
+      - "%{_datadir}/applauncherd-testscripts/utils.py"
+      - "%{_datadir}/applauncherd-testscripts/test-security.py"
+      - "%{_datadir}/applauncherd-testscripts/test-daemons.py"
+      - "%{_bindir}/fala_wid"
+      - "%{_datadir}/applauncherd-testscripts/fala_xres_wl"
+      - "%{_datadir}/applauncherd-testscripts/fala_xres_wol"
+      - "%{_datadir}/applauncherd-testscripts/signal-forward/*"
+      - "%{_datadir}/applauncherd-testscripts/test-single-instance.py"
+      - "%{_datadir}/applauncherd-testscripts/test-core-dump.py"
+      - "%{_datadir}/applauncherd-tests/tests.xml"
+      - "%{_datadir}/applauncherd-tests/ut_booster"
+      - "%{_datadir}/applauncherd-tests/ut_boosterfactory"
+      - "%{_datadir}/applauncherd-tests/ut_daemon"
+      - "%{_datadir}/applauncherd-tests/ut_connection"
+      - "%{_datadir}/applauncherd-tests/ut_dbooster"
+      - "%{_datadir}/applauncherd-tests/ut_ebooster"
+      - "%{_datadir}/applauncherd-tests/ut_mbooster"
+      - "%{_datadir}/applauncherd-tests/ut_qtbooster"
+      - "%{_datadir}/applauncherd-tests/ut_socketmanager"
+      - "%{_datadir}/applauncherd-functional-tests/tests.xml"
+      - "%{_datadir}/applauncherd-libmeegotouch-perf-tests/tests.xml"
+      - "%{_datadir}/applauncherd-qml-perf-tests/tests.xml"
+      - "%{_datadir}/applauncherd-red-tests/tests.xml"
+      - "%{_datadir}/applauncherd-reference-perf-tests/tests.xml"
+
+Files:
+    - "%{_bindir}/invoker"
+    - "%{_bindir}/applauncherd.bin"
+    - "%{_libdir}/applauncherd/libapplauncherd.so"
+    - "%{_bindir}/applauncherd"
+    - "%{_libdir}/applauncherd/libebooster.so"
+    - "%{_libdir}/applauncherd/libmbooster.so"
+    - "%{_libdir}/applauncherd/libqtbooster.so"
+    - "%{_libdir}/applauncherd/libqdeclarativebooster.so"
+    - "%{_libdir}/libmdeclarativecache.so"
+    - "%{_libdir}/libmdeclarativecache.so.*"
+    - "%{_bindir}/single-instance"
+    - "%config %{_sysconfdir}/xdg/autostart/applauncherd.desktop"
+
