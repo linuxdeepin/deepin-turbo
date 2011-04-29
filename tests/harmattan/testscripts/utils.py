@@ -15,17 +15,16 @@ DAEMONS_TO_BE_STOPPED = ['xsession/applifed', 'xsession/conndlgs']
 def stop_daemons():
     for daemon in DAEMONS_TO_BE_STOPPED:
         os.system('initctl stop %s'%(daemon))
+    wait_for_single_applauncherd()
+    get_booster_pid()
 
 # Function to start desired daemons. This is also done in teardown function
 # if start_daemons is not called before.
 def start_daemons():
     for daemon in DAEMONS_TO_BE_STOPPED:
         os.system('initctl start %s'%(daemon))
-    time.sleep(5)
-    wait_for_app('booster-m')
-    wait_for_app('booster-e')
-    wait_for_app('booster-d')
-    wait_for_app('booster-q')
+    wait_for_single_applauncherd()
+    get_booster_pid()
 
 def daemons_running():
      st, op = commands.getstatusoutput('pgrep %s'%DAEMONS_TO_BE_STOPPED[0].split("/")[1])        
@@ -50,8 +49,7 @@ def remove_applauncherd_runtime_files():
     Removes files that applauncherd leaves behind after it has been stopped
     """
     debug("Removing files that applauncherd leaves behind after it has been stopped")
-    files = ['/var/run/applauncherd.lock']
-    files += glob.glob('/tmp/boost*')
+    files = glob.glob('/tmp/boost*')
 
     for f in files:
         debug("removing %s" % f)
@@ -66,8 +64,7 @@ def start_applauncherd():
     handle = Popen(['initctl', 'start', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
                    shell = False)
-
-    time.sleep(6)
+    get_booster_pid()
     return handle.wait() == 0
 
 def stop_applauncherd():
@@ -141,7 +138,7 @@ def get_newest_pid(app):
     
     return None
 
-def wait_for_app(app = None, timeout = 5, sleep = 1):
+def wait_for_app(app = None, timeout = 10, sleep = 1):
     """
     Waits for an application to start. Checks periodically if
     the app is running for a maximum wait set in timeout.
@@ -165,6 +162,26 @@ def wait_for_app(app = None, timeout = 5, sleep = 1):
 
     return pid
 
+def wait_for_single_applauncherd(timeout = 20, sleep = 1):
+    pid = get_pid('applauncherd') 
+    count = len(pid.split("\n"))
+    start = time.time()
+
+    while count > 1 and time.time() < start + timeout:
+
+        debug("waiting %s secs for single applauncherd" %sleep)
+        time.sleep(sleep)
+
+        pid = get_pid('applauncherd') 
+        count = len(pid.split("\n"))
+        if count == 1:
+            break
+
+def get_booster_pid():
+    wait_for_app('booster-q')
+    wait_for_app('booster-e')
+    wait_for_app('booster-d')
+    wait_for_app('booster-m')
 
 def kill_process(appname=None, apppid=None, signum=15):
     if apppid and appname: 

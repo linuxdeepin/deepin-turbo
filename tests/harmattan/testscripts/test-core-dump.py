@@ -47,11 +47,7 @@ class CoreDumpTests(unittest.TestCase):
             self.START_DAEMONS_AT_TEARDOWN = False
 
         if get_pid('applauncherd') == None:
-            os.system('initctl start xsession/applauncherd')
-        time.sleep(5)
-        get_pid('booster-m')
-        get_pid('booster-q')
-        get_pid('booster-d')
+            start_applauncherd()
         #setup here
         debug("Executing SetUp")
 
@@ -59,8 +55,8 @@ class CoreDumpTests(unittest.TestCase):
         #teardown here
         debug("Executing TearDown")
         if get_pid('applauncherd') == None:
-            os.system('initctl start xsession/applauncherd')
-        time.sleep(5)
+            start_applauncherd()
+        wait_for_single_applauncherd()
 
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()

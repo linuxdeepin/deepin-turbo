@@ -13,6 +13,10 @@
       <case name="applauncherd__test_001_daemon_list" type="Functional" description="To list the running daemons using invoker after boot" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_001_daemon_list</step>
       </case>
+
+      <case name="applauncherd__test_daemon" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_daemon</step>
+      </case>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
@@ -21,8 +25,8 @@
 
     <set name="TC_Launcher" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
-          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
       <case name="applauncherd__test_launcher_exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="360" level="System" insignificant="false">
@@ -45,9 +49,6 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance</step>
       </case>
 
-      <case name="applauncherd__test_daemon" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_daemon</step>
-      </case>
 
       <case name="applauncherd__test_launch_multiple_apps_cont" type="Functional" description="Test that launcher can launch multiple applications continously" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont</step>
@@ -66,6 +67,7 @@
     <set name="TC_Invoker" description="Tests for invoker" feature="AF Basic Launcher daemon support" requirement="300168">
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
       <case name="applauncherd__test_signal_forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="true">
@@ -92,7 +94,6 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_gid_uid</step>
       </case>
 
-
       <case name="applauncherd__test_launch_wo_applauncherd" type="Functional" description="Test invoker cannot launch applications when applauncherd is not running" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_wo_applauncherd</step>
       </case>
@@ -114,6 +115,10 @@
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
+      <case name="applauncherd__test_restart_booster" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_restart_booster</step>
+      </case>
+
       <case name="applauncherd__test_booster_pid_change" type="Functional" description="Test that application pid changes to the booster 'x' when application is launched using booster 'x' " timeout="360" level="System" insignificant="false">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_booster_pid_change</step>
       </case>
@@ -124,10 +129,6 @@
 
       <case name="applauncherd__test_fd_booster_q" type="Functional" description="File descriptor test for booster-q" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_q</step>
-      </case>
-
-      <case name="applauncherd__test_restart_booster" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_restart_booster</step>
       </case>
 
       <case name="applauncherd__test_booster_killed_or_restarted" type="Functional" description="Test that booster is restarted if applauncherd is killed" timeout="360" level="System" insignificant="false">
@@ -153,8 +154,8 @@
     <set name="TC_Security" description="Tests that have something to do with the security platform" feature="AF Basic Launcher daemon support" requirement="300168">
 
       <pre_steps>
-          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
       <case name="applauncherd__test_no_aegis" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="360" level="System" insignificant="false" >
@@ -260,8 +261,8 @@
       <!-- Test for qml booster -->
     <set name="TC_Qml_Booster" description="functional tests for qml boosters" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
-          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
 
@@ -302,8 +303,8 @@
       <!-- Test for e booster -->
     <set name="TC_e_Booster" description="functional tests for qml boosters" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
-          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
       <case name="applauncherd__test_zombie_state_e" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">

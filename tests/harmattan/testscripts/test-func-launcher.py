@@ -91,11 +91,8 @@ class launcher_tests (unittest.TestCase):
             self.START_DAEMONS_AT_TEARDOWN = False
 
         if get_pid('applauncherd') == None:
-            os.system('initctl start xsession/applauncherd')
-        time.sleep(5)
-        get_pid('booster-m')
-        get_pid('booster-q')
-        get_pid('booster-d')
+            start_applauncherd()
+            
         #setup here
         debug("Executing SetUp")
 
@@ -103,9 +100,9 @@ class launcher_tests (unittest.TestCase):
         #teardown here
         debug("Executing TearDown")
         if get_pid('applauncherd') == None:
-            os.system('initctl start xsession/applauncherd')
-        time.sleep(5)
+            start_applauncherd()
 
+        wait_for_single_applauncherd()
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
     
@@ -549,6 +546,7 @@ class launcher_tests (unittest.TestCase):
         #Test for m-booster
         debug("Test for m-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py")
+        time.sleep(3)
         debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
@@ -557,6 +555,7 @@ class launcher_tests (unittest.TestCase):
         #Test for d-booster
         debug("Test for d-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_d.py")
+        time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(d-booster) was not killed by the same signal")
@@ -565,6 +564,7 @@ class launcher_tests (unittest.TestCase):
         #Test for e-booster
         debug("Test for e-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_e.py")
+        time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(e-booster) was not killed by the same signal")
@@ -574,6 +574,7 @@ class launcher_tests (unittest.TestCase):
         #Test for q-booster
         debug("Test for q-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
+        time.sleep(3)
         debug("The Invoker killed by : %s" %op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
