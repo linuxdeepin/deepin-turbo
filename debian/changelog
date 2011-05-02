@@ -1,3 +1,13 @@
+applauncherd (0.29.2) stable; urgency=low
+
+  * Changes: Added 'all boosters up and running'-check in applauncherd tests
+  * Fixes: NB#250976 - User Documentation for applauncherd still "Under Construction"
+  * New: Content added to invokerparameters.dox
+  * Changes: Added a note about splash screen to limitations.dox
+
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 02 May 2011 11:40:27 +0300
+
 applauncherd (0.29.1) unstable; urgency=low
 
   * Fixes: NB#250976 - User Documentation for applauncherd still "Under Construction"
