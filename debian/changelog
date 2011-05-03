@@ -1,3 +1,9 @@
+applauncherd (0.29.3) stable; urgency=low
+
+  * Fixes: NB#249151 - applauncher: security issue: memory area marked as writable and executable
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Tue, 03 Apr 2011 11:11:24 +0200
+
 applauncherd (0.29.2) stable; urgency=low
 
   * Changes: Added 'all boosters up and running'-check in applauncherd tests
@@ -8,7 +14,7 @@ applauncherd (0.29.2) stable; urgency=low
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 02 May 2011 11:40:27 +0300
 
-applauncherd (0.29.1) unstable; urgency=low
+applauncherd (0.29.1) stable; urgency=low
 
   * Fixes: NB#250976 - User Documentation for applauncherd still "Under Construction"
 
