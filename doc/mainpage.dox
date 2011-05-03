@@ -11,6 +11,8 @@ This documentation describes the idea behind this functionality and how to utili
 
 - \ref howdoesitwork "How does it work?"
 
+- \ref qtquick " Getting started with Qt Quick applications"
+
 - How to enable boosted startup for different types of applications: 
   - \ref qmlboost "QML"
   - \ref qtboost "Qt"

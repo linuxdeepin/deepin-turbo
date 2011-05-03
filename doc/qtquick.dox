@@ -1,0 +1,29 @@
+/*!  \page  qtquick Getting started with Qt Quick applications
+
+Fast startup for Qt Quick applications can be achieved by using the 
+applauncherd daemon and the QML booster. As described in the earlier 
+section, the applauncherd (daemon) forks the booster process 
+(in this case QML booster), which in turn is transformed into real 
+application when user launches a boosted QML application. 
+
+For compiling and linking, special flags are needed. For more details see: \subpage qmlboostcompiling "compiling and linking".
+
+The QML booster helps reduce application startup latency by creating instances of the classes QApplication and QDeclarativeView in 
+MDeclarativeCache. For more details on booster cache see: \subpage qmlboostcache "Utilizing the booster cache".
+
+The invoker can also provide a splash screen for QML application as follows. For more details on splash screen, see \subpage splash "the splash screen documentation."
+
+\code
+/usr/bin/invoker --splash=/usr/share/myApp/splash.jpg --type=d /usr/bin/myApp
+\endcode
+
+Also a single-instance support is provided to allow only one instance of an application at a time. For more details on single instance  see \subpage singleinstance "the single-instance documentation."
+
+\code
+/usr/bin/invoker --single-instance --type=d /usr/bin/<application_name>
+\endcode
+
+There are certain limitaions and known issues. For more details on limitations see: \subpage limitations "limitations documentation"
+
+*/
+
