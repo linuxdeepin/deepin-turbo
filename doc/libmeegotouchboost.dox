@@ -12,13 +12,13 @@ The launcher can start an application if the following pre-requisites are met:
 \li MApplication and MApplicationWindow instances are taken into use from
 MComponentCache
 
-\li The application is compiled and linked to a position independent binary
+\li application is compiled and linked to a position independent binary
 (executable or library)
 
-\li The application is started with the \c invoker command instead of executing the
+\li application is started with the \c invoker command instead of executing the
 executable file.
 
-\section howitworksmtf How the launcher can help MeeGo Touch applications
+\section howitworks How the launcher can help MeeGo Touch applications
 
 Applauncherd daemon makes it possible to launch applications faster. First of all, it preloads a number of 
 libraries, including MeeGo Touch and Qt libraries. This makes it faster to load application binaries
@@ -46,7 +46,7 @@ launcher/invoker as well. In that case, MComponentCache
 instantiates new MApplication and MApplicationWindow objects on the
 fly.
 
-The launcher needs to find the symbol \c main in the application binary
+The launcher needs to find the symbol \c main in an application binary
 in order to start executing the application. However, unnecessary
 symbols in the application binary cause unnecessary overhead, so the
 recommended flags for compiling for the launcher hide symbols 
