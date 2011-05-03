@@ -171,7 +171,7 @@ running. You can now run your application as usual as
 \code
 invoker --type=m /usr/bin/application_binary
 \endcode
-\_exit() should be used instead of exit() with every other booster than exec-booster 
+_exit() should be used instead of exit() with every other booster than exec-booster 
 
 The basic difference between exit() and _exit() is that the former performs clean-up related to user-mode constructs in the library,
 and calls user-supplied cleanup-functions, whereas the latter performs only the kernel cleanup for the process.
@@ -180,7 +180,7 @@ The function _exit() terminates the calling process "immediately". Any open file
 of the process are inherited by process.
 
 The exit() function causes normal process termination and the value of status is returned to the parent.
-a child process should strictly use _exit() instead of a simple exit() or a normal return from main(). 
+A child process should strictly use _exit() instead of a simple exit() or a normal return from main(). 
 
 The user level initializations of the libraries are done once when the launcher daemon loads the libraries. 
 The launched applications are child processes of the launcher, and every time exit() is called, the corresponding cleanup actions are executed.
