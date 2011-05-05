@@ -1,6 +1,6 @@
 /*! \page invokerparameters Advanced Invoker Command Line Parameters
 
-Invoker recognizes over 10 different command line parameters. All the parameters are listed here.
+This section describes some of the invoker command line parameters. For a full list, use \c invoker \c --help.
 
 \section type --type TYPE
 
@@ -10,21 +10,22 @@ TYPE chooses the type of booster used. Qt-booster may be used to     launch anyt
 - d = Launch a Qt Declarative (QML) application.
 - e = Launch any application, even if it's not a library.
 
-\section creds -c, --creds
-
-Print Aegis security credentials (if enabled).
-
 \section delay -d, --delay SECS
 
-After invoking sleep for SECS seconds (default 0).
+After invoking sleep for SECS seconds (default 0). 
 
 \section respawn -r, --respawn SECS
 
 After invoking respawn new booster after SECS seconds (default 3, max 10).
+This can be used if the application is very slow to start up, and respawning the booster interferes
 
 \section waitterm -w, --wait-term
 
-Wait for launched process to terminate (default).
+Wait for launched process to terminate (default). The invoker is not
+really needed after the application process has been started, but some
+processes can get confused if the invoker exits immediately. For
+example, Upstart reacts to invoker exit by trying to launch the same
+application again.
 
 \section nowait -n, --no-wait
 
@@ -34,24 +35,11 @@ Do not wait for launched process to terminate.
 
 Places symbols in the application binary and its libraries to the global scope. See RTLD_GLOBAL in the dlopen manual page.
 
-\section singleinstanceparam -s, --single-instance
-
-Launch the application as a single instance. The existing application window will be activated if already launched.
-
-\section splashparam -S, --splash FILE
-
-Show splash screen from the FILE.
-
-\section splashlandscape -L, --splash-landscape FILE
-
-Show splash screen from the FILE in case the device is in landscape orientation.
-
 \section daemonmode -o, --daemon-mode
 
-Notify invoker that the launched process is a daemon. This resets the oom_adj of the process.
+Notify invoker that the launched process is a daemon. This resets the
+oom_adj of the process. The flag is not needed if something like
+Upstart already takes care of daemonization.
 
-\section help -h, --help
-
-Print help.
 */
 

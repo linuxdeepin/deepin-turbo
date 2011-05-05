@@ -1,10 +1,10 @@
 /*! \page qtboost Using the Qt Booster
 
-Launcher makes it possible to start up various types of applications very
-quickly. Launcher uses a different <em>booster</em> for each of the
-application types. This section concentrates on launching Qt applications with the Qt booster.
+This section describes how to use the Qt booster. The booster provides
+the application with the key libraries already present in the process,
+but no other initializations are done in the booster.
 
-\section intro Introduction
+\section intro Prerequisites
 
 The launcher can start an application if the following pre-requisites are met:
 
@@ -13,133 +13,72 @@ The launcher can start an application if the following pre-requisites are met:
 
 \li The application is started with the \c invoker command instead of executing the executable file.
 
-\section howitworksforqt How the launcher can help Qt applications
+\section qtboostcompiling 1. Compiling and linking for launcher
 
-There no cache (like MComponentCache) for Qt applications, but preloading Qt libraries make the launch faster. Using the launcher will also save memory.
+Binaries intended to be run with \c applauncherd should be compiled
+with \c -fPIC option to produce position independent code. They should
+then be linked either as shared libraries, or better yet as position
+independent executables, which can be executed both traditionally and
+with the launcher. The \c -pie and \c -rdynamic linker flags
+accomplish this.
 
-\section source Modifying source code
-
-The launcher needs to find the symbol \c main in the application binary
-in order to start executing the application. However, unnecessary
-symbols in the application binary cause unnecessary overhead, so the
-recommended flags for compiling for the launcher hide symbols 
-by default. When the flags are used, the main function must be
-explicitly exported as follows:
+To improve linking and loading times of shared object libraries it is
+encouraged to hide any unnecessary symbols from the resulting binary
+by using \c -fvisibility=hidden and \c -fvisibility-inlines-hidden
+flags as well.  However, \c applauncherd needs to find the entry point
+for your application, so the symbol \c main needs to be explicitly made
+visible. This can be done as follows:
 
 \code
-#include <QtCore/QtGlobal>
-
-Q_DECL_EXPORT int main(int argc, char **argv)
-{
-...
-}
+  #include <QtCore/QtGlobal>
+  
+  Q_DECL_EXPORT int main(int argc, char **argv)
+  {
+  ...
+  }
 \endcode
 
-\section compilation Compiling and linking
+Normally you should not need to worry about the compiler and linker
+flags, as the \c applauncherd-dev package provides configuration
+options for \c QMake, \c cmake, and \c pkg-config. If you are building
+a Debian package, make your package build-depend on \c
+applauncherd-dev.
 
-To compile binaries that can be run with applauncherd, use
-\c -fPIC option to produce position-independent code. To
-produce a position-independent executable, \c -pie option and \c
--rdynamic options can be used in linking. This makes it possible to execute the result both 
-traditionally and with the invoker.
+For details on how to get the compiler and linker flags, see 
+\subpage usingqmake "Using QMake", \subpage usingcmake "Using CMake", or
+\subpage usingpkgconfig "Using pkg-config".
 
-To improve linking and load times of shared object libraries the size
-of dynamic export table it is encouraged to hide the unnecessary
-symbols from the resulting binary by using \c -fvisibility=hidden and
-\c -fvisibility-inlines-hidden flags in compilation as well.
+\section qtboostexit 2. Adapting application source code
 
-\subsection qmaketips Building with QMake
+No modifications are typically needed when the Qt booster is
+used. However, if the application has explicit calls to \c exit(),
+these should be changed to use \c _exit() instead. The brief
+explanation is that this prevents cleanup actions related to shared
+libraries to be performed multiple times. For more details see
+\subpage limitations "Limitations and known issues".
 
-\subsubsection qmakepreferred Building in the preferred way
 
-Once you have installed the \c applauncherd-dev package, simply use QMake configuration option \c qt-boostable:
-
-\code
-CONFIG += qt-boostable
-\endcode
-
-This tells qmake to use the \c qt-boostable feature, which
-uses \c pkg-config for the flags. Unfortunately qmake does not complain
-if you add the line but have not installed \c applauncherd-dev, so if the
-QMake magic does not seem to work, double-check that the package is
-indeed installed.
-
-\subsubsection qmakeother Building with pkg-config
-
-Use the \c pkg-config to get the correct flags:
-
-\code
-QMAKE_CXXFLAGS += `pkg-config --cflags qt-boostable`
-QMAKE_LFLAGS += `pkg-config --libs qt-boostable`
-\endcode
-
-If \c applauncherd-dev is not installed, \c pkg-config 
-complains when you run \c make.
-
-\subsubsection qmakelastresort The last resort
-
-Manually define the following variables in the .pro file:
-
-\code
-QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
-QMAKE_LFLAGS += -pie -rdynamic
-\endcode
-
-It is then up to you to modify the .pro file if there are changes to the
-required compiler and linker flags.
-
-\subsection cmaketips Building with CMake
-
-1. Use \c pkg-config in CMake by including \c FindPkgConfig in \c CMakeLists.txt:
-
-\code
-include(FindPkgConfig) 
-\endcode
-
-2. To obtain the compiler and linker flags, add the following lines:
-
-\code
-pkg_check_modules(QT_BOOSTABLE REQUIRED qt-boostable)
-add_definitions(${QT_BOOSTABLE_CFLAGS})
-link_libraries(${QT_BOOSTABLE_LDFLAGS})
-\endcode  
-
-If you do not want to use \c pkg-config for some reason, you can manually add the
-compiler and linker flags as follows:
-
-\code
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
-set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
-\endcode  
-
-Again, you need to update the flags if something changes.
-
-\subsection pkgconfig Obtaining flags with pkg-config
-
-The package \c applauncherd-dev provides the necessary files for
-\c pkg-config to get the appropriate compiler and linker flags.
-
-1. To get the compiler flags, use the following:
-
-\code
-pkg-config --cflags qt-boostable
-\endcode
-
-2. To get the linker flags, use the following:
-
-\code
-pkg-config --libs qt-boostable
-\endcode
-
-\section running Running boosted application
+\section qtboostinvoker 3. Launching the application
 
 Check that applauncherd package is installed and applancherd daemon is
 running. You can now run your application as usual as
-/usr/bin/application_binary, or use the qtboosted launching by running:
+/usr/bin/myApp, or use the qtboosted launching by running:
 
 \code
-invoker --type=q /usr/bin/application_binary
+invoker --type=q /usr/bin/myApp
 \endcode
+
+\section qtboostfinishingtouch 4. Finishing touches.
+
+The invoker can also provide single instance behavior and a splash
+screen for you application as follows. For more details, see 
+\subpage singleinstance "the single instance documentation" and 
+\subpage splash "the splash screen documentation."
+
+\code
+/usr/bin/invoker --single-instance --splash=/usr/share/myApp/splash.jpg --type=q /usr/bin/myApp
+\endcode
+
 */
 
 

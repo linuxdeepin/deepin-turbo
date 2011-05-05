@@ -8,7 +8,7 @@ to an already running booster process. For instance:
 1. Run the following command:
 
 \code
-gdb /usr/bin/applauncherd.bin $(pgrep booster-m)
+gdb /usr/bin/applauncherd.bin $(pgrep booster-d)
 \endcode
 
 2. Set a breakpoint to the application code and let the process
@@ -28,7 +28,7 @@ Continuing.
 is attached:
 
 \code
-invoker --type=m /usr/bin/application_binary
+invoker --type=d /usr/bin/myApp
 \endcode
 
 \subsection pie-binaries PIE binaries and debugging
@@ -53,6 +53,7 @@ QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
 QMAKE_LFLAGS += -shared -rdynamic
 \endcode
 
-Remember to remove the CONFIG += meegotouch-boostable, if used.
+Remember to remove the CONFIG += qdeclarative-boostable, if used
+(ditto for meegotouch-boostable or qt-boostable).
 
 */

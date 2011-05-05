@@ -1,0 +1,29 @@
+/*!\page advancedapplauncherd Advanced applauncherd usage
+
+Applauncherd is usually started by \c upstart (Harmattan) or \c uxlaunch (MeeGo) at boot,
+but it can be also started manually in scratchbox or in the device by the /usr/bin/applauncherd
+script. Applauncherd does not daemonize itself by default. If daemonizing is
+wanted, use --daemon command-line parameter.
+
+In Harmattan, \c applauncherd can be started and stopped with the \c
+initctl command, e.g. \c "initctl stop xsession/applauncherd".
+
+\section bootmode Boot mode
+
+There is a special boot mode that can be used to speed up device boots when
+applauncherd is used. 
+
+In boot mode, no booster caches are initialized and the booster respawn delay is 
+set to zero to ensure quick booster restarts after launches.
+
+The boot mode is activated by starting applauncherd with --boot-mode. Normal mode
+can be entered again by sending SIGUSR1 Unix signal to the launcher.
+
+Boot mode can be activated also by sending SIGUSR2 Unix signal to the launcher.
+
+\section debuginfo Debug info
+
+Applauncherd logs to syslog.
+Additional debug messages and logging also to stdout can be enabled with --debug.
+
+*/

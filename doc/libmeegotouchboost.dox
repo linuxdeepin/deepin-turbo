@@ -1,11 +1,11 @@
 /*! \page libmeegotouchboost Using the MeeGo Touch Booster
 
-Launcher makes it possible to start up various types of applications very
-quickly. Launcher uses a different <em>booster</em> for each of the
-application types. This section concentrates on launching MeeGo Touch
-applications with the MeeGo Touch booster.
+This section describes how to use the MeeGo Touch booster. The
+booster provides the application with the key libraries already
+present in the process, and instances of \c MApplication and 
+\c MApplicationWindow waiting in the cache.
 
-\section intro Introduction
+\section mtboostprereq Prerequisites
 
 The launcher can start an application if the following pre-requisites are met:
 
@@ -18,40 +18,21 @@ MComponentCache
 \li application is started with the \c invoker command instead of executing the
 executable file.
 
-\section howitworks How the launcher can help MeeGo Touch applications
+\section mtboostcompiling 1. Compiling and linking for launcher
 
-Applauncherd daemon makes it possible to launch applications faster. First of all, it preloads a number of 
-libraries, including MeeGo Touch and Qt libraries. This makes it faster to load application binaries
-when needed. Secondly, it initialises certain components before an
-application is loaded and makes the results available to applications
-when they start.
+Binaries intended to be run with \c applauncherd should be compiled
+with \c -fPIC option to produce position independent code. They should
+then be linked either as shared libraries, or better yet as position
+independent executables, which can be executed both traditionally and
+with the launcher. The \c -pie and \c -rdynamic linker flags
+accomplish this.
 
-Boosted MeeGo Touch applications pick up and use the already
-instantiated MApplication and MApplicationWindow objects from
-MComponentCache instead of creating new ones.
-
-
-\section source Modifying source code
-
-MApplication instance must be taken from the MComponentCache. It is
-recommended to take MApplicationWindow from the cache as well. Thus, the main program should have:
-
-\code
-MApplication* application = MComponentCache::mApplication(argc, argv);
-MApplicationWindow* window = MComponentCache::mApplicationWindow();
-\endcode
-
-Note: Applications that use MComponentCache can be run without the
-launcher/invoker as well. In that case, MComponentCache 
-instantiates new MApplication and MApplicationWindow objects on the
-fly.
-
-The launcher needs to find the symbol \c main in an application binary
-in order to start executing the application. However, unnecessary
-symbols in the application binary cause unnecessary overhead, so the
-recommended flags for compiling for the launcher hide symbols 
-by default. When the flags are used, the main function must be
-explicitly exported as follows:
+To improve linking and loading times of shared object libraries it is
+encouraged to hide any unnecessary symbols from the resulting binary
+by using \c -fvisibility=hidden and \c -fvisibility-inlines-hidden
+flags as well.  However, \c applauncherd needs to find the entry point
+for your application, so the symbol \c main needs to be explicitly made
+visible. This can be done as follows:
 
 \code
 #include <MExport>
@@ -62,130 +43,101 @@ M_EXPORT int main(int argc, char **argv)
 }
 \endcode
 
+Normally you should not need to worry about the compiler and linker
+flags, as the \c libmeegotouch-dev package provides configuration
+options for \c QMake, \c cmake, and \c pkg-config. If you are building
+a Debian package, make your package build-depend on \c
+libmeegotouch-dev.
 
-\section compilation Compiling and linking
+For details on how to get the compiler and linker flags, see 
+\subpage usingqmake "Using QMake", \subpage usingcmake "Using CMake", or
+\subpage usingpkgconfig "Using pkg-config".
 
-To compile binaries that can be run with applauncherd, use
-\c -fPIC option to produce position-independent code. To
-produce a position-independent executable, \c -pie option and \c
--rdynamic options can be used in linking. This makes it possible to execute the result both 
-traditionally and with the invoker.
+\section mtboostcache 2. Utilizing the booster cache'
 
-To improve linking and load times of shared object libraries the size
-of dynamic export table it is encouraged to hide the unnecessary
-symbols from the resulting binary by using \c -fvisibility=hidden and
-\c -fvisibility-inlines-hidden flags in compilation as well.
+Instantiating \c MApplication and \c MApplicationWindow is a relatively
+expensive operation. The MeeGo Touch booster helps reduce application startup
+latency by creating instances of the classes in \c MComponentCache.
 
-\subsection qmaketips Building with QMake
-
-\subsubsection qmakepreferred Building in the preferred way
-
-Once you have installed the \c libmeegotouch-dev package, simply use QMake configuration option 
-\c meegotouch-boostable:
+MApplication instance must be taken from the MComponentCache. It is
+recommended to take MApplicationWindow from the cache as well. Thus,
+if the classes are instantiated in the application as
 
 \code
-CONFIG += meegotouch-boostable
+      MApplication application(argc, argv);
+      MApplicationWindow window;
 \endcode
 
-This tells qmake to use the \c meegotouch-boostable feature, which
-includes the \c meegotouch feature and ultimately uses \c pkg-config for the
-flags. Unfortunately qmake does not complain if you add the line but
-have not installed \c libmeegotouch-dev, so if the QMake magic does
-not seem to work, double-check that the package is indeed installed.
-
-\subsubsection qmakeother Building with pkg-config
-
-Use the \c pkg-config to get the correct flags:
+the code needs to be modified to:
 
 \code
-QMAKE_CXXFLAGS += `pkg-config --cflags meegotouch-boostable`
-QMAKE_LFLAGS += `pkg-config --libs meegotouch-boostable`
+MApplication* application = MComponentCache::mApplication(argc, argv);
+MApplicationWindow* window = MComponentCache::mApplicationWindow();
 \endcode
 
-If \c libmeegotouch-dev is not installed, \c pkg-config 
-complains when you run \c make.
+The cache class works both with the booster and without it. In the
+non-boosted case there are no pre-created instances, so the cache
+class simply creates the instances on the fly.
 
-\subsubsection qmakelastresort The last resort
+The ownership of the instances is transferred from the cache to the
+application code. The instances need to be deleted in the correct
+order, deleting the \c MApplication instance before the \c
+MApplicationWindow instance is known to cause crashes.
 
-Manually define the following variables in the .pro file:
+\section mtboostexit 3. Adapting application source code
+
+Making use of the cache is typically the only modification needed to
+the application. However, if the application has explicit calls to \c
+exit(), these should be changed to use \c _exit() instead. The brief
+explanation is that this prevents cleanup actions related to shared
+libraries to be performed multiple times. For more details see 
+\subpage limitations "Limitations and known issues".
+
+\section mtboostinvoker 4. Launching the application
+
+Now everything should be in place for launching the application. The
+linker flags create a Position Independent Binary (PIE), so the
+application can still be invoked from the command line. In order to
+verify that the modifications done to the application and the build
+scripts have not broken anything, it is a good idea at this point to
+check that the application still starts and functions normally from
+the command line:
 
 \code
-QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
-QMAKE_LFLAGS += -pie -rdynamic
+$ ./myApp
 \endcode
 
-It is then up to you to modify the .pro file if there are changes to the
-required compiler and linker flags.
-
-\subsection cmaketips Building with CMake
-
-1. Use \c pkg-config in CMake by including \c FindPkgConfig in \c CMakeLists.txt:
+The next step is to use the \c invoker to launch the application. In
+order for this to work, you need to have \c applauncherd and \c
+booster-m (the MeeGo Touch booster process) running. To check that this is the
+case, you can do:
 
 \code
-include(FindPkgConfig) 
+$ ps ax | grep booster-m
 \endcode
 
-2. To obtain the compiler and linker flags, add the following lines:
+If you don't see the booster process, you need to start \c
+applauncherd manually. In Harmattan and MeeGo, \c applauncherd should
+be running as part of the UI session.
+
+Once you have verified that the booster process is running, you can
+use the following command line to ask the booster process to turn into
+your application:
 
 \code
-pkg_check_modules(MEEGOTOUCH_BOOSTABLE REQUIRED meegotouch-boostable)
-add_definitions(${MEEGOTOUCH_BOOSTABLE_CFLAGS})
-link_libraries(${MEEGOTOUCH_BOOSTABLE_LDFLAGS})
-\endcode  
-
-If you do not want to use \c pkg-config for some reason, you can manually add the
-compiler and linker flags as follows:
-
-\code
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
-set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
-\endcode  
-
-Again, you need to update the flags if something changes.
-
-\subsection pkgconfig Obtaining flags with pkg-config
-
-The package \c libmeegotouch-dev provides the necessary files for
-\c pkg-config to get the appropriate compiler and linker flags.
-
-1. To get the compiler flags, use the following:
-
-\code
-pkg-config --cflags meegotouch-boostable
+invoker --type=m /usr/bin/myApp
 \endcode
 
-2. To get the linker flags, use the following:
+\section mtboostfinishingtouch 5. Finishing touches.
+
+The invoker can also provide single instance behavior and a splash
+screen for you application as follows. For more details, see 
+\subpage singleinstance "the single instance documentation" and 
+\subpage splash "the splash screen documentation."
 
 \code
-pkg-config --libs meegotouch-boostable
+/usr/bin/invoker --single-instance --splash=/usr/share/myApp/splash.jpg --type=m /usr/bin/myApp
 \endcode
-
-\section running Running boosted application
-
-Check that applauncherd package is installed and applancherd daemon is
-running. You can now run your application as usual as
-/usr/bin/application_binary, or use the mboosted launching by running:
-
-
-
-\code
-invoker --type=m /usr/bin/application_binary
-\endcode
-_exit() should be used instead of exit() with every other booster than exec-booster 
-
-The basic difference between exit() and _exit() is that the former performs clean-up related to user-mode constructs in the library,
-and calls user-supplied cleanup-functions, whereas the latter performs only the kernel cleanup for the process.
-
-The function _exit() terminates the calling process "immediately". Any open file descriptors belonging to the process are closed; any children
-of the process are inherited by process.
-
-The exit() function causes normal process termination and the value of status is returned to the parent.
-A child process should strictly use _exit() instead of a simple exit() or a normal return from main(). 
-
-The user level initializations of the libraries are done once when the launcher daemon loads the libraries. 
-The launched applications are child processes of the launcher, and every time exit() is called, the corresponding cleanup actions are executed.
-The root problem is that the cleanup actions get done multiple times, and libraries may not be designed to tolerate this. 
-By calling _exit() in the applications, the problem is avoided. 
 
 */
 

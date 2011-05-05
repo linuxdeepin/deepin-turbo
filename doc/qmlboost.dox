@@ -1,6 +1,13 @@
 /*!  \page qmlboost Using the QML booster 
 
+This section describes how to use the QML (QDeclarative) booster. The
+booster provides the application with the key libraries already
+present in the process, and instances of \c QApplication and \c
+QDeclarativeView waiting in the cache.
+
 \section qmlboostprereq Prerequisites
+
+The launcher can start an application if the following pre-requisites are met:
 
   - The QML-application uses a C++-based runner.
   - The runner uses \c QApplication and \c QDeclarativeView directly, i.e. does not inherit from the classes.
@@ -37,69 +44,9 @@ options for \c QMake, \c cmake, and \c pkg-config. If you are building
 a Debian package, make your package build-depend on \c
 applauncherd-dev.
 
-\subsection qmlboostqmake Using QMake
-
-If you are using \c QMake, obtaining the correct compiler and linker
-flags is just a matter of adding a suitable configuration option:
-
-\code
-    CONFIG += qdeclarative-boostable
-\endcode
-
-If you want to use \c pkg-config directly for some reason (like getting
-error messages), you can add explicit \c pkg-config calls in the appropriate
-flags:
-
-\code
-    QMAKE_CXXFLAGS += `pkg-config --cflags qdeclarative-boostable`
-    QMAKE_LFLAGS += `pkg-config --libs qdeclarative-boostable`
-\endcode
-
-You can also manually set the options in your .pro file like this:
-
-\code
-    QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
-    QMAKE_LFLAGS += -pie -rdynamic
-\endcode
-
-Note that you have to update the flags manually if there are any changes in
-the required flags.
-
-\subsection qmlboostcmake Using CMake
-
-You can utilize \c pkg-config in \c CMake by including \c FindPkgConfig in \c CMakeLists.txt:
-
-\code
-  include(FindPkgConfig) 
-\endcode
-
-To obtain the compiler and linker flags, add the following lines in \c CMakeLists.txt:
-
-\code
-  pkg_check_modules(QDECLARATIVE_BOOSTABLE REQUIRED qdeclarative-boostable)
-  add_definitions(${QDECLARATIVE_BOOSTABLE_CFLAGS})
-  link_libraries(${QDECLARATIVE_BOOSTABLE_LDFLAGS})
-\endcode
-  
-If you do not want to use \c pkg-config for some reason, you can manually add the
-compiler and linker flags like this:
-
-\code
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden 
-      -fvisibility-inlines-hidden")
-  set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
-\endcode
-  
-Again, this requires you to update the flags if something changes.
-
-\subsection qmlboostpkgconfig Automatic settings with pkg-config (any build system)
-
-The correct flags can be automatically obtained with:
-
-\code
-    pkg-config --cflags qdeclarative-boostable
-    pkg-config --libs qdeclarative-boostable
-\endcode
+For details on how to get the compiler and linker flags, see 
+\subpage usingqmake "Using QMake", \subpage usingcmake "Using CMake", or
+\subpage usingpkgconfig "Using pkg-config".
 
 \section qmlboostcache 2. Utilizing the booster cache
 
@@ -111,11 +58,11 @@ pick up the instances from the cache. Thus, if the application code
 instantiates the classes as
 
 \code
-      QApplication app;
+      QApplication app(argc, argv);
       QDeclarativeView view;
 \endcode
 
-It needs to be modified into:
+it needs to be modified into:
 
 \code
      QApplication *app = MDeclarativeCache::qApplication(argc, argv);
@@ -136,7 +83,16 @@ application code. The instances need to be deleted in the correct
 order, deleting the \c QApplication instance before the \c
 QDeclarativeView instance is known to cause crashes.
 
-\section qmlboostinvoker 3. Launching the application
+\section qmlboostexit 3. Adapting application source code
+
+Making use of the cache is typically the only modification needed to
+the application. However, if the application has explicit calls to \c
+exit(), these should be changed to use \c _exit() instead. The brief
+explanation is that this prevents cleanup actions related to shared
+libraries to be performed multiple times. For more details see 
+\subpage limitations "Limitations and known issues".
+
+\section qmlboostinvoker 4. Launching the application
 
 Now everything should be in place for launching the application. The
 linker flags create a Position Independent Binary (PIE), so the
@@ -176,12 +132,15 @@ the command line, just a little bit faster. You can now proceed to
 change the \c .desktop file or \c .service file that launches the
 application to use the invoker command.
 
-\section qmlboostsplas 4. Adding a splash screen
+\section qmlboostfinishingtouch 5. Finishing touches.
 
-The invoker can also provide a splash screen for you application as follows. For more details on splash screen, see \subpage splash "the splash screen documentation."
+The invoker can also provide single instance behavior and a splash
+screen for you application as follows. For more details, see 
+\subpage singleinstance "the single instance documentation" and 
+\subpage splash "the splash screen documentation."
 
 \code
-/usr/bin/invoker --splash=/usr/share/myApp/splash.jpg --type=d /usr/bin/myApp
+/usr/bin/invoker --single-instance --splash=/usr/share/myApp/splash.jpg --type=d /usr/bin/myApp
 \endcode
 
 */

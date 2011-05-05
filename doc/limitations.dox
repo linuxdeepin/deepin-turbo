@@ -1,5 +1,30 @@
 /*! \page limitations Limitations and known issues
 
+\section issue-exit Using \c _exit() instead of \c exit()
+
+\c _exit() should be used instead of \c exit() with every other booster than exec-booster 
+
+The basic difference between \c exit() and \c _exit() is that the former
+performs clean-up related to user-mode constructs in the library, and
+calls user-supplied cleanup-functions, whereas the latter performs
+only the kernel cleanup for the process.
+
+The function \c _exit() terminates the calling process "immediately". Any
+open file descriptors belonging to the process are closed; any
+children of the process are inherited by process.
+
+The \c exit() function causes normal process termination and the value of
+status is returned to the parent.  A child process should strictly use
+\c _exit() instead of a simple \c exit().
+
+The user level initializations of the libraries are done once when the
+launcher daemon loads the libraries.  The launched applications are
+child processes of the launcher, and every time exit() is called, the
+corresponding cleanup actions are executed.  The root problem is that
+the cleanup actions get done multiple times, and libraries may not be
+designed to tolerate this.  By calling _exit() in the applications,
+the problem is avoided.
+
 \section issue-cmdline Issues with command line arguments
 
 Current launcher implementation does not support following Qt and
@@ -78,7 +103,7 @@ custom debug message handler and didn't uninstall it before exit.
 
 \section splashlimitations Splash screen limitations
 
-Splash screen functionality needs support from the window manager.
-Currently tested with mcompositor version 0.9.6.
+Splash screen functionality needs support from the \c mcompositor window manager.
+Versions after 0.9.6 include splash screen support.
 */
 

@@ -1,0 +1,22 @@
+/*!\page usingpkgconfig Automatic settings with pkg-config (any build system)
+
+  To get Debian packages built correctly, make the package build-depend on libmeegotouch-dev 
+  for MeeGo Touch applications, and on applauncherd-dev for other cases. The correct 
+  flags can be automatically obtained with one of:
+
+\verbatim
+    pkg-config --cflags meegotouch-boostable
+    pkg-config --libs meegotouch-boostable
+\endverbatim
+
+\verbatim
+    pkg-config --cflags qdeclarative-boostable
+    pkg-config --libs qdeclarative-boostable
+\endverbatim
+
+\verbatim
+    pkg-config --cflags qt-boostable
+    pkg-config --libs qt-boostable
+\endverbatim
+
+*/
