@@ -930,6 +930,17 @@ class launcher_tests (unittest.TestCase):
 
         kill_process(PREFERED_APP) 
 
+    def test_writable_executable_mem(self):
+        """
+        Test that applauncherd does not have the writable and executable memory
+        """
+
+        pid = get_pid('applauncherd')
+        st, op = commands.getstatusoutput("grep wx /proc/%s/smaps" %pid)
+        debug("The value of status is %d" %st)
+        debug("The value of output is %s" %op)
+        self.assert_(st != 0, "applauncherd has writable and executable memory")
+
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include

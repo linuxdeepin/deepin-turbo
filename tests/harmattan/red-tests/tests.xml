@@ -14,6 +14,9 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_correct_creds</step>
       </case>
 
+      <case name="applauncherd__test_writable_executable_mem" type="Functional" description="Test that applauncherd does not have the writable and executable memory" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_writable_executable_mem</step>
+      </case>
       <!--case name="applauncherd__test_application_specific_theming" type="Functional" description="Application specific theming tests" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_application_specific_theming</step>
       </case>
