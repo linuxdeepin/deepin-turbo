@@ -175,7 +175,9 @@ const char * const gLibs[] =
     "/usr/lib/libXrender.so.1",
     "/usr/lib/libicuuc.so.44",
     "/lib/librt-2.10.1.so",
-    "/usr/bin/single-instance"
+    "/usr/bin/single-instance",
+    // Library to trigger LMT font and style initializations
+    "/usr/lib/libmeegotouchpreloader.so.0"
 };
 
 #endif // PRELOAD_H
