@@ -1,6 +1,6 @@
 applauncherd (0.29.5) unstable; urgency=low
 
-  * 
+  * Fixes: NB#250971 - a booster is wasted with --single-instance
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 10 May 2011 15:36:02 +0300
 

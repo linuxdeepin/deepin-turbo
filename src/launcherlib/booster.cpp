@@ -123,43 +123,55 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
     // Restore priority
     popPriority();
 
-    // Wait and read commands from the invoker
-    Logger::logDebug("Booster: Wait for message from invoker");
-    if (!receiveDataFromInvoker(socketFd))
-        throw std::runtime_error("Booster: Couldn't read command\n");
+    while (true)
+    {
+        // Wait and read commands from the invoker
+        Logger::logDebug("Booster: Wait for message from invoker");
+        if (!receiveDataFromInvoker(socketFd))
+            throw std::runtime_error("Booster: Couldn't read command\n");
+
+        // Run process as single instance if requested
+        if (m_appData->singleInstance())
+        {  
+            // Check if instance is already running
+            SingleInstancePluginEntry * pluginEntry = singleInstance->pluginEntry();
+            if (pluginEntry)
+            {
+                if (!pluginEntry->lockFunc(m_appData->appName().c_str()))
+                {
+                    // Try to activate the window of the existing instance
+                    if (!pluginEntry->activateExistingInstanceFunc(m_appData->appName().c_str()))
+                    {
+                        Logger::logWarning("Booster: Can't activate existing instance of the application!");
+                        m_connection->sendExitValue(EXIT_FAILURE);
+                    }
+                    else
+                    {
+                        m_connection->sendExitValue(EXIT_SUCCESS);
+                    }
+                    m_connection->close();
+                    
+                    // invoker requested to start an application that is already running
+                    // booster is not needed this time, let's wait for the next connection from invoker
+                    continue;
+                }
+
+                // Close the single-instance plugin
+                singleInstance->closePlugin();
+            }
+            else
+            {
+                Logger::logWarning("Booster: Single-instance launch wanted, but single-instance plugin not loaded!");
+            }
+        }
+
+        //this instance of booster will be used to start application, exit from the loop
+        break;
+    }
 
     // Send parent process a message that it can create a new booster,
     // send pid of invoker, booster respawn value and invoker socket connection.
-    // Must be called before possible exit during single instatance check.
     sendDataToParent();
-
-    // Run process as single instance if requested
-    if (m_appData->singleInstance())
-    {  
-        // Check if instance is already running
-        SingleInstancePluginEntry * pluginEntry = singleInstance->pluginEntry();
-        if (pluginEntry)
-        {
-            if (!pluginEntry->lockFunc(m_appData->appName().c_str()))
-            {
-                // Try to activate the window of the existing instance
-                if (!pluginEntry->activateExistingInstanceFunc(m_appData->appName().c_str()))
-                {
-                    _exit(EXIT_FAILURE);
-                }
-
-                // Existing application instance activated, exit
-                _exit(EXIT_SUCCESS);
-            }
-
-            // Close the single-instance plugin
-            singleInstance->closePlugin();
-        }
-        else
-        {
-            Logger::logWarning("Booster: Single-instance launch wanted, but single-instance plugin not loaded!");
-        }
-    }
 
     // Give the process the real application name now that it
     // has been read from invoker in receiveDataFromInvoker().

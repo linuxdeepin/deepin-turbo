@@ -271,14 +271,14 @@ static uint32_t invoker_recv_pid(int fd)
 }
 
 // Receives exit status of the invoked process
-static uint32_t invoker_recv_exit(int fd)
+static bool invoker_recv_exit(int fd, int* status)
 {
-  uint32_t action, status;
+  uint32_t action;
 
   // Receive action.
-  invoke_recv_msg(fd, &action);
+  bool res = invoke_recv_msg(fd, &action);
 
-  if (action != INVOKER_MSG_EXIT)
+  if (!res || (action != INVOKER_MSG_EXIT))
   {
       // Boosted application process was killed somehow.
       // Let's give applauncherd process some time to cope 
@@ -286,12 +286,12 @@ static uint32_t invoker_recv_exit(int fd)
       sleep(2);
 
       // If nothing happend, return
-      return EXIT_STATUS_APPLICATION_CONNECTION_LOST;
+      return false;
   }
   
   // Receive exit status.
-  invoke_recv_msg(fd, &status);
-  return status;
+  res = invoke_recv_msg(fd, status);
+  return res;
 }
 
 // Sends magic number / protocol version
@@ -523,33 +523,41 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
                 // Check if an exit status from the invoked application
                 if (FD_ISSET(socket_fd, &readfds))
                 {
-                    // Check if we've got application exit status or if the process
-                    // on the other side of socket just died / was killed.
-                    // We check from /proc whether the launched program is still
-                    // running.
-                    char filename[50];
-                    snprintf(filename, sizeof(filename), "/proc/%d/cmdline", g_invoked_pid);
+                    bool res = invoker_recv_exit(socket_fd, &status);
 
-                    // Open filename for reading only
-                    int fd = open(filename, O_RDONLY);
-                    if (fd != -1)
+                    if (!res)
                     {
-                        // Application is still running, so applauncherd must be dead,
-                        // because the blocking read on the socket returned.
-                        close(fd);
+                        // Check if the process
+                        // on the other side of socket just died / was killed.
+                        // We check from /proc whether the launched program is still
+                        // running.
+                        char filename[50];
+                        snprintf(filename, sizeof(filename), "/proc/%d/cmdline", g_invoked_pid);
 
-                        // Send a signal to kill the application too and exit.
-                        // We must do this, because the invoker<->application
-                        // mapping is lost. Sleep for some time to give
-                        // the new applauncherd some time to load its boosters and
-                        // the restart of g_invoked_pid succeeds.
+                        // Open filename for reading only
+                        int fd = open(filename, O_RDONLY);
+                        if (fd != -1)
+                        {
+                            // Application is still running, so applauncherd must be dead,
+                            // because the blocking read on the socket returned.
+                            close(fd);
 
-                        sleep(10);
-                        kill(g_invoked_pid, SIGKILL);
-                        raise(SIGKILL);
+                            // Send a signal to kill the application too and exit.
+                            // We must do this, because the invoker<->application
+                            // mapping is lost. Sleep for some time to give
+                            // the new applauncherd some time to load its boosters and
+                            // the restart of g_invoked_pid succeeds.
+
+                            sleep(10);
+                            kill(g_invoked_pid, SIGKILL);
+                            raise(SIGKILL);
+                        }
+                        else
+                        {
+                            // connection to application was lost
+                            status = EXIT_FAILURE; 
+                        }
                     }
-
-                    status = invoker_recv_exit(socket_fd);
                     break;
                 }
                 // Check if we got a UNIX signal.

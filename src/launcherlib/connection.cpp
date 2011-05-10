@@ -245,6 +245,14 @@ bool Connection::sendPid(pid_t pid)
     return true;
 }
 
+bool Connection::sendExitValue(int value)
+{
+    sendMsg(INVOKER_MSG_EXIT);
+    sendMsg(value);
+
+    return true;
+}
+
 uint32_t Connection::receiveMagic()
 {
     uint32_t magic = 0;

@@ -79,6 +79,9 @@ public:
     //! \brief Get pid of the process on the other end of socket connection
     pid_t peerPid();
 
+    //! \brief Send application exit value 
+    bool sendExitValue(int value);
+
 private:
 
     /*! \brief Receive actions.
