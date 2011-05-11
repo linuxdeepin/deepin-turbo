@@ -926,7 +926,7 @@ class launcher_tests (unittest.TestCase):
 
         st, op = commands.getstatusoutput('cat /proc/%s/oom_adj' % pid)
 
-        self.assert_(op == '-1', "oom.adj of the launched process is not -1")
+        self.assert_(op == '-2', "oom.adj of the launched process is not -1")
 
         kill_process(PREFERED_APP) 
 
