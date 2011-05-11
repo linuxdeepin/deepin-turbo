@@ -1,4 +1,4 @@
-applauncherd (0.29.5) unstable; urgency=low
+applauncherd (0.29.5) stable; urgency=low
 
   * Fixes: NB#250971 - a booster is wasted with --single-instance
 
