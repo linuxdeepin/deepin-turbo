@@ -53,7 +53,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
   # method called before any test case
   def setup
 
-    optparse = OptionParser.new do|opts|
+      #running cpu in full speed
+      system "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
+
+      optparse = OptionParser.new do|opts|
       options = {}  
       # Set a banner, displayed at the top
       # of the help screen.
