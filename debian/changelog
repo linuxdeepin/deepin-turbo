@@ -1,10 +1,10 @@
-applauncherd (0.29.6) unstable; urgency=low
+applauncherd (0.29.6) stable; urgency=low
 
   * Changes: Corrected doxygen grouping in documentation	
   * Changes: Added a command to run cpu in full speed to perf tests
   * Fixes: NB#254878 - COREWEB: /usr/bin/camera-ui.launch 'AppData::deleteArgv Booster::launchProcess' 
   * Implemented: SWP#DUI-5313, SWP#DUI-5315
-	
+
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 12 May 2011 11:34:15 +0300
 
 applauncherd (0.29.5) stable; urgency=low
