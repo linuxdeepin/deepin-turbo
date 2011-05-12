@@ -1,6 +1,6 @@
 /*! \mainpage Optimizing Application Startup
 
-\section intro Introduction
+\section introduction Introduction
 
 The \c invoker program and the \c applauncherd daemon help
 applications launch faster and save memory via shared resources and
@@ -64,8 +64,8 @@ The \c invoker can be used to get a splash screen for the application
 and to implement single instance behavior. If the \a exec \a booster
 is used, no modifications to the application source code are needed. Simply
 specify the name of the splash image on the invoker command line as
-follows. For more details see \subpage eboost "the exec booster documentation" and
-\subpage splash "the splash documentation".
+follows. For more details see \ref eboost "the exec booster documentation" and
+\ref splash "the splash documentation".
 
 \code 
 invoker --type=e --splash=/usr/share/images/myAppSplash.jpg /usr/bin/myApp
@@ -82,7 +82,7 @@ This causes \c invoker to look for a running instance of the
 application using a simple lock file based mechanism. If an already
 running instance is found, it is brought to the foreground instead of
 launching a new instance of the application. See 
-\subpage singleinstance "the single instance documentation" for more
+\ref singleinstance "the single instance documentation" for more
 information.
 
 The options can also be combined, in which case the splash screen is
@@ -135,44 +135,29 @@ invoker --type=d ./qml-helloworld
 \endcode
 
 Normally the compiler and linker flags would be provided automatically
-either by using \subpage usingpkgconfig "pkg-config" directly, or using it
-via \subpage usingcmake "cmake" or \subpage usingqmake "qmake".
+either by using \ref usingpkgconfig "pkg-config" directly, or using it
+via \ref usingcmake "cmake" or \ref usingqmake "qmake".
 
 It is also a good idea to hide any unnecessary symbols in the
 application binary to speed up opening it in the booster. How to do
-this is covered in \subpage qmlboost "the QML booster documentation"
-and \subpage libmeegotouchboost "the MeeGo Touch booster documentation".
+this is covered in \ref qmlboost "the QML booster documentation"
+and \ref libmeegotouchboost "the MeeGo Touch booster documentation".
 
 \section reference Reference documentation
 
 - How to enable boosted startup for different types of applications: 
-  - \ref qmlboost "QML"
-  - \ref qtboost "Qt"
-  - \ref libmeegotouchboost "MeeGo Touch"
-  - \ref eboost "Generic booster for all applications"
+  - \subpage qmlboost "QML"
+  - \subpage qtboost "Qt"
+  - \subpage libmeegotouchboost "MeeGo Touch"
+  - \subpage eboost "Generic booster for all applications"
 
-- \ref splash "How to enable splash screen for the application"
+- \subpage splash "How to enable splash screen for the application"
 
-- \ref singleinstance "How to enable single instance support for the application"
-
-- \ref invokerparameters "Advanced \c invoker command line parameters"
-
-- \ref advancedapplauncherd "Advanced \c applauncherd usage"
+- \subpage singleinstance "How to enable single instance support for the application"
 
 \section tipsntricks Tips and tricks
 
-- How to compile and link applications with different build systems:
-  - \ref usingcmake "CMake"
-  - \ref usingqmake "QMake"
-  - \ref usingpkgconfig "pkg-config"
-
-- \ref debug "How to debug boosted applications"
-
-- \ref dbus "How to use applauncherd with D-Bus"
-
-- \ref aegis "Aegis platform security and applauncherd"
-
-- \ref limitations "Limitations and known issues"
+See separate page for \subpage tipsandtricks 
 
 */
 

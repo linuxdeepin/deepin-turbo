@@ -45,8 +45,8 @@ a Debian package, make your package build-depend on \c
 applauncherd-dev.
 
 For details on how to get the compiler and linker flags, see 
-\subpage usingqmake "Using QMake", \subpage usingcmake "Using CMake", or
-\subpage usingpkgconfig "Using pkg-config".
+\ref usingqmake "Using QMake", \ref usingcmake "Using CMake", or
+\ref usingpkgconfig "Using pkg-config".
 
 \section qtboostexit 2. Adapting application source code
 
@@ -55,7 +55,7 @@ used. However, if the application has explicit calls to \c exit(),
 these should be changed to use \c _exit() instead. The brief
 explanation is that this prevents cleanup actions related to shared
 libraries to be performed multiple times. For more details see
-\subpage limitations "Limitations and known issues".
+\ref limitations "Limitations and known issues".
 
 
 \section qtboostinvoker 3. Launching the application
@@ -72,8 +72,8 @@ invoker --type=q /usr/bin/myApp
 
 The invoker can also provide single instance behavior and a splash
 screen for you application as follows. For more details, see 
-\subpage singleinstance "the single instance documentation" and 
-\subpage splash "the splash screen documentation."
+\ref singleinstance "the single instance documentation" and 
+\ref splash "the splash screen documentation."
 
 \code
 /usr/bin/invoker --single-instance --splash=/usr/share/myApp/splash.jpg --type=q /usr/bin/myApp

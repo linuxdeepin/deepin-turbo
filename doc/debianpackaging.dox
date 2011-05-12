@@ -8,6 +8,6 @@ applauncherd-dev package, and applications that use the MeeGo Touch
 booster should build-depend on the \c libmeegotouch-dev package.
 
 When packaging applications for Harmattan, it may also be necessary to
-\subpage aegis "modify the Aegis manifest" of the application.
+\ref aegis "modify the Aegis manifest" of the application.
 
 */

@@ -10,11 +10,11 @@ even if the application is not a library.
 
 Applauncherd supports showing of a splash screen for applications. All 
 those applications which can be boosted using the other boosters can show
-splash screen as described \subpage splash "here". For those applications
+splash screen as described \ref splash "here". For those applications
 which cannot be boosted and require to have a splash screen can use the 
 Exec Booster. Hence for launching a splash screen for any application the Exec 
 Booster can be used. Also the non boosted applications can be launched as a 
-\subpage singleinstance "Single Instance" application using the Exec Booster.
+\ref singleinstance "Single Instance" application using the Exec Booster.
 
 \section runebooster Running application using Exec Booster
 

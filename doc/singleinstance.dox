@@ -1,4 +1,4 @@
-/*! \page singleinstance How to enable single instance support for the application
+/*! \page singleinstance How To Enable Single Instance Support For the Application
 
 Usually user wants his application to be run as a single instance. This means,
 that if the launched application is already running, the existing application
