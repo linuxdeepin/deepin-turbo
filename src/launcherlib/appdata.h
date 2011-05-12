@@ -134,9 +134,6 @@ public:
     //! Get group ID of calling process
     gid_t groupId() const;
 
-    //! Frees the memory reserved for argv
-    void deleteArgv();
-
 #if defined (HAVE_CREDS)
     //! Store security credentials
     void setPeerCreds(creds_t peerCreds);

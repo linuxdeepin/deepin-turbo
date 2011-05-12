@@ -190,21 +190,6 @@ gid_t AppData::groupId() const
     return m_gid;
 }
 
-void AppData::deleteArgv()
-{
-    if (m_argv)
-    {
-        for (int i = 0; i < m_argc; i++)
-        {
-            delete [] m_argv[i];
-            m_argv[i] = NULL;
-        }
-
-        delete [] m_argv;
-        m_argv = NULL;
-    }
-}
-
 #if defined (HAVE_CREDS)
 void AppData::setPeerCreds(creds_t peerCreds)
 {
@@ -225,7 +210,6 @@ void AppData::deletePeerCreds()
 
 AppData::~AppData()
 {
-    deleteArgv();
 #if defined (HAVE_CREDS)
     deletePeerCreds();
 #endif

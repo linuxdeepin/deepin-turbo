@@ -1,6 +1,7 @@
 applauncherd (0.29.6) unstable; urgency=low
 
   * Changes: Added a command to run cpu in full speed to perf tests
+  * Fixes: NB#254878 - COREWEB: /usr/bin/camera-ui.launch 'AppData::deleteArgv Booster::launchProcess' 
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 12 May 2011 11:34:15 +0300
 

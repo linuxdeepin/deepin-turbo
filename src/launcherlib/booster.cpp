@@ -536,7 +536,6 @@ int Booster::launchProcess()
 
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
-    m_appData->deleteArgv();
     dlclose(handle);
     return retVal;
 }
