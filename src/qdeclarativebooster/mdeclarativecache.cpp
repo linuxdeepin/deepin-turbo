@@ -33,6 +33,10 @@
 
 #include "coverage.h"
 
+// Environment
+extern char ** environ;
+
+
 MDeclarativeCachePrivate * const MDeclarativeCache::d_ptr = new MDeclarativeCachePrivate;
 const int MDeclarativeCachePrivate::ARGV_LIMIT = 32;
 
@@ -87,15 +91,20 @@ void MDeclarativeCachePrivate::populate()
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
 {
-    if (qApplicationInstance == 0) {
+    if (qApplicationInstance == 0) 
+    {
         qApplicationInstance = new QApplication(argc, argv);
-    } else {
-        if (argc > ARGV_LIMIT) {
+    } 
+    else 
+    {
+        if (argc > ARGV_LIMIT) 
+        {
             qWarning("MComponentCache: QCoreApplication::arguments() will not contain all arguments.");
         }
         
         // Copy arguments to QCoreApplication 
-        for (int i = 0; i < qMin(argc, ARGV_LIMIT); i++) {
+        for (int i = 0; i < qMin(argc, ARGV_LIMIT); i++) 
+        {
             qApp->argv()[i] = argv[i];
         }
         
@@ -108,13 +117,38 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
         // Set object name
         qApp->setObjectName(appName);
 
-        testabilityInit();
+        bool loadTestabilityArg = false;
+        const char* testabilityArg = "-testability";
+        for (int i = 0; i < argc; i++) 
+        {
+            if (strcmp(argv[i], testabilityArg) == 0)
+            {
+                loadTestabilityArg = true;
+                break;
+            }
+        }
+
+        bool loadTestabilityEnv = false;
+        const char* testabilityEnv = "QT_LOAD_TESTABILITY";
+        for (int i = 0; environ[i] != NULL; i++) 
+        {
+            if (strcmp(environ[i], testabilityEnv) == 0)
+            {
+                loadTestabilityEnv = true;
+                break;
+            }
+        }
+
+        if (loadTestabilityEnv || loadTestabilityArg)
+            testabilityInit();
 
 #ifdef Q_WS_X11
         // reinit WM_COMMAND X11 property
-        if (qDeclarativeViewInstance) {
+        if (qDeclarativeViewInstance) 
+        {
             Display *display = QX11Info::display();
-            if (display) {
+            if (display) 
+            {
                 XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
 
                 // set correct WM_CLASS properties
@@ -134,7 +168,8 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             }
         }
 #endif
-        if (cachePopulated) {
+        if (cachePopulated) 
+        {
             // In Qt 4.7, QCoreApplication::applicationDirPath() and
             // QCoreApplication::applicationFilePath() look up the paths in /proc,
             // which does not work when the booster is used. As a workaround, we

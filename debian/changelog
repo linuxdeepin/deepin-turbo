@@ -1,6 +1,6 @@
 applauncherd (0.29.7) unstable; urgency=low
 
-  * 
+  * Changes: Refactoring of testability plug-in loading
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 12 May 2011 16:43:38 +0300
 
