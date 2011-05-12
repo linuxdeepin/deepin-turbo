@@ -848,7 +848,7 @@ class launcher_tests (unittest.TestCase):
         #For booster-m        
         #Check though the process list
         p = run_cmd_as_user('invoker --type=m --no-wait fala_wl -faulty')
-        time.sleep(2)
+        time.sleep(5)
         pid = get_pid('fala_wl')
         st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
         self.assert_(op.split('\0')[0] == "fala_wl",'Application name is incorrect')    
