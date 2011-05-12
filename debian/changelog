@@ -1,3 +1,9 @@
+applauncherd (0.29.7) unstable; urgency=low
+
+  * 
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 12 May 2011 16:43:38 +0300
+
 applauncherd (0.29.6) stable; urgency=low
 
   * Changes: Corrected doxygen grouping in documentation	
