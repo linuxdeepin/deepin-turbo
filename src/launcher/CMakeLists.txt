@@ -19,7 +19,7 @@ set(SRC launcher.c)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${CMAKE_CURRENT_BINARY_DIR})
 
 # Set C flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L -Wl,@additional-linked-libraries.ld")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L -Wl,--no-as-needed -Wl,@additional-linked-libraries.ld")
 
 # Set precompiler flags
 add_definitions(-DLIBRARIES_CONFIG_FILE="/etc/applauncherd.conf")
