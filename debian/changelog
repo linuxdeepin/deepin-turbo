@@ -1,6 +1,7 @@
 applauncherd (0.29.7) unstable; urgency=low
 
   * Changes: Refactoring of testability plug-in loading
+  * Changes: Corrected path names in documentation
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 12 May 2011 16:43:38 +0300
 

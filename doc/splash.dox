@@ -14,7 +14,7 @@ System default splash images can be obtained by giving \c default or
 For instance,
 
 \verbatim
-/usr/bin/invoker --splash=/usr/share/application_name/splash.jpg --splash-landscape=/usr/share/application_name/splash-l.jpg --type=m /usr/bin/application_name
+/usr/bin/invoker --splash=/usr/share/application_name/splash.jpg --splash-landscape=/usr/share/application_name/splash-l.jpg --type=d /usr/bin/application_name
 \endverbatim
 
 shows the splash screen with splash.jpg as its content when the device
@@ -74,7 +74,7 @@ application running, the following sequence of events takes place:
 There are basically two ways around the D-Bus related problem outlined
 above. One is to use the single instance support of the invoker, and
 the other one is to use a D-Bus service in the \c .desktop file. The
-following examples demonstrate how to do this with the \c clock application.
+following examples demonstrate how to do this with the \c helloworld application.
 
 In the first approach, there is an \c Exec line with \c invoker
 command in both the \c .desktop file and the \c .service file. Both
@@ -84,15 +84,15 @@ flag:
 \code
 [Desktop Entry]
 Type=Application
-Name=Clock
-Icon=icon-l-clock
-Exec=/usr/bin/invoker --single-instance --splash /usr/share/themes/blanco/meegotouch/images/splash/meegotouch-clock-splash.jpg --type=m /usr/bin/clock
+Name=Helloworld
+Icon=icon-l-helloworld
+Exec=/usr/bin/invoker --single-instance --splash /usr/share/helloworld/helloworld-splash.jpg --type=d /usr/bin/helloworld
 \endcode
 
 \code
 [D-BUS Service]
-Name=com.nokia.clock
-Exec=/usr/bin/invoker --single-instance --splash /usr/share/themes/blanco/meegotouch/images/splash/meegotouch-clock-splash.jpg --type=m /usr/bin/clock
+Name=com.nokia.helloworld
+Exec=/usr/bin/invoker --single-instance --splash /usr/share/helloworld/helloworld-splash.jpg --type=d /usr/bin/helloworld
 \endcode
 
 In the second approach, the \c .desktop file specifies the D-Bus
@@ -104,16 +104,16 @@ to be required even if it is not used.
 \code
 [Desktop Entry]
 Type=Application
-Name=Clock
-Icon=icon-l-clock
+Name=Helloworld
+Icon=icon-l-helloworld
 Exec=/path/not/used
-X-Maemo-Service=com.nokia.clock
+X-Maemo-Service=com.nokia.helloworld
 \endcode
 
 \code
 [D-BUS Service]
-Name=com.nokia.clock
-Exec=/usr/bin/invoker --splash /usr/share/themes/blanco/meegotouch/images/splash/meegotouch-clock-splash.jpg --type=m /usr/bin/clock
+Name=com.nokia.helloworld
+Exec=/usr/bin/invoker --splash /usr/share/helloworld/helloworld-splash.jpg --type=d /usr/bin/helloworld
 \endcode
 
 */
