@@ -2,7 +2,7 @@ Source: applauncherd
 Section: admin
 Priority: important
 Maintainer: Jussi Lind <jussi.lind@nokia.com>
-Build-Depends: cmake (>= 2.6.0), debhelper (>= 7), libqt4-dev (>= 4.5.0), libmeegotouch-dev, libcreds2-dev [arm armel], aegis-builder (>= 1.4) [arm armel], libxtst-dev, libxext-dev, libxi-dev, doxygen, python
+Build-Depends: cmake (>= 2.6.0), debhelper (>= 7), libqt4-dev (>= 4.5.0), libmeegotouch-dev, libcreds2-dev [arm armel], aegis-builder (>= 1.4) [arm armel], libxtst-dev, libxext-dev, libxi-dev, doxygen, python,       libsaveas, libmeegocontrol0, libduicontrolpanel, libxcomposite-dev, libresource0, libqt4-dev, liblocationextras, libmessagingif0, libsignon-qt0, libcontactswidgets-dev, sensord, libc6, libiphb0, libsignon-ui0, libdatepicker2, libxrandr-dev, liblocationpicker
 Standards-Version: 3.8.0
 
 Package: applauncherd
@@ -35,7 +35,7 @@ Description: Invoker debug package
  
 Package: applauncherd-launcher
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libcreds2 [arm armel], applauncherd-single-instance 
+Depends: ${shlibs:Depends}, ${misc:Depends}, libcreds2 [arm armel], applauncherd-single-instance,      libcontactswidgets0, libiphb0, libsignon-qt0, libxrandr2, libresource0, libsaveas, sensord, libxcomposite1, libqt4-declarative, libmeegocontrol0, libdatepicker2, libc6, libduicontrolpanel, libsignon-ui0, liblocationextras, libmessagingif0, liblocationpicker
 Description: Launcher part of applauncherd
  Launcher part of applauncherd.
 
