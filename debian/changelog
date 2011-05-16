@@ -1,7 +1,8 @@
-applauncherd (0.29.7) unstable; urgency=low
+applauncherd (0.29.7) stable; urgency=low
 
   * Changes: Refactoring of testability plug-in loading
   * Changes: Corrected path names in documentation
+  * Fixes: NB#250404 - Unable to create non-native single-instance applications with /usr/bin/single-instance or /usr/bin/invoker
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 12 May 2011 16:43:38 +0300
 

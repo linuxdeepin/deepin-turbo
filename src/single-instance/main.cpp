@@ -189,8 +189,9 @@ void raiseWindow(Display *dpy, Window window)
  *
  * This method first fetches _NET_CLIENT_LIST for window candidates,
  * and then finds the matching binary using /proc/[pid]/cmdline.
- * Proc fs is used, because we cannot trust WM_COMMAND window property.
- * It might not be even set.
+ * Proc fs is primarily used, because we cannot trust WM_COMMAND window property
+ * in all cases. Anyhow we check also WM_COMMAND because proc fs does not work
+ * with scripts (python etc.).
  *
  * \param dpy The X11 display.
  * \param binaryName Full path to the binary.
@@ -207,6 +208,8 @@ Window windowIdForBinary(Display *dpy, const char *binaryName)
         unsigned long  nItems;
         unsigned long  bytesAfter;
         unsigned char *prop = 0;
+        char           **wmCommand = NULL;
+        int            wmCommandCount = 0;
 
         // Get the client list of the root window
         if(XGetWindowProperty(dpy, XDefaultRootWindow(dpy), netClientListAtom,
@@ -216,10 +219,16 @@ Window windowIdForBinary(Display *dpy, const char *binaryName)
             Window * clients = reinterpret_cast<Window *>(prop);
             for (unsigned long i = 0; i < nItems; i++) 
             {
-                if (binaryNameForPid(windowPid(dpy, clients[i])) == binaryName) 
+                if (binaryNameForPid(windowPid(dpy, clients[i])) == binaryName ||
+                    (XGetCommand (dpy, clients[i], &wmCommand, &wmCommandCount) != 0 && 
+                     wmCommandCount > 0 && strcmp(wmCommand[0], binaryName) == 0))
                 {
                     retValue = clients[i];
                     break;
+                }
+
+                if (wmCommand) {
+                    XFreeStringList(wmCommand);
                 }
             }
             
