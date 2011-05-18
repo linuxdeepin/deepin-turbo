@@ -77,13 +77,14 @@ class BootModeTests(unittest.TestCase):
         
         if get_pid('applauncherd'):
             kill_process('applauncherd')
+        start_applauncherd()
 
         time.sleep(5)
 
     def start_applauncherd_in_boot_mode(self):
         remove_applauncherd_runtime_files()
 
-        run_app_as_user('/usr/bin/applauncherd --boot-mode', flag = False)
+        run_cmd_as_user('/usr/bin/applauncherd --boot-mode')
 
         time.sleep(5)
 
@@ -128,7 +129,7 @@ class BootModeTests(unittest.TestCase):
     def launch_apps(self, n = 6):
         # check that launching works and the apps are there
         for i in range(n):
-            run_app_as_user('/usr/bin/invoker -n -r 2 --type=m fala_multi-instance %d' % i, flag = False)
+            run_cmd_as_user('/usr/bin/invoker -n -r 2 --type=m fala_multi-instance %d' % i)
 
         # give the applications time to really start
         time.sleep(2 * n + 5)

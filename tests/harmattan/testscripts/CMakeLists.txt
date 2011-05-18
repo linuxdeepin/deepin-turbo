@@ -12,6 +12,7 @@ if ($ENV{HARMATTAN})
         test-daemons.py 
         test-single-instance.py
         test-core-dump.py
+        test-boot-mode.py
         DESTINATION /usr/share/applauncherd-testscripts)
 
     install(PROGRAMS

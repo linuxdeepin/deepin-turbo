@@ -89,6 +89,24 @@
           <hardware>true</hardware>    
       </environments>
     </set>
+    <set name="TC_Boot_mode" description="functional tests for boot mode" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_change_to_normal_mode" type="Functional" description="To test change from boot mode to normal mode" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_change_to_normal_mode</step>
+      </case>
+
+      <case name="applauncherd__test_boot_mode_and_normal_mode" type="Functional" description="To test boot mode and normal mode" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_boot_mode_and_normal_mode</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
   </suite>
 </testdefinition>
 
