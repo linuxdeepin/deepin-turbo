@@ -1,5 +1,6 @@
 applauncherd (0.29.7) stable; urgency=low
 
+  * Changes: Remove deprecated library (see NB#231286, comment 54).
   * Changes: Refactoring of testability plug-in loading
   * Changes: Corrected path names in documentation
   * Fixes: NB#250404 - Unable to create non-native single-instance applications with /usr/bin/single-instance or /usr/bin/invoker

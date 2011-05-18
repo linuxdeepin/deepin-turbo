@@ -108,7 +108,6 @@ libraries = [
     (D, "/usr/lib/libthumbnailer.so.0",                                    "-lthumbnailer", "libthumbnailer0", "libthumbnailer-dev"),
     (D, "/usr/lib/libsysinfo.so.0",                                        "-lsysinfo", "libsysinfo0", "libsysinfo-dev"),
     (D, "/usr/lib/libbmeipc.so.0",                                         "-lbmeipc", "libbmeipc0", "libbmeipc-dev"),
-    (D, "/usr/lib/libqttracker.so.1~6",                                    "-lqttracker", "libqttracker1pre6", "libqttracker-dev"),
     (D, "/usr/lib/libjpeg.so.62",                                          "-ljpeg", "libjpeg62", "libjpeg62-dev"),
     (D, "/usr/lib/libQtXmlPatterns.so.4",                                  "-lQtXmlPatterns", "libqt4-xmlpatterns", "libqt4-dev"),
     (D, "/usr/lib/libQtScript.so.4",                                       "-lQtScript", "libqt4-script", "libqt4-dev"),
