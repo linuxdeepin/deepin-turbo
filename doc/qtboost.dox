@@ -42,7 +42,8 @@ Normally you should not need to worry about the compiler and linker
 flags, as the \c applauncherd-dev package provides configuration
 options for \c QMake, \c cmake, and \c pkg-config. If you are building
 a Debian package, make your package build-depend on \c
-applauncherd-dev.
+applauncherd-dev and your application binary package depend on \c 
+applauncherd.
 
 For details on how to get the compiler and linker flags, see 
 \ref usingqmake "Using QMake", \ref usingcmake "Using CMake", or
