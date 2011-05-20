@@ -91,8 +91,11 @@ class launcher_tests (unittest.TestCase):
             self.START_DAEMONS_AT_TEARDOWN = False
 
         if get_pid('applauncherd') == None:
-            start_applauncherd()
-            
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
+        get_pid('booster-m')
+        get_pid('booster-q')
+        get_pid('booster-d')
         #setup here
         debug("Executing SetUp")
 
@@ -100,9 +103,9 @@ class launcher_tests (unittest.TestCase):
         #teardown here
         debug("Executing TearDown")
         if get_pid('applauncherd') == None:
-            start_applauncherd()
+            os.system('initctl start xsession/applauncherd')
+        time.sleep(5)
 
-        wait_for_single_applauncherd()
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
     
@@ -295,7 +298,7 @@ class launcher_tests (unittest.TestCase):
         app_pid2 = get_pid(app_name)
         self.assert_(app_pid2 == None, "%s was not killed" % app_path)
 
-
+    
 
     def test_daemon(self):
         """
@@ -304,11 +307,13 @@ class launcher_tests (unittest.TestCase):
 
         stop_applauncherd()
 
-        remove_applauncherd_runtime_files()
+        #remove_applauncherd_runtime_files()
 
         p = run_cmd_as_user('/usr/bin/applauncherd.bin --daemon')
 
         time.sleep(5)
+
+        #check_boosters_exists()
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
         p_id = op.split(" ")[0]
@@ -336,9 +341,9 @@ class launcher_tests (unittest.TestCase):
 
         # only the daemonized applauncherd should be running now
         kill_process(apppid = p_id)
-        #commands.getstatusoutput('pkill applauncherd')
+        commands.getstatusoutput('pkill applauncherd')
 
-        remove_applauncherd_runtime_files()
+        #remove_applauncherd_runtime_files()
 
         start_applauncherd()
 
@@ -546,7 +551,6 @@ class launcher_tests (unittest.TestCase):
         #Test for m-booster
         debug("Test for m-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py")
-        time.sleep(3)
         debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
@@ -555,7 +559,6 @@ class launcher_tests (unittest.TestCase):
         #Test for d-booster
         debug("Test for d-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_d.py")
-        time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(d-booster) was not killed by the same signal")
@@ -564,7 +567,6 @@ class launcher_tests (unittest.TestCase):
         #Test for e-booster
         debug("Test for e-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_e.py")
-        time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(e-booster) was not killed by the same signal")
@@ -574,7 +576,6 @@ class launcher_tests (unittest.TestCase):
         #Test for q-booster
         debug("Test for q-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
-        time.sleep(3)
         debug("The Invoker killed by : %s" %op.split('\n')[-1])
     
         self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
@@ -848,7 +849,7 @@ class launcher_tests (unittest.TestCase):
         #For booster-m        
         #Check though the process list
         p = run_cmd_as_user('invoker --type=m --no-wait fala_wl -faulty')
-        time.sleep(5)
+        time.sleep(2)
         pid = get_pid('fala_wl')
         st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
         self.assert_(op.split('\0')[0] == "fala_wl",'Application name is incorrect')    
@@ -912,6 +913,15 @@ class launcher_tests (unittest.TestCase):
         self.assert_(op == '0',"oom.adj of the launched process is not 0")
         kill_process(PREFERED_APP) 
 
+    def test_temporary_process_name(self):
+        """
+        Test TemporaryProcessName
+        """
+
+        st, op = commands.getstatusoutput('invoker --type=e --wait-term /usr/bin/fala_status')
+        time.sleep(1)
+        
+
     def test_oom_adj_minus_one(self):
         """
         Test that oom.adj is -1 for launched application process when using
@@ -926,20 +936,9 @@ class launcher_tests (unittest.TestCase):
 
         st, op = commands.getstatusoutput('cat /proc/%s/oom_adj' % pid)
 
-        self.assert_(op == '-2', "oom.adj of the launched process is not -1")
+        self.assert_(op == '-1', "oom.adj of the launched process is not -1")
 
         kill_process(PREFERED_APP) 
-
-    def test_writable_executable_mem(self):
-        """
-        Test that applauncherd does not have the writable and executable memory
-        """
-
-        pid = get_pid('applauncherd')
-        st, op = commands.getstatusoutput("grep wx /proc/%s/smaps" %pid)
-        debug("The value of status is %d" %st)
-        debug("The value of output is %s" %op)
-        self.assert_(st != 0, "applauncherd has writable and executable memory")
 
 # main
 if __name__ == '__main__':
