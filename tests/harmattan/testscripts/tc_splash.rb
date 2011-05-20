@@ -31,6 +31,10 @@ class TC_Splash < Test::Unit::TestCase
 
     def setup
         print_debug("In Setup")
+        wait_for_app('applauncherd')
+        wait_for_app('booster-q')
+        wait_for_app('booster-m')
+        wait_for_app('booster-d')
         apps = ['fala_wl', 'fala_ft_hello']
         for app in apps
             if system("pgrep #{app}") == true
@@ -66,6 +70,24 @@ class TC_Splash < Test::Unit::TestCase
         print_debug("The Pid of #{app} is #{pid}")
         pid = nil if pid.empty?
         return pid
+    end
+    def wait_for_app(app, timeout = 20, wait = 1)
+        pid = `pgrep #{app}`
+        print_debug("The Pid of #{app} is #{pid}")
+        len = pid.split(/\n/).length()
+        start = Time.now
+
+        while  len > 1 and Time.now < start + timeout
+            print_debug("Waiting for 1 sec")
+            sleep(wait)
+
+            pid = `pgrep #{app}`
+            print_debug("The Pid of #{app} is #{pid}")
+            len = pid.split(/\n/).length()
+            if len == 1 
+                break
+            end
+        end
     end
     
     def test_splash
@@ -132,12 +154,12 @@ class TC_Splash < Test::Unit::TestCase
         launched without using splash
         """
         system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --type=m #{TestApp} &"
-        sleep(2)
+        wait_for_app(TestApp)
         p = get_pid(TestApp)
         system "kill -15 #{p}"
         sleep(2)
         system "invoker --type=m #{No_Splash_App} &" 
-        sleep(2)
+        wait_for_app(No_Splash_App)
         pid = get_pid(No_Splash_App)
         w = get_compositor_wid
 
@@ -162,3 +184,4 @@ class TC_Splash < Test::Unit::TestCase
 
 
 end
+

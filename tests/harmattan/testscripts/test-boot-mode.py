@@ -114,8 +114,9 @@ class BootModeTests(unittest.TestCase):
 
         # send SIGUSR1
         kill_process('applauncherd', signum=10)
+        wait_for_app('booster-q')
+        wait_for_app('booster-m')
 
-        time.sleep(10)
 
         # get booster pids in normal mode
         pids2 = self.get_booster_pids()
@@ -132,7 +133,7 @@ class BootModeTests(unittest.TestCase):
             run_cmd_as_user('/usr/bin/invoker -n -r 2 --type=m fala_multi-instance %d' % i)
 
         # give the applications time to really start
-        time.sleep(2 * n + 5)
+        wait_for_app('fala_multi-instance')
 
         pids = get_pid('fala_multi-instance')
         pids = pids.split()
@@ -159,16 +160,21 @@ class BootModeTests(unittest.TestCase):
 
         # launch apps in boot mode
         res_boot = self.launch_apps(6)
+        debug("Res at boot : %s" %res_boot)
 
         # switch to normal mode and give boosters some time to start
         kill_process('applauncherd', signum=10)
-        time.sleep(5)
+        wait_for_app('booster-m')
+        wait_for_app('booster-q')
 
         # launch apps in normal mode
         res_norm = self.launch_apps(6)
+        debug("Res at normal : %s" %res_norm)
 
         # and finally, terminate applauncherd
         kill_process('applauncherd', signum=15)
+        wait_for_app('booster-m')
+        wait_for_app('booster-q')
 
         # assert that the boot mode results are correct
         self.assert_(res_boot[0] == 6 and res_boot[1] == 6,
@@ -204,3 +210,4 @@ if __name__ == '__main__':
         sys.exit(1)
 
     sys.exit(0)
+
