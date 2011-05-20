@@ -327,11 +327,6 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_wait_term_e</step>
       </case>
 
-      <case name="applauncherd__test_temporary_process_name" type="Functional" description="Test TemporaryProcessName() when starting application with booster-e" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_temporary_process_name</step>
-      </case>
-
-
       <case name="applauncherd__test_fd_booster_e" type="Functional" description="File descriptor test for booster-d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_e</step>
       </case>
