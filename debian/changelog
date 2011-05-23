@@ -1,9 +1,9 @@
-applauncherd (0.29.8) unstable; urgency=low
+applauncherd (0.29.8) stable; urgency=low
 
   * Fixes: NB#231286 - Launcher daemon doesn't link the libraries so that they could be prelinked
   * Changes: Highlighted applauncherd dependency with debian packages in documentation.
 
- -- Olli Leppanen <olli.leppanen@nokia.com>  Thu, 19 May 2011 15:42:28 +0300
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Mon, 23 May 2011 15:42:28 +0300
 
 
 applauncherd (0.29.7) stable; urgency=low
