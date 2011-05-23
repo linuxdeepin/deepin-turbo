@@ -930,6 +930,14 @@ class launcher_tests (unittest.TestCase):
 
         kill_process(PREFERED_APP) 
 
+    def test_invoker_usage_printing(self):
+        """
+        Test that applauncherd invoker --help usage printing ok
+        """
+
+        p = run_cmd_as_user('invoker --help')
+        self.assert_(p.wait() == 0, "'invoker --help' failed")
+
     def test_writable_executable_mem(self):
         """
         Test that applauncherd does not have the writable and executable memory

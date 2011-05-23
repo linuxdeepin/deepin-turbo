@@ -37,6 +37,8 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_applications_exist</step>
       </case>
 
+
+
       <case name="applauncherd__test_zombie_state" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state</step>
       </case>
@@ -76,6 +78,10 @@
 
       <case name="applauncherd__test_invoker_delay" type="Functional" description="Test that invokers --delay parameter works" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_delay</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_usage_printing" type="Functional" description="Test that applauncherd invoker --help usage printing ok" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_invoker_usage_printing</step>
       </case>
 
       <case name="applauncherd__test_invoker_search_prog" type="Functional" description="Test that invoker finds binaries from PATH" timeout="360" level="System" insignificant="false">
@@ -326,6 +332,8 @@
       <case name="applauncherd__test_wait_term_e" type="Functional" description="When calling invoker with --wait-term and killing invoker,the launched application should die too." timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_wait_term_e</step>
       </case>
+
+
 
       <case name="applauncherd__test_fd_booster_e" type="Functional" description="File descriptor test for booster-d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_e</step>
