@@ -131,22 +131,19 @@ class BootModeTests(unittest.TestCase):
         # check that launching works and the apps are there
         for i in range(n):
             run_cmd_as_user('/usr/bin/invoker -n -r 2 --type=m fala_multi-instance %d' % i)
+            time.sleep(4)
 
         # give the applications time to really start
-        wait_for_app('fala_multi-instance')
+        time.sleep(2 * n + 5)
 
         pids = get_pid('fala_multi-instance')
         pids = pids.split()
 
         # check that windows are there
-        st, op = commands.getstatusoutput('xwininfo -root -tree')
-        op = op.splitlines()
-
-        wids = []
-        for line in op:
-            if line.find('fala_multi-instance') != -1 and line.find('1x1+0+0') == -1:
-                print line
-                wids.append(line.split()[0])
+        st, op = commands.getstatusoutput("xwininfo -root -tree| grep 854x480+0+0 |awk '/fala_multi-instance/ {print $1}'")
+        wids = op.splitlines()
+        
+        debug("The windows is %s " %wids)
         
         # terminate apps
         kill_process('fala_multi-instance', signum=15)

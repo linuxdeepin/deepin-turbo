@@ -81,7 +81,7 @@ class CoreDumpTests(unittest.TestCase):
 
         time.sleep(3)
 
-        pid = get_pid(APP)
+        pid = wait_for_app(APP)
         self.assert_(pid != None, APP + " is not running!")
         pid = pid.splitlines()[0]
 

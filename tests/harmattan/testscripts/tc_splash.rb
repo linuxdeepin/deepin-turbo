@@ -72,22 +72,25 @@ class TC_Splash < Test::Unit::TestCase
         return pid
     end
     def wait_for_app(app, timeout = 20, wait = 1)
-        pid = `pgrep #{app}`
-        print_debug("The Pid of #{app} is #{pid}")
-        len = pid.split(/\n/).length()
+        pid = get_pid(app) 
         start = Time.now
+        while pid == nil and Time.now < start + timeout
+            print_debug("Waiting for 1 sec")
+            sleep(wait)
+            pid = get_pid(app)
+        end
+        len = pid.length()
 
         while  len > 1 and Time.now < start + timeout
             print_debug("Waiting for 1 sec")
             sleep(wait)
-
-            pid = `pgrep #{app}`
-            print_debug("The Pid of #{app} is #{pid}")
-            len = pid.split(/\n/).length()
+            pid = get_pid(app) 
+            len = pid.length()
             if len == 1 
                 break
             end
         end
+        return pid
     end
     
     def test_splash
@@ -98,7 +101,7 @@ class TC_Splash < Test::Unit::TestCase
         system "invoker --splash #{PortraitImg} --type=m #{TestApp} &"
         sleep(2)
 
-        p = get_pid(TestApp)
+        p = wait_for_app(TestApp)
         w = get_compositor_wid
         
         prop1 = `xprop -id #{w} | awk '/_MEEGO_SPLASH_SCREEN/ {print $3}'`
@@ -127,7 +130,7 @@ class TC_Splash < Test::Unit::TestCase
         system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --type=m #{TestApp} &"
         sleep(2)
 
-        p = get_pid(TestApp)
+        p = wait_for_app(TestApp)
         w = get_compositor_wid
 
         prop1 = `xprop -id #{w} | awk '/_MEEGO_SPLASH_SCREEN/ {print $3}'`
@@ -154,13 +157,11 @@ class TC_Splash < Test::Unit::TestCase
         launched without using splash
         """
         system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --type=m #{TestApp} &"
-        wait_for_app(TestApp)
-        p = get_pid(TestApp)
+        p = wait_for_app(TestApp)
         system "kill -15 #{p}"
         sleep(2)
         system "invoker --type=m #{No_Splash_App} &" 
-        wait_for_app(No_Splash_App)
-        pid = get_pid(No_Splash_App)
+        pid = wait_for_app(No_Splash_App)
         w = get_compositor_wid
 
         prop1 = `xprop -id #{w} | awk '/_MEEGO_SPLASH_SCREEN/ {print $3}'`
