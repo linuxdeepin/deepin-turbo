@@ -33,10 +33,6 @@
 
 #include "coverage.h"
 
-// Environment
-extern char ** environ;
-
-
 MDeclarativeCachePrivate * const MDeclarativeCache::d_ptr = new MDeclarativeCachePrivate;
 const int MDeclarativeCachePrivate::ARGV_LIMIT = 32;
 
@@ -128,17 +124,8 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             }
         }
 
-        bool loadTestabilityEnv = false;
-        const char* testabilityEnv = "QT_LOAD_TESTABILITY";
-        for (int i = 0; environ[i] != NULL; i++) 
-        {
-            if (strcmp(environ[i], testabilityEnv) == 0)
-            {
-                loadTestabilityEnv = true;
-                break;
-            }
-        }
-
+        
+        bool loadTestabilityEnv = !qgetenv("QT_LOAD_TESTABILITY").isNull();
         if (loadTestabilityEnv || loadTestabilityArg)
             testabilityInit();
 

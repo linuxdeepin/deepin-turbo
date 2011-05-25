@@ -1,3 +1,9 @@
+applauncherd (0.29.9) unstable; urgency=low
+
+  * Fixes: NB#247707 - Invoker interferes with qttas plugin loading for qml applications
+
+ -- Pertti Kellomaki <pertti.kellomaki@nokia.com>  Wed, 25 May 2011 14:18:05 +0300
+
 applauncherd (0.29.8) stable; urgency=low
 
   * Fixes: NB#231286 - Launcher daemon doesn't link the libraries so that they could be prelinked
