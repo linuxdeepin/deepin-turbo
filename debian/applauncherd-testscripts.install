@@ -10,6 +10,7 @@ usr/share/applauncherd-testscripts/utils.py
 usr/share/applauncherd-testscripts/test-security.py
 usr/share/applauncherd-testscripts/test-daemons.py
 usr/share/applauncherd-testscripts/test-boot-mode.py
+usr/share/applauncherd-testscripts/view.qml
 usr/bin/fala_wid
 usr/share/applauncherd-testscripts/fala_xres_wl
 usr/share/applauncherd-testscripts/fala_xres_wol

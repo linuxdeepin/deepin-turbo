@@ -258,6 +258,9 @@
       <case name="applauncherd__test_single_instance_abnormal_lock_release_w_invoker" type="Functional" description="Try starting an app, killing it and starting it again checking that the pid has changed" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_abnormal_lock_release_with_invoker</step>
       </case>
+      <case name="applauncherd__test_single_instance_window_raise_with_script" type="Functional" description="Test basic single instance functionality and window raising using script" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_with_script</step>
+      </case>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

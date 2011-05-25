@@ -16,6 +16,7 @@ usr/bin/fala_gettime
 usr/bin/fala_gettime_ms
 usr/bin/fala_pixelchanged
 usr/bin/fala_windowid
+usr/bin/fala_focus
 usr/bin/xsendevent
 usr/share/dbus-1/services/com.nokia.fala_testapp.service
 usr/share/dbus-1/services/com.nokia.fala_wl.service

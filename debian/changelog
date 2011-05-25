@@ -1,6 +1,7 @@
-applauncherd (0.29.9) unstable; urgency=low
+applauncherd (0.29.9) stable; urgency=low
 
   * Fixes: NB#247707 - Invoker interferes with qttas plugin loading for qml applications
+  * Implemented: SWP#DUI-5353
 
  -- Pertti Kellomaki <pertti.kellomaki@nokia.com>  Wed, 25 May 2011 14:18:05 +0300
 
