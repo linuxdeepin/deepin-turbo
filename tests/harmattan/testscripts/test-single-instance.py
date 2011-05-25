@@ -166,6 +166,30 @@ class SingleInstanceTests(unittest.TestCase):
         
         return None
 
+    def wait_for_app(self, app = None, timeout = 10, sleep = 1):
+        """
+        Waits for an application to start. Checks periodically if
+        the app is running for a maximum wait set in timeout.
+
+        Returns the pid of the application if it was running before
+        the timeout finished, otherwise None is returned.
+        """
+
+        pid = None
+        start = time.time()
+
+        while pid == None and time.time() < start + timeout:
+            pid = self.get_pid_full(app)
+
+            if pid != None:
+                break
+
+            debug("waiting %s secs for %s" % (sleep, app))
+
+            time.sleep(sleep)
+
+        return pid
+
     def single_instance_window_raise_with_script(self, si_cmd):
         # For Bug#250404
         # 1. Start the multi-instance application from script 
@@ -187,7 +211,7 @@ class SingleInstanceTests(unittest.TestCase):
         time.sleep(4)
 
         # get pid
-        pid1 = self.get_pid_full('/usr/bin/python /usr/bin/fala_focus')
+        pid1 = self.wait_for_app('/usr/bin/python /usr/bin/fala_focus')
         self.assert_(pid1 != None, "%s was not started")
 
         wid = self.minimize(app)
@@ -200,7 +224,7 @@ class SingleInstanceTests(unittest.TestCase):
         time.sleep(4)
 
         # check  that there's only one instance running
-        pids = self.get_pid_full('/usr/bin/python /usr/bin/fala_focus')
+        pids= self.wait_for_app('/usr/bin/python /usr/bin/fala_focus')
         st, op = commands.getstatusoutput("xprop -id %s | awk '/window state/ {print $3}'" %wid)
         self.assert_(op == 'Normal', "%s was not raised" % app)
 

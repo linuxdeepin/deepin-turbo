@@ -101,6 +101,9 @@
       <case name="applauncherd__test_boot_mode_and_normal_mode" type="Functional" description="To test boot mode and normal mode" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_boot_mode_and_normal_mode</step>
       </case>
+      <case name="applauncherd__test_single_instance_window_raise_with_script" type="Functional" description="Test basic single instance functionality and window raising using script" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_with_script</step>
+      </case>
 
       <environments>
           <scratchbox>true</scratchbox>
