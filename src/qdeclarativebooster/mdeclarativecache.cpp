@@ -99,7 +99,7 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
     {
         if (argc > ARGV_LIMIT) 
         {
-            qWarning("MComponentCache: QCoreApplication::arguments() will not contain all arguments.");
+            qWarning("MDeclarativeCache: QCoreApplication::arguments() will not contain all arguments.");
         }
         
         // Copy arguments to QCoreApplication 
