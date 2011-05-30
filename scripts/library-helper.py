@@ -15,7 +15,8 @@ real_build_deps = set(['cmake (>= 2.6.0)',
                        'libxext-dev', 
                        'libxi-dev', 
                        'doxygen', 
-                       'python'])
+                       'python (>= 2.6)',
+                       'python (<< 2.7)'])
 
 # Real runtime dependencies for applauncherd-launcher, you may need to update these as well
 real_runtime_deps = set(['${shlibs:Depends}', 
