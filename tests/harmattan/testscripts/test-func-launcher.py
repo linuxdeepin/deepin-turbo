@@ -582,22 +582,36 @@ class launcher_tests (unittest.TestCase):
 
     def test_launch_wo_applauncherd(self):
         """
-        To Test that invoker cannot launch applications when the
-        applauncherd is not running
+        To Test that invoker can launch applications when the
+        applauncherd is not running. Try launching applications with
+        all boosters
         """
 
         stop_applauncherd()
+        if get_pid(PREFERED_APP) != None:
+            kill_process(PREFERED_APP)
         
-        st, op = commands.getstatusoutput("su - user -c '/usr/bin/invoker --type=m fala_ft_hello'")
-        time.sleep(3)
-        pid1 = get_pid('fala_ft_hello')
-        
-        self.assert_(pid1 == None, "Application was executed")
-        self.assert_(op.split('\n')[1] == "invoker: warning: Failed to initiate connect on the socket.", "Application was executed")
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm')
+        pid1 = wait_for_app(PREFERED_APP)
+        self.assert_(pid1 != None, "Application was executed")
+        kill_process(PREFERED_APP)
+
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'e')
+        pid1 = wait_for_app(PREFERED_APP)
+        self.assert_(pid1 != None, "Application was executed")
+        kill_process(PREFERED_APP)
+
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'q')
+        pid1 = wait_for_app(PREFERED_APP)
+        self.assert_(pid1 != None, "Application was executed")
+        kill_process(PREFERED_APP)
+
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'd')
+        pid1 = wait_for_app(PREFERED_APP)
+        self.assert_(pid1 != None, "Application was executed")
+        kill_process(PREFERED_APP)
 
         start_applauncherd()
-
-        time.sleep(4)
 
     def test_invoker_search_prog(self):
         """
