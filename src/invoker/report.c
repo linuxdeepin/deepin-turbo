@@ -71,6 +71,16 @@ static void vreport(enum report_type type, char *msg, va_list arg)
 
     vsnprintf(str, sizeof(str), msg, arg);
 
+    // report errors and fatals to syslog even if it's not default output
+    if ((output != report_syslog) &&
+        ((type == report_error) || (type == report_fatal)))
+    {
+        enum report_output old_output = output;
+        report_set_output(report_syslog);
+        syslog(log_type, "%s%s", str_type, str);
+        report_set_output(old_output);
+    }
+
     if (output == report_console)
         printf("%s: %s%s", PROG_NAME_INVOKER, str_type, str);
     else if (output == report_syslog)

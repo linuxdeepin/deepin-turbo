@@ -1,6 +1,6 @@
 applauncherd (0.30.0) unstable; urgency=low
 
-  * 
+  * Fixes: NB#261960 - [TASK] "Invoker" should be able to launch applications even when "applauncherd" is not running
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Wed, 01 Jun 2011 15:09:02 +0300
 

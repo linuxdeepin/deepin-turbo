@@ -211,7 +211,7 @@ static int invoker_init(enum APP_TYPE app_type)
     fd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (fd < 0)
     {
-        warning("Failed to open invoker socket.\n");
+        error("Failed to open invoker socket.\n");
         return -1;
     }
 
@@ -243,7 +243,7 @@ static int invoker_init(enum APP_TYPE app_type)
 
     if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
     {
-        warning("Failed to initiate connect on the socket.\n");
+        error("Failed to initiate connect on the socket.\n");
         return -1;
     }
 
@@ -255,43 +255,43 @@ static int invoker_init(enum APP_TYPE app_type)
 // is the one who forks.
 static uint32_t invoker_recv_pid(int fd)
 {
-  // Receive action.
-  uint32_t action;
-  invoke_recv_msg(fd, &action);
-  if (action != INVOKER_MSG_PID)
-      die(1, "Received a bad message id (%08x)\n", action);
+    // Receive action.
+    uint32_t action;
+    invoke_recv_msg(fd, &action);
+    if (action != INVOKER_MSG_PID)
+        die(1, "Received a bad message id (%08x)\n", action);
 
-  // Receive pid.
-  uint32_t pid = 0;
-  invoke_recv_msg(fd, &pid);
-  if (pid == 0)
-      die(1, "Received a zero pid \n");
+    // Receive pid.
+    uint32_t pid = 0;
+    invoke_recv_msg(fd, &pid);
+    if (pid == 0)
+        die(1, "Received a zero pid \n");
 
-  return pid;
+    return pid;
 }
 
 // Receives exit status of the invoked process
 static bool invoker_recv_exit(int fd, int* status)
 {
-  uint32_t action;
+    uint32_t action;
 
-  // Receive action.
-  bool res = invoke_recv_msg(fd, &action);
+    // Receive action.
+    bool res = invoke_recv_msg(fd, &action);
 
-  if (!res || (action != INVOKER_MSG_EXIT))
-  {
-      // Boosted application process was killed somehow.
-      // Let's give applauncherd process some time to cope 
-      // with this situation.
-      sleep(2);
+    if (!res || (action != INVOKER_MSG_EXIT))
+    {
+        // Boosted application process was killed somehow.
+        // Let's give applauncherd process some time to cope 
+        // with this situation.
+        sleep(2);
 
-      // If nothing happend, return
-      return false;
-  }
+        // If nothing happend, return
+        return false;
+    }
   
-  // Receive exit status.
-  res = invoke_recv_msg(fd, status);
-  return res;
+    // Receive exit status.
+    res = invoke_recv_msg(fd, (uint32_t*) status);
+    return res;
 }
 
 // Sends magic number / protocol version
@@ -620,6 +620,36 @@ static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *p
     return exit_status;
 }
 
+static void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
+{
+    // Connection with launcher is broken,
+    // try to launch application via execve
+    warning("Connection with launcher process is broken. \n");
+    error("Start application %s as a binary executable without launcher...\n", prog_name);
+
+    // Fork if wait_term not set
+    if(!wait_term)
+    {
+        // Fork a new process
+        pid_t newPid = fork();
+
+        if (newPid == -1)
+        {
+            error("Invoker failed to fork. \n");
+            exit(EXIT_FAILURE);
+        }
+        else if (newPid != 0) /* parent process */
+        {
+            return;
+        }
+    }
+
+    // Exec the process image
+    execve(prog_name, prog_argv, environ);
+    perror("execve");   /* execve() only returns on error */
+    exit(EXIT_FAILURE);
+}
+
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                   enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
@@ -629,13 +659,12 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
 
     if (prog_name && prog_argv)
     {
-        // If invoker cannot find the socket to connect to,
-        // exit with an error message.
+        // This is a fallback if connection with the launcher
+        // process is broken       
         int fd = invoker_init(app_type);
         if (fd == -1)
         {
-            report(report_error, "Cannot find booster socket.\n");
-            exit(EXIT_FAILURE);
+            invoke_fallback(prog_argv, prog_name, wait_term);
         }
         // "normal" invoke through a socket connetion
         else
