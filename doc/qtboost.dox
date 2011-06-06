@@ -38,6 +38,11 @@ visible. This can be done as follows:
   }
 \endcode
 
+If your application loads a plugin that needs to access some symbols
+in the main application, the symbols also need to be exported. In
+addition, the \c --global-syms invoker parameter needs to use, as
+described in \ref invokerparameters "Advanced Invoker Command Line Parameters".
+
 Normally you should not need to worry about the compiler and linker
 flags, as the \c applauncherd-dev package provides configuration
 options for \c QMake, \c cmake, and \c pkg-config. If you are building

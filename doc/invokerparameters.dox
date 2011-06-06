@@ -35,6 +35,10 @@ Do not wait for launched process to terminate.
 
 Places symbols in the application binary and its libraries to the global scope. See RTLD_GLOBAL in the dlopen manual page.
 
+If your application loads a plugin that needs to access symbols
+defined in the main application, you need this parameter. You also
+need to explicitly export the symbols using \c M_EXPORT or \c Q_DECL_EXPORT.
+
 \section daemonmode -o, --daemon-mode
 
 Notify invoker that the launched process is a daemon. This resets the
