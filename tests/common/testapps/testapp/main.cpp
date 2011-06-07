@@ -66,11 +66,11 @@ int main(int argc, char **argv) {
     QString appName(argv[0]);
     if (appName.endsWith("fala_wl"))
     {
-	log_file = "/tmp/fala_wl.log";
+        log_file = "/tmp/fala_wl.log";
     }
     else if (appName.endsWith("fala_wol"))
     {
-	log_file = "/tmp/fala_wol.log";
+        log_file = "/tmp/fala_wol.log";
     }
     timestamp("application main");
 #ifdef HAVE_MCOMPONENTCACHE
@@ -99,6 +99,6 @@ int main(int argc, char **argv) {
     w->show();
     timestamp("w->show() called");
 
-    return app->exec();
+    _exit(app->exec());
 }
 

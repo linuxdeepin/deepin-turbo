@@ -21,6 +21,6 @@ M_EXPORT int main(int argc, char ** argv)
 
     mainPage.appear();
   
-    return app->exec();
+    _exit(app->exec());
 }
 

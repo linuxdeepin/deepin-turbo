@@ -56,5 +56,5 @@ int main(int argc, char ** argv)
     page.centralWidget()->setLayout(layout);
     page.appear();
     window->show();
-    return app->exec();
+    _exit(app->exec());
 }

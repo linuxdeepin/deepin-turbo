@@ -1,3 +1,9 @@
+applauncherd (0.30.1) unstable; urgency=low
+
+  * Changes: Modify test applications to use _exit().
+
+ -- Pertti Kellomaki <pertti.kellomaki@nokia.com>  Wed, 8 Jun 2011 13:36:37 +0300
+
 applauncherd (0.30.0) stable; urgency=low
 
   * Fixes: NB#261960 - [TASK] "Invoker" should be able to launch applications even when "applauncherd" is not running

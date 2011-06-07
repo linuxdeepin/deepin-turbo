@@ -68,5 +68,5 @@ M_EXPORT int main(int argc, char ** argv)
     // Explicitly state where to appear, just to be sure :-)
     mainPage->appear(window);
   
-    return app->exec();
+    _exit(app->exec());
 }

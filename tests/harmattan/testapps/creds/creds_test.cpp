@@ -100,7 +100,7 @@ M_EXPORT int main(int argc, char **argv)
     edit->setText("Credential support not compiled");
 #endif
 
-    return app->exec();
+    _exit(app->exec());
 }
 
 

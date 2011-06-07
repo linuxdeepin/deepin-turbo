@@ -48,11 +48,11 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     QString appName(argv[0]); 
     if (appName.endsWith("fala_qml_wl"))
     {
-	log_file = "/tmp/fala_qml_wl.log";
+        log_file = "/tmp/fala_qml_wl.log";
     }
     else if (appName.endsWith("fala_qml_wol"))
     {
-	log_file = "/tmp/fala_qml_wol.log";
+        log_file = "/tmp/fala_qml_wol.log";
     }
     timestamp("application main");
 
@@ -70,6 +70,6 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     window->showFullScreen();
     
     timestamp("Calling app->exec()");
-    return app->exec();
+    _exit(app->exec());
 }
 
