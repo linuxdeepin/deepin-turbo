@@ -60,17 +60,17 @@ public:
 
     //! Returns the directory that contains the application executable.
     /*!
-     * Workaround for QApplication::applicationDirPath() that does not
-     * work on linux with qdeclarativebooster and Qt 4.7.
+     * This function is deprecated. It used to be a workaround for QApplication::applicationDirPath()
+     * not working on harmattan with qdeclarativebooster and Qt 4.7, but this has been fixed.
      */
-    static QString applicationDirPath();
+    static QString applicationDirPath() __attribute__ ((deprecated));
 
     //! Returns the file path of the application executable.
     /*!
-     * Workaround for QApplication::applicationFilePath() that does not
-     * work on linux with qdeclarativebooster and Qt 4.7.
+     * This function is deprecated. It used to be a workaround for QApplication::applicationFilePath()
+     * not working on harmattan with qdeclarativebooster and Qt 4.7, but this has been fixed.
      */
-    static QString applicationFilePath();
+    static QString applicationFilePath() __attribute__ ((deprecated));
 
 protected:
 

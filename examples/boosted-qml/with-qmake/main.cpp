@@ -25,10 +25,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     QApplication *app = MDeclarativeCache::qApplication(argc, argv);
     QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
 
-    // Use MDeclarativeCache::applicationDirPath()
-    // instead of QCoreApplication::applicationDirPath()
-    // because the latter does not work with the booster.
-    QDir::setCurrent(MDeclarativeCache::applicationDirPath());
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
 
     window->setSource(QUrl::fromLocalFile("main.qml"));
 
