@@ -28,7 +28,7 @@ real_runtime_deps = set(['${shlibs:Depends}',
 D = 0   # dlopen
 L = 1   # link
 
-libraries = [
+libraries_nokia = [
     # Library                                                              Linker flags, Binary package, Dev package
     #(L, "/usr/lib/libcontactsvoicemail.so.0",                              "-lcontactsvoicemail", "libcontactsvoicemail0", "libcontactswidgets-dev"),
     #(L, "/usr/lib/libmaemomeegotouchcalendarinterface.so.1",               "-lmaemomeegotouchcalendarinterface", "maemo-meegotouch-interfaces", "maemo-meegotouch-interfaces-dev"),
@@ -183,6 +183,14 @@ libraries = [
     #(L, "/usr/lib/libicuuc.so.44",                                         "-licuuc", "libicu44", "libicu-dev"),
     (L, "/lib/librt-2.10.1.so",                                            "-lrt-2.10.1", "libc6", "libc6"),
 ]
+
+# Choose library list based on build environment
+libraries = libraries_nokia
+try:
+    if "MeeGo" in file("/etc/meego-release").read():
+        import libraries_meego
+        libraries=libraries_meego.libraries
+except: pass
 
 import sys
 import fileinput
