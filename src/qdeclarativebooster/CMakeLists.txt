@@ -21,6 +21,9 @@ set(LIBSRC mdeclarativecache.cpp mdeclarativecache.h mdeclarativecache_p.h)
 add_library(mdeclarativecache SHARED ${LIBSRC})
 set_target_properties(mdeclarativecache PROPERTIES
   VERSION 0.1 SOVERSION 0)
+if ($ENV{HARMATTAN})
+  set_target_properties(mdeclarativecache PROPERTIES COMPILE_FLAGS -DHAVE_PATH_REINIT)
+endif ($ENV{HARMATTAN})
 target_link_libraries(mdeclarativecache ${LIBDL} ${QT_QTCORE_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES})
 
 add_library(qdeclarativebooster MODULE ${PLUGINSRC} ${MOC_SRC})

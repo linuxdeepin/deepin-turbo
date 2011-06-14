@@ -182,6 +182,11 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
     __gcov_flush();
 #endif
 
+#ifdef HAVE_PATH_REINIT
+    // Set the magic attribute so that paths are reinitialized
+    qApplicationInstance->setAttribute(Qt::AA_LinuxReinitPathsFromArgv0, true);
+#endif
+
     return qApplicationInstance;
 }
 
