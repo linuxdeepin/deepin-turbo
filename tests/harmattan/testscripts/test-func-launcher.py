@@ -963,6 +963,130 @@ class launcher_tests (unittest.TestCase):
         debug("The value of output is %s" %op)
         self.assert_(st != 0, "applauncherd has writable and executable memory")
 
+    def test_qttas_load_booster_d(self):
+        """
+        To test invoker that qttestability plugin is loaded with -testability argument for booster-d
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP_QML
+                p = run_app_as_user_with_invoker("%s -testability" %testapp, booster = 'd')
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+    def test_qttas_load_booster_m(self):
+        """
+        To test invoker that qttestability plugin is loaded with -testability argument for booster-m
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP
+                p = run_app_as_user_with_invoker("%s -testability" %testapp, booster = 'm')
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+    def test_qttas_load_env_booster_d(self):
+        """
+        To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-d
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP_QML
+                cmd = ['su', '-', 'user', '-c'] 
+                invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --type=d %s" %testapp
+                cmd.append(invoke)
+
+                p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL)
+
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+
+    def test_qttas_load_env_booster_m(self):
+        """
+        To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-m
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP
+                cmd = ['su', '-', 'user', '-c']
+                invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --type=m %s" %testapp
+                cmd.append(invoke)                                               
+                
+                p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL)
+
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
