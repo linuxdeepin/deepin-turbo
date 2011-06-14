@@ -89,7 +89,19 @@ static void sig_forwarder(int sig)
     {
         if (kill(g_invoked_pid, sig) != 0)
         {
-            report(report_error, "Can't send signal to application: %s \n", strerror(errno));
+            if (sig == SIGTERM && errno == ESRCH)
+            {
+                report(report_info,
+                       "Can't send signal SIGTERM to application [%i] "
+                       "because application is already terminated. \n",
+                       g_invoked_pid);
+            }
+            else
+            {
+                report(report_error,
+                      "Can't send signal %i to application [%i]: %s \n",
+                      sig, g_invoked_pid, strerror(errno));
+            }
         }
 
         // Restore signal handlers

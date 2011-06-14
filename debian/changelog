@@ -1,3 +1,9 @@
+applauncherd (1.1.0) unstable; urgency=low
+
+  * Fixes: NB#248543 - [SSU]:Error seen at 'invoker: error: Can't send signal to application: No such process '
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Tue, 14 Jun 2011 14:55:06 +0300
+
 applauncherd (0.30.1) unstable; urgency=low
 
   * Changes: Deprecate MDeclarativeCache::applicationDirPath() and MDeclarativeCache::applicationFilePath().
