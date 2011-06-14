@@ -28,5 +28,6 @@ set(CMAKE_EXE_LINKER_FLAGS ${booster_libs})
 add_executable(fala_hello ${SRC})
 
 install(PROGRAMS fala_hello DESTINATION /usr/bin/ RENAME fala_ft_hello)
+install(PROGRAMS fala_hello DESTINATION /usr/share/fala_images)
 install(SCRIPT scripts/create_links.cmake)
 

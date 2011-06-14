@@ -24,13 +24,37 @@
 #include <MExport>
 #include <MButton>
 #include <MLabel>
+#include <QString>
 #include <MSlider>
 #include <MLayout>
 #include <MLinearLayoutPolicy>
+#include <QFile>
+#include <sys/time.h>
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
 #endif
+
+QString log_file = "/tmp/fala_hello.log";
+
+void FANGORNLOG(const char *s)
+{
+    QFile f(log_file);
+    f.open(QIODevice::Append);
+    f.write(s, qstrlen(s));
+    f.write("\n", 1);
+    f.close();
+}
+
+void timestamp(const char *s)
+{
+    timeval tim;
+    char msg[80];
+    gettimeofday(&tim, NULL);
+    snprintf(msg, 80, "%d%03d %s", 
+             static_cast<int>(tim.tv_sec), static_cast<int>(tim.tv_usec)/1000, s);
+    FANGORNLOG(msg);
+}
 
 M_EXPORT int main(int argc, char ** argv)
 {
@@ -41,6 +65,14 @@ M_EXPORT int main(int argc, char ** argv)
     MApplication *app = new MApplication(argc, argv);
     MApplicationWindow *window = new MApplicationWindow;
 #endif
+
+    QString d_path, f_path; 
+    d_path = QString("applicationDirPath: ").append(QApplication::applicationDirPath());
+    const char * path_d = d_path.toStdString().c_str();
+    timestamp(path_d);
+    f_path = QString("applicationFilePath: ").append(QApplication::applicationFilePath());
+    const char * path_f = f_path.toStdString().c_str();
+    timestamp(path_f);
 
     MApplicationPage *mainPage = new MApplicationPage;
     mainPage->setTitle("Hello World! (Now supports Launcher)");

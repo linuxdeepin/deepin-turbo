@@ -1,5 +1,6 @@
 applauncherd (0.30.1) unstable; urgency=low
 
+  * Changes: Add test for QApplication::applicationFilePath and applicationDirPath
   * Fixes: NB#257654 - QApplication::applicationDirPath() and QApplication::applicationFilePath() return wrong values for d-boosted applications
   * Changes: New functional tests added to check testability library is loaded by booster-m and booster-d
   * Changes: Deprecate MDeclarativeCache::applicationDirPath() and MDeclarativeCache::applicationFilePath().

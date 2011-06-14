@@ -1086,6 +1086,37 @@ class launcher_tests (unittest.TestCase):
 
                 time.sleep(2)
 
+    def test_dirPath_filePath_m(self):
+        self._test_dirPath_filePath('m', "/usr/share/fala_images", "fala_hello")
+
+    def test_dirPath_filePath_d(self):
+        self._test_dirPath_filePath('d', "/usr/share/fala_images", "fala_qml_helloworld")
+
+    def test_dirPath_filePath_q(self):
+        self._test_dirPath_filePath('q', "/usr/share/fala_images", "fala_hello")
+
+    def test_dirPath_filePath_e(self):
+        self._test_dirPath_filePath('e')
+
+    def _test_dirPath_filePath(self, btype, path, testapp):
+        """
+        Test that correct file path and dir path is passed
+        """
+        if os.path.isfile("/tmp/%s.log" % testapp):
+            os.system("rm /tmp/%s.log" % testapp)
+        if get_pid(testapp)!= None:
+            kill_process(testapp)
+        p = run_cmd_as_user('invoker --type=%s %s/%s' % (btype, path, testapp))
+        time.sleep(4)
+        pid = get_pid(testapp)
+        self.assert_(pid != None, "The application was not launched")
+        debug("get filePath and dirPath from log file")
+        st, op = commands.getstatusoutput("grep Path /tmp/%s.log | tail -2" % testapp)
+        dirpath = op.split("\n")[0].split(" ")[2]
+        self.assert_(dirpath == path, "Wrong dirPath: %s" % dirpath)
+        filepath = op.split("\n")[1].split(" ")[2]
+        self.assert_(filepath == "%s/%s" % (path, testapp), "Wrong filePath: %s" % filepath)
+        kill_process(apppid=pid)
 
 # main
 if __name__ == '__main__':
