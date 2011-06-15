@@ -105,5 +105,58 @@ custom debug message handler and didn't uninstall it before exit.
 
 Splash screen functionality needs support from the \c mcompositor window manager.
 Versions after 0.9.6 include splash screen support.
+
+\section wm_class_value WM_CLASS value
+
+If application is started with m-booster but it creates its own MApplicationWindow based object 
+(e.g. MApplicationWindow derived class object or application has multiple windows), 
+current launcher implementation does not set correct value for WM_CLASS property of X window.
+WM_CLASS property is used e.g. by Compositor as application name to notify user when application
+gets stuck. 
+ 
+Application should set correct WM_CLASS property by following way:
+
+\code
+M_EXPORT int main(int argc, char **argv)
+{
+    MApplication *app = MComponentCache::mApplication(argc, argv);
+    
+    //don't use window from cache, create our own
+    MApplicationWindow *window = new myDerivedMApplicationWindow();
+
+#ifdef Q_WS_X11
+            // reinit WM_COMMAND X11 property
+            if (window) {
+                Display *display = QX11Info::display();
+                if (display) {
+                    XSetCommand(display, window->effectiveWinId(), argv, argc);
+
+                    // set correct WM_CLASS properties
+                    QString appName = QFileInfo(argv[0]).fileName();
+                    QString appClass = appName.left(1).toUpper();
+                    if (appName.length() > 1)
+                        appClass += appName.right(appName.length() - 1);
+           
+                    // reserve memory for C strings
+                    QByteArray arrName(appName.toLatin1());
+                    QByteArray arrClass(appClass.toLatin1());
+
+                    XClassHint class_hint;
+                    class_hint.res_name  = arrName.data();
+                    class_hint.res_class = arrClass.data();
+
+                    XSetClassHint(display, window->effectiveWinId(), &class_hint);
+                }
+            }
+#endif
+
+    // do application specific stuff
+    ...    
+
+    window->show();
+    return app->exec();
+}
+\endcode
+
 */
 

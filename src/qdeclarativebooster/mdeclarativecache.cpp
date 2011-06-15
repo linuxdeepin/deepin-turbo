@@ -82,7 +82,17 @@ void MDeclarativeCachePrivate::populate()
         qApplicationInstance = new QApplication(initialArgc, initialArgv);
     }
 
+    bool default_widget_creation = QCoreApplication::testAttribute(Qt::AA_ImmediateWidgetCreation);
+
+    if (!default_widget_creation)
+    {
+        QCoreApplication::setAttribute(Qt::AA_ImmediateWidgetCreation, true);
+    }
+
     qDeclarativeViewInstance = new QDeclarativeView();
+
+    // restore default value
+    QCoreApplication::setAttribute(Qt::AA_ImmediateWidgetCreation, default_widget_creation);
 }
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
