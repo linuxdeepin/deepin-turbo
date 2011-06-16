@@ -10,6 +10,19 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
+      <!-- case name="applauncherd__test_dirPath_filePath_m" type="Functional" description="Test that correct file path and dir path is passed by booster m" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_m</step>
+      </case -->
+
+      <case name="applauncherd__test_dirPath_filePath_d" type="Functional" description="Test that correct file path and dir path is passed by booster d" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_d</step>
+      </case>
+      <case name="applauncherd__test_dirPath_filePath_q" type="Functional" description="Test that correct file path and dir path is passed by booster q" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_q</step>
+      </case>
+      <case name="applauncherd__test_dirPath_filePath_e" type="Functional" description="Test that correct file path and dir path is passed by booster e" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_e</step>
+      </case>
       <case name="applauncherd__test_correct_creds" type="Functional" description="Test that launched applications get correct credentials when they provide Aegis files" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_correct_creds</step>
       </case>
@@ -103,19 +116,6 @@
       </case>
       <case name="applauncherd__test_single_instance_window_raise_with_script" type="Functional" description="Test basic single instance functionality and window raising using script" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_with_script</step>
-      </case>
-      <case name="applauncherd__test_dirPath_filePath_m" type="Functional" description="Test that correct file path and dir path is passed by booster m" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_m</step>
-      </case>
-
-      <case name="applauncherd__test_dirPath_filePath_d" type="Functional" description="Test that correct file path and dir path is passed by booster d" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_d</step>
-      </case>
-      <case name="applauncherd__test_dirPath_filePath_q" type="Functional" description="Test that correct file path and dir path is passed by booster q" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_q</step>
-      </case>
-      <case name="applauncherd__test_dirPath_filePath_e" type="Functional" description="Test that correct file path and dir path is passed by booster e" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_e</step>
       </case>
       <environments>
           <scratchbox>true</scratchbox>

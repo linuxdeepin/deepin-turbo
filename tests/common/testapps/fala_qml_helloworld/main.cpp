@@ -43,6 +43,15 @@ void timestamp(const char *s)
     FANGORNLOG(msg);
 }
 
+void timestamp(const QString& s)
+{
+    QByteArray ba = s.toLocal8Bit();
+    char *p = new char[ba.size() + 1];
+    strcpy(p, ba.data());
+    timestamp(p);
+}
+
+
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
     QString appName(argv[0]); 
@@ -62,14 +71,8 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
     timestamp("QDeclarativeView from cache");
 
-    QString d_path, f_path; 
-    d_path = QString("applicationDirPath: ").append(QApplication::applicationDirPath());
-    const char * path_d = d_path.toStdString().c_str();
-    timestamp(path_d);
-
-    f_path = QString("applicationFilePath: ").append(QApplication::applicationFilePath());
-    const char * path_f = f_path.toStdString().c_str();
-    timestamp(path_f);
+    timestamp(QString("applicationDirPath: ").append(QApplication::applicationDirPath()));
+    timestamp(QString("applicationFilePath: ").append(QApplication::applicationFilePath()));
 
     window->setWindowTitle("Applauncherd QML testapp");
 

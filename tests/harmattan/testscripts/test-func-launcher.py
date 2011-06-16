@@ -1093,10 +1093,10 @@ class launcher_tests (unittest.TestCase):
         self._test_dirPath_filePath('d', "/usr/share/fala_images", "fala_qml_helloworld")
 
     def test_dirPath_filePath_q(self):
-        self._test_dirPath_filePath('q', "/usr/share/fala_images", "fala_hello")
+        self._test_dirPath_filePath('q', "/usr/share/fala_images", "fala_qml_helloworld")
 
     def test_dirPath_filePath_e(self):
-        self._test_dirPath_filePath('e')
+        self._test_dirPath_filePath('e', "/usr/share/fala_images", "fala_qml_helloworld")
 
     def _test_dirPath_filePath(self, btype, path, testapp):
         """
