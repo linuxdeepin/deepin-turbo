@@ -158,7 +158,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     print_debug("restart applauncherd")
     system("initctl restart xsession/applauncherd")
-    sleep(10)
+
+    #waiting for applauncherd and boosters to stabalise and up and running
+    sleep(30)
+    x = `ps ax | grep applauncherd`
+    if x.split(/\n/)[0].include?("boot-mode")
+        print_debug("The applauncherd is running in boot mode")
+    else
+        print_debug("The applauncherd is running in normal mode")
+    end
+
   end
   
 
@@ -176,7 +185,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end
     if not system "pgrep applauncherd"
         system("initctl start xsession/applauncherd")
-        sleep(5)
+        sleep(30)
     end
   end
   
