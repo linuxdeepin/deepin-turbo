@@ -1,5 +1,6 @@
 applauncherd (0.30.2) unstable; urgency=low
 
+  * Fixes: NB#257654 - QApplication::applicationDirPath() and QApplication::applicationFilePath() return wrong values for d-boosted applications
   * Changes: Fix dir path logging in test apps. Remove redundant test case applauncherd__test_dirPath_filePath_m.
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 16 Jun 2011 14:14:58 +0300
