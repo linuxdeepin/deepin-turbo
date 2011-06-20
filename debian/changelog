@@ -1,3 +1,9 @@
+applauncherd (0.30.3) unstable; urgency=low
+
+  * Changes: single-instance documentation updated
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Mon, 20 Jun 2011 13:25:56 +0300
+
 applauncherd (0.30.2) stable; urgency=low
 
   * Fixes: NB#257654 - QApplication::applicationDirPath() and QApplication::applicationFilePath() return wrong values for d-boosted applications

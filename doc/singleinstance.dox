@@ -15,9 +15,15 @@ Exec=/usr/bin/invoker --single-instance --type=e /usr/bin/myApp
 \endverbatim
 
 As a result, a lock file 
-\c /var/run/single-instance-locks/myApp/instance.lock is created. 
+\c /var/run/single-instance-locks/usr/bin/myApp/instance.lock is created. 
 If applauncherd cannot acquire the lock, it tries to find the corresponding
-window and activates it.
+window and activates it. 
+
+Single-instance functionality requires that the shown window belongs to the invoked
+application binary. For example if the invoked application starts a new application 
+as a plugin and the plugin shows the window, single-instance could be used only if 
+plugin's window XProperty WM_COMMAND is manually set to correspond with the application
+name used in the single-instance lock file.
 
 Consider using --single-instance instead of the single instance functionality
 provided by D-Bus, because it very likely is much faster.
