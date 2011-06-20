@@ -1,12 +1,12 @@
 /*! \page usingcmake Using CMake
 
-  You can utilize pkg-config in CMake by including FindPkgConfig in CMakeLists.txt:
+  You can utilise pkg-config in CMake by including FindPkgConfig in CMakeLists.txt:
 
 \verbatim
   include(FindPkgConfig) 
 \endverbatim
 
-  To get Debian packages built correctly, make the package build-depend on libmeegotouch-dev 
+  To ensure that Debian packages are built correctly, make the package build-depend on libmeegotouch-dev 
   for MeeGo Touch applications, and on applauncherd-dev for other cases. To obtain the 
   compiler and linker flags, add the following lines in CMakeLists.txt.
 
@@ -34,14 +34,14 @@
   link_libraries(${QT_BOOSTABLE_LDFLAGS})
 \endverbatim
   
-  If you do not want to use pkg-config for some reason, you can manually add the
-  compiler and linker flags like this:
+  If you do not want to use pkg-config, you can manually add the
+  compiler and linker flags as follows:
 
 \verbatim
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden -fvisibility-inlines-hidden")
   set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
 \endverbatim
-  
-  Again, this requires you to update the flags if something changes.
+
+  Note: You must update the flags if something changes.
 
 */

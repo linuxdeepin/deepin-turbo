@@ -1,6 +1,5 @@
 /*! \page tipsandtricks Tips and tricks
-
-This page contains miscellaneous tips and triks for using \c invoker and \c applauncherd
+This section contains miscellaneous tips and tricks for using \c invoker and \c applauncherd.
 
 - \subpage invokerparameters "Advanced \c invoker command line parameters"
 
@@ -8,18 +7,18 @@ This page contains miscellaneous tips and triks for using \c invoker and \c appl
 
 - How to compile and link applications with different build systems:
   - \subpage usingcmake "CMake"
-  - \subpage usingqmake "QMake"
+  - \subpage usingqmake "qmake"
   - \subpage usingpkgconfig "pkg-config"
 
-- \subpage debug "How to debug boosted applications"
+- \subpage debug "Debugging boosted applications"
 
-- \subpage dbus "How to use applauncherd with D-Bus"
+- \subpage dbus "Using the launcher with D-Bus"
 
-- \subpage aegis "Aegis platform security and applauncherd"
+- \subpage aegis "Requesting protected resources for the launcher"
 
 - \subpage limitations "Limitations and known issues"
 
-- \subpage debianpackaging "Debian packaging"
+- \subpage debianpackaging "Packaging boosted applications"
 
 */
 

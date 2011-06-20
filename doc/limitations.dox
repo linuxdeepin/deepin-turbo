@@ -1,35 +1,38 @@
 /*! \page limitations Limitations and known issues
 
-\section issue-exit Using \c _exit() instead of \c exit()
+\section issue-exit Using _exit() instead of exit()
 
-\c _exit() should be used instead of \c exit() with every other booster than exec-booster 
+Use \c _exit() instead of \c exit() with QML, Qt, and MeeGo Touch
+boosters. However, do not use it with exec booster.
 
 The basic difference between \c exit() and \c _exit() is that the former
-performs clean-up related to user-mode constructs in the library, and
+performs cleanup related to user-mode constructs in the library and
 calls user-supplied cleanup-functions, whereas the latter performs
 only the kernel cleanup for the process.
 
-The function \c _exit() terminates the calling process "immediately". Any
+The function \c _exit() terminates the calling process immediately. Any
 open file descriptors belonging to the process are closed; any
 children of the process are inherited by process.
 
 The \c exit() function causes normal process termination and the value of
-status is returned to the parent.  A child process should strictly use
+status is returned to the parent. A child process must strictly use
 \c _exit() instead of a simple \c exit().
 
-The user level initializations of the libraries are done once when the
-launcher daemon loads the libraries.  The launched applications are
-child processes of the launcher, and every time exit() is called, the
-corresponding cleanup actions are executed.  The root problem is that
-the cleanup actions get done multiple times, and libraries may not be
-designed to tolerate this.  By calling _exit() in the applications,
-the problem is avoided.
+The user-level initialisations of the libraries are done once when the
+launcher daemon loads the libraries. The launched applications are
+child processes of the launcher, and every time \c exit() is called, the
+corresponding cleanup actions are executed. The root problem is that
+the cleanup actions are carried out multiple times, and libraries may
+not be designed to tolerate this. By calling \c _exit() in the
+applications, the problem is avoided.
 
-\section issue-cmdline Issues with command line arguments
+\section issue-cmdline Command line arguments
 
-Current launcher implementation does not support following Qt and
-MeeGo Touch command line options (see QApplication and MApplication
-docs for more information about command options usage):
+Current launcher implementation does not support the following Qt and
+MeeGo Touch command line options. For more information on QApplication
+command line options, see MeeGo 1.2 Harmattan API reference
+library. For more information on MApplication command line options,
+see Platform API reference library.
 
 \li  \c -style
 \li  \c -stylesheet
@@ -74,37 +77,37 @@ M_EXPORT int main(int argc, char **argv) {
     ...
 \endcode
 
-\section issue-watchdog Issues with scripts, D-Bus, and process monitoring
+\section issue-watchdog Scripts, D-Bus, and process monitoring
 
 By default, invoker processes terminate before or right after booster
-processes have called main(). This may confuse shell scripts and
-process monitoring in D-Bus daemon and Upstart, for instance. To help
-solving these issues invoker accepts parameters
+processes have called main(). This can confuse shell scripts and
+process monitoring in D-Bus daemon and Upstart, for instance. To solve
+these issues, you can use the following parameters supported by the
+invoker:
 
-\li \c --delay \c 10 invoker waits for 10 seconds before terminating
-\li \c --wait-term invoker will not terminate until the launched
-application terminates. Invoker will return the same return value as
-the application did, or it will be terminated by the same signal as
-the launched application. Signals received by the invoker process will
-be forwarded to the launched application.
+    \li <tt> --delay 10 </tt> The invoker waits for 10 seconds before terminating
+    \li <tt>--wait-term </tt> The invoker does not terminate until the launched
+    application terminates. The invoker returns the same return
+    value as the application did, or it is terminated by the same
+    signal as the launched application. Signals received by the
+    invoker process are forwarded to the launched application.
 
 \section forking Forking
 
-It's not possible to use MComponentCache or MDeclarativeCache in the child
-process if you fork() in your application. This is just due to the fact that
-X11 connections get messed up after fork().
+It is not possible to use MComponentCache or MDeclarativeCache in the child
+process if you fork() in your application. This is due to the fact that
+X11 connections are disrupted after fork().
 
 \section crashes Crashes after application's main()
 
 If an application is launched with invoker, there may be some
 destructors of MeeGo Touch classes executed after application's
-main(). This can cause crashes, if the application has installed a
-custom debug message handler and didn't uninstall it before exit.
+main(). This can cause crashes if the application has installed a
+custom debug message handler and does not uninstall it before exit.
 
-\section splashlimitations Splash screen limitations
+\section splashlimitations Splash screen
 
 Splash screen functionality needs support from the \c mcompositor window manager.
-Versions after 0.9.6 include splash screen support.
 
 \section wm_class_value WM_CLASS value
 

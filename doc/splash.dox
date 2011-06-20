@@ -1,9 +1,9 @@
-/*! \page splash How To Enable Splash Screen For the Application
+/*! \page splash Enabling a splash screen for an application
 
-\section splashsec Enabling splash screen
+\section splashsec Enabling a splash screen
 
-Applauncherd supports showing a splash screen if there is mcompositor
-(the MeeGo window manager) running.
+Applauncherd allows an application to show a splash screen if the 
+mcompositor (the MeeGo 1.2 Harmattan window manager) is running.
 
 The splash screen is not shown by default. If an application wants it
 to be shown, it must pass --splash, and optionally --splash-landscape
@@ -11,15 +11,15 @@ arguments to the invoker.
 System default splash images can be obtained by giving \c default or
 \c default-landscape in place of image file names.
 
-For instance,
+For instance, the following shows the splash screen with splash.jpg 
+as its content when the device is in the portrait orientation:
 
 \verbatim
 /usr/bin/invoker --splash=/usr/share/application_name/splash.jpg --splash-landscape=/usr/share/application_name/splash-l.jpg --type=d /usr/bin/application_name
 \endverbatim
 
-shows the splash screen with splash.jpg as its content when the device
-is in the portrait orientation. Otherwise splash-l.jpg is shown. If
-only --splash is given, that image is shown in both orientations.
+Otherwise splash-l.jpg is shown. If only --splash is given, that 
+image is shown in both orientations.
 
 Invoker passes the splash request to the booster. The booster sends
 the splash request to the window manager by setting a window property
@@ -28,16 +28,16 @@ to window manager's window.
 If the filenames do not include absolute paths, the window manager
 looks for the files from a default location.
 
-The file should be in a format recognized by QPixmap, preferably JPEG
+The file should be in a format recognised by QPixmap, preferably JPEG
 as it is fast to load. The size of the image should not be larger than
-the screen. If it is smaller, it will be stretched.
+the screen. If it is smaller, it is stretched.
 
 \subsection splashndbus Splash and D-Bus interaction
 
-Some care needs to be taken if the application is to be invoked via
-D-Bus as well as from the application grid. The single instance
-behavior provided by \c MApplication falls under this category as
-well, so you may be using D-Bus even if there is no D-Bus related code
+If you want to invoke the application through D-Bus as well as from 
+the application grid, follow the instructions in this section. This 
+also applies to single instance behaviour provided by \c MApplication, 
+so you may be using D-Bus even if there is no D-Bus related code 
 in your application.
 
 If splash is not used, the \c Exec line in the application's \c
@@ -50,7 +50,7 @@ launch() D-Bus method of the existing application instance and then
 exits. The end result is that the existing instance is brought to the
 foreground and there is just one instance of the application running.
 
-Things change when the \c --splash option is used in an invoker command
+This changes when the \c --splash option is used in an invoker command
 in the \c Exec line of the \c .desktop file. When the application is
 started from the grid and there is already an instance of the
 application running, the following sequence of events takes place:
@@ -66,15 +66,16 @@ application running, the following sequence of events takes place:
 \li The compositor ignores this window, because it has a different pid
     from the one specified in the splash request.
 \li The compositor finally gives up waiting for the specified pid to
-    map a window, and fades away the splash screen, revealing the
+    map a window, and fades out the splash screen, revealing the
     application window.
 
 \subsection splashndbusdeploy Deployment with splash and D-Bus on Harmattan
 
-There are basically two ways around the D-Bus related problem outlined
-above. One is to use the single instance support of the invoker, and
-the other one is to use a D-Bus service in the \c .desktop file. The
-following examples demonstrate how to do this with the \c helloworld application.
+There are two ways to solve the D-Bus related problem described in the
+previous section. Firstly, you can use the single instance support of
+the invoker, and, secondly, you can use a D-Bus service in the
+\c .desktop file. The following examples demonstrate how to do this with
+the \c helloworld application.
 
 In the first approach, there is an \c Exec line with \c invoker
 command in both the \c .desktop file and the \c .service file. Both
@@ -98,8 +99,8 @@ Exec=/usr/bin/invoker --single-instance --splash /usr/share/helloworld/helloworl
 In the second approach, the \c .desktop file specifies the D-Bus
 service, and the invoker command is in the \c Exec line of the \c
 .service file. In this case there is no need for the \c
---single-instance flag. A small wrinkle is that the \c Exec line seems
-to be required even if it is not used.
+--single-instance flag. A minor problem is that the \c Exec line is
+required even if it is not used.
 
 \code
 [Desktop Entry]

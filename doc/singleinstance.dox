@@ -1,6 +1,6 @@
-/*! \page singleinstance How To Enable Single Instance Support For the Application
+/*! \page singleinstance Enabling single instance support for an application
 
-Usually user wants his application to be run as a single instance. This means,
+Usually a user wants an application to be run as a single instance. This means
 that if the launched application is already running, the existing application
 window is activated and no new application processes are started.
 
@@ -26,6 +26,6 @@ plugin's window XProperty WM_COMMAND is manually set to correspond with the appl
 name used in the single-instance lock file.
 
 Consider using --single-instance instead of the single instance functionality
-provided by D-Bus, because it very likely is much faster.
+provided by D-Bus, because --single-instance is much faster in most cases.
 
 */

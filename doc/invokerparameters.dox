@@ -1,23 +1,24 @@
-/*! \page invokerparameters Advanced Invoker Command Line Parameters
+/*! \page invokerparameters Advanced invoker command line parameters
 
 This section describes some of the invoker command line parameters. For a full list, use \c invoker \c --help.
 
 \section type --type TYPE
 
-TYPE chooses the type of booster used. Qt-booster may be used to     launch anything. Possible values for TYPE:
+TYPE chooses the type of booster used. Qt booster may be used to     
+launch anything. Possible values for TYPE:
 - m = Launch a MeeGo Touch application.
 - q = Launch a Qt application.
 - d = Launch a Qt Declarative (QML) application.
-- e = Launch any application, even if it's not a library.
+- e = Launch any application even if it is not a library.
 
 \section delay -d, --delay SECS
 
-After invoking sleep for SECS seconds (default 0). 
+After invoking, sleep for SECS seconds (default 0). 
 
 \section respawn -r, --respawn SECS
 
-After invoking respawn new booster after SECS seconds (default 3, max 10).
-This can be used if the application is very slow to start up, and respawning the booster interferes
+After invoking, respawn new booster after SECS seconds (default 3, max 10).
+This can be used if the application is very slow to start up, and respawning the booster interferes.
 
 \section waitterm -w, --wait-term
 
@@ -29,11 +30,11 @@ application again.
 
 \section nowait -n, --no-wait
 
-Do not wait for launched process to terminate.
+Do not wait for the launched process to terminate.
 
 \section globalsyms -G, --global-syms
 
-Places symbols in the application binary and its libraries to the global scope. See RTLD_GLOBAL in the dlopen manual page.
+Place symbols in the application binary and its libraries to the global scope. See RTLD_GLOBAL in the dlopen manual page.
 
 If your application loads a plugin that needs to access symbols
 defined in the main application, you need this parameter. You also
@@ -43,7 +44,7 @@ need to explicitly export the symbols using \c M_EXPORT or \c Q_DECL_EXPORT.
 
 Notify invoker that the launched process is a daemon. This resets the
 oom_adj of the process. The flag is not needed if something like
-Upstart already takes care of daemonization.
+Upstart already takes care of daemonisation.
 
 */
 
