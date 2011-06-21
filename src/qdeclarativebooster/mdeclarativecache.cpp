@@ -22,6 +22,7 @@
 #include <QtPlugin>
 #include <QPluginLoader>
 #include <QLibraryInfo>
+#include <QApplication>
 
 #include "mdeclarativecache.h"
 #include "mdeclarativecache_p.h"
@@ -83,7 +84,6 @@ void MDeclarativeCachePrivate::populate()
     }
 
     qDeclarativeViewInstance = new QDeclarativeView();
-
 }
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
@@ -129,6 +129,16 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
         if (loadTestabilityEnv || loadTestabilityArg)
             testabilityInit();
 
+        QString appClass = appName.left(1).toUpper();
+        if (appName.length() > 1)
+            appClass += appName.right(appName.length() - 1);
+
+        char* app_name = qstrdup(appName.toLatin1().data());
+        QApplication::setAppName(app_name);
+
+        char* app_class = qstrdup(appClass.toLatin1().data());
+        QApplication::setAppClass(app_class);
+
 #ifdef Q_WS_X11
         // reinit WM_COMMAND X11 property
         if (qDeclarativeViewInstance) 
@@ -136,7 +146,6 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             Display *display = QX11Info::display();
             if (display) 
             {
-
                 qDeclarativeViewInstance->winId();
                 XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
 
