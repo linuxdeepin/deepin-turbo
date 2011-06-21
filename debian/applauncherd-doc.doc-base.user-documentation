@@ -1,0 +1,10 @@
+Document: applauncherd-user-documentation
+Title: Optimizing Application Startup 
+Abstract: Documentation for developers who are willing to use 
+ booster, splash screen or single instance functionalities in 
+ their application startup.
+Section: Programming/C++
+
+Format: HTML
+Files: /usr/share/doc/applauncherd/user-documentation/html/*.html
+Index: /usr/share/doc/applauncherd/user-documentation/html/index.html

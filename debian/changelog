@@ -2,6 +2,7 @@ applauncherd (0.30.3) unstable; urgency=low
 
   * Changes: single-instance documentation updated
   * Changes: Documentation updated according proof-reading results.
+  * Changes: Added doc-base control files for documentation in applauncherd-doc package
   * Fixes: NB#267376 - [TASK] Defects found in applauncherd documentation after proof-reading should be corrected
 	
  -- Juha Lintula <juha.lintula@nokia.com>  Mon, 20 Jun 2011 13:25:56 +0300
