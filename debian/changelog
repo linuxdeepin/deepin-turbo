@@ -1,3 +1,9 @@
+applauncherd (0.30.4) unstable; urgency=low
+
+  * 
+	
+ -- Juha Lintula <juha.lintula@nokia.com>  Wed, 22 Jun 2011 13:33:58 +0300
+	
 applauncherd (0.30.3) stable; urgency=low
 
   * Changes: single-instance documentation updated
