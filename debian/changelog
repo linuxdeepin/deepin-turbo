@@ -1,4 +1,4 @@
-applauncherd (0.30.3) unstable; urgency=low
+applauncherd (0.30.3) stable; urgency=low
 
   * Changes: single-instance documentation updated
   * Changes: Documentation updated according proof-reading results.
