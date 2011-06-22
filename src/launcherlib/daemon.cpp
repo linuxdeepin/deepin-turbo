@@ -529,6 +529,13 @@ void Daemon::reapZombies()
                     Logger::logDebug("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
                     Logger::logDebug("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
 
+                    FdMap::iterator fd = m_boosterPidToInvokerFd.find(pid);
+                    if (fd != m_boosterPidToInvokerFd.end())
+                    {
+                        close((*fd).second);
+                        m_boosterPidToInvokerFd.erase(fd);
+                    }
+
                     killProcess(invokerPid, signal);
                 }
 

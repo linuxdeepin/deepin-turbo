@@ -1,6 +1,6 @@
 applauncherd (0.30.4) unstable; urgency=low
 
-  * 
+  * Fixes: NB#267579 - Socket file descriptor leaks in applauncherd.bin
 	
  -- Juha Lintula <juha.lintula@nokia.com>  Wed, 22 Jun 2011 13:33:58 +0300
 	
