@@ -1,16 +1,17 @@
 applauncherd (0.30.4) unstable; urgency=low
 
   * Fixes: NB#267579 - Socket file descriptor leaks in applauncherd.bin
-	
+  * Changes: Test for Socket file descriptor leaks in applauncherd.bin
+
  -- Juha Lintula <juha.lintula@nokia.com>  Wed, 22 Jun 2011 13:33:58 +0300
-	
+
 applauncherd (0.30.3) stable; urgency=low
 
   * Changes: single-instance documentation updated
   * Changes: Documentation updated according proof-reading results.
   * Changes: Added doc-base control files for documentation in applauncherd-doc package
   * Fixes: NB#267376 - [TASK] Defects found in applauncherd documentation after proof-reading should be corrected
-	
+
  -- Juha Lintula <juha.lintula@nokia.com>  Mon, 20 Jun 2011 13:25:56 +0300
 
 applauncherd (0.30.2) stable; urgency=low

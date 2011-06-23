@@ -1117,6 +1117,52 @@ class launcher_tests (unittest.TestCase):
         filepath = op.split("\n")[1].split(" ")[2]
         self.assert_(filepath == "%s/%s" % (path, testapp), "Wrong filePath: %s" % filepath)
         kill_process(apppid=pid)
+        
+    def test_applauncherd_fd_close(self):
+        self._test_applauncherd_fd()
+
+    def test_applauncherd_fd_kill(self):
+        self._test_applauncherd_fd(False)
+
+    def _test_applauncherd_fd(self, close = True):
+        """
+        To test that file descriptors are closed before calling application main
+        """
+        #get fd of booster before launching application
+        debug("get fd of applauncherd before launching application")
+        pid = commands.getoutput("pgrep applauncherd")
+        init_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+        debug("\nThe count of initial file descriptors is : %s\n" %init_count)
+        time.sleep(3)
+        
+        #launch application using booster
+        debug("launch fala_wl using booster")
+        status = os.system('invoker --type=m /usr/bin/fala_wl &')
+
+        #get fd of booster after launching the application
+        debug("get fd of booster after launching the application")
+        if status == 0:
+            launch_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+            debug("\nThe count of file descriptors after launch : %s\n" %launch_count)
+        time.sleep(3)
+        
+        #Close application
+        if close:
+            st, wid = commands.getstatusoutput(\
+                    "xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
+            os.system("/usr/bin/xsendevent close %s" %wid)
+        else:
+            pid_app = commands.getoutput('pgrep fala_wl')    
+            kill_process(apppid=pid_app) 
+        time.sleep(3)
+
+        #get fd of booster after closing the application
+        debug("get fd of booster after closing the application")
+        close_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+        debug("\nThe count file descriptors after close: %s\n" %close_count)
+        self.assert_(int(launch_count) == int(init_count) +1, "The file descriptors was not changed")
+        self.assert_(close_count == init_count, "The file descriptors was changed")
+
 
 # main
 if __name__ == '__main__':
