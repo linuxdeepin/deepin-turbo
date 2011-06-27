@@ -82,17 +82,8 @@ void MDeclarativeCachePrivate::populate()
         qApplicationInstance = new QApplication(initialArgc, initialArgv);
     }
 
-    bool default_widget_creation = QCoreApplication::testAttribute(Qt::AA_ImmediateWidgetCreation);
-
-    if (!default_widget_creation)
-    {
-        QCoreApplication::setAttribute(Qt::AA_ImmediateWidgetCreation, true);
-    }
-
     qDeclarativeViewInstance = new QDeclarativeView();
 
-    // restore default value
-    QCoreApplication::setAttribute(Qt::AA_ImmediateWidgetCreation, default_widget_creation);
 }
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
@@ -133,7 +124,6 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
                 break;
             }
         }
-
         
         bool loadTestabilityEnv = !qgetenv("QT_LOAD_TESTABILITY").isNull();
         if (loadTestabilityEnv || loadTestabilityArg)
@@ -146,6 +136,8 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             Display *display = QX11Info::display();
             if (display) 
             {
+
+                qDeclarativeViewInstance->winId();
                 XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
 
                 // set correct WM_CLASS properties
