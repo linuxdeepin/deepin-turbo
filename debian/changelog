@@ -1,3 +1,9 @@
+applauncherd (0.30.6) unstable; urgency=low
+
+  * 
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:55:48 +0300
+
 applauncherd (0.30.5) stable; urgency=low
 
   * Fixes: NB#267391 - Boosting prevents QML apps from dropping the GL context on background
