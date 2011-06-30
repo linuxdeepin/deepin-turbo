@@ -111,13 +111,14 @@ Splash screen functionality needs support from the \c mcompositor window manager
 
 \section wm_class_value WM_CLASS value
 
-If application is started with m-booster but it creates its own MApplicationWindow based object 
-(e.g. MApplicationWindow derived class object or application has multiple windows), 
-current launcher implementation does not set correct value for WM_CLASS property of X window.
-WM_CLASS property is used e.g. by Compositor as application name to notify user when application
-gets stuck. 
- 
-Application should set correct WM_CLASS property by following way:
+If an application is started with m-booster but it creates its own
+MApplicationWindow based object, such as an MApplicationWindow derived
+class object, or if an application has multiple windows, the launcher
+does not currently set the correct value for WM_CLASS property of X
+window. The WM_CLASS property is used, for example, by Compositor as
+the application name to notify the user if the application is stuck.
+
+Set the WM_CLASS property for the application as follows:
 
 \code
 M_EXPORT int main(int argc, char **argv)

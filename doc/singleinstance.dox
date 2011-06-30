@@ -19,11 +19,12 @@ As a result, a lock file
 If applauncherd cannot acquire the lock, it tries to find the corresponding
 window and activates it. 
 
-Single-instance functionality requires that the shown window belongs to the invoked
-application binary. For example if the invoked application starts a new application 
-as a plugin and the plugin shows the window, single-instance could be used only if 
-plugin's window XProperty WM_COMMAND is manually set to correspond with the application
-name used in the single-instance lock file.
+Using single instance support requires that the shown window belongs
+to the invoked application binary. For example, if the invoked
+application starts a new application as a plug-in and the plug-in
+shows the window, you must manually set the plug-in window XProperty
+WM_COMMAND. To use single instance support, set the property to
+correspond with the application name used in the single instance lock file.
 
 Consider using --single-instance instead of the single instance functionality
 provided by D-Bus, because --single-instance is much faster in most cases.

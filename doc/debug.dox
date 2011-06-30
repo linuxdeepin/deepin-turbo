@@ -2,9 +2,9 @@
 
 \section debugging Debugging
 
-To debug a launched application, the debugger must be attached
-to an already running booster process. Due to security limitations
-it's required to use \c aegis-su tool from \c aegis-dss-tools package. 
+To debug a launched application, the debugger must be attached to an
+already running booster process. Due to security limitations, it is
+required to use \c aegis-su tool from \c aegis-dss-tools package. 
 For instance:
 
 1. Run the following command:
