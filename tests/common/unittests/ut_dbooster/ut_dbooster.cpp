@@ -65,5 +65,17 @@ void Ut_DBooster::testPreload()
     QVERIFY(MDeclarativeCache::qDeclarativeView());
 }
 
+void Ut_DBooster::testTemporaryProcessName()
+{
+    QVERIFY(QDeclarativeBooster::temporaryProcessName() == QDeclarativeBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->temporaryProcessName() == QDeclarativeBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->boosterTemporaryProcessName() == QDeclarativeBooster::m_temporaryProcessName);
+}
+
+void Ut_DBooster::testReceiveDataFromInvokerWithBadSocket()
+{
+   QVERIFY(m_subject->receiveDataFromInvoker(-100) == false);
+}
+
 QTEST_APPLESS_MAIN(Ut_DBooster);
 

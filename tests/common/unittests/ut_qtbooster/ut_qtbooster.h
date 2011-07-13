@@ -42,6 +42,7 @@ private Q_SLOTS:
     void cleanupTestCase();
     void testSocketName();
     void testType();
+    void testTemporaryProcessName();
 
 private:
     std::tr1::shared_ptr<QtBooster> m_subject;

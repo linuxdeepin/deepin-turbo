@@ -2,6 +2,7 @@ applauncherd (0.30.6) unstable; urgency=low
 
   * Changes: Performance test modified. Tracking pixel co-ordinates changed.
   * Changes: Language corrections into documentation.
+  * Changes: Added unittests for mbooster, qtbooster, ebooster, dbooster
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:55:48 +0300
 

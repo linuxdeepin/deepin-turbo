@@ -45,5 +45,12 @@ void Ut_QtBooster::testType()
     QVERIFY2(m_subject->boosterType() == 'q', "Failure");
 }
 
+void Ut_QtBooster::testTemporaryProcessName()
+{
+    QVERIFY(QtBooster::temporaryProcessName() == QtBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->temporaryProcessName() == QtBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->boosterTemporaryProcessName() == QtBooster::m_temporaryProcessName);
+}
+
 QTEST_APPLESS_MAIN(Ut_QtBooster);
 

@@ -64,5 +64,17 @@ void Ut_MBooster::testPreload()
 #endif
 }
 
+void Ut_MBooster::testTemporaryProcessName()
+{
+    QVERIFY(MBooster::temporaryProcessName() == MBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->temporaryProcessName() == MBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->boosterTemporaryProcessName() == MBooster::m_temporaryProcessName);
+}
+
+void Ut_MBooster::testReceiveDataFromInvokerWithBadSocket()
+{
+   QVERIFY(m_subject->receiveDataFromInvoker(-100) == false);
+}
+
 QTEST_APPLESS_MAIN(Ut_MBooster);
 
