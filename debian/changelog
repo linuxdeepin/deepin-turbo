@@ -1,5 +1,6 @@
 applauncherd (0.30.6) unstable; urgency=low
 
+  * Changes: Added test cases for argument passing to cached [QM]Application.
   * Changes: Performance test modified. Tracking pixel co-ordinates changed.
   * Changes: Language corrections into documentation.
   * Changes: Added unittests for mbooster, qtbooster, ebooster, dbooster

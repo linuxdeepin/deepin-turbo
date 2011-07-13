@@ -1163,6 +1163,60 @@ class launcher_tests (unittest.TestCase):
         self.assert_(int(launch_count) == int(init_count) +1, "The file descriptors was not changed")
         self.assert_(close_count == init_count, "The file descriptors was changed")
 
+    def test_argv_mbooster_limit(self):
+        self._test_argv_booster_limit("m", "fala_wl")
+
+    def test_argv_dbooster_limit(self):
+        self._test_argv_booster_limit("d", "fala_qml_helloworld")
+
+    def _test_argv_booster_limit(self, btype, testapp):
+        """
+        Test that ARGV_LIMIT (32) arguments are successfully passed to cached [QM]Application.
+        """
+        if os.path.isfile("/tmp/%s.log" % testapp):
+            os.system("rm /tmp/%s.log" % testapp)
+        if get_pid(testapp)!= None:
+            kill_process(testapp)
+        p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t' % (btype, testapp))
+        time.sleep(4)
+        pid = get_pid(testapp)
+        self.assert_(pid != None, "The application was not launched")
+        debug("get arguments from log file")
+        st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+        original_argv = op.split("\n")[0]
+        cache_argv = op.split("\n")[1]
+        self.assert_(original_argv == cache_argv, "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        kill_process(apppid=pid)
+        
+    def test_argv_mbooster_over_limit(self):
+        self._test_argv_booster_over_limit("m", "fala_wl")
+
+    def test_argv_dbooster_over_limit(self):
+        self._test_argv_booster_over_limit("d", "fala_qml_helloworld")
+
+    def _test_argv_booster_over_limit(self, btype, testapp):
+        """
+        Test that if more than ARGV_LIMIT (32) arguments are passed to cached [QM]Application,
+        the application is still launched and ARGV_LIMIT arguments are successfully passed.
+        """
+        ARGV_LIMIT = 32
+        if os.path.isfile("/tmp/%s.log" % testapp):
+            os.system("rm /tmp/%s.log" % testapp)
+        if get_pid(testapp)!= None:
+            kill_process(testapp)
+        p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z' % (btype, testapp))
+        time.sleep(4)
+        pid = get_pid(testapp)
+        self.assert_(pid != None, "The application was not launched")
+        debug("get arguments from log file")
+        st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+        original_argv = op.split("\n")[0].split(" ")[1:]
+        cache_argv = op.split("\n")[1].split(" ")[1:]
+        self.assert_(len(cache_argv) == ARGV_LIMIT, "Wrong number of arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        for i in range(ARGV_LIMIT):
+            self.assert_(original_argv[i] == cache_argv[i], "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        kill_process(apppid=pid)
+        
 
 # main
 if __name__ == '__main__':

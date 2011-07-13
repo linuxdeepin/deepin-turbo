@@ -31,13 +31,23 @@
 
 QString log_file = "/tmp/fala_testapp.log";
 
-void FANGORNLOG(const char* s)
+void FANGORNLOG(const char* s, bool eol = true)
 {
     QFile f(log_file);
     f.open(QIODevice::Append);
     f.write(s, qstrlen(s));
-    f.write("\n", 1);
+    if (eol) {
+        f.write("\n", 1);
+    }
     f.close();
+}
+
+void FANGORNLOG(const QString& s, bool eol = true)
+{
+    QByteArray ba = s.toLocal8Bit();
+    char *p = new char[ba.size() + 1];
+    strcpy(p, ba.data());
+    FANGORNLOG(p, eol);
 }
 
 void timestamp(const char *s)
@@ -86,6 +96,23 @@ int main(int argc, char **argv) {
     MApplicationWindow* w = new MApplicationWindow;
     timestamp("win created without cache");
 #endif
+
+    if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
+        FANGORNLOG("argv:", false);
+        for (int i = 0; i < argc; i++) {
+            FANGORNLOG(" ", false);
+            FANGORNLOG(argv[i], false);
+        }
+        FANGORNLOG("");
+
+        FANGORNLOG("argv:", false);
+        QStringList args = QCoreApplication::arguments();
+        for (int i = 0; i < args.size(); i++) {
+            FANGORNLOG(" ", false);
+            FANGORNLOG(args.at(i), false);
+        }
+        FANGORNLOG("");
+    }
 
     MyApplicationPage p;
     timestamp("page created");
