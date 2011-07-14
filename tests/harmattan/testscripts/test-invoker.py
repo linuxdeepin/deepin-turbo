@@ -128,7 +128,7 @@ class InvokerTests(unittest.TestCase):
         kill_process("fala_wl")
         self.assert_(pid != None ,"The application was not launched")
 
-    def test_app_directory_file(self):
+    def test_app_directory(self):
         """
         Test that invoker is unable to launch a application which is a directory 
         """
@@ -179,6 +179,16 @@ class InvokerTests(unittest.TestCase):
         debug("terminating fala_wait ...")
 
         self.assert_(success, "invoker terminated before delay elapsed")
+
+    def test_relative_path_search(self):
+        """
+        Test that invoker searches the application through relative path
+        """
+        os.system("(cd /usr;export PATH=bin;/usr/bin/invoker --type=m fala_wl&)")
+        pid = get_pid("fala_wl")
+        kill_process("fala_wl")
+        self.assert_(pid != None ,"The application was not launched")
+
         
 
 # main
