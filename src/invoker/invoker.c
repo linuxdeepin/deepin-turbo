@@ -101,6 +101,9 @@ static void sig_forwarder(int sig)
 
         // Send the signal to itself using the default handler
         raise(sig);
+#ifdef WITH_COVERAGE
+        __gcov_flush();
+#endif
     }
 }
 

@@ -89,7 +89,7 @@ def run_app_as_user_with_invoker(appname, booster = 'm', arg = "", out = DEV_NUL
     Runs the specified app as a user.
     """
     inv_cmd = "/usr/bin/invoker --type=%s %s %s" %(booster,arg, appname)
-    debug("run %s as user" %appname)
+    debug("run %s as user" %inv_cmd)
     cmd = ['su', '-', 'user', '-c']
     if type(appname) == list:
         cmd += inv_cmd

@@ -549,7 +549,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Segmentation fault', "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
          
         #Test for d-booster
@@ -577,7 +577,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : %s" %op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Aborted', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
     def test_launch_wo_applauncherd(self):
