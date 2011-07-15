@@ -7,7 +7,7 @@ import commands
 os.system("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.sh &")
 
 time.sleep(2)
-st, op = commands.getstatusoutput("ps ax | grep fala_ft_hello | grep invoker")
+st, op = commands.getstatusoutput("pgrep -lf 'invoker --type=m --wait-term /usr/bin/fala_ft_hello'")
 op = op.split("\n")[0].split(" ")[0]
 
 #Killing application with a signal 11 (Segmentation Fault)

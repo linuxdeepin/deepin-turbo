@@ -105,6 +105,7 @@ class InvokerTests(unittest.TestCase):
         os.system("ln -s /usr/bin/fala_wl /usr/bin/fala_link")
         cmd = "/usr/bin/invoker --type=m /usr/bin/fala_link"
         os.system('su - user -c "%s"&' %cmd)
+        time.sleep(3)
         pid = get_pid("fala_link")
         os.system("rm /usr/bin/fala_link")
         kill_process("fala_link")
