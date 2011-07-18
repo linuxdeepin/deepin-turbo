@@ -7,6 +7,7 @@ add_subdirectory(ut_ebooster)
 add_subdirectory(ut_mbooster)
 add_subdirectory(ut_qtbooster)
 add_subdirectory(ut_socketmanager)
+add_subdirectory(ut_singleinstance)
 
 install(FILES tests.xml DESTINATION /usr/share/applauncherd-tests)
 

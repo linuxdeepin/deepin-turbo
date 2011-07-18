@@ -63,6 +63,21 @@
       </get-->
     </set>
 
+    <set name="singleinstance-test" description="Singleinstance unit tests" feature="AF Singleinstance for Launcher daemon" requirement="1131430" >   
+
+      <case name="Singleinstance" type="Functional" description="Unit tests for Singleinstance class" level="Component" timeout="20">
+          <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_singleinstance'</step>
+      </case>
+
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+
+      <!--get>
+      </get-->
+    </set>
+
   </suite>
 </testdefinition>
 
