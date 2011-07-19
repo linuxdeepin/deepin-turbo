@@ -1216,6 +1216,21 @@ class launcher_tests (unittest.TestCase):
         for i in range(ARGV_LIMIT):
             self.assert_(original_argv[i] == cache_argv[i], "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
         kill_process(apppid=pid)
+
+    def test_daemon_second_instance(self):
+        """
+        Test that second instance of applauncherd cannot be started
+        """
+        daemon_pid = get_pid("applauncherd")
+        if daemon_pid == None:
+            start_applauncherd
+            daemon_pid = get_pid("applauncherd")
+        debug("start applauncherd again")
+        st, op = commands.getstatusoutput("initctl start xsession/applauncherd")
+        time.sleep(3)
+        daemon_pid_new = get_pid("applauncherd")
+        self.assert_(daemon_pid == daemon_pid_new, "New instance of applauncherd started")
+        self.assert_(st != 0, "Second instance of applauncherd started")
         
 
 # main

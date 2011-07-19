@@ -135,6 +135,15 @@
       <case name="applauncherd__test_applauncherd_fd_kill" type="Functional" description="Test that applauncherd file descriptor does not change after killing app" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_applauncherd_fd_kill</step>
       </case>
+      <case name="applauncherd__test_SIGUSR2" type="Functional" description="Test for SIGUSR2" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR2</step>
+      </case>
+      <case name="applauncherd__test_SIGUSR1" type="Functional" description="Test for SIGUSR1" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR1 </step>
+      </case>
+      <case name="applauncherd__test_daemon_second_instance" type="Functional" description="Test that 2nd instance of daemon cannot be started" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_daemon_second_instance </step>
+      </case>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

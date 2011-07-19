@@ -60,11 +60,6 @@ class BootModeTests(unittest.TestCase):
         if get_pid('applauncherd') != None:
             stop_applauncherd()
 
-        time.sleep(2)
-
-        if get_pid('applauncherd') != None:
-            kill_process('applauncherd')
-
         self.start_applauncherd_in_boot_mode()
 
         for b in ['booster-m', 'booster-q', 'booster-d']:
@@ -73,13 +68,12 @@ class BootModeTests(unittest.TestCase):
     def tearDown(self):
         debug("tearDown")
 
-        kill_process('fala_multi-instance')
+        if get_pid('fala_multi-instance') != None:
+            kill_process('fala_multi-instance')
         
-        if get_pid('applauncherd'):
+        if get_pid('applauncherd') != None:
             kill_process('applauncherd')
         start_applauncherd()
-
-        time.sleep(5)
 
     def start_applauncherd_in_boot_mode(self):
         remove_applauncherd_runtime_files()
@@ -184,6 +178,57 @@ class BootModeTests(unittest.TestCase):
                      "%d apps, %d windows. Expected %d apps, %d windows (normal mode)" % (res_norm[0],
                                                                                           res_norm[1],
                                                                                           6, 6))
+
+    def test_SIGUSR2(self):
+        """
+        send SIGUSR2 for applauncherd when in boot mode. This should turn it into boot mode.
+        """
+        pid = wait_for_single_applauncherd()
+        st, op = commands.getstatusoutput("kill -SIGUSR2 %s" %pid)
+        time.sleep(3)
+        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Already in boot mode' /var/log/syslog " %pid)
+        debug("The log msg is %s" %op1)
+        self.assert_(st == 0, "Seems that SIGUSR2 was not send")
+
+    def test_SIGUSR1(self):
+        """
+        send SIGUSR1 for applauncherd when it is in boot mode. 
+        This should turn it into normal mode. Try sending signal twice.
+        Another time you would get message in syslog that it is already in normal mode
+        """
+        #Send SIGUSR1 for the first time
+        #Get pids for daemon and boosters
+        daemon_pid = wait_for_single_applauncherd()
+        pid_q = wait_for_app("booster-q")
+        pid_d = wait_for_app("booster-d")
+        pid_m = wait_for_app("booster-m")
+        pid_e = wait_for_app("booster-e")
+
+        #Send SIGUSR1 to daemon
+        st, op = commands.getstatusoutput("kill -SIGUSR1 %s" %daemon_pid)
+        time.sleep(3)
+        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Exited boot mode.' /var/log/syslog " %daemon_pid)
+        debug("The log msg is %s" %op1)
+        self.assert_(st == 0, "Seems that SIGUSR1 was not send")
+
+        #Get pids for boosters
+        pid_q_1 = wait_for_app("booster-q")
+        pid_d_1 = wait_for_app("booster-d")
+        pid_m_1 = wait_for_app("booster-m")
+        pid_e_1 = wait_for_app("booster-e")
+
+        self.assert_(pid_q != pid_q_1, "Applauncherd not changed to normal mode")
+        self.assert_(pid_d != pid_d_1, "Applauncherd not changed to normal mode")
+        self.assert_(pid_m != pid_m_1, "Applauncherd not changed to normal mode")
+        self.assert_(pid_e != pid_e_1, "Applauncherd not changed to normal mode")
+
+        #Send SIGUSR1 for the second time
+        st, op = commands.getstatusoutput("kill -SIGUSR1 %s" %daemon_pid)
+        time.sleep(3)
+        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Already in normal mode.' /var/log/syslog " %daemon_pid)
+        debug("The log msg is %s" %op1)
+        self.assert_(st == 0, "Seems that SIGUSR1 was not send")
+
 
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
