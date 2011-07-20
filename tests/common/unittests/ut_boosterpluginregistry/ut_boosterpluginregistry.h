@@ -17,11 +17,31 @@
 **
 ****************************************************************************/
 
-#define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
-extern "C"
+#ifndef UT_BOOSTERPLUGINREGISTRY_H
+#define UT_BOOSTERPLUGINREGISTRY_H
+
+#include<QtTest/QtTest>
+#include<QObject>
+
+#define UNIT_TEST
+
+class BoosterPluginRegistry;
+
+class Ut_BoosterPluginRegistry : public QObject
 {
-    DECL_EXPORT bool lock(const char * binaryName)
-    {
-        return true;
-    }
-}
+    Q_OBJECT
+
+public:
+    Ut_BoosterPluginRegistry();
+    virtual ~Ut_BoosterPluginRegistry();
+
+private Q_SLOTS:
+    void initTestCase();
+    void cleanupTestCase();
+    void testValidateAndRegisterPlugin();
+    void testRegisterPlugin();
+    void testPluginEntry();
+
+};
+
+#endif // UT_BOOSTERPLUGINREGISTRY_H
