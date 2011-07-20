@@ -92,6 +92,10 @@ private:
     //! Registry
     typedef vector<shared_ptr<BoosterPluginEntry> > RegistryType;
     static RegistryType m_registry;
+
+#ifdef UNIT_TEST
+    friend class Ut_BoosterPluginRegistry;
+#endif
 };
 
 #endif // BOOSTERPLUGINREGISTRY_H

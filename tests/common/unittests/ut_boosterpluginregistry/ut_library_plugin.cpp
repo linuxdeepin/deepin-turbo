@@ -20,8 +20,23 @@
 #define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 extern "C"
 {
-    DECL_EXPORT bool lock(const char * binaryName)
+    DECL_EXPORT void create()
     {
-        return true;
+    }
+
+    DECL_EXPORT char type()
+    {
+        return 'z';
+    }
+
+    DECL_EXPORT const char * socketName()
+    {
+        return 0;
+    }
+
+    DECL_EXPORT const char * temporaryProcessName()
+    {
+        return 0;
     }
 }
+

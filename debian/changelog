@@ -5,6 +5,7 @@ applauncherd (0.30.6) unstable; urgency=low
   * Changes: Language corrections into documentation.
   * Changes: Added unittests for mbooster, qtbooster, ebooster, dbooster
   * Changes: Added unittests for SingleInstance
+  * Changes: Added unittests for BoosterPluginRegistry
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:55:48 +0300
 

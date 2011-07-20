@@ -11,4 +11,8 @@ usr/share/applauncherd-tests/ut_socketmanager
 usr/share/applauncherd-tests/ut_singleinstance
 usr/share/applauncherd-tests/libutwithlock.so
 usr/share/applauncherd-tests/libutwithlockunlock.so
-
+usr/share/applauncherd-tests/ut_boosterpluginregistry
+usr/share/applauncherd-tests/libutwithcreate.so
+usr/share/applauncherd-tests/libutwithcreatetype.so
+usr/share/applauncherd-tests/libutwithcreatetypesocketname.so
+usr/share/applauncherd-tests/libutplugin.so
