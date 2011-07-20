@@ -1,6 +1,6 @@
 /***************************************************************************
 **
-** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
+** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (directui@nokia.com)
 **
@@ -17,37 +17,20 @@
 **
 ****************************************************************************/
 
-#ifndef UT_EBOOSTER_H
-#define UT_EBOOSTER_H
+#include <MApplication>
+#include <MExport>
+#include <QTimer>
+#include <iostream>
 
-#include<QtTest/QtTest>
-#include<QObject>
+#ifdef HAVE_MCOMPONENTCACHE
+#include <mcomponentcache.h>
+#endif
 
-#include <tr1/memory>
-
-#define UNIT_TEST
-
-class EBooster;
-
-class Ut_EBooster : public QObject
+M_EXPORT int main(int argc, char ** argv)
 {
-    Q_OBJECT
-
-public:
-    Ut_EBooster();
-    virtual ~Ut_EBooster();
-
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-    void testSocketName();
-    void testType();
-    void testPreload();
-    void testTemporaryProcessName();
-    void testLaunchProcessWithBadArg();
-
-private:
-    std::tr1::shared_ptr<EBooster> m_subject;
-};
-
-#endif // UT_EBOOSTER_H
+#ifdef HAVE_MCOMPONENTCACHE
+    MApplication *app = MComponentCache::mApplication(argc, argv);
+#endif
+    QTimer::singleShot(6000, app, SLOT(quit()));
+    app->exec();
+}

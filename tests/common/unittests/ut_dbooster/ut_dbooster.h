@@ -43,6 +43,8 @@ private Q_SLOTS:
     void testSocketName();
     void testType();
     void testPreload();
+    void testTemporaryProcessName();
+    void testReceiveDataFromInvokerWithBadSocket();
 
 private:
     std::tr1::shared_ptr<QDeclarativeBooster> m_subject;

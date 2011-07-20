@@ -1,12 +1,11 @@
-/*! \page debug How To Debug Boosted Applications
+/*! \page debug Debugging boosted applications
 
 \section debugging Debugging
 
-To debug a launched application, the debugger must be attached
-to an already running booster process. Due to security limitations
-it's required to use <B>aegis-su</B> tool from <B>aegis-dss-tools</B> package. 
-See <A HREF="https://projects.maemo.org/trac/meego-security/wiki/DisablingAegisValidator#Useaegis-sutooltogranttcbtomodechange">Use aegis-su tool...</A>
-
+To debug a launched application, the debugger must be attached to an
+already running booster process. Due to security limitations, it is
+required to use \c aegis-su tool from \c aegis-dss-tools package. 
+For instance:
 
 1. Run the following command:
 
@@ -38,7 +37,7 @@ invoker --type=d /usr/bin/myApp
 
 If you use the \c pkg-config when building your binaries, they are
 linked with the \c -pie flag. The \c -pie flag  makes your binaries
-\e position \e independent \e executables. This means that the executables
+\e position-independent \e executables. This means that the executables
 can be either used as a normal shared library or run, for example, from
 the command line.
 
@@ -49,7 +48,7 @@ To use gdb 7.0 or earlier, link your binaries as
 libraries by using \c -shared instead of \c -pie. After this, you cannot
 execute your binaries directly, you have to use \c invoker.
 
-Setting correct linker flags with QMake:
+Setting correct linker flags with qmake:
 
 \code
 QMAKE_CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
@@ -57,6 +56,6 @@ QMAKE_LFLAGS += -shared -rdynamic
 \endcode
 
 Remember to remove the CONFIG += qdeclarative-boostable, if used
-(ditto for meegotouch-boostable or qt-boostable).
+(the same applies for meegotouch-boostable or qt-boostable).
 
 */

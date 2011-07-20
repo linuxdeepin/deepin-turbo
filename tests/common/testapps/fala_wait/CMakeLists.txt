@@ -1,5 +1,5 @@
 # Set sources
-set(SRC helloworld.cpp)
+set(SRC fala_wait.cpp)
 
 link_libraries(${MEEGOTOUCH_LIBRARIES})
 
@@ -25,9 +25,8 @@ execute_process(COMMAND "env"
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${booster_cflags}")
 set(CMAKE_EXE_LINKER_FLAGS ${booster_libs})
 
-add_executable(fala_hello ${SRC})
+add_executable(fala_wait ${SRC})
 
-install(PROGRAMS fala_hello DESTINATION /usr/bin/ RENAME fala_ft_hello)
-install(PROGRAMS fala_hello DESTINATION /usr/share/fala_images)
-install(SCRIPT scripts/create_links.cmake)
+# Install
+install(PROGRAMS fala_wait DESTINATION /usr/bin/ )
 

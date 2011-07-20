@@ -1,13 +1,14 @@
-/*! \page debianpackaging Debian Packaging
+/*! \page debianpackaging Packaging boosted applications
 
 Applications using the launcher must depend on the \c applauncherd
 package. For applications that use the exec booster, this is the only
-dependency that is needed. Applications that use the QML booster or
-the Qt booster need to add a build dependency to the \c
-applauncherd-dev package, and applications that use the MeeGo Touch
-booster should build-depend on the \c libmeegotouch-dev package.
+dependency that is needed. For applications that use the QML booster
+or the Qt booster, add a build dependency to the \c applauncherd-dev
+package. For applications that use the MeeGo Touch booster, add a
+build dependency to the \c libmeegotouch-dev package.
 
-When packaging applications for Harmattan, it may also be necessary to
-\ref aegis "modify the Aegis manifest" of the application.
+When packaging applications for MeeGo 1.2 Harmattan, you may also need to
+\ref aegis "modify the aegis manifest file" of the application.
+
 
 */

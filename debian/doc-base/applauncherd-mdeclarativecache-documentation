@@ -1,0 +1,8 @@
+Document: applauncherd-mdeclarativecache-documentation
+Title: MDeclarativeCache API Library 
+Abstract: API Documentation for MDeclarativeCache
+Section: Programming/C++
+
+Format: HTML
+Files: /usr/share/doc/applauncherd/mdeclarativecache-documentation/html/*.html
+Index: /usr/share/doc/applauncherd/mdeclarativecache-documentation/html/index.html

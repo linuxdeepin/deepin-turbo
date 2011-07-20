@@ -17,8 +17,8 @@
 **
 ****************************************************************************/
 
-#ifndef UT_EBOOSTER_H
-#define UT_EBOOSTER_H
+#ifndef UT_SINGLEINSTANCE_H
+#define UT_SINGLEINSTANCE_H
 
 #include<QtTest/QtTest>
 #include<QObject>
@@ -27,27 +27,24 @@
 
 #define UNIT_TEST
 
-class EBooster;
+class SingleInstance;
 
-class Ut_EBooster : public QObject
+class Ut_SingleInstance : public QObject
 {
     Q_OBJECT
 
 public:
-    Ut_EBooster();
-    virtual ~Ut_EBooster();
+    Ut_SingleInstance();
+    virtual ~Ut_SingleInstance();
 
 private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
-    void testSocketName();
-    void testType();
-    void testPreload();
-    void testTemporaryProcessName();
-    void testLaunchProcessWithBadArg();
+    void testValidateAndRegisterPlugin();
+    void testPluginEntry();
 
 private:
-    std::tr1::shared_ptr<EBooster> m_subject;
+    std::tr1::shared_ptr<SingleInstance> m_subject;
 };
 
-#endif // UT_EBOOSTER_H
+#endif // UT_QTBOOSTER_H

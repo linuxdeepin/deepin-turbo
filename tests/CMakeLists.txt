@@ -43,6 +43,9 @@ add_subdirectory(common/unittests)
 # Sub build: common/testapps/fala_status
 add_subdirectory(common/testapps/fala_status)
 
+# Sub build: common/testapps/fala_wait
+add_subdirectory(common/testapps/fala_wait)
+
 # Sub build: common/testapps/focustest
 add_subdirectory(common/testapps/focustest)
 

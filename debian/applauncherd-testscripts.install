@@ -8,6 +8,7 @@ usr/share/applauncherd-testscripts/test-perf.rb
 usr/share/applauncherd-testscripts/get-coordinates.rb
 usr/share/applauncherd-testscripts/utils.py
 usr/share/applauncherd-testscripts/test-security.py
+usr/share/applauncherd-testscripts/test-invoker.py
 usr/share/applauncherd-testscripts/test-daemons.py
 usr/share/applauncherd-testscripts/test-boot-mode.py
 usr/share/applauncherd-testscripts/view.qml

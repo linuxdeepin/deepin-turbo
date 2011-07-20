@@ -9,6 +9,7 @@ if ($ENV{HARMATTAN})
         test-func-launcher.py
         utils.py
         test-security.py
+        test-invoker.py
         test-daemons.py 
         test-single-instance.py
         test-core-dump.py

@@ -146,6 +146,22 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_theme_change_booster_restart</step>
       </case-->
 
+      <case name="applauncherd__test_qttas_load_booster_d" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-d" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_d</step>
+      </case>
+
+      <case name="applauncherd__test_qttas_load_env_booster_d" type="Functional" description="To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-d" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_env_booster_d</step>
+      </case>
+
+      <case name="applauncherd__test_qttas_load_booster_m" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-m" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_m</step>
+      </case>
+
+      <case name="applauncherd__test_qttas_load_env_booster_m" type="Functional" description="To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-m" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_env_booster_m</step>
+      </case>
+
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
       </post_steps>

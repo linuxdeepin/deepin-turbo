@@ -83,6 +83,7 @@ void MDeclarativeCachePrivate::populate()
     }
 
     qDeclarativeViewInstance = new QDeclarativeView();
+
 }
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
@@ -123,7 +124,6 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
                 break;
             }
         }
-
         
         bool loadTestabilityEnv = !qgetenv("QT_LOAD_TESTABILITY").isNull();
         if (loadTestabilityEnv || loadTestabilityArg)
@@ -136,6 +136,8 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             Display *display = QX11Info::display();
             if (display) 
             {
+
+                qDeclarativeViewInstance->winId();
                 XSetCommand(display, qDeclarativeViewInstance->effectiveWinId(), argv, argc);
 
                 // set correct WM_CLASS properties
@@ -170,6 +172,11 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
 
 #ifdef WITH_COVERAGE
     __gcov_flush();
+#endif
+
+#ifdef HAVE_PATH_REINIT
+    // Set the magic attribute so that paths are reinitialized
+    qApplicationInstance->setAttribute(Qt::AA_LinuxReinitPathsFromArgv0, true);
 #endif
 
     return qApplicationInstance;

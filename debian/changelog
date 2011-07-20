@@ -5,10 +5,54 @@ applauncherd (1.1.0) unstable; urgency=low
 
  -- Juha Lintula <juha.lintula@nokia.com>  Tue, 14 Jun 2011 14:55:06 +0300
 
-applauncherd (0.30.1) unstable; urgency=low
+applauncherd (0.30.6) unstable; urgency=low
 
+  * Changes: Added test cases for argument passing to cached [QM]Application.
+  * Changes: Performance test modified. Tracking pixel co-ordinates changed.
+  * Changes: Language corrections into documentation.
+  * Changes: Added unittests for mbooster, qtbooster, ebooster, dbooster
+  * Changes: Added unittests for SingleInstance
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:55:48 +0300
+
+applauncherd (0.30.5) stable; urgency=low
+
+  * Fixes: NB#267391 - Boosting prevents QML apps from dropping the GL context on background
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:28:30 +0300
+
+applauncherd (0.30.4) stable; urgency=low
+
+  * Fixes: NB#267579 - Socket file descriptor leaks in applauncherd.bin
+  * Changes: Test for Socket file descriptor leaks in applauncherd.bin
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Mon, 27 Jun 2011 13:33:58 +0300
+
+applauncherd (0.30.3) stable; urgency=low
+
+  * Changes: single-instance documentation updated
+  * Changes: Documentation updated according proof-reading results.
+  * Changes: Added doc-base control files for documentation in applauncherd-doc package
+  * Fixes: NB#267376 - [TASK] Defects found in applauncherd documentation after proof-reading should be corrected
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Mon, 20 Jun 2011 13:25:56 +0300
+
+applauncherd (0.30.2) stable; urgency=low
+
+  * Fixes: NB#257654 - QApplication::applicationDirPath() and QApplication::applicationFilePath() return wrong values for d-boosted applications
+  * Changes: Fix dir path logging in test apps. Remove redundant test case applauncherd__test_dirPath_filePath_m.
+  * Changes: perf test modified to wait for applauncherd to be running in normal mode
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Fri, 17 Jun 2011 14:14:58 +0300
+
+applauncherd (0.30.1) stable; urgency=low
+
+  * Changes: Add test for QApplication::applicationFilePath and applicationDirPath
+  * Fixes: NB#257654 - QApplication::applicationDirPath() and QApplication::applicationFilePath() return wrong values for d-boosted applications
+  * Changes: New functional tests added to check testability library is loaded by booster-m and booster-d
   * Changes: Deprecate MDeclarativeCache::applicationDirPath() and MDeclarativeCache::applicationFilePath().
   * Changes: Modify test applications to use _exit().
+  * Fixes: NB#263422 - Precached (QML) applications do not set WM_NAME window atom properly
 
  -- Pertti Kellomaki <pertti.kellomaki@nokia.com>  Wed, 8 Jun 2011 13:36:37 +0300
 

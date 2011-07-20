@@ -549,7 +549,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Segmentation fault (core dumped)', "The invoker(m-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Segmentation fault', "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
          
         #Test for d-booster
@@ -577,7 +577,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : %s" %op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Aborted (core dumped)', "The invoker(q-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1] == 'Aborted', "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
     def test_launch_wo_applauncherd(self):
@@ -962,6 +962,290 @@ class launcher_tests (unittest.TestCase):
         debug("The value of status is %d" %st)
         debug("The value of output is %s" %op)
         self.assert_(st != 0, "applauncherd has writable and executable memory")
+
+    def test_qttas_load_booster_d(self):
+        """
+        To test invoker that qttestability plugin is loaded with -testability argument for booster-d
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP_QML
+                p = run_app_as_user_with_invoker("%s -testability" %testapp, booster = 'd')
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+    def test_qttas_load_booster_m(self):
+        """
+        To test invoker that qttestability plugin is loaded with -testability argument for booster-m
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP
+                p = run_app_as_user_with_invoker("%s -testability" %testapp, booster = 'm')
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+    def test_qttas_load_env_booster_d(self):
+        """
+        To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-d
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP_QML
+                cmd = ['su', '-', 'user', '-c'] 
+                invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --type=d %s" %testapp
+                cmd.append(invoke)
+
+                p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL)
+
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+
+    def test_qttas_load_env_booster_m(self):
+        """
+        To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-m
+        """
+        for i in range(2):
+                debug("Running cycle %s" %i)
+                testapp = PREFERED_APP
+                cmd = ['su', '-', 'user', '-c']
+                invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --type=m %s" %testapp
+                cmd.append(invoke)                                               
+                
+                p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL)
+
+                time.sleep(2)
+
+                pid = get_pid(testapp)
+                self.assert_(pid != None, "Can't start application %s" %testapp)
+
+                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas)
+                debug("The value of output is %s" %op_tas)
+
+                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                debug("The value of status is %d" %st_tas_plug)
+                debug("The value of output is %s" %op_tas_plug)
+
+                kill_process(apppid=pid)
+
+                self.assert_(st_tas == 0,"libtestability.so not loaded")
+                self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
+
+                time.sleep(2)
+
+    def test_dirPath_filePath_m(self):
+        self._test_dirPath_filePath('m', "/usr/share/fala_images", "fala_hello")
+
+    def test_dirPath_filePath_d(self):
+        self._test_dirPath_filePath('d', "/usr/share/fala_images", "fala_qml_helloworld")
+
+    def test_dirPath_filePath_q(self):
+        self._test_dirPath_filePath('q', "/usr/share/fala_images", "fala_qml_helloworld")
+
+    def test_dirPath_filePath_e(self):
+        self._test_dirPath_filePath('e', "/usr/share/fala_images", "fala_qml_helloworld")
+
+    def _test_dirPath_filePath(self, btype, path, testapp):
+        """
+        Test that correct file path and dir path is passed
+        """
+        if os.path.isfile("/tmp/%s.log" % testapp):
+            os.system("rm /tmp/%s.log" % testapp)
+        if get_pid(testapp)!= None:
+            kill_process(testapp)
+        p = run_cmd_as_user('invoker --type=%s %s/%s' % (btype, path, testapp))
+        time.sleep(4)
+        pid = get_pid(testapp)
+        self.assert_(pid != None, "The application was not launched")
+        debug("get filePath and dirPath from log file")
+        st, op = commands.getstatusoutput("grep Path /tmp/%s.log | tail -2" % testapp)
+        dirpath = op.split("\n")[0].split(" ")[2]
+        self.assert_(dirpath == path, "Wrong dirPath: %s" % dirpath)
+        filepath = op.split("\n")[1].split(" ")[2]
+        self.assert_(filepath == "%s/%s" % (path, testapp), "Wrong filePath: %s" % filepath)
+        kill_process(apppid=pid)
+        
+    def test_applauncherd_fd_close(self):
+        self._test_applauncherd_fd()
+
+    def test_applauncherd_fd_kill(self):
+        self._test_applauncherd_fd(False)
+
+    def _test_applauncherd_fd(self, close = True):
+        """
+        To test that file descriptors are closed before calling application main
+        """
+        #get fd of booster before launching application
+        debug("get fd of applauncherd before launching application")
+        pid = commands.getoutput("pgrep applauncherd")
+        init_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+        debug("\nThe count of initial file descriptors is : %s\n" %init_count)
+        time.sleep(3)
+        
+        #launch application using booster
+        debug("launch fala_wl using booster")
+        status = os.system('invoker --type=m /usr/bin/fala_wl &')
+
+        #get fd of booster after launching the application
+        debug("get fd of booster after launching the application")
+        if status == 0:
+            launch_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+            debug("\nThe count of file descriptors after launch : %s\n" %launch_count)
+        time.sleep(3)
+        
+        #Close application
+        if close:
+            st, wid = commands.getstatusoutput(\
+                    "xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
+            os.system("/usr/bin/xsendevent close %s" %wid)
+        else:
+            pid_app = commands.getoutput('pgrep fala_wl')    
+            kill_process(apppid=pid_app) 
+        time.sleep(3)
+
+        #get fd of booster after closing the application
+        debug("get fd of booster after closing the application")
+        close_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+        debug("\nThe count file descriptors after close: %s\n" %close_count)
+        self.assert_(int(launch_count) == int(init_count) +1, "The file descriptors was not changed")
+        self.assert_(close_count == init_count, "The file descriptors was changed")
+
+    def test_argv_mbooster_limit(self):
+        self._test_argv_booster_limit("m", "fala_wl")
+
+    def test_argv_dbooster_limit(self):
+        self._test_argv_booster_limit("d", "fala_qml_helloworld")
+
+    def _test_argv_booster_limit(self, btype, testapp):
+        """
+        Test that ARGV_LIMIT (32) arguments are successfully passed to cached [QM]Application.
+        """
+        if os.path.isfile("/tmp/%s.log" % testapp):
+            os.system("rm /tmp/%s.log" % testapp)
+        if get_pid(testapp)!= None:
+            kill_process(testapp)
+        p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t' % (btype, testapp))
+        time.sleep(4)
+        pid = get_pid(testapp)
+        self.assert_(pid != None, "The application was not launched")
+        debug("get arguments from log file")
+        st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+        original_argv = op.split("\n")[0]
+        cache_argv = op.split("\n")[1]
+        self.assert_(original_argv == cache_argv, "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        kill_process(apppid=pid)
+        
+    def test_argv_mbooster_over_limit(self):
+        self._test_argv_booster_over_limit("m", "fala_wl")
+
+    def test_argv_dbooster_over_limit(self):
+        self._test_argv_booster_over_limit("d", "fala_qml_helloworld")
+
+    def _test_argv_booster_over_limit(self, btype, testapp):
+        """
+        Test that if more than ARGV_LIMIT (32) arguments are passed to cached [QM]Application,
+        the application is still launched and ARGV_LIMIT arguments are successfully passed.
+        """
+        ARGV_LIMIT = 32
+        if os.path.isfile("/tmp/%s.log" % testapp):
+            os.system("rm /tmp/%s.log" % testapp)
+        if get_pid(testapp)!= None:
+            kill_process(testapp)
+        p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z' % (btype, testapp))
+        time.sleep(4)
+        pid = get_pid(testapp)
+        self.assert_(pid != None, "The application was not launched")
+        debug("get arguments from log file")
+        st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+        original_argv = op.split("\n")[0].split(" ")[1:]
+        cache_argv = op.split("\n")[1].split(" ")[1:]
+        self.assert_(len(cache_argv) == ARGV_LIMIT, "Wrong number of arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        for i in range(ARGV_LIMIT):
+            self.assert_(original_argv[i] == cache_argv[i], "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        kill_process(apppid=pid)
+
+    def test_daemon_second_instance(self):
+        """
+        Test that second instance of applauncherd cannot be started
+        """
+        daemon_pid = get_pid("applauncherd")
+        if daemon_pid == None:
+            start_applauncherd
+            daemon_pid = get_pid("applauncherd")
+        debug("start applauncherd again")
+        st, op = commands.getstatusoutput("initctl start xsession/applauncherd")
+        time.sleep(3)
+        daemon_pid_new = get_pid("applauncherd")
+        self.assert_(daemon_pid == daemon_pid_new, "New instance of applauncherd started")
+        self.assert_(st != 0, "Second instance of applauncherd started")
+        
+    def test_nonlaunchable_apps(self):
+        """
+        Test that Booster gives warning while trying to launch non launchable applications
+        Here fala_wid is a shell script and libebooster.so is a library
+        """
+        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/bin/fala_wid")
+        debug("The Warning is %s" %(op.split("\n")[0]))
+        pos = op.split("\n")[0].find("Booster: Loading invoked application failed:")
+        self.assert_(pos != -1, "The booster did not give warning")
+        
+        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/lib/applauncherd/libebooster.so")
+        debug("The Warning is %s" %(op.split("\n")[0]))
+        pos = op.split("\n")[0].find("Booster: Loading symbol 'main' failed:")
+        self.assert_(pos != -1, "The booster did not give warning")
 
 # main
 if __name__ == '__main__':

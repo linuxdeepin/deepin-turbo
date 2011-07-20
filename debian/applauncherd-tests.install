@@ -8,3 +8,7 @@ usr/share/applauncherd-tests/ut_ebooster
 usr/share/applauncherd-tests/ut_mbooster
 usr/share/applauncherd-tests/ut_qtbooster
 usr/share/applauncherd-tests/ut_socketmanager
+usr/share/applauncherd-tests/ut_singleinstance
+usr/share/applauncherd-tests/libutwithlock.so
+usr/share/applauncherd-tests/libutwithlockunlock.so
+

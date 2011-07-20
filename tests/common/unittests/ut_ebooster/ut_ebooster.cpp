@@ -19,6 +19,7 @@
 
 #include "ut_ebooster.h"
 #include "ebooster.h"
+#include <errno.h>
 
 Ut_EBooster::Ut_EBooster() :
     m_subject(new EBooster)
@@ -48,6 +49,19 @@ void Ut_EBooster::testType()
 void Ut_EBooster::testPreload()
 {
     QVERIFY(m_subject->preload());
+}
+
+void Ut_EBooster::testTemporaryProcessName()
+{
+    QVERIFY(EBooster::temporaryProcessName() == EBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->temporaryProcessName() == EBooster::m_temporaryProcessName);
+    QVERIFY(m_subject->boosterTemporaryProcessName() == EBooster::m_temporaryProcessName);
+}
+
+
+void Ut_EBooster::testLaunchProcessWithBadArg()
+{
+   QVERIFY(m_subject->launchProcess() == EXIT_FAILURE);
 }
 
 QTEST_APPLESS_MAIN(Ut_EBooster);

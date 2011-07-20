@@ -89,7 +89,7 @@ def run_app_as_user_with_invoker(appname, booster = 'm', arg = "", out = DEV_NUL
     Runs the specified app as a user.
     """
     inv_cmd = "/usr/bin/invoker --type=%s %s %s" %(booster,arg, appname)
-    debug("run %s as user" %appname)
+    debug("run %s as user" %inv_cmd)
     cmd = ['su', '-', 'user', '-c']
     if type(appname) == list:
         cmd += inv_cmd
@@ -120,7 +120,7 @@ def run_cmd_as_user(cmnd, out = DEV_NULL, err = DEV_NULL):
 def get_pid(appname):
     temp = basename(appname)[:14]
     st, op = commands.getstatusoutput("pgrep %s" % temp)
-    debug("The Pid of %s is: %s" %(appname, op))
+    debug("The Pid of %s is %s" %(appname, op))
     if st == 0:
         return op
     else:
@@ -132,7 +132,7 @@ def get_newest_pid(app):
 
     op = p.communicate()[0]
 
-    debug("The New Pid of %s is %s:" %(app, op.strip()))
+    debug("The New Pid of %s is %s" %(app, op.strip()))
     if p.wait() == 0:
         return op.strip()
     
@@ -176,6 +176,7 @@ def wait_for_single_applauncherd(timeout = 20, sleep = 1):
         count = len(pid.split("\n"))
         if count == 1:
             break
+    return pid
 
 def get_booster_pid():
     wait_for_app('booster-q')

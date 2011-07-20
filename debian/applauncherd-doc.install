@@ -1,1 +1,3 @@
 usr/share/doc/applauncherd
+../doc-base/applauncherd-user-documentation usr/share/doc-base
+../doc-base/applauncherd-mdeclarativecache-documentation usr/share/doc-base

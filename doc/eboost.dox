@@ -1,27 +1,27 @@
-/*! \page eboost Using the Exec Booster
+/*! \page eboost Using the exec booster
 
-Exec Booster is a generic booster for all kinds of applications. Unlike 
-the other boosters (Meegotouch, QML and QT boosters) this booster does
-not help in quick startup of the application. It is basically a booster
+The exec booster is a generic booster for all kinds of applications. Unlike 
+the other boosters (MeeGo Touch, QML and Qt boosters), this booster does
+not help to start up the application more quickly. It is basically a booster
 that only exec()'s the given binary. It can be used to launch any application 
 even if the application is not a library.
 
-\section eboosterpurpose Purpose of Exec Booster
+\section eboosterpurpose Purpose of exec booster
 
-Applauncherd supports showing of a splash screen for applications. All 
-those applications which can be boosted using the other boosters can show
-splash screen as described \ref splash "here". For those applications
-which cannot be boosted and require to have a splash screen can use the 
-Exec Booster. Hence for launching a splash screen for any application the Exec 
-Booster can be used. Also the non boosted applications can be launched as a 
-\ref singleinstance "Single Instance" application using the Exec Booster.
+Applauncherd allows applications to show a splash screen. For instructions 
+on showing the splash screen in applications boosted using the other 
+boosters, see \ref splash "here". If you want to have a splash screen in an 
+application that cannot be boosted, use the exec booster. Thus, you can use 
+exec booster for launching a splash screen for any application. You can 
+also launch non-boosted applications as \ref singleinstance "single-instance" 
+applications with the exec booster.
 
-\section runebooster Running application using Exec Booster
+\section runebooster Running an application with exec booster
 
-One can launch any application binary using the Exec Booster. Before launching 
-any application one should check that applauncherd package is installed and
-applauncherd daemon and the booster-e is running. Now one can launch the application
-using Exec Booster as:
+You can launch any application binary using the exec booster. Before launching 
+an application, check that applauncherd package is installed and applauncherd 
+daemon and the booster-e are running. You can then launch the application 
+with exec booster as follows:
 
 \code
     

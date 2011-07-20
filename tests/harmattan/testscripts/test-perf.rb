@@ -158,7 +158,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     print_debug("restart applauncherd")
     system("initctl restart xsession/applauncherd")
-    sleep(10)
+
+    #waiting for applauncherd and boosters to stabalise and up and running
+    sleep(30)
+    x = `ps ax | grep applauncherd`
+    if x.split(/\n/)[0].include?("boot-mode")
+        print_debug("The applauncherd is running in boot mode")
+    else
+        print_debug("The applauncherd is running in normal mode")
+    end
+
   end
   
 
@@ -176,7 +185,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end
     if not system "pgrep applauncherd"
         system("initctl start xsession/applauncherd")
-        sleep(5)
+        sleep(30)
     end
   end
   
@@ -210,7 +219,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("Check the avarage system load is under 0.3")
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
 
-      start_command ="`#{PIXELCHANGED_BINARY} -t 20x20 -t 840x466 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
+      start_command ="`#{PIXELCHANGED_BINARY} -t 101x4 -t 845x473 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       print_debug ("start command: #{start_command}")
       system start_command
 
@@ -219,16 +228,29 @@ class TC_PerformanceTests < Test::Unit::TestCase
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
       @pos = @pos.split("\n")[-1]
       print_debug ("Co-ordinates: #{@pos}")
-      
+      x_val = Integer(@pos.split("x")[0])
+      y_val = Integer(@pos.split("x")[1])
+
       print_debug("Check the avarage system load is under 0.3")
       system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 50 -d"
+      cmd = 0
+      if (x_val >= 0 && x_val <= 420)   
+          if (y_val >= 240 && y_val <= 480)
+              cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x4 -t 845x473 -f #{PIXELCHANGED_LOG} -q"
+          elsif (y_val >= 0 && y_val <= 239)
+              cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x473 -t 845x4 -f #{PIXELCHANGED_LOG} -q"
+          end
+      elsif (x_val >= 421 && x_val <= 900)
+          if (y_val >= 240 && y_val <= 480)
+              cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x473 -t 845x4 -f #{PIXELCHANGED_LOG} -q"
+          elsif (y_val >= 0 && y_val <= 239)
+              cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x4 -t 845x473 -f #{PIXELCHANGED_LOG} -q"
+          end
+      end
 
-      cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 20x20 -t 840x466 -f #{PIXELCHANGED_LOG} -q"
       print_debug("pixel changed command is : #{cmd}")
       system cmd
-
       sleep (4)
-
       # Raise meegotouchhome to the top.
       #Workaround for keeping the window stack in shape.
       print_debug("#{GET_COORDINATES_SCRIPT} -g")

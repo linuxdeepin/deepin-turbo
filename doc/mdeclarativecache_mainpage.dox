@@ -12,7 +12,8 @@
   </table>
  
 \section getting_started Getting started
-  For writing application which are using MDeclarativeCache, please see the full 
-  developer guide from applauncher-doc package.  
-  
+  For writing applications which are using MDeclarativeCache, please see the full 
+  developer guide "Optimising application startup" in "Best practices for 
+  application development" section.
+
 */

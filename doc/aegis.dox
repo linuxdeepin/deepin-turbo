@@ -1,16 +1,16 @@
-/*! \page aegis Platform Security and Applauncherd
+/*! \page aegis Requesting protected resources for the launcher
 
-\section setup Setting up Aegis security tokens
+\section setup Setting up aegis security tokens
 
 If your application does not have an aegis manifest file, no actions are
 needed for platform security.
 
-If your application has a manifest file, something needs to be added
-there: everything that is requested for the application binary must be
-requested to the application launcher binary as well.
+If your application has a manifest file, everything that is requested
+for the application binary must be requested to the application
+launcher binary as well.
 
-For instance, manifest file for an application that needs only an
-automatically generated application ID:
+In the following example a manifest file for an application needs only
+an automatically generated application ID:
 
 \code
 <aegis>
@@ -21,7 +21,7 @@ automatically generated application ID:
 </aegis>
 \endcode
 
-If an application has a user-defined ID:
+In the following example an application has a user-defined ID:
 
 \code
 <aegis>
@@ -32,7 +32,7 @@ If an application has a user-defined ID:
 </aegis>
 \endcode
 
-Finally, if an application has some security tokens:
+In the following example an application has security tokens:
 
 \code
 <aegis>

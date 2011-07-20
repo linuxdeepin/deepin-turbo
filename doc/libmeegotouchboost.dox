@@ -1,4 +1,4 @@
-/*! \page libmeegotouchboost Using the MeeGo Touch Booster
+/*! \page libmeegotouchboost Using the MeeGo Touch booster
 
 This section describes how to use the MeeGo Touch booster. The
 booster provides the application with the key libraries already
@@ -7,28 +7,28 @@ present in the process, and instances of \c MApplication and
 
 \section mtboostprereq Prerequisites
 
-The launcher can start an application if the following pre-requisites are met:
+The launcher can start an application if the following prerequisites are met:
 
 \li MApplication and MApplicationWindow instances are taken into use from
 MComponentCache
 
-\li application is compiled and linked to a position independent binary
+\li application is compiled and linked to a position-independent binary
 (executable or library)
 
 \li application is started with the \c invoker command instead of executing the
-executable file.
+executable file
 
 \section mtboostcompiling 1. Compiling and linking for launcher
 
-Binaries intended to be run with \c applauncherd should be compiled
-with \c -fPIC option to produce position independent code. They should
-then be linked either as shared libraries, or better yet as position
-independent executables, which can be executed both traditionally and
+If you intend to run a binary with \c applauncherd, compile it
+with \c -fPIC option to produce position independent code. It is 
+recommended to link them either as shared libraries, or, preferably, as 
+position-independent executables, which can be executed both traditionally and
 with the launcher. The \c -pie and \c -rdynamic linker flags
 accomplish this.
 
-To improve linking and loading times of shared object libraries it is
-encouraged to hide any unnecessary symbols from the resulting binary
+To improve linking and loading times of shared object libraries, it is
+recommended that you hide any unnecessary symbols from the resulting binary
 by using \c -fvisibility=hidden and \c -fvisibility-inlines-hidden
 flags as well.  However, \c applauncherd needs to find the entry point
 for your application, so the symbol \c main needs to be explicitly made
@@ -43,23 +43,23 @@ M_EXPORT int main(int argc, char **argv)
 }
 \endcode
 
-If your application loads a plugin that needs to access some symbols
+If your application loads a plug-in that needs to access some symbols
 in the main application, the symbols also need to be exported. In
-addition, the \c --global-syms invoker parameter needs to use, as
-described in \ref invokerparameters "Advanced Invoker Command Line Parameters".
+addition, you must use the \c --global-syms invoker parameter, as
+described in \ref invokerparameters "Advanced invoker command line parameters".
 
-Normally you should not need to worry about the compiler and linker
+Normally you do not need to worry about the compiler and linker
 flags, as the \c libmeegotouch-dev package provides configuration
-options for \c QMake, \c cmake, and \c pkg-config. If you are building
+options for \c qmake, \c CMake, and \c pkg-config. If you are building
 a Debian package, make your package build-depend on \c
 libmeegotouch-dev and your application binary package depend on 
 \c applauncherd.
 
 For details on how to get the compiler and linker flags, see 
-\ref usingqmake "Using QMake", \ref usingcmake "Using CMake", or
+\ref usingqmake "Using qmake", \ref usingcmake "Using CMake", or
 \ref usingpkgconfig "Using pkg-config".
 
-\section mtboostcache 2. Utilizing the booster cache'
+\section mtboostcache 2. Utilising the booster cache
 
 Instantiating \c MApplication and \c MApplicationWindow is a relatively
 expensive operation. The MeeGo Touch booster helps reduce application startup
@@ -67,14 +67,14 @@ latency by creating instances of the classes in \c MComponentCache.
 
 MApplication instance must be taken from the MComponentCache. It is
 recommended to take MApplicationWindow from the cache as well. Thus,
-if the classes are instantiated in the application as
+if the classes are instantiated in the application as follows:
 
 \code
       MApplication application(argc, argv);
       MApplicationWindow window;
 \endcode
 
-the code needs to be modified to:
+Modify the code as follows:
 
 \code
 MApplication* application = MComponentCache::mApplication(argc, argv);
@@ -92,11 +92,11 @@ MApplicationWindow instance is known to cause crashes.
 
 \section mtboostexit 3. Adapting application source code
 
-Making use of the cache is typically the only modification needed to
-the application. However, if the application has explicit calls to \c
-exit(), these should be changed to use \c _exit() instead. The brief
+Making use of the cache is typically the only modification that you need to
+make in the application. However, if the application has explicit calls to \c
+exit(), change these to use \c _exit() instead. The brief
 explanation is that this prevents cleanup actions related to shared
-libraries to be performed multiple times. For more details see 
+libraries to be performed multiple times. For more details, see 
 \ref limitations "Limitations and known issues".
 
 \section mtboostinvoker 4. Launching the application
@@ -122,8 +122,8 @@ case, you can do:
 $ ps ax | grep booster-m
 \endcode
 
-If you don't see the booster process, you need to start \c
-applauncherd manually. In Harmattan and MeeGo, \c applauncherd should
+If you do not see the booster process, you need to start \c
+applauncherd manually. In MeeGo 1.2 Harmattan, \c applauncherd should
 be running as part of the UI session.
 
 Once you have verified that the booster process is running, you can
@@ -134,12 +134,12 @@ your application:
 invoker --type=m /usr/bin/myApp
 \endcode
 
-\section mtboostfinishingtouch 5. Finishing touches.
+\section mtboostfinishingtouch 5. Finishing touches
 
-The invoker can also provide single instance behavior and a splash
-screen for you application as follows. For more details, see 
-\ref singleinstance "the single instance documentation" and 
-\ref splash "the splash screen documentation."
+The invoker can also provide single instance behaviour and a splash
+screen for your application as follows. For more details, see 
+\ref singleinstance "Enabling single instance support for an application" and 
+\ref splash "Enabling a splash screen for an application".
 
 \code
 /usr/bin/invoker --single-instance --splash=/usr/share/myApp/splash.jpg --type=m /usr/bin/myApp

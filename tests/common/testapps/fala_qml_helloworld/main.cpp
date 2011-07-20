@@ -24,13 +24,23 @@
 
 QString log_file = "/tmp/fala_qml_helloworld.log";
 
-void FANGORNLOG(const char* s)
+void FANGORNLOG(const char* s, bool eol = true)
 {
     QFile f(log_file);
     f.open(QIODevice::Append);
     f.write(s, qstrlen(s));
-    f.write("\n", 1);
+    if (eol) {
+        f.write("\n", 1);
+    }
     f.close();
+}
+
+void FANGORNLOG(const QString& s, bool eol = true)
+{
+    QByteArray ba = s.toLocal8Bit();
+    char *p = new char[ba.size() + 1];
+    strcpy(p, ba.data());
+    FANGORNLOG(p, eol);
 }
 
 void timestamp(const char *s)
@@ -42,6 +52,15 @@ void timestamp(const char *s)
              static_cast<int>(tim.tv_sec), static_cast<int>(tim.tv_usec/1000), s);
     FANGORNLOG(msg);
 }
+
+void timestamp(const QString& s)
+{
+    QByteArray ba = s.toLocal8Bit();
+    char *p = new char[ba.size() + 1];
+    strcpy(p, ba.data());
+    timestamp(p);
+}
+
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
@@ -61,7 +80,27 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 
     QDeclarativeView *window = MDeclarativeCache::qDeclarativeView();
     timestamp("QDeclarativeView from cache");
-    
+
+    timestamp(QString("applicationDirPath: ").append(QApplication::applicationDirPath()));
+    timestamp(QString("applicationFilePath: ").append(QApplication::applicationFilePath()));
+
+    if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
+        FANGORNLOG("argv:", false);
+        for (int i = 0; i < argc; i++) {
+            FANGORNLOG(" ", false);
+            FANGORNLOG(argv[i], false);
+        }
+        FANGORNLOG("");
+
+        FANGORNLOG("argv:", false);
+        QStringList args = QCoreApplication::arguments();
+        for (int i = 0; i < args.size(); i++) {
+            FANGORNLOG(" ", false);
+            FANGORNLOG(args.at(i), false);
+        }
+        FANGORNLOG("");
+    }
+
     window->setWindowTitle("Applauncherd QML testapp");
 
     window->setResizeMode(QDeclarativeView::SizeRootObjectToView);

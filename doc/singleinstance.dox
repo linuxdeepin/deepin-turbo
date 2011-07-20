@@ -1,6 +1,6 @@
-/*! \page singleinstance How To Enable Single Instance Support For the Application
+/*! \page singleinstance Enabling single instance support for an application
 
-Usually user wants his application to be run as a single instance. This means,
+Usually a user wants an application to be run as a single instance. This means
 that if the launched application is already running, the existing application
 window is activated and no new application processes are started.
 
@@ -15,11 +15,18 @@ Exec=/usr/bin/invoker --single-instance --type=e /usr/bin/myApp
 \endverbatim
 
 As a result, a lock file 
-\c /var/run/single-instance-locks/myApp/instance.lock is created. 
+\c /var/run/single-instance-locks/usr/bin/myApp/instance.lock is created. 
 If applauncherd cannot acquire the lock, it tries to find the corresponding
-window and activates it.
+window and activates it. 
+
+Using single instance support requires that the shown window belongs
+to the invoked application binary. For example, if the invoked
+application starts a new application as a plug-in and the plug-in
+shows the window, you must manually set the plug-in window XProperty
+WM_COMMAND. To use single instance support, set the property to
+correspond with the application name used in the single instance lock file.
 
 Consider using --single-instance instead of the single instance functionality
-provided by D-Bus, because it very likely is much faster.
+provided by D-Bus, because --single-instance is much faster in most cases.
 
 */
