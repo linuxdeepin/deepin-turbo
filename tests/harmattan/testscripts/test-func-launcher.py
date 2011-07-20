@@ -1247,6 +1247,39 @@ class launcher_tests (unittest.TestCase):
         pos = op.split("\n")[0].find("Booster: Loading symbol 'main' failed:")
         self.assert_(pos != -1, "The booster did not give warning")
 
+    def test_signal_status(self):
+        """
+        Test that values of SigBlk, SigIgn and SigCgt in /proc/pid/status 
+        is same for both boosted and non boosted applications
+        """
+        #Get status for non boosted apps
+        os.system("/usr/bin/fala_wl &")
+        time.sleep(2)
+
+        pid = get_pid("fala_wl")
+        st, SigBlk_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigBlk" %pid)
+        st, SigIgn_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigIgn" %pid)
+        st, SigCgt_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigCgt" %pid)
+
+        kill_process("fala_wl")
+        time.sleep(2)
+        
+        #Get status for booster application
+        os.system("/usr/bin/invoker --type=m /usr/bin/fala_wl &")
+        time.sleep(2)
+
+        pid = get_pid("fala_wl")
+        st, SigBlk_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigBlk" %pid)
+        st, SigIgn_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigIgn" %pid)
+        st, SigCgt_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigCgt" %pid)
+
+        kill_process("fala_wl")
+        time.sleep(2)
+        
+        self.assert_(SigBlk_wol == SigBlk_wl, "The SigBlk is not same for both apps")
+        self.assert_(SigIgn_wol == SigIgn_wl, "The SigIgn is not same for both apps")
+        self.assert_(SigCgt_wol == SigCgt_wl, "The SigCgt is not same for both apps")
+
 # main
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
