@@ -1232,6 +1232,20 @@ class launcher_tests (unittest.TestCase):
         self.assert_(daemon_pid == daemon_pid_new, "New instance of applauncherd started")
         self.assert_(st != 0, "Second instance of applauncherd started")
         
+    def test_nonlaunchable_apps(self):
+        """
+        Test that Booster gives warning while trying to launch non launchable applications
+        Here fala_wid is a shell script and libebooster.so is a library
+        """
+        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/bin/fala_wid")
+        debug("The Warning is %s" %(op.split("\n")[0]))
+        pos = op.split("\n")[0].find("Booster: Loading invoked application failed:")
+        self.assert_(pos != -1, "The booster did not give warning")
+        
+        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/lib/applauncherd/libebooster.so")
+        debug("The Warning is %s" %(op.split("\n")[0]))
+        pos = op.split("\n")[0].find("Booster: Loading symbol 'main' failed:")
+        self.assert_(pos != -1, "The booster did not give warning")
 
 # main
 if __name__ == '__main__':
