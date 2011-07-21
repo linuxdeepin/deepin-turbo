@@ -30,6 +30,10 @@
       <case name="applauncherd__test_writable_executable_mem" type="Functional" description="Test that applauncherd does not have the writable and executable memory" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_writable_executable_mem</step>
       </case>
+
+      <case name="applauncherd__test_unix_signal_handlers" type="Functional" description="Test unixSignalHAndlers by killing booster-m and booster-d, singnal hup" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_unix_signal_handlers</step>
+      </case>
       <case name="applauncherd__test_nonlaunchable_apps" type="Functional" description="Test for booster warning while invoking non launchable apps" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_nonlaunchable_apps</step>
       </case>

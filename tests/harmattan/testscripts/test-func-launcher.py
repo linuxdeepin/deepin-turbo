@@ -952,6 +952,27 @@ class launcher_tests (unittest.TestCase):
         p = run_cmd_as_user('invoker --help')
         self.assert_(p.wait() == 0, "'invoker --help' failed")
 
+    def test_unix_signal_handlers(self):
+        """
+        Test unixSignalHAndlers by killing booster-m and booster-d, singnal hub 
+        """
+
+        mpid = get_pid('booster-m')
+        st, op = commands.getstatusoutput('kill -hup %s' % mpid)
+        time.sleep(2)
+        mpid_new = wait_for_app('booster-m')
+        self.assert_(mpid != mpid_new, "booster-m pid is not changed")
+        
+        
+        dpid = get_pid('booster-d')
+        st, op = commands.getstatusoutput('kill -hup %s' % dpid)
+        time.sleep(2)
+        dpid_new = wait_for_app('booster-d')
+        self.assert_(dpid != dpid_new, "booster-d pid is not changed")
+
+        
+        
+
     def test_writable_executable_mem(self):
         """
         Test that applauncherd does not have the writable and executable memory
