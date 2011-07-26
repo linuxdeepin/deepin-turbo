@@ -94,3 +94,6 @@ add_subdirectory(common/testapps/fala_qml_helloworld)
 # Sub build: common/testapps/fala_multiwindow
 add_subdirectory(common/testapps/fala_multiwindow)
 
+# Sub build: common/testapps/fala_windowless
+add_subdirectory(common/testapps/fala_windowless)
+

@@ -373,6 +373,40 @@ class SingleInstanceTests(unittest.TestCase):
     def test_single_instance_window_raise_with_script(self):
         self.single_instance_window_raise_with_script('invoker --single-instance --type=e')
 
+    def test_single_instance_windowless_w_invoker(self):
+        """
+        To test that starting twice windowless application with invoker with single-instance
+	will report error in syslog
+        """
+	app = '/usr/bin/fala_windowless'
+	#remove already running fala_windowless if any
+        kill_process(app)
+	#check applauncherd is started
+        pid_ad = wait_for_single_applauncherd()
+        self.assert_(pid_ad != None, "Applauncherd was not started")
+	#run fala_windowless first time
+        run_app_as_user_with_invoker(app, booster = 'm', arg = "--single-instance")
+        pid1 = wait_for_app(app)
+        self.assert_(pid1 != None, "%s was not started." % app)
+	#count previous error messages related to single instance application start attempts
+	st, op = commands.getstatusoutput('grep -c "]: Booster: Can\'t activate existing instance of the application!" /var/log/syslog ')
+	debug("The errors count in syslog is: %s" %op)
+	#run fala_windowless second time	
+        run_app_as_user_with_invoker(app, booster = 'm', arg = "--single-instance")
+	time.sleep(5)
+	pid2 = get_pid(app)
+        #count error messages in sislog once again
+	st1, op1 = commands.getstatusoutput('grep -c "]: Booster: Can\'t activate existing instance of the application!" /var/log/syslog ')
+	debug("The errors count in syslog is: %s" %op1)
+	#cleanup
+	pid_list = pid2.split()
+        for pid in pid_list:
+            kill_process(apppid=pid)
+	#check only one instance has been started
+        self.assert_(len(pid_list) == 1, "Second instance of single-instance app has been started.");
+	#check +1 error message found
+	self.assert_(int(op) + 1 == int(op1), "No errror has been logged to syslog for windowless single instance app.")
+ 
 
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include
