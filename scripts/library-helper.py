@@ -28,6 +28,14 @@ real_runtime_deps = set(['${shlibs:Depends}',
 D = 0   # dlopen
 L = 1   # link
 
+# Library modifiers for dlopen (D-status only!), do not use modifiers below for L-status (link) libraries
+# Add extra-symbol on first position of library name to control dlopen mode. See dlopen(3) for details.
+# 'N' - default, dlopen mode is RTLD_NOW | RTLD_GLOBAL, ex "N/usr/lib/libsomelibrary.so" is equvalent to "/usr/lib/libsomelibrary.so": RTLD_NOW | RTLD_GLOBAL will be used for dlopen
+# 'L' - dlopen mode is RTLD_LAZY | RTLD_GLOBAL, ex "L/usr/lib/libsomelibrary.so": RTLD_LAZY | RTLD_GLOBAL will be used for dlopen
+# 'D' - dlopen mode is RTLD_DEEPBIND | RTLD_GLOBAL, ex "D/usr/lib/libsomelibrary.so": RTLD_DEEPBIND | RTLD_GLOBAL will be used for dlopen
+# '#' - library will NOT be dlopened, ex "#/usr/lib/libsomelibrary.so" - will not be dlopened
+
+
 libraries_nokia = [
     # Library                                                              Linker flags, Binary package, Dev package
     #(L, "/usr/lib/libcontactsvoicemail.so.0",                              "-lcontactsvoicemail", "libcontactsvoicemail0", "libcontactswidgets-dev"),
