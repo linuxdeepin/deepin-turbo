@@ -47,7 +47,6 @@ const int Daemon::m_boosterSleepTime = 2;
 
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
-    m_quiet(false),
     m_bootMode(false),
     m_socketManager(new SocketManager),
     m_singleInstance(new SingleInstance)
@@ -63,10 +62,6 @@ Daemon::Daemon(int & argc, char * argv[]) :
 
     // Parse arguments
     parseArgs(ArgVect(argv, argv + argc));
-
-    // Disable console output
-    if (m_quiet)
-        consoleQuiet();
 
     // Store arguments list
     m_initialArgv = argv;
@@ -87,20 +82,6 @@ Daemon::Daemon(int & argc, char * argv[]) :
     {
         daemonize();
     }
-}
-
-void Daemon::consoleQuiet()
-{
-    close(0);
-    close(1);
-    close(2);
-
-    if (open("/dev/null", O_RDONLY) < 0)
-        throw std::runtime_error("Daemon: Failed to open /dev/null as read-only");
-
-    int fd = open("/dev/null", O_WRONLY);
-    if ((fd == -1) || (dup(fd) < 0))
-        throw std::runtime_error("Daemon: Failed to open /dev/null as write-only");
 }
 
 Daemon * Daemon::instance()
@@ -682,10 +663,6 @@ void Daemon::parseArgs(const ArgVect & args)
         {
             usage(EXIT_SUCCESS);
         }
-        else if ((*i) == "--quiet" || (*i) == "-q")
-        {
-            m_quiet = true;
-        }
     }
 }
 
@@ -704,7 +681,6 @@ void Daemon::usage(int status)
            "                   to the launcher.\n"
            "  -d, --daemon     Run as %s a daemon.\n"
            "  --debug          Enable debug messages and log everything also to stdout.\n"
-           "  -q, --quiet      Close fd's 0, 1 and 2.\n"
            "  -h, --help       Print this help.\n\n",
            PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER);
 

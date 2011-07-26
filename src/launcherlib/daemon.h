@@ -64,7 +64,6 @@ public:
      *
      * Supported arguments:
      * --daemon == daemonize
-     * --quiet  == quiet
      * --help   == print usage
      */
     Daemon(int & argc, char * argv[]);
@@ -134,9 +133,6 @@ private:
     //! Fork all registered boosters
     void forkBoosters();
 
-    //! Don't use console for output
-    void consoleQuiet();
-
     //! Kill given pid with SIGKILL by default
     void killProcess(pid_t pid, int signal = SIGKILL) const;
 
@@ -175,9 +171,6 @@ private:
 
     //! Daemonize flag (--fork). Daemon forks if true.
     bool m_daemon;
-
-    //! Debug print flag (--quiet). Daemon closes fd's 0 - 2 if true.
-    bool m_quiet;
 
     /*! Flag indicating boot mode (--boot-mode). If true, then:
      *  - Caches won't be initialized.

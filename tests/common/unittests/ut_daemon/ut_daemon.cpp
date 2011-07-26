@@ -51,24 +51,20 @@ void Ut_Daemon::testInitialArguments()
 
 void Ut_Daemon::testParseArgs()
 {
-    int argc = 3;
+    int argc = 2;
     char **argv = new char * [argc];
 
     argv[0] = strdup("app");
     argv[1] = strdup("--daemon");
-    argv[2] = strdup("--quiet");
 
     QVERIFY(m_subject->m_daemon == false);
-    QVERIFY(m_subject->m_quiet == false);
 
     m_subject->parseArgs(vector<string>(argv, argv + argc));
 
     QVERIFY(m_subject->m_daemon == true);
-    QVERIFY(m_subject->m_quiet == true);
 
     delete argv[0];
     delete argv[1];
-    delete argv[2];
     delete [] argv;
 }
 

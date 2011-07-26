@@ -24,7 +24,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "report.h"
 #include "search.h"
 
 static char* merge_paths(const char *base_path, const char *rel_path)
