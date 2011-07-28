@@ -10,6 +10,7 @@ add_subdirectory(ut_socketmanager)
 add_subdirectory(ut_singleinstance)
 add_subdirectory(ut_boosterpluginregistry)
 add_subdirectory(ut_appdata)
+add_subdirectory(ut_logger)
 
 install(FILES tests.xml DESTINATION /usr/share/applauncherd-tests)
 

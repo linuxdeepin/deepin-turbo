@@ -16,3 +16,5 @@ usr/share/applauncherd-tests/libutwithcreate.so
 usr/share/applauncherd-tests/libutwithcreatetype.so
 usr/share/applauncherd-tests/libutwithcreatetypesocketname.so
 usr/share/applauncherd-tests/libutplugin.so
+usr/share/applauncherd-tests/ut_logger
+

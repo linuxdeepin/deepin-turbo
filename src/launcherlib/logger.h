@@ -93,6 +93,10 @@ private:
 
     //! Echo everything including debug messages to stdout if true
     static bool m_debugMode;
+
+#ifdef UNIT_TEST
+    friend class Ut_Logger;
+#endif
 };
 
 #endif // LOGGER_H
