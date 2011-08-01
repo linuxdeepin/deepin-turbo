@@ -23,6 +23,10 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <errno.h>
+#include <stdexcept>
+
+static const QString syslogFile = "/var/log/syslog";
+static const int delay = 1000;
 
 // Redefine some methods for Connection class
 class MyConnection : public Connection
@@ -144,6 +148,58 @@ void Ut_Connection::testGetAppName()
     string resName = m_subject->receiveAppName();
     QVERIFY(!resName.empty());
     QVERIFY(resName.compare(realName) == 0);
+}
+
+void Ut_Connection::testConnection()
+{
+    //negative testcase for wrong socket
+    bool exceptionTriggered = false;
+    QString exceptionDetails;
+    Connection * cn = NULL;
+    try {
+         cn = new Connection(-1);
+    }catch (std::runtime_error & e) {
+        exceptionTriggered = true;
+        exceptionDetails = e.what();
+    }
+    if (cn)
+        delete cn;
+    QCOMPARE(exceptionTriggered, true);
+    QVERIFY(exceptionDetails.compare("Connection: Socket isn't initialized!\n") == 0);
+
+    //negative testcase for credentials
+    qsrand(QDateTime::currentMSecsSinceEpoch());
+    char invalidCredentials[255];
+    const char * correctCredentials = Connection::m_credsStr;
+    sprintf(invalidCredentials,"invalid-credentials-%i",qrand());
+    Connection::m_credsStr = invalidCredentials;
+    cn = new Connection(0);
+    Connection::m_credsStr = correctCredentials;
+    if (cn)
+        delete cn;
+    QString matchPattern = "Connection: credentials " + QString(invalidCredentials) +" conversion failed";
+    QTest::qSleep(delay); // wait for syslog
+    int exitCode = QProcess::execute("grep", QStringList() << matchPattern << syslogFile);
+    QVERIFY(exitCode == 0);
+}
+
+void Ut_Connection::testReceiveArgs()
+{
+    m_subject.reset(new MyConnection(0, true));
+    //positive testcase
+    m_subject->nextMsg = 1;
+    char testValue[] = "test";
+    m_subject->nextStr = testValue;
+    QVERIFY(m_subject->receiveArgs() == true);
+
+    //negative testcase with zero number of args
+    m_subject->nextMsg = 0;
+    QVERIFY(m_subject->receiveArgs() == false);
+
+    //negative testcase with null arg pointer
+    m_subject->nextMsg = 1;
+    m_subject->nextStr = NULL;
+    QVERIFY(m_subject->receiveArgs() == false);
 }
 
 QTEST_APPLESS_MAIN(Ut_Connection);

@@ -7,6 +7,7 @@ applauncherd (0.30.6) unstable; urgency=low
   * Changes: Added unittests for SingleInstance
   * Changes: Added unittests for BoosterPluginRegistry
   * Changes: Added unittests for Logger
+  * Changes: Added unittests for Connection
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:55:48 +0300
 

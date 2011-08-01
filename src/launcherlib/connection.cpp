@@ -28,6 +28,7 @@
 #include <cerrno>
 #include <unistd.h>
 #include <stdexcept>
+#include <sys/syslog.h>
 
 #if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
     const char * Connection::m_credsStr = "applauncherd-launcher::access";
@@ -66,6 +67,8 @@ Connection::Connection(int socketFd, bool testMode) :
 
     if (m_credsType == CREDS_BAD)
     {
+        //while Logger is disabled in boosters need logging to syslog directly
+        syslog(LOG_ERR,"Connection: credentials %s conversion failed \n", m_credsStr);
         Logger::logError("Connection: credentials %s conversion failed \n", m_credsStr);
     }
 
