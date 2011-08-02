@@ -97,6 +97,16 @@ public:
      */
     int sigPipeFd() const;
 
+    /*!
+     * Set unix signal handler and save its original value.
+     */
+    void setUnixSignalHandler(int signum, sighandler_t handler);
+
+    /*!
+     * Restore unix signal handlers to their saved values.
+     */
+    void restoreUnixSignalHandlers();
+
 private:
 
     //! Disable copy-constructor
@@ -220,6 +230,10 @@ private:
 
     //! Single instance plugin handle
     SingleInstance * m_singleInstance;
+
+    //! Original unix signal handlers are saved here
+    typedef map<int, struct sigaction*> SigHandlerMap;
+    SigHandlerMap m_originalSigHandlers;
 
 #ifdef UNIT_TEST
     friend class Ut_Daemon;

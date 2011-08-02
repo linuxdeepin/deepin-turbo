@@ -37,6 +37,12 @@
       <case name="applauncherd__test_nonlaunchable_apps" type="Functional" description="Test for booster warning while invoking non launchable apps" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_nonlaunchable_apps</step>
       </case>
+      <case name="applauncherd__test_signal_status_m" type="Functional" description="Test that SigBlk, SigIgn and SigCgt is same for launched and non launched applications" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_status_m</step>
+      </case>
+      <case name="applauncherd__test_signal_status_qml" type="Functional" description="Test that SigBlk, SigIgn and SigCgt is same for launched and non launched applications" timeout="360" level="System" insignificant="true">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_status_qml</step>
+      </case>
       <!--case name="applauncherd__test_application_specific_theming" type="Functional" description="Application specific theming tests" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/tc_theming.rb name test_application_specific_theming</step>
       </case>
