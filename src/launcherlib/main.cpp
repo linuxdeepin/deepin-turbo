@@ -93,12 +93,13 @@ DECL_EXPORT int main(int argc, char * argv[])
         // Get fd for signal pipe.
         g_sigPipeFd = myDaemon.sigPipeFd();
 
-        // Install signal handlers
-        signal(SIGCHLD, sigChldHandler); // reap zombies
-        signal(SIGTERM, sigTermHandler); // exit launcher
-        signal(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
-        signal(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
-        signal(SIGPIPE, sigPipeHandler); // broken invoker's pipe
+        // Install signal handlers. The original handlers are saved
+        // in the daemon instance so that they can be restored in boosters.
+        myDaemon.setUnixSignalHandler(SIGCHLD, sigChldHandler); // reap zombies
+        myDaemon.setUnixSignalHandler(SIGTERM, sigTermHandler); // exit launcher
+        myDaemon.setUnixSignalHandler(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
+        myDaemon.setUnixSignalHandler(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
+        myDaemon.setUnixSignalHandler(SIGPIPE, sigPipeHandler); // broken invoker's pipe
 
         // Run the main loop
         myDaemon.run();

@@ -405,12 +405,8 @@ void Daemon::forkBooster(char type, int sleepTime)
 
     if (newPid == 0) /* Child process */
     {
-        // Reset used signal handlers
-        signal(SIGCHLD, SIG_DFL);
-        signal(SIGTERM, SIG_DFL);
-        signal(SIGUSR1, SIG_DFL);
-        signal(SIGUSR2, SIG_DFL);
-        signal(SIGPIPE, SIG_DFL);
+        // Restore used signal handlers
+        restoreUnixSignalHandlers();
 
         // Will get this signal if applauncherd dies
         prctl(PR_SET_PDEATHSIG, SIGHUP);
@@ -766,6 +762,33 @@ void Daemon::killBoosters()
     // NOTE!!: m_boosterTypeToPid must not be cleared
     // in order to automatically start new boosters.
 }
+
+void Daemon::setUnixSignalHandler(int signum, sighandler_t handler)
+{
+    struct sigaction *oldAct = new struct sigaction();
+    struct sigaction newAct;
+
+    newAct.sa_handler = handler;
+    sigemptyset(&newAct.sa_mask);
+    newAct.sa_flags |= SA_RESTART;
+    if (sigaction(signum, &newAct, oldAct) == 0)
+    {
+        m_originalSigHandlers[signum] = oldAct;
+    } else {
+        throw std::runtime_error("Daemon: Failed to set signal handler");
+    }
+}
+
+void Daemon::restoreUnixSignalHandlers()
+{
+    for (SigHandlerMap::iterator it = m_originalSigHandlers.begin(); it != m_originalSigHandlers.end(); it++ )
+    {
+        sigaction(it->first, it->second, NULL);
+    }
+
+    m_originalSigHandlers.clear();
+}
+
 
 Daemon::~Daemon()
 {
