@@ -1,13 +1,8 @@
-applauncherd (1.1.0) unstable; urgency=low
+applauncherd (1.0.0) unstable; urgency=low
 
   * Fixes: NB#262604 - applauncherd not buildable with eglibc 2.12
   * Fixes: NB#248543 - [SSU]:Error seen at 'invoker: error: Can't send signal to application: No such process '
   * Fixes: NB#273378 - Boosters should restore original signal handlers modified by applauncherd
-
- -- Juha Lintula <juha.lintula@nokia.com>  Tue, 14 Jun 2011 14:55:06 +0300
-
-applauncherd (0.30.6) unstable; urgency=low
-
   * Changes: Added test cases for argument passing to cached [QM]Application.
   * Changes: Performance test modified. Tracking pixel co-ordinates changed.
   * Changes: Language corrections into documentation.
@@ -16,7 +11,7 @@ applauncherd (0.30.6) unstable; urgency=low
   * Changes: Added unittests for BoosterPluginRegistry
   * Changes: Added unittests for Logger
 
- -- Alexey Shilov <alexey.shilov@nokia.com>  Tue, 28 Jun 2011 13:55:48 +0300
+ -- Pertti Kellomäki <pertti.kellomaki@nokia.com>  Tue, 2 Aug 2011  12:46:01 +0300
 
 applauncherd (0.30.5) stable; urgency=low
 
