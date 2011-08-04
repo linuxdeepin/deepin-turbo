@@ -1,4 +1,4 @@
-applauncherd (1.0.0) unstable; urgency=low
+applauncherd (1.0.0) stable; urgency=low
 
   * Fixes: NB#262604 - applauncherd not buildable with eglibc 2.12
   * Fixes: NB#248543 - [SSU]:Error seen at 'invoker: error: Can't send signal to application: No such process '
@@ -12,7 +12,7 @@ applauncherd (1.0.0) unstable; urgency=low
   * Changes: Added unittests for Logger
   * Changes: Added unittests for Connection
 
- -- Pertti Kellomäki <pertti.kellomaki@nokia.com>  Tue, 2 Aug 2011  12:46:01 +0300
+ -- Pertti Kellomäki <pertti.kellomaki@nokia.com>  Tue, 4444 Aug 2011  12:46:01 +0300
 
 applauncherd (0.30.5) stable; urgency=low
 
