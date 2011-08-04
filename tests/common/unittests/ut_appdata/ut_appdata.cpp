@@ -34,38 +34,16 @@ void Ut_AppData::initTestCase()
 void Ut_AppData::cleanupTestCase()
 {}
 
-
-
-
 void Ut_AppData::testEntry()
 {
-  /*    QVERIFY(!m_subject->pluginEntry()); //plugin not loaded yet
-
-    void * handle = dlopen(SINGLE_INSTANCE_PATH, RTLD_NOW);
-    QVERIFY(handle);
-    QVERIFY(m_subject->validateAndRegisterPlugin(handle) == true);
-    QVERIFY(m_subject->pluginEntry()); //plugin loaded
-    m_subject->closePlugin(); 
-
-void AppData::setEntry(entry_t newEntry)
-{
-    m_entry = newEntry;
-}
-
-entry_t AppData::entry() const
-{
-    return m_entry;
-}
-
-*/
-AppData * appData = new AppData();
-QVERIFY(appData);
-entry_t newEntry = (entry_t)(new int(1)); 
-appData->setEntry(newEntry);
-entry_t checkEntry = appData->entry();
-QVERIFY(checkEntry == newEntry);
-delete appData;
-appData = NULL; 
+    AppData * appData = new AppData();
+    QVERIFY(appData);
+    entry_t newEntry = (entry_t)(new int(1)); 
+    appData->setEntry(newEntry);
+    entry_t checkEntry = appData->entry();
+    QVERIFY(checkEntry == newEntry);
+    delete appData;
+    appData = NULL; 
 }
 
 
