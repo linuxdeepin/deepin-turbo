@@ -1,7 +1,7 @@
 Source: applauncherd
 Section: admin
 Priority: important
-Maintainer: Jussi Lind <jussi.lind@nokia.com>
+Maintainer: Alexey Shilov <alexey.shilov@nokia.com>
 Build-Depends: cmake (>= 2.6.0), debhelper (>= 7), libqt4-dev (>= 4.5.0), libmeegotouch-dev, libcreds2-dev [arm armel], aegis-builder (>= 1.4) [arm armel], libxtst-dev, libxext-dev, libxi-dev, doxygen, python2.6, libsaveas, libmeegocontrol0, libduicontrolpanel, libxcomposite-dev, libresource0, libqt4-dev, liblocationextras, libmessagingif0, libsignon-qt0, libcontactswidgets-dev, sensord, libc6, libiphb0, libsignon-ui0, libdatepicker2, libxrandr-dev, liblocationpicker
 Standards-Version: 3.8.0
 
