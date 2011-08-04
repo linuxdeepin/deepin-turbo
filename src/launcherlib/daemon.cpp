@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
+#include <sys/syslog.h>
 #include <fcntl.h>
 #include <dlfcn.h>
 #include <glob.h>
@@ -278,7 +279,11 @@ void Daemon::readFromBoosterSocket(int fd)
     }
     else
     {
-        Logger::logWarning("Daemon: Nothing read from the socket\n");
+        // Since Logger is not working in boosters log directly to syslog
+        syslog(LOG_ERR,"Daemon: Nothing read from the socket\n");
+        Logger::logError("Daemon: Nothing read from the socket\n");
+        // Critical error communicating with booster. Exiting applauncherd.
+        _exit(EXIT_FAILURE);
     }
 
     // Fork a new booster of the given type
@@ -375,6 +380,15 @@ void Daemon::loadBoosterPlugins()
 
 void Daemon::forkBooster(char type, int sleepTime)
 {
+    if (!BoosterPluginRegistry::pluginEntry(type)) {
+        // Since Logger is not working in boosters log directly to syslog
+        syslog(LOG_ERR,"Daemon: Unknown booster type '%c'\n",type);
+        Logger::logError("Daemon: Unknown booster type '%c'\n",type);
+        // Critical error unknown booster type. Exiting applauncherd.
+        _exit(EXIT_FAILURE);
+    }
+
+
     // Invalidate current booster pid for the given type
     setPidToBooster(type, 0);
 

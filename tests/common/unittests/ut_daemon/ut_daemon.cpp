@@ -101,4 +101,52 @@ void Ut_Daemon::testSetPidToBooster()
     QVERIFY(m_subject->boosterPidForType('c') == 0);
 }
 
-QTEST_APPLESS_MAIN(Ut_Daemon);
+void Ut_Daemon::testLock()
+{
+    //negative testcase with already locked soket (it's locked by running applauncherd)
+    QVERIFY(Daemon::lock() == false);
+
+    //negative testcase with wrong lock file descriptor
+    Daemon::unlock();
+    m_subject->m_lockFd = -1;
+    QVERIFY(Daemon::lock() == false);
+}
+
+void Ut_Daemon::testForkBooster()
+{
+    //negative testcase for unregistered booster type '0'
+    pid_t pid = fork();
+    if (pid == 0) { // child
+        // Code only executed by child process
+        m_subject->forkBooster('0');
+        QFAIL("Not exited on invalid booster type");
+        _exit(0); //exit from child if something goes wrong
+    } else if (pid < 0) { // failed to fork
+        QFAIL("Unable to fork for test _exit");
+    } else { //parent only
+        QTest::qSleep(1000);
+        int resultCode = QProcess::execute("grep",QStringList() << "Daemon: Unknown booster type '0'" << "/var/log/syslog");
+        QVERIFY(resultCode == 0);
+    }
+}
+
+
+void Ut_Daemon::testReadFromBoosterSocket()
+{
+    //negative testcase reads from invalid socket
+    pid_t pid = fork();
+    if (pid == 0) { // child
+        // Code only executed by child process
+        m_subject->readFromBoosterSocket(-1);
+        QFAIL("Not exited on invalid socket");
+        _exit(0); //exit from child if something goes wrong
+    } else if (pid < 0) { // failed to fork
+        QFAIL("Unable to fork for test _exit");
+    } else { //parent only
+        QTest::qSleep(1000);
+        int resultCode = QProcess::execute("grep",QStringList() << "Daemon: Nothing read from the socket" << "/var/log/syslog");
+        QVERIFY(resultCode == 0);
+    }
+}
+
+QTEST_APPLESS_MAIN(Ut_Daemon)

@@ -45,6 +45,9 @@ private Q_SLOTS:
     void testVerifyInstance();
     void testReapZombies();
     void testSetPidToBooster();
+    void testLock();
+    void testForkBooster();
+    void testReadFromBoosterSocket();
 
 private:
     std::tr1::shared_ptr<Daemon> m_subject;
