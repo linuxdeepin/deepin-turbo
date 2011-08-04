@@ -1,3 +1,9 @@
+applauncherd (1.0.1) stable; urgency=low
+
+  * Changes: Modified unittest for Connection
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 04 Aug 2011 14:40:53 +0300
+
 applauncherd (1.0.0) stable; urgency=low
 
   * Fixes: NB#262604 - applauncherd not buildable with eglibc 2.12
@@ -11,7 +17,6 @@ applauncherd (1.0.0) stable; urgency=low
   * Changes: Added unittests for BoosterPluginRegistry
   * Changes: Added unittests for Logger
   * Changes: Added unittests for Connection
-  * Changes: Modified unittest for Connection
 
  -- Pertti Kellomäki <pertti.kellomaki@nokia.com>  Tue, 4 Aug 2011  12:46:01 +0300
 
