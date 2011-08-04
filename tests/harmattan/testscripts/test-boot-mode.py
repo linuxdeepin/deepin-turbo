@@ -188,7 +188,7 @@ class BootModeTests(unittest.TestCase):
         time.sleep(3)
         st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Already in boot mode' /var/log/syslog " %pid)
         debug("The log msg is %s" %op1)
-        self.assert_(st == 0, "Seems that SIGUSR2 was not send")
+        self.assert_(st1 == 0, "Seems that SIGUSR2 was not send")
 
     def test_SIGUSR1(self):
         """
@@ -209,7 +209,7 @@ class BootModeTests(unittest.TestCase):
         time.sleep(3)
         st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Exited boot mode.' /var/log/syslog " %daemon_pid)
         debug("The log msg is %s" %op1)
-        self.assert_(st == 0, "Seems that SIGUSR1 was not send")
+        self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
 
         #Get pids for boosters
         pid_q_1 = wait_for_app("booster-q")
@@ -227,7 +227,7 @@ class BootModeTests(unittest.TestCase):
         time.sleep(3)
         st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Already in normal mode.' /var/log/syslog " %daemon_pid)
         debug("The log msg is %s" %op1)
-        self.assert_(st == 0, "Seems that SIGUSR1 was not send")
+        self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
 
 
 if __name__ == '__main__':
