@@ -167,6 +167,7 @@ void Ut_Connection::testConnection()
     QCOMPARE(exceptionTriggered, true);
     QVERIFY(exceptionDetails.compare("Connection: Socket isn't initialized!\n") == 0);
 
+#if defined (HAVE_CREDS)
     //negative testcase for credentials
     qsrand(QDateTime::currentMSecsSinceEpoch());
     char invalidCredentials[255];
@@ -181,6 +182,7 @@ void Ut_Connection::testConnection()
     QTest::qSleep(delay); // wait for syslog
     int exitCode = QProcess::execute("grep", QStringList() << matchPattern << syslogFile);
     QVERIFY(exitCode == 0);
+#endif
 }
 
 void Ut_Connection::testReceiveArgs()

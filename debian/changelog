@@ -11,8 +11,9 @@ applauncherd (1.0.0) stable; urgency=low
   * Changes: Added unittests for BoosterPluginRegistry
   * Changes: Added unittests for Logger
   * Changes: Added unittests for Connection
+  * Changes: Modified unittest for Connection
 
- -- Pertti Kellomäki <pertti.kellomaki@nokia.com>  Tue, 4444 Aug 2011  12:46:01 +0300
+ -- Pertti Kellomäki <pertti.kellomaki@nokia.com>  Tue, 4 Aug 2011  12:46:01 +0300
 
 applauncherd (0.30.5) stable; urgency=low
 
