@@ -179,25 +179,6 @@ bool Connection::recvMsg(uint32_t *msg)
     }
 }
 
-bool Connection::sendStr(const char * str)
-{
-    if (!m_testMode)
-    {
-        // Send size.
-        uint32_t size = strlen(str) + 1;
-        sendMsg(size);
-
-        Logger::logDebug("Connection: %s: '%s'", __FUNCTION__, str);
-
-        // Send the string.
-        return write(m_fd, str, size) != -1;
-    }
-    else
-    {
-        return true;
-    }
-}
-
 const char * Connection::recvStr()
 {
     if (!m_testMode)

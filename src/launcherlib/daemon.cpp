@@ -602,6 +602,7 @@ void Daemon::daemonize()
     }
 
     // Check the lock
+    // Note: file locking must be done after forking, otherwise lock belongs to parent process
     if(!Daemon::lock())
         throw std::runtime_error(std::string(PROG_NAME_LAUNCHER) + " is already running\n");
 
