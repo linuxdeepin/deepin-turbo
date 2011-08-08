@@ -21,6 +21,10 @@ as its content when the device is in the portrait orientation:
 Otherwise splash-l.jpg is shown. If only --splash is given, that 
 image is shown in both orientations.
 
+The dimensions of both portrait and landscape images should be the same
+&lt;screen width&gt; X &lt;screen height&gt;; i.e. mcompositor does not rotate
+the splash image, it should be drawn rotated.
+
 Invoker passes the splash request to the booster. The booster sends
 the splash request to the window manager by setting a window property
 to window manager's window.
