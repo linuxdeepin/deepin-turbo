@@ -1,3 +1,9 @@
+applauncherd (1.0.3) stable; urgency=low
+
+  * Fixes: NB#273378 - Boosters should restore original signal handlers modified by applauncherd
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 09 Aug 2011 17:54:18 +0300
+
 applauncherd (1.0.2) stable; urgency=low
 
   * Stopping applifed in performance tests
