@@ -18,8 +18,6 @@ EventHandler::EventHandler(Booster* parent,  EventHandlerType type) : m_item(0),
 
 void EventHandler::runEventLoop()
 {
-    Logger::logError(" EventHandler::runEventLoop() ");
-
     if (m_type == MEventHandler)
     {
         // Exit from event loop when invoker is ready to connect
@@ -107,8 +105,6 @@ void EventHandler::notifyThemeChange()
 
 void EventHandler::hupSignalHandler(int)
 {
-    Logger::logError(" EventHandler::hupSignalHandler(int) ");
-
     char a = 1;
     ::write(m_sighupFd[0], &a, sizeof(a));
 }

@@ -31,6 +31,10 @@ bool Logger::m_debugMode = false;
 
 void Logger::openLog(const char * progName)
 {
+    if (Logger::m_isOpened)
+    {
+        Logger::closeLog();
+    }
     openlog(progName, LOG_PID, LOG_DAEMON);
     Logger::m_isOpened = true;
 }
@@ -54,11 +58,12 @@ void Logger::writeLog(const int priority, const char * format, va_list ap)
         printf("\n");
     }
 
-    if (Logger::m_isOpened)
+    // Print to syslog
+    if (!Logger::m_isOpened)
     {
-        // Print to syslog
-        vsyslog(priority, format, ap);
+        Logger::openLog(); //open log with default name
     }
+    vsyslog(priority, format, ap);
 }
 
 void Logger::logDebug(const char * format, ...)

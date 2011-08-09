@@ -35,7 +35,7 @@ public:
      * \brief Open the log
      * \param progName Program name as it will be seen in the log.
      */
-    static void openLog(const char * progName);
+    static void openLog(const char * progName = PROG_NAME_LAUNCHER);
 
     /*!
      * \brief Close the log

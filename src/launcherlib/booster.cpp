@@ -60,7 +60,6 @@ namespace
 }
 #endif // HAVE_CREDS
 
-#include <sys/syslog.h>
 #include "coverage.h"
 
 static const int FALLBACK_GID = 126;
@@ -144,8 +143,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
                     if (!pluginEntry->activateExistingInstanceFunc(m_appData->appName().c_str()))
                     {
                         Logger::logWarning("Booster: Can't activate existing instance of the application!");
-                        //since logger is disabled in Booster writing directly to syslog
-                        syslog(LOG_WARNING,"Booster: Can't activate existing instance of the application!");
                         m_connection->sendExitValue(EXIT_FAILURE);
                     }
                     else
@@ -523,7 +520,6 @@ void Booster::setEnvironmentBeforeLaunch()
     if (pwd) chdir(pwd);
 
     Logger::logDebug("Booster: launching process: '%s' ", m_appData->fileName().c_str());
-    Logger::closeLog();
 }
 
 int Booster::launchProcess()
