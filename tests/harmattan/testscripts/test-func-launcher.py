@@ -551,7 +551,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Segmentation fault', "The invoker(m-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1].startswith('Segmentation fault') == True, "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
          
         #Test for d-booster

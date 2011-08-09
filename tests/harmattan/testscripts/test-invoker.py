@@ -54,7 +54,7 @@ class InvokerTests(unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : <%s>" %op)
     
-        self.assert_(op == 'Segmentation fault', "The invoker(m-booster) was not killed by the same signal")
+        self.assert_(op.startswith('Segmentation fault') == True, "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
 
     def test_wrong_type(self):
