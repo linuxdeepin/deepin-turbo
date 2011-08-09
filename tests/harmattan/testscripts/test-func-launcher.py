@@ -560,7 +560,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(d-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1].startswith('Terminated') == True, "The invoker(d-booster) was not killed by the same signal")
         time.sleep(2)
          
         #Test for e-booster
@@ -569,7 +569,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Terminated', "The invoker(e-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1].startswith('Terminated') == True, "The invoker(e-booster) was not killed by the same signal")
         time.sleep(2)
 
         #This case is launching the application in user mode
@@ -579,7 +579,7 @@ class launcher_tests (unittest.TestCase):
         time.sleep(3)
         debug("The Invoker killed by : %s" %op.split('\n')[-1])
     
-        self.assert_(op.split('\n')[-1] == 'Aborted', "The invoker(q-booster) was not killed by the same signal")
+        self.assert_(op.split('\n')[-1].startswith('Aborted') == True, "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
 
     def test_launch_wo_applauncherd(self):
