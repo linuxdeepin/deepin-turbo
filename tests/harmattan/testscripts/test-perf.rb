@@ -152,6 +152,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     print_debug("restart mthome")
     system("initctl restart xsession/mthome")
+    print_debug("stop applifed")
+    system("initctl stop xsession/applifed")
 
     print_debug("move #{MATTI_LOCATION} to #{TEMPORARY_MATTI_LOCATION}")
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
@@ -185,8 +187,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end
     if not system "pgrep applauncherd"
         system("initctl start xsession/applauncherd")
-        sleep(30)
     end
+    if not system "pgrep applifed"
+        system("initctl start xsession/applifed")
+    end
+    sleep(30)
   end
   
 
