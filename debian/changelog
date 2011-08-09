@@ -1,9 +1,9 @@
-applauncherd (1.0.2) unstable; urgency=low
+applauncherd (1.0.2) stable; urgency=low
 
   * Stopping applifed in performance tests
   * Changes: Added documentation that the Splash Screen is not rotated
 
- -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 09 Aug 2011 11:12:11 +0300
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Tue, 09 Aug 2011 16:12:11 +0300
 
 applauncherd (1.0.1) stable; urgency=low
 
