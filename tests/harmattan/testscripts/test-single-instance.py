@@ -84,7 +84,7 @@ class SingleInstanceTests(unittest.TestCase):
         if pid:
             st, op = commands.getstatusoutput('fala_windowid %s' % pid)
         else:
-            st, op = commands.getstatusoutput("xwininfo -root -tree| grep 854x388+0+36\
+            st, op = commands.getstatusoutput("xwininfo -root -tree| grep 854\
                     |awk '/%s/ {print $1}'" %(basename(app)))
         wid = op.splitlines()
 
