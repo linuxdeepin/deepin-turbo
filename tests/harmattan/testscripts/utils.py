@@ -9,6 +9,14 @@ from os.path import basename
 
 DEV_NULL = file("/dev/null","w")
 DAEMONS_TO_BE_STOPPED = ['xsession/applifed', 'xsession/conndlgs']
+LAUNCHER_BINARY='/usr/bin/applauncherd'
+DEV_NULL = file("/dev/null","w")
+LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin/fala_ft_hello2']
+LAUNCHABLE_APPS_QML = ['/usr/bin/fala_qml_helloworld','/usr/bin/fala_qml_helloworld1', '/usr/bin/fala_qml_helloworld2']
+PREFERED_APP = '/usr/bin/fala_ft_hello'
+PREFERED_APP_QML = '/usr/bin/fala_qml_helloworld'
+GET_COORDINATE_SCRIPT = '/usr/share/applauncherd-testscripts/get-coordinates.rb'
+PIXELCHANHED_BINARY = '/usr/bin/fala_pixelchanged'
 
 # Function to stop desired daemons. This is also done in setup function
 # if stop_daemons is not called before.
@@ -283,7 +291,7 @@ def get_file_descriptor(booster, type, app_name):
     #launch application using booster
     debug("launch %s using booster" % app_name)
     st = os.system('invoker --type=%s --no-wait /usr/bin/%s' % (type, app_name))
-    time.sleep(2)
+    time.sleep(4)
 
     #get fd of booster after launching the application
     debug("get fd of booster after launching the application")
@@ -305,7 +313,7 @@ def get_file_descriptor(booster, type, app_name):
                 count = count + 1
         except KeyError:
             print "some key in init is not in final" 
-    time.sleep(2)
+    time.sleep(4)
     debug("The number of changed file descriptors %d" %count)
     kill_process(apppid=pid) 
     return count

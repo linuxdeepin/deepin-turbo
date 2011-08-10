@@ -11,16 +11,16 @@
       </pre_steps>
 
 
-      <case name="applauncherd__test_launch_multiple_apps" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps</step>
+      <case name="applauncherd__test_launch_multiple_apps_m" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_m</step>
       </case>
 
-      <case name="applauncherd__test_one_instance" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance</step>
+      <case name="applauncherd__test_one_instance_m" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance_m</step>
       </case>
 
-      <case name="applauncherd__test_zombie_state" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state</step>
+      <case name="applauncherd__test_zombie_state_m" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state_m</step>
       </case>
       
       <environments>
