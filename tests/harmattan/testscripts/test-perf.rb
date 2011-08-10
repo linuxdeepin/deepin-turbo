@@ -224,6 +224,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end
     if not system "pgrep applifed"
         system("initctl start xsession/applifed")
+        #applifed start causes booster-m to be used to prestart applications. 
+        #Camera has the least priority and the last one to be prestarted.Hence
+        #We wait for the camera to be up and running so that any more booster-m is not used up
+        wait_for_app('camera-ui')
     end
     wait_for_app('applauncherd') 
     wait_for_app('booster-q') 
