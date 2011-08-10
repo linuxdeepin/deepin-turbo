@@ -44,9 +44,39 @@ class TC_PerformanceTests < Test::Unit::TestCase
   
 
   $path = string = `echo $PATH `
+
   def print_debug(msg)
     message = "[INFO]  #{msg}\n"
     puts message
+  end
+
+  def get_pid(app)
+      pid = `pgrep #{app}`.split(/\s/).collect { |x| x.strip() }.delete_if { |x| x.empty? }
+      print_debug("The Pid of #{app} is #{pid}")
+      pid = nil if pid.empty?
+      return pid
+  end
+
+  def wait_for_app(app, timeout = 40, wait = 1)
+      pid = get_pid(app) 
+      start = Time.now
+      while pid == nil and Time.now < start + timeout
+          print_debug("Waiting for 1 sec")
+          sleep(wait)
+          pid = get_pid(app)
+      end
+      len = pid.length()
+
+      while  len > 1 and Time.now < start + timeout
+          print_debug("Waiting for 1 sec")
+          sleep(wait)
+          pid = get_pid(app) 
+          len = pid.length()
+          if len == 1 
+              break
+          end
+      end
+      return pid
   end
 
   
@@ -162,7 +192,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
     system("initctl restart xsession/applauncherd")
 
     #waiting for applauncherd and boosters to stabalise and up and running
-    sleep(30)
+    wait_for_app('applauncherd') 
+    wait_for_app('booster-q') 
+    wait_for_app('booster-e') 
+    wait_for_app('booster-d') 
+    wait_for_app('booster-m') 
     x = `ps ax | grep applauncherd`
     if x.split(/\n/)[0].include?("boot-mode")
         print_debug("The applauncherd is running in boot mode")
@@ -191,7 +225,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
     if not system "pgrep applifed"
         system("initctl start xsession/applifed")
     end
-    sleep(30)
+    wait_for_app('applauncherd') 
+    wait_for_app('booster-q') 
+    wait_for_app('booster-e') 
+    wait_for_app('booster-d') 
+    wait_for_app('booster-m') 
   end
   
 
