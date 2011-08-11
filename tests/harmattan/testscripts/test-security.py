@@ -351,7 +351,33 @@ class SecurityTests(unittest.TestCase):
 
             self.assert_(cred not in creds2,
                          '%s was passed to fala_ft_hello' % cred)
-        
+
+    def test_no_aegis_invoker_creds(self):
+        """                                                                                 
+        Check that invoker gets the correct credentials 
+        """                                                                               
+        #Hardcoding the invoker specific credentials.Needs to be changed if invoker creds changes
+        invoker_specific_creds = ['applauncherd-invoker::applauncherd-invoker',\
+                'applauncherd-launcher::access']
+        p = run_app_as_user_with_invoker("/usr/bin/fala_wl")                                
+        time.sleep(3)                                                                       
+        st, op = commands.getstatusoutput("pgrep -lf '/usr/bin/invoker --type=m /usr/bin/fala_wl'")
+        pid = op.split("\n")[0].split(" ")[0]                                               
+        debug("The pid of Invoker is %s" % pid)                                             
+
+        invoker_creds = get_creds(pid = pid)
+        kill_process("fala_wl")
+        self.assert_(invoker_creds != None,
+                "error retrieving creds for invoker")
+        creds = self.filter_creds(invoker_creds)                                                     
+        creds.sort()                                                                        
+        debug("The creds for invoker is %s" %creds)                                                                             
+
+        req_creds = invoker_specific_creds + self.user_creds(True)                
+        req_creds.sort()                                                                         
+        debug("The required creds for invoker is %s" %req_creds)                                          
+        self.assert_(creds == req_creds,                                                         
+                "invoker has incorrect credentials")  
 
 # main
 if __name__ == '__main__':
