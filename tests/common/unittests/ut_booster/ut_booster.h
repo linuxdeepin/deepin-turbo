@@ -37,6 +37,8 @@ private Q_SLOTS:
     void initTestCase();
     void testRenameProcess();
     void testRenameProcessNotEnoughSpace();
+    void testBoosterLauncherSocket();
+    void testLoadMain();
     void cleanupTestCase();
 
 private:

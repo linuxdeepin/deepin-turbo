@@ -19,6 +19,8 @@
 
 #include "ut_booster.h"
 #include "booster.h"
+#include <stdexcept>
+#include <QString>
 
 // Booster is an abstract base-class, so let's inherit it and
 // define methods that are pure virtual
@@ -146,6 +148,49 @@ void Ut_Booster::testRenameProcessNotEnoughSpace()
     QVERIFY(memcmp(initialArgv[0], m_subject->appData()->argv()[0], initLen) == 0);
     QVERIFY(initialArgv[0][initLen] == '\0');
     QVERIFY(initialArgv[0][initLen - 1] == 'L');
+}
+
+void Ut_Booster::testBoosterLauncherSocket()
+{
+    int testValue = 11;
+    m_subject->setBoosterLauncherSocket(testValue);
+    int resultValue = m_subject->boosterLauncherSocket();
+    QVERIFY(resultValue == testValue);
+}
+
+void Ut_Booster::testLoadMain()
+{
+
+    m_subject->appData()->setFileName("/no/such/file");
+    bool exceptionTriggered = false;
+    QString exceptionDetails;
+    try{
+        m_subject->loadMain();
+    }
+    catch (std::runtime_error & e)
+    {
+        exceptionTriggered = true;
+        exceptionDetails = e.what();
+    }
+
+    QVERIFY(exceptionTriggered == true);
+    QVERIFY(exceptionDetails.contains("Booster: Loading invoked application failed:", Qt::CaseInsensitive) == true);
+
+    m_subject->appData()->setFileName("/usr/share/applauncherd-tests/libutplugin.so");
+
+    exceptionTriggered = false;
+    exceptionDetails = "";
+    try{
+        m_subject->loadMain();
+    }
+    catch (std::runtime_error & e)
+    {
+        exceptionTriggered = true;
+        exceptionDetails = e.what();
+    }
+
+    QVERIFY(exceptionTriggered == true);
+    QVERIFY(exceptionDetails.contains("Booster: Loading symbol 'main' failed:", Qt::CaseInsensitive) == true) ;
 }
 
 QTEST_APPLESS_MAIN(Ut_Booster);
