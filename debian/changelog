@@ -1,6 +1,6 @@
 applauncherd (1.0.4) unstable; urgency=low
 
-  * 
+  * Fixes: NB#276265 - After SSU with build version 20.2011.32-0.REQ.759009, applications running in the background and foreground are crashing
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 15 Aug 2011 11:30:49 +0300
 

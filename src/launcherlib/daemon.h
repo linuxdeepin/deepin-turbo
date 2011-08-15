@@ -232,7 +232,7 @@ private:
     SingleInstance * m_singleInstance;
 
     //! Original unix signal handlers are saved here
-    typedef map<int, struct sigaction*> SigHandlerMap;
+    typedef map<int, sighandler_t> SigHandlerMap;
     SigHandlerMap m_originalSigHandlers;
 
 #ifdef UNIT_TEST

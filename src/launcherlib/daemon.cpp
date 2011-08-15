@@ -765,16 +765,14 @@ void Daemon::killBoosters()
 
 void Daemon::setUnixSignalHandler(int signum, sighandler_t handler)
 {
-    struct sigaction *oldAct = new struct sigaction();
-    struct sigaction newAct;
+    sighandler_t old_handler = signal(signum, handler);
 
-    newAct.sa_handler = handler;
-    sigemptyset(&newAct.sa_mask);
-    newAct.sa_flags |= SA_RESTART;
-    if (sigaction(signum, &newAct, oldAct) == 0)
+    if (old_handler != SIG_ERR)
     {
-        m_originalSigHandlers[signum] = oldAct;
-    } else {
+        m_originalSigHandlers[signum] = old_handler;
+    } 
+    else 
+    {
         throw std::runtime_error("Daemon: Failed to set signal handler");
     }
 }
@@ -783,7 +781,7 @@ void Daemon::restoreUnixSignalHandlers()
 {
     for (SigHandlerMap::iterator it = m_originalSigHandlers.begin(); it != m_originalSigHandlers.end(); it++ )
     {
-        sigaction(it->first, it->second, NULL);
+        signal(it->first, it->second);
     }
 
     m_originalSigHandlers.clear();
