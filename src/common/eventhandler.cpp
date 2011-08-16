@@ -133,7 +133,7 @@ bool EventHandler::setupUnixSignalHandlers()
 
     hup.sa_handler = hupSignalHandler;
     sigemptyset(&hup.sa_mask);
-    hup.sa_flags |= SA_RESTART;
+    hup.sa_flags = SA_RESTART;
 
     if (sigaction(SIGHUP, &hup, &m_oldSigAction) > 0)
     {
