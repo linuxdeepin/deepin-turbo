@@ -30,6 +30,22 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_app_exits_clean</step>
       </case>
 
+      <!--<case name="applauncherd__test_launched_app_wm_class_m" type="Functional" description="Test that launched application have correct WM_CLASS Xproperty booster m" timeout="460" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_wm_class_m</step>
+      </case>-->
+
+      <case name="applauncherd__test_launched_app_wm_class_d" type="Functional" description="Test that launched application have correct WM_CLASS Xproperty booster d" timeout="460" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_wm_class_d</step>
+      </case>
+
+      <case name="applauncherd__test_launched_app_wm_class_e" type="Functional" description="Test that launched application have correct WM_CLASS Xproperty booster e" timeout="460" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_wm_class_e</step>
+      </case>
+
+      <case name="applauncherd__test_launched_app_wm_class_q" type="Functional" description="Test that launched application have correct WM_CLASS Xproperty booster q" timeout="460" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_wm_class_q</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

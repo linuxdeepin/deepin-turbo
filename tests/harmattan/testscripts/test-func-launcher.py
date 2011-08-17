@@ -41,6 +41,7 @@ import time
 import sys
 import unittest
 import re
+import string
 from subprocess import Popen
 from utils import *
 from os.path import basename
@@ -835,6 +836,89 @@ class launcher_tests (unittest.TestCase):
         self.assert_(SigBlk_wol == SigBlk_wl, "The SigBlk is not same for both apps")
         self.assert_(SigIgn_wol == SigIgn_wl, "The SigIgn is not same for both apps")
         self.assert_(SigCgt_wol == SigCgt_wl, "The SigCgt is not same for both apps")
+
+    def test_launched_app_wm_class_m(self):
+        """
+        Test that launched application have correct WM_CLASS Xproperty booster m
+        """
+        #For booster-m MApplicationWindow from MComponentCache
+        self._test_launched_app_wm_class_helper("m","fala_wl","-faulty","fala_wl",2)
+
+        #For booster-m MApplicationWindow NOT from cache. 3 windows (2 for application + 1 is created by cache but not used)
+        self._test_launched_app_wm_class_helper("m","fala_ft_hello","-window-not-from-cache","fala_ft_hello",3)
+
+        #For booster-m multiple MApplicationWindow (3 windows + 1)
+        self._test_launched_app_wm_class_helper("m","fala_multi-window","","fala_multi-window",4)
+
+        #For booster-m multiple MApplicationWindow NOT from cache (3 windows + 1 + 1 created by cache but not used)
+        self._test_launched_app_wm_class_helper("m","fala_multi-window","-window-not-from-cache","fala_multi-window",5)
+
+    def test_launched_app_wm_class_d(self):
+        """
+        Test that launched application have correct WM_CLASS Xproperty booster d
+        """
+        #For booster-d QDeclarativeView from MDeclarativeCache
+        self._test_launched_app_wm_class_helper("d","fala_qml_helloworld","-faulty","fala_qml_helloworld",2)
+
+        #For booster-d QDeclarativeView NOT from cache (2 windows + 1 is created by cache but not used)
+        self._test_launched_app_wm_class_helper("d","fala_qml_helloworld","-window-not-from-cache","fala_qml_helloworld",3)
+
+
+    def test_launched_app_wm_class_e(self):
+        """
+        Test that launched application have correct WM_CLASS Xproperty booster e
+        """
+        #For booster-e MApplicationWindow from MComponentCache
+        self._test_launched_app_wm_class_helper("e","fala_wl","-faulty","fala_wl",2)
+
+        #For booster-e MApplicationWindow NOT from cache
+        self._test_launched_app_wm_class_helper("e","fala_ft_hello","-window-not-from-cache","fala_ft_hello",2)
+
+        #For booster-e multiple MApplicationWindow (3 windows + 1)
+        self._test_launched_app_wm_class_helper("e","fala_multi-window","","fala_multi-window",4)
+
+
+
+    def test_launched_app_wm_class_q(self):
+        """
+        Test that launched application have correct WM_CLASS Xproperty booster q
+        """
+        #For booster-q MApplicationWindow from MComponentCache
+        self._test_launched_app_wm_class_helper("q","fala_wl","-faulty","fala_wl",2)
+
+        #For booster-q MApplicationWindow NOT from cache
+        self._test_launched_app_wm_class_helper("q","fala_ft_hello","-window-not-from-cache","fala_ft_hello",2)
+
+        #For booster-q multiple MApplicationWindow (3 windows + 1)
+        self._test_launched_app_wm_class_helper("q","fala_multi-window","","fala_multi-window",4)
+
+
+    def _test_launched_app_wm_class_helper(self,btype,test_application,cmd_arguments,window_name,window_count):
+        run_command = 'invoker --type=%s --no-wait %s %s' %(btype, test_application, cmd_arguments)
+        p = run_cmd_as_user(run_command)
+        time.sleep(5)
+
+        pid = get_pid(test_application)
+        self.assert_(pid != None, "Can't start application %s" %test_application)
+
+        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/%s/ {print $1}'" %window_name)
+        ids = op.split("\n")
+        xProperties=[]
+        for wid in ids:
+                st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_CLASS/{print $3$4}'" %wid)
+                xProperties.append(op1)
+
+        kill_process(apppid=pid)
+
+        #check that we catch exac number of windows
+        numwind = len(ids)
+        self.assert_(window_count == numwind, 'Got wrong number of windows: %s' %numwind)
+
+        wm_class_xproperty_string = '"' + test_application + '","' + string.capwords(test_application) + '"'
+        debug("Looking for '%s'" %wm_class_xproperty_string)
+
+        for property in xProperties:
+                self.assert_(op1 == wm_class_xproperty_string,'Application WM_CLASS 1 is incorrect: %s' %property)
 
 # main
 if __name__ == '__main__':

@@ -1,0 +1,12 @@
+README
+------
+
+Multiwindow test application. 
+
+Command to launch application
+
+invoker --type=m /usr/bin/fala_multi-window [-window-not-from-cache]
+
+Application can be started with the switch "-output-level debug" to get information what happens inside it.
+
+

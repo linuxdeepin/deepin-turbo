@@ -90,3 +90,10 @@ add_subdirectory(common/testapps/xsendevent)
 
 # Sub build: common/testapps/fala_qml_helloworld
 add_subdirectory(common/testapps/fala_qml_helloworld)
+
+# Sub build: common/testapps/fala_windowless
+add_subdirectory(common/testapps/fala_windowless)
+
+# Sub build: common/testapps/fala_multiwindow
+add_subdirectory(common/testapps/fala_multiwindow)
+

@@ -68,7 +68,26 @@ M_EXPORT int main(int argc, char ** argv)
 {
 #ifdef HAVE_MCOMPONENTCACHE
     MApplication *app = MComponentCache::mApplication(argc, argv);
-    MApplicationWindow *window = MComponentCache::mApplicationWindow();
+    MApplicationWindow *window = NULL;
+
+    bool bWindowNotFromCache = false;
+    const QString sWindowNotFromCache = "window-not-from-cache";
+
+    for (int i = 1; i < argc; i++) {
+	QString sArg = QString(argv[i]);
+	if (sArg.contains(sWindowNotFromCache,Qt::CaseInsensitive)) {
+		bWindowNotFromCache = true;
+		break;
+	}
+    }		
+	
+    if (bWindowNotFromCache) {
+	window = new MApplicationWindow();
+        timestamp("MApplicationWindow NOT from cache");
+    } else {	
+    	window = MComponentCache::mApplicationWindow();
+    	timestamp("MApplicationWindow from cache");
+    }
 #else
     MApplication *app = new MApplication(argc, argv);
     MApplicationWindow *window = new MApplicationWindow;
