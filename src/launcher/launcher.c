@@ -163,6 +163,10 @@ int main(int argc, char ** argv)
         fprintf(stderr, "FATAL!!: Failed to load the launcher library\n");
         return EXIT_FAILURE;
     }
+
+#ifdef WITH_COVERAGE
+        __gcov_flush();
+#endif
    
     return EXIT_SUCCESS;
 }

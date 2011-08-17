@@ -179,6 +179,47 @@ class DaemonTests(unittest.TestCase):
         pos = op.split("\n")[0].find("Booster: Loading symbol 'main' failed:")
         self.assert_(pos != -1, "The booster did not give warning")
 
+    def test_daemon_debug(self):
+        """
+        Test the --debug option for the daemon
+        """
+        stop_applauncherd()
+        remove_applauncherd_runtime_files()
+        os.system('/usr/bin/applauncherd.bin --debug&')
+        time.sleep(10)
+
+        st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --debug"')
+        p_id = op.split(" ")[0]
+        debug("The pid of applauncherd --debug is %s" %op)
+        kill_process(apppid=p_id)
+        start_applauncherd()
+        self.assert_(st == 0, "Applauncherd was not started in debug mode")
+
+    def test_daemon_help(self):
+        """
+        Test the --help parameter for the daemon
+        """
+        stop_applauncherd()
+        remove_applauncherd_runtime_files()
+        st, op = commands.getstatusoutput('/usr/bin/applauncherd.bin --help')
+        start_applauncherd()
+        self.assert_(st == 0, "Applauncherd did not print help")
+        self.assert_(op.split("\n")[1] == 'Usage: applauncherd [options]', "Applauncherd did not print help")
+
+    def test_daemon_no_display(self):
+        """
+        Test that daemon cannot be started if the DISPLAY env variable is not set
+        """
+        stop_applauncherd()
+        remove_applauncherd_runtime_files()
+        st, op = commands.getstatusoutput('(unset DISPLAY;/usr/bin/applauncherd.bin)')
+        start_applauncherd()
+        self.assert_(st != 0, "Applauncherd was started even when DISPLAY was not set")
+        self.assert_(op == 'FATAL!!: DISPLAY environment variable not set.',\
+                "Applauncherd was started even when DISPLAY was not set")
+
+
+
 
 
 
