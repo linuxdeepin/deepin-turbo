@@ -1,3 +1,9 @@
+applauncherd (2.0.0) unstable; urgency=low
+
+  * 
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 18 Aug 2011 15:43:02 +0300
+
 applauncherd (1.0.9) stable; urgency=low
 
   * Changes: Improve test debug output.
