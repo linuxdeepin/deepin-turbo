@@ -96,7 +96,7 @@ Package: applauncherd-art-tests
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
-XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Packages: applauncherd-launcher, applauncherd-invoker 
 XB-Maemo-CI-Stage:acceptance, validation
 Description: applauncherd art tests
  Art tests for testing applauncherd.
