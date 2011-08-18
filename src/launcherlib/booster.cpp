@@ -527,7 +527,7 @@ int Booster::launchProcess()
     setEnvironmentBeforeLaunch();
 
     // Load the application and find out the address of main()
-    void* handle = loadMain();
+    loadMain();
 
 #ifdef WITH_COVERAGE
     __gcov_flush();
@@ -535,7 +535,6 @@ int Booster::launchProcess()
 
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
-    dlclose(handle);
 
 #ifdef WITH_COVERAGE
     __gcov_flush();

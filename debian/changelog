@@ -1,6 +1,6 @@
 applauncherd (2.0.0) unstable; urgency=low
 
-  * 
+  * Fixes: #274302 - don't unload the main binary
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 18 Aug 2011 15:43:02 +0300
 
