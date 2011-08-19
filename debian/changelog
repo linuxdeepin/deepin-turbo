@@ -1,8 +1,9 @@
-applauncherd (1.0.5) unstable; urgency=low
+applauncherd (1.0.5) stable; urgency=low
 
   * Fixes: NB#276265 - After SSU with build version 20.2011.32-0.REQ.759009, applications running in the background and foreground are crashing
+  * Changes: XB-Maemo-CI-Packages for art-tests changed from applauncherd to applauncherd-launcher and applauncherd-invoker
 
- -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Tue, 16 Aug 2011 11:23:55 +0300
+ -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Tue, 19 Aug 2011 13:23:55 +0300
 
 applauncherd (1.0.4) stable; urgency=low
 
