@@ -22,6 +22,9 @@ add_subdirectory(harmattan/testscripts)
 # Sub build: harmattan/art-tests
 add_subdirectory(harmattan/art-tests)
 
+# Sub build: harmattan/apps-tests
+add_subdirectory(harmattan/apps-tests)
+
 # Sub build: harmattan/red-tests
 add_subdirectory(harmattan/red-tests)
 

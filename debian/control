@@ -101,6 +101,14 @@ XB-Maemo-CI-Stage:acceptance, validation
 Description: applauncherd art tests
  Art tests for testing applauncherd.
 
+Package: applauncherd-apps-tests
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: facebookqml  
+XB-Maemo-CI-Stage:acceptance, validation
+Description: applauncherd tests for applications dependent on applauncherd
+
 Package: applauncherd-red-tests
 Priority: extra
 Architecture: any

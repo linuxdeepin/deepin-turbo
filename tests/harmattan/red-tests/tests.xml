@@ -17,9 +17,6 @@
       <!--case name="applauncherd__test_stress_boosted_apps" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>
       </case-->
-      <case name="applauncherd__test_no_aegis_invoker_creds" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_no_aegis_invoker_creds </step>
-      </case>
       <case name="applauncherd__test_daemon_help" type="Functional" description="Test the --help parameter for the daemon" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon_help</step>
       </case>
