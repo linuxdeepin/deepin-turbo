@@ -26,6 +26,9 @@
       <case name="applauncherd__test_daemon_debug" type="Functional" description="Test the --debug option for the daemon" timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon_debug </step>
       </case>
+      <case name="applauncherd__test_app_exits_clean" type="Functional" description="Test the application exits clean" timeout="360" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_app_exits_clean</step>
+      </case>
 
       <environments>
           <scratchbox>true</scratchbox>

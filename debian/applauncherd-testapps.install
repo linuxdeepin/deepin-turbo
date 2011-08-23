@@ -1,6 +1,7 @@
 usr/bin/fala_ft_hello
 usr/bin/fala_status
 usr/bin/fala_wait
+usr/bin/fala_exit
 usr/bin/fala_ft_hello1
 usr/bin/fala_ft_hello2
 usr/bin/fala_ft_creds1

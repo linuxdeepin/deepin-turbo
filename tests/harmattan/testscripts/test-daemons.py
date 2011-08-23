@@ -218,8 +218,27 @@ class DaemonTests(unittest.TestCase):
         self.assert_(op == 'FATAL!!: DISPLAY environment variable not set.',\
                 "Applauncherd was started even when DISPLAY was not set")
 
+    def test_app_exits_clean(self):
+        """
+        Test that a test applications exits clean.
+        """
+        launcher_pid = wait_for_single_applauncherd
+        mbooster_pid = wait_for_app("booster-m")
 
+        cmd = '/usr/bin/invoker --type=m /usr/bin/fala_exit' 
+        st, op = commands.getstatusoutput(cmd)
+        time.sleep(5)
+        self.assert_(st == 0, "The application did not exit clean")
 
+        launcher_pid_new = wait_for_single_applauncherd
+        self.assert_(launcher_pid == launcher_pid_new, "The Pid of applauncherd has changed")
+
+        st, op = commands.getstatusoutput(cmd)
+        time.sleep(5)
+        self.assert_(st == 0, "The application did not exit clean")
+
+        launcher_pid_new = wait_for_single_applauncherd
+        self.assert_(launcher_pid == launcher_pid_new, "The Pid of applauncherd has changed")
 
 
 
