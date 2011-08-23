@@ -378,7 +378,10 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
         int retval = XGetWindowProperty(dpy, rootWin, compositorWindowIdAtom,
                                         0, 0x7fffffff, False, XA_WINDOW,
                                         &type, &format, &nItems, &bytesAfter, &prop);
-        if (retval == Success) 
+
+        // Check not only return value but also make sure
+        // that property was found so pointer isn't NULL
+        if ((retval == Success) && (prop != NULL))
         {
             // Package up the data and set the property
             int len = pidStr.length() + 1

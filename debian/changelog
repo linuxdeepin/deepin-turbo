@@ -1,6 +1,7 @@
 applauncherd (2.0.0) unstable; urgency=low
 
-  * Fixes: #274302 - don't unload the main binary
+  * Fixes: NB#274302 - don't unload the main binary
+  * Fixes: NB#275522 - Booster::requestSplash() segfault
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 18 Aug 2011 15:43:02 +0300
 
