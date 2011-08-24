@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<testdefinition version="0.1">
+
+<!-- Test suite, name mandatory - the same as test package name -->
+  <!-- Schema: https://projects.maemo.org/docs/testing/xml-definition.html -->
+  <suite name="applauncherd-daemon-tests" domain="Application framework"> 
+
+
+    <set name="TC_Daemon" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_launcher_exist" type="Functional" description="To test if the launcher exists and is executable or not" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_launcher_exist</step>
+      </case>
+
+      <case name="applauncherd__test_daemon_list" type="Functional" description="To list the running daemons using invoker after boot" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon_list</step>
+      </case>
+
+      <case name="applauncherd__test_daemon_second_instance" type="Functional" description="Test that 2nd instance of daemon cannot be started" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon_second_instance </step>
+      </case>
+
+      <case name="applauncherd__test_writable_executable_mem" type="Functional" description="Test that applauncherd does not have the writable and executable memory" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_writable_executable_mem</step>
+      </case>
+
+      <case name="applauncherd__test_applauncherd_fd_close" type="Functional" description="Test that applauncherd file descriptor does not change after closing aapp " timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_applauncherd_fd_close</step>
+      </case>
+
+      <case name="applauncherd__test_applauncherd_fd_kill" type="Functional" description="Test that applauncherd file descriptor does not change after killing app" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_applauncherd_fd_kill</step>
+      </case>
+
+      <case name="applauncherd__test_nonlaunchable_apps" type="Functional" description="Test for booster warning while invoking non launchable apps" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_nonlaunchable_apps</step>
+      </case>
+
+      <case name="applauncherd__test_daemon" type="Functional" description="Test that the applauncherd can be started daemonized" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon</step>
+      </case>
+      <post_steps>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+    
+    <set name="TC_Bootmode" description="functional tests for boot mode" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_change_to_normal_mode" type="Functional" description="To test change from boot mode to normal mode" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_change_to_normal_mode</step>
+      </case>
+
+      <case name="applauncherd__test_boot_mode_and_normal_mode" type="Functional" description="To test boot mode and normal mode" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_boot_mode_and_normal_mode</step>
+      </case>
+      <case name="applauncherd__test_single_instance_window_raise_with_script" type="Functional" description="Test basic single instance functionality and window raising using script" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-single-instance.py test_single_instance_window_raise_with_script</step>
+      </case>
+      <case name="applauncherd__test_SIGUSR2" type="Functional" description="Test for SIGUSR2" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR2</step>
+      </case>
+      <case name="applauncherd__test_SIGUSR1" type="Functional" description="Test for SIGUSR1" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR1 </step>
+      </case>
+      <environments>
+          <scratchbox>true</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
+  </suite>
+</testdefinition>
+
+

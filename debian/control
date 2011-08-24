@@ -92,6 +92,24 @@ XB-Maemo-CI-Stage: fast, staging
 Description: applauncherd functional tests
  Functional tests for testing applauncherd.
 
+Package: applauncherd-invoker-tests
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging
+Description: applauncherd functional tests for invoker
+ Functional tests for testing applauncherd.
+
+Package: applauncherd-daemon-tests
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
+XB-Maemo-CI-Packages: applauncherd
+XB-Maemo-CI-Stage: fast, staging
+Description: applauncherd functional tests for daemon
+ Functional tests for testing applauncherd.
+
 Package: applauncherd-art-tests
 Priority: extra
 Architecture: any

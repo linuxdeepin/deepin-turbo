@@ -28,6 +28,12 @@ add_subdirectory(harmattan/apps-tests)
 # Sub build: harmattan/red-tests
 add_subdirectory(harmattan/red-tests)
 
+# Sub build: harmattan/invoker-tests
+add_subdirectory(harmattan/invoker-tests)
+
+# Sub build: harmattan/daemon-tests
+add_subdirectory(harmattan/daemon-tests)
+
 # Sub build: harmattan/functests
 add_subdirectory(harmattan/functests)
 
