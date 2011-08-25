@@ -1,6 +1,7 @@
-applauncherd (1.0.6) unstable; urgency=low
+applauncherd (1.0.6) stable; urgency=low
 
-  * 
+  * Fixes: NB#269073 - Precached (QML) applications do not set WM_CLASS window atom properly
+  * Changes: Added functional tests for WM_CLASS
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 22 Aug 2011 11:22:42 +0300
 
