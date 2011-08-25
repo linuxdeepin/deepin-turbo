@@ -1,3 +1,9 @@
+applauncherd (1.0.7) stable; urgency=low
+
+  * Changes: Unwanted testapp fala_windowless removed from the CMake file
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 25 Aug 2011 15:06:28 +0300
+
 applauncherd (1.0.6) stable; urgency=low
 
   * Fixes: NB#269073 - Precached (QML) applications do not set WM_CLASS window atom properly
