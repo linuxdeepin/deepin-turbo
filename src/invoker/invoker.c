@@ -529,6 +529,8 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
             FD_SET(socket_fd, &readfds);
             ndfs = (socket_fd > ndfs) ? socket_fd : ndfs;
 
+            // sig_forwarder() handles signals.
+            // We only have to receive those here.
             FD_SET(g_signal_pipe[0], &readfds);
             ndfs = (socket_fd > ndfs) ? socket_fd : ndfs;
 
@@ -542,10 +544,9 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
 
                     if (!res)
                     {
-                        // Check if the process
-                        // on the other side of socket just died / was killed.
-                        // We check from /proc whether the launched program is still
-                        // running.
+                        // Because we are here, applauncherd.bin must be dead.
+                        // Now we check if the invoked process is also dead
+                        // and if not, we will kill it.
                         char filename[50];
                         snprintf(filename, sizeof(filename), "/proc/%d/cmdline", g_invoked_pid);
 
@@ -553,13 +554,11 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
                         int fd = open(filename, O_RDONLY);
                         if (fd != -1)
                         {
-                            // Application is still running, so applauncherd must be dead,
-                            // because the blocking read on the socket returned.
+                            // Application is still running
                             close(fd);
 
                             // Send a signal to kill the application too and exit.
-                            // We must do this, because the invoker<->application
-                            // mapping is lost. Sleep for some time to give
+                            // Sleep for some time to give
                             // the new applauncherd some time to load its boosters and
                             // the restart of g_invoked_pid succeeds.
 
@@ -574,17 +573,6 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
                         }
                     }
                     break;
-                }
-                // Check if we got a UNIX signal.
-                else if (FD_ISSET(g_signal_pipe[0], &readfds))
-                {
-                    // Clean up the pipe
-                    char signal_id;
-                    read(g_signal_pipe[0], &signal_id, sizeof(signal_id));
-
-                    // Set signals forwarding to the invoked process again
-                    // (they were reset by the signal forwarder).
-                    sigs_init();
                 }
             }
         }
@@ -824,12 +812,6 @@ int main(int argc, char *argv[])
     if (optind < argc)
     {
         prog_name = search_program(argv[optind]);
-        if (!prog_name)
-        {
-            report(report_error, "Can't find application to invoke.\n");
-            usage(0);
-        }
-
         prog_argc = argc - optind;
         prog_argv = &argv[optind];
     }
