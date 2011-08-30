@@ -1,3 +1,9 @@
+applauncherd (1.0.8) unstable; urgency=low
+
+  * Fixes: NB#263622 - [TASK] applauncherd-launcher should depend on libmeegotouchpreloader0
+
+ -- Pertti Kellomaki <pertti.kellomaki@nokia.com>  Tue, 30 Aug 2011 10:32:28 +0300
+
 applauncherd (1.0.7) stable; urgency=low
 
   * Changes: Unwanted testapp fala_windowless removed from the CMake file
