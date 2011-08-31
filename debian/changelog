@@ -1,3 +1,9 @@
+applauncherd (1.0.9) unstable; urgency=low
+
+  * 
+
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 31 Aug 2011 13:30:06 +0300
+
 applauncherd (1.0.8) stable; urgency=low
 
   * Fixes: NB#263622 - [TASK] applauncherd-launcher should depend on libmeegotouchpreloader0

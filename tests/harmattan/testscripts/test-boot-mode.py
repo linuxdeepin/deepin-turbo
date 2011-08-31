@@ -59,6 +59,8 @@ class BootModeTests(unittest.TestCase):
 
         if get_pid('applauncherd') != None:
             stop_applauncherd()
+        if get_pid('applifed') != None:
+            os.system("initctl stop xsession/applifed")
 
         self.start_applauncherd_in_boot_mode()
 
@@ -73,6 +75,9 @@ class BootModeTests(unittest.TestCase):
         
         if get_pid('applauncherd') != None:
             kill_process('applauncherd')
+        if get_pid('applifed') == None:
+            os.system("initctl start xsession/applifed")
+            wait_for_app('camera-ui')
         start_applauncherd()
 
     def start_applauncherd_in_boot_mode(self):

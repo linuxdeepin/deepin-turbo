@@ -146,7 +146,7 @@ def get_newest_pid(app):
     
     return None
 
-def wait_for_app(app = None, timeout = 10, sleep = 1):
+def wait_for_app(app = None, timeout = 40, sleep = 1):
     """
     Waits for an application to start. Checks periodically if
     the app is running for a maximum wait set in timeout.
@@ -197,10 +197,10 @@ def kill_process(appname=None, apppid=None, signum=15):
         return None
     else:
         if apppid:
-            debug("Now killing the app with pid %s" %apppid) 
+            debug("Now sending SIGTERM to the app with pid %s" %apppid) 
             st, op = commands.getstatusoutput("kill -%s %s" % (str(signum), str(apppid)))
         if appname: 
-            debug("Now killing %s" %appname) 
+            debug("Now sending SIGTERM to %s" %appname) 
             temp = basename(appname)[:14]
             st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
 
