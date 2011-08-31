@@ -67,6 +67,7 @@ private slots:
     void handleSigHup();
 
     //! Qt signal handler for theme change
+    //! Deprecated in MeeGo 1.2 Harmattan
     void notifyThemeChange();
 
 signals:
