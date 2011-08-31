@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <dlfcn.h>
 #include <string.h>
+#include <malloc.h>
 
 #include "preload.h"
 
@@ -152,6 +153,21 @@ int main(int argc, char ** argv)
     // case it's not set, we set it to /var/tmp, which usually is not
     // a RAM disk.
     setenv("TMPDIR", "/var/tmp", 0);
+
+    // Since this application is classified as suid application due to it's credentials
+    // the environment variables below are not processed by eglibc
+    // so we're processing this to set correct memory options
+    char* s = NULL;
+    if((s = getenv("MALLOC_TRIM_THRESHOLD_")))
+        mallopt(M_TRIM_THRESHOLD, atoi(s));
+    if((s = getenv("MALLOC_TOP_PAD_")))
+        mallopt(M_TOP_PAD, atoi(s));
+    if((s = getenv("MALLOC_PERTURB_")))
+        mallopt(M_PERTURB, atoi(s));
+    if((s = getenv("MALLOC_MMAP_THRESHOLD_")))
+        mallopt(M_MMAP_THRESHOLD, atoi(s));
+    if((s = getenv("MALLOC_MMAP_MAX_")))
+        mallopt(M_MMAP_MAX, atoi(s));
 
     // Preload libraries
     if (!helpWanted)
