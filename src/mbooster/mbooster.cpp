@@ -104,3 +104,17 @@ bool MBooster::receiveDataFromInvoker(int socketFd)
     }
 }
 
+void MBooster::preinit()
+{
+    QString appName = QFileInfo(m_appData->argv()[0]).fileName();
+
+    QString appClass = appName.left(1).toUpper();
+    if (appName.length() > 1)
+        appClass += appName.right(appName.length() - 1);
+
+    char* app_name = qstrdup(appName.toLatin1().data());
+    QApplication::setAppName(app_name);
+
+    char* app_class = qstrdup(appClass.toLatin1().data());
+    QApplication::setAppClass(app_class);
+}

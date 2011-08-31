@@ -530,6 +530,10 @@ int Booster::launchProcess()
     // Load the application and find out the address of main()
     void* handle = loadMain();
 
+    // make booster specific initializations unless booster is in boot mode
+    if (!m_bootMode)
+        preinit();
+
 #ifdef WITH_COVERAGE
     __gcov_flush();
 #endif
