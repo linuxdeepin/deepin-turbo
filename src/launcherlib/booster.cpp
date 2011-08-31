@@ -532,6 +532,9 @@ int Booster::launchProcess()
     // Load the application and find out the address of main()
     loadMain();
 
+    // make booster specific initializations
+    preinit();
+
 #ifdef WITH_COVERAGE
     __gcov_flush();
 #endif

@@ -20,6 +20,9 @@
 #ifndef QDECLARATIVEBOOSTER_H
 #define QDECLARATIVEBOOSTER_H
 
+#include <QApplication>
+#include "QFileInfo"
+
 #include "eventhandler.h"
 #include "booster.h"
 
@@ -69,6 +72,9 @@ protected:
 
     //! \reimp
     virtual bool receiveDataFromInvoker(int socketFd);
+
+    //! \reimp
+    virtual void preinit();
 
 private:
 

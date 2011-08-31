@@ -207,6 +207,14 @@ protected:
                        const string &portraitSplash, const string &landscapeSplash,
                        const string &pixmapId);
 
+
+    /*! This method is called just before call boosted application's
+     *  main function. Empty by default but some booster specific
+     *  initializations can be done here.
+     *  Re-implement if needed.
+     */
+    virtual void preinit() {};
+
     //! Set nice value and store the old priority. Return true on success.
     bool pushPriority(int nice);
 
@@ -223,6 +231,9 @@ protected:
     //! Reset out-of-memory killer adjustment
     void resetOomAdj();
 
+    //! Data structure representing the application to be invoked
+    AppData* m_appData;
+
 private:
 
     //! Disable copy-constructor
@@ -237,9 +248,6 @@ private:
 
     //! Helper method: load the library and find out address for "main".
     void* loadMain();
-
-    //! Data structure representing the application to be invoked
-    AppData* m_appData;
 
     //! Socket connection to invoker
     Connection* m_connection;
