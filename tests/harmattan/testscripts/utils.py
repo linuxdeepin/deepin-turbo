@@ -68,7 +68,7 @@ def remove_applauncherd_runtime_files():
             pass
 
 def start_applauncherd():
-    debug("Staring applauncherd")
+    debug("Starting applauncherd")
     handle = Popen(['initctl', 'start', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
                    shell = False)
@@ -193,14 +193,26 @@ def get_booster_pid():
     wait_for_app('booster-m')
 
 def kill_process(appname=None, apppid=None, signum=15):
+    # obtained by running 'kill -l'
+    signal = {1: "HUP", 2: "INT", 3: "QUIT", 4: "ILL", 5: "TRAP", 6: "ABRT", 7: "BUS", 
+              8: "FPE", 9: "KILL", 10: "USR1", 11: "SEGV", 12: "USR2", 13: "PIPE", 
+              14: "ALRM", 15: "TERM", 16: "STKFLT", 17: "CHLD", 18: "CONT", 19: "STOP", 
+              20: "TSTP", 21: "TTIN", 22: "TTOU", 23: "URG", 24: "XCPU", 25: "XFSZ", 
+              26: "VTALRM", 27: "PROF", 28: "WINCH", 29: "POLL", 30: "PWR", 31: "SYS"}
+    if signal.has_key(signum):
+        signame = "SIG%s" % signal[signum]
+    else:
+        # should never reach this
+        signame = "signal %s" % signum
+
     if apppid and appname: 
         return None
     else:
         if apppid:
-            debug("Now sending SIGTERM to the app with pid %s" %apppid) 
+            debug("Now sending %s to the app with pid %s" % (signame, apppid))
             st, op = commands.getstatusoutput("kill -%s %s" % (str(signum), str(apppid)))
         if appname: 
-            debug("Now sending SIGTERM to %s" %appname) 
+            debug("Now sending %s to %s" % (signame, appname))
             temp = basename(appname)[:14]
             st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
 
