@@ -1,9 +1,9 @@
-applauncherd (1.0.9) unstable; urgency=low
+applauncherd (1.0.9) stable; urgency=low
 
   * Changes: Improve test debug output.
   * Fixes: NB#277092 - With Applauncher Gallery process does not release ~10 MB dirty memory when in background
 
- -- Nimika Keshri <nimika.1.keshri@nokia.com>  Wed, 31 Aug 2011 13:30:06 +0300
+ -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 1 Sep 2011 10:30:06 +0300
 
 applauncherd (1.0.8) stable; urgency=low
 
