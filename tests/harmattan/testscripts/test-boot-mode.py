@@ -179,10 +179,10 @@ class BootModeTests(unittest.TestCase):
                                                                                         6, 6))
 
         # assert that the normal mode results are correct
-        self.assert_(res_norm[0] == 6 and res_norm[1] == 6,
+        self.assert_(res_norm[0] == 6 and res_norm[1] == 12,
                      "%d apps, %d windows. Expected %d apps, %d windows (normal mode)" % (res_norm[0],
                                                                                           res_norm[1],
-                                                                                          6, 6))
+                                                                                          6, 12))
 
     def test_SIGUSR2(self):
         """
