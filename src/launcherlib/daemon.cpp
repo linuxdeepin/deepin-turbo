@@ -673,6 +673,10 @@ void Daemon::parseArgs(const ArgVect & args)
         {
             usage(EXIT_SUCCESS);
         }
+        else
+        {
+            usage(EXIT_FAILURE);
+        }
     }
 }
 
