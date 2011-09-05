@@ -101,6 +101,22 @@ void Ut_Logger::testCloseLog() {
     QVERIFY(m_subject->m_isOpened == false);
 }
 
+void Ut_Logger::testOpenLogTwice() {
+    //open log first time with random name
+    _setTestPhrase(Q_FUNC_INFO);
+    Logger::openLog(m_testPhrase);
+    QVERIFY(m_subject->m_isOpened == true);
+    Logger::logInfo("Testing OpenLog twice");
+    QVERIFY(_findPhraseInSyslog() == true);
+    //open log second time with another random name
+    _setTestPhrase(Q_FUNC_INFO);
+    Logger::openLog(m_testPhrase);
+    QVERIFY(m_subject->m_isOpened == true);
+    Logger::logInfo("Testing OpenLog twice");
+    QVERIFY(_findPhraseInSyslog() == true);
+    Logger::closeLog();
+}
+
 
 bool Ut_Logger::_findPhraseInSyslog()
 {

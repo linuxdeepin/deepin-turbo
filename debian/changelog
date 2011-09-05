@@ -1,3 +1,9 @@
+applauncherd (1.0.10) unstable; urgency=low
+
+  * Changes: Add unit test for Logger - open log twice
+
+ -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Mon, 5 Sep 2011 13:33:55 +0300
+
 applauncherd (1.0.9) stable; urgency=low
 
   * Changes: Improve test debug output.
