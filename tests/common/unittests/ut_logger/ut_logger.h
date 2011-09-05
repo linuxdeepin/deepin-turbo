@@ -46,6 +46,7 @@ private Q_SLOTS:
     void testLogInfo();
     void testLogWarning();
     void testCloseLog();
+    void testOpenLogTwice();
 
 private:
     char m_testPhrase[255];
