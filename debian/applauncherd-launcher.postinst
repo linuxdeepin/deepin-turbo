@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ "$1" = "configure" ]; then
+
+    # At package configuration time we need to inform aegis about the configuration file
+    aegisfs --install /etc/aegisfs.d/applauncherd-fs.conf
+
+elif [ "$1" = "triggered" ]; then
+
+    # Installation of some other package may have caused applauncherd credentials to go stale,
+    # ask applauncherd to re-exec to refresh the credentials.
+    if [ -f /var/run/applauncherd.lock ]; then
+	#kill -HUP `cat /var/run/applauncherd.lock`
+        echo ""   #placeholder
+    fi
+fi

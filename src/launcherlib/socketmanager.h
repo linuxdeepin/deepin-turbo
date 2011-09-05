@@ -60,9 +60,17 @@ public:
     //! Return count of currently active sockets
     unsigned int socketCount() const;
 
+    // Type of the internal state
+    typedef map<string, int> SocketHash;
+
+    //! Get the state
+    SocketHash getState();
+
+    //! Add mapping of socketId to fd
+    void addMapping(const string & socketId, int fd);
+
 private:
 
-    typedef map<string, int> SocketHash;
     SocketHash m_socketHash;
 };
 

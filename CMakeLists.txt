@@ -59,9 +59,31 @@ else (EXISTS ${CREDS_H})
     message(STATUS "  not found: Platform Security is disabled.")
 endif (EXISTS ${CREDS_H})
 
+# Find aegis_crypto.h (and libaegis_crypto if the header is found)
+message(STATUS "checking for aegis_crypto.h")
+find_file(AEGIS_CRYPTO_H NAMES aegis_crypto.h PATHS /usr/include/sys)
+if (EXISTS ${AEGIS_CRYPTO_H})
+    message(STATUS "  found: " ${AEGIS_CRYPTO_H})
+    message(STATUS "checking for libaegis_crypto")
+    find_library(LIBAEGIS_CRYPTO NAMES aegis_crypto)
+    if (EXISTS ${LIBAEGIS_CRYPTO})
+        add_definitions(-DHAVE_AEGIS_CRYPTO)
+        link_libraries(${LIBAEGIS_CRYPTO})
+        message(STATUS "  found: " ${LIBAEGIS_CRYPTO})
+    else (EXISTS ${LIBAEGIS_CRYPTO})
+        message(STATUS "  not found: Platform Security is disabled.")
+    endif (EXISTS ${LIBAEGIS_CRYPTO})
+else (EXISTS ${AEGIS_CRYPTO_H})
+    message(STATUS "  not found: Platform Security is disabled.")
+endif (EXISTS ${AEGIS_CRYPTO_H})
+
 if ($ENV{DISABLE_VERIFICATION})
     add_definitions(-DDISABLE_VERIFICATION)
 endif ($ENV{DISABLE_VERIFICATION})
+
+if ($ENV{DEBUG_BUILD})
+    add_definitions(-DDEBUG_BUILD)
+endif ($ENV{DEBUG_BUILD})
 
 # Set the program name defines. Must be at this level due to unit tests.
 add_definitions(-DPROG_NAME_INVOKER="invoker")
@@ -124,7 +146,11 @@ install(DIRECTORY examples
         DESTINATION /usr/share/doc/applauncherd)
 
 # Install startup script
-install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
+if ($ENV{DEBUG_BUILD})
+    install(PROGRAMS src/scripts/applauncherd-debug DESTINATION /usr/bin/ RENAME applauncherd)
+else ($ENV{DEBUG_BUILD})
+    install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
+endif ($ENV{DEBUG_BUILD})
 
 # Install pkg-config and qmake feature files. Note that current packaging policy is such 
 # that applauncherd-dev installs only qt-boostable.pc which is intended for "all" 
@@ -142,3 +168,6 @@ install(FILES data/mkspecs/features/qdeclarative-boostable.prf DESTINATION /usr/
 if ($ENV{MEEGO})
     install(FILES meego/applauncherd.desktop DESTINATION /etc/xdg/autostart)
 endif ($ENV{MEEGO})
+
+# Install aegisfs configuration file
+install(FILES aegisfs/applauncherd-fs.conf DESTINATION /etc/aegisfs.d)

@@ -38,18 +38,31 @@
 #include <cstring>
 #include <cstdio>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
+
+#ifdef HAVE_AEGIS_CRYPTO
+#include <aegis_crypto.h>
+#endif
 
 #include "coverage.h"
+
+// Environment
+extern char ** environ;
 
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
 const int Daemon::m_boosterSleepTime = 2;
+const char *Daemon::m_stateDir = "/var/run/applauncherd";
+const char *Daemon::m_stateFile = "/var/run/applauncherd/saved-state";
 
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
+    m_debugMode(false),
     m_bootMode(false),
     m_socketManager(new SocketManager),
-    m_singleInstance(new SingleInstance)
+    m_singleInstance(new SingleInstance),
+    m_reExec(false)
 {
     if (!Daemon::m_instance)
     {
@@ -63,16 +76,21 @@ Daemon::Daemon(int & argc, char * argv[]) :
     // Parse arguments
     parseArgs(ArgVect(argv, argv + argc));
 
+    if (m_reExec)
+    {
+        restoreState();
+    }
+
     // Store arguments list
     m_initialArgv = argv;
     m_initialArgc = argc;
 
-    if (socketpair(AF_UNIX, SOCK_DGRAM, 0, m_boosterLauncherSocket) == -1)
+    if (!m_reExec && socketpair(AF_UNIX, SOCK_DGRAM, 0, m_boosterLauncherSocket) == -1)
     {
         throw std::runtime_error("Daemon: Creating a socket pair for boosters failed!\n");
     }
 
-    if (pipe(m_sigPipeFd) == -1)
+    if (!m_reExec && pipe(m_sigPipeFd) == -1)
     {
         throw std::runtime_error("Daemon: Creating a pipe for Unix signals failed!\n");
     }
@@ -103,6 +121,11 @@ bool Daemon::lock()
 
     if(fcntl(m_lockFd, F_SETLK, &fl) == -1)
         return false;
+
+    // write pid into the lock file
+    std::stringstream ss;
+    ss << getpid();
+    write(m_lockFd, ss.str().c_str(), ss.str().length());
 
     return true;
 }
@@ -153,14 +176,23 @@ void Daemon::run()
     // dlopen() booster plugins
     loadBoosterPlugins();
 
-    // Create sockets for each of the boosters
-    initBoosterSockets();
-
     // dlopen single-instance
     loadSingleInstancePlugin();
 
-    // Fork each booster for the first time
-    forkBoosters();
+    if (m_reExec)
+    {
+        // Reap dead booster processes and restart them
+        // Note: this cannot be done before booster plugins have been loaded
+        reapZombies();
+    }
+    else
+    {
+        // Create sockets for each of the boosters
+        initBoosterSockets();
+
+        // Fork each booster for the first time
+        forkBoosters();
+    }
 
     // Main loop
     while (true)
@@ -222,6 +254,14 @@ void Daemon::run()
                 case SIGPIPE:
                     Logger::logDebug("Daemon: SIGPIPE received.");
                     break;
+
+                case SIGHUP:
+                    Logger::logDebug("Daemon: SIGHUP received.");
+                    reExec();
+
+                    // not reached if re-exec successful
+                    break;
+                    
 
                 default:
                     break;
@@ -668,10 +708,15 @@ void Daemon::parseArgs(const ArgVect & args)
         else if ((*i) == "--debug")
         {
             Logger::setDebugMode(true);
+            m_debugMode = true;
         }
         else if ((*i) == "--help" || (*i) == "-h")
         {
             usage(EXIT_SUCCESS);
+        }
+        else if ((*i) == "--re-exec")
+        {
+            m_reExec = true;
         }
     }
 }
@@ -753,7 +798,15 @@ void Daemon::setUnixSignalHandler(int signum, sighandler_t handler)
 {
     sighandler_t old_handler = signal(signum, handler);
 
-    if (old_handler != SIG_ERR)
+    if (signum == SIGHUP && old_handler == SIG_IGN)
+    {
+        // SIGHUP is a special case. It is set to SIG_IGN
+        // when applauncherd does a re-exec, but we still want the
+        // boosters / launched applications to get the default
+        // handler.
+        m_originalSigHandlers[signum] = SIG_DFL;
+    }
+    else if (old_handler != SIG_ERR)
     {
         m_originalSigHandlers[signum] = old_handler;
     } 
@@ -782,4 +835,287 @@ Daemon::~Daemon()
 #ifdef WITH_COVERAGE
     __gcov_flush();
 #endif
+}
+
+void Daemon::reExec()
+{
+    Logger::logInfo("Daemon: Re-exec requested.");
+
+    struct stat st;
+    if (stat(m_stateDir, &st) != 0)
+    {
+        Logger::logDebug("Daemon: State saving directory %s does not exist", m_stateDir);
+        Logger::logDebug("Daemon: Attempting to create it");
+
+        if (mkdir(m_stateDir, S_IRUSR | S_IWUSR | S_IXUSR) != 0)
+        {
+            Logger::logDebug("Daemon: Failed to create directory, re-exec failed, exiting.");
+            _exit(1);
+        }
+    }
+
+    if (stat(m_stateDir, &st) != 0)
+    {
+        Logger::logDebug("Daemon: Directory vanished, re-exec failed, exiting.");
+        _exit(1);
+    }
+    if (!S_ISDIR(st.st_mode))
+    {
+        Logger::logDebug("Daemon: %s exists but it is not a directory, re-exec failed, exiting.", m_stateDir);
+        _exit(1);
+    }
+
+    try {
+        std::ofstream ss(m_stateFile);
+        ss.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+
+        // dump the pid to double check that the state file is from this process
+        ss << "my-pid " << getpid() << std::endl;
+
+        // Save debug mode first, restoring it will enable debug logging.
+        // This way we get debug output from the re-execed daemon as early
+        // as possible.
+        ss << "debug-mode " << m_debugMode << std::endl;
+
+        // The pids of the dead boosters are also passed as children, but
+        // this causes no harm.
+        for(PidVect::iterator it = m_children.begin(); it != m_children.end(); it++)
+        {
+            ss << "child " << *it << std::endl;
+        }
+
+        for(PidMap::iterator it = m_boosterPidToInvokerPid.begin(); it != m_boosterPidToInvokerPid.end(); it++)
+        {
+            ss << "booster-invoker-pid " << it->first << " " << it->second << std::endl;
+        }
+
+        for(FdMap::iterator it = m_boosterPidToInvokerFd.begin(); it != m_boosterPidToInvokerFd.end(); it++)
+        {
+            ss << "booster-invoker-fd " << it->first << " " << it->second << std::endl;
+        }
+
+        for(TypeMap::iterator it = m_boosterTypeToPid.begin(); it != m_boosterTypeToPid.end(); it++)
+        {
+            ss << "booster-type " << (it->first) << " " << it->second << std::endl;
+        }
+
+        ss << "launcher-socket " << m_boosterLauncherSocket[0] << " " << m_boosterLauncherSocket[1] << std::endl;
+
+        ss << "sigpipe-fd " << m_sigPipeFd[0] << " " << m_sigPipeFd[1] << std::endl;
+
+        ss << "boot-mode " << m_bootMode << std::endl;
+
+        ss << "lock-file " << m_lockFd << std::endl;
+
+        SocketManager::SocketHash s = m_socketManager->getState();
+        for(SocketManager::SocketHash::iterator it = s.begin(); it != s.end(); it++)
+        {
+            ss << "socket-hash " << it->first << " " << it->second << std::endl;
+        }
+
+        // when the new applauncherd reads this,
+        // it knows state saving was successful.
+        ss << "end" << std::endl;
+        ss.close();
+    }
+    catch (std::ofstream::failure e)
+    {
+        Logger::logError("Daemon: Failed to save state, re-exec failed, exiting.");
+        _exit(1);
+    }
+    
+    char *argv[] = {"/usr/bin/applauncherd.bin",
+                    "--re-exec",
+                    "                                                  ",
+                    NULL};
+
+    // The boosters have state which will become stale, so kill them.
+    // The dead boosters will be reaped when the re-execed applauncherd
+    // calls reapZombies after it has initialized.
+    killBoosters();
+
+    // Signal handlers are reset at exec(), so we will lose
+    // the SIGHUP handling. However, ignoring a signal is preserved
+    // over exec(), so start ignoring SIGHUP to prevent applauncherd
+    // dying if we receive multiple SIGHUPs.
+    signal(SIGHUP, SIG_IGN);
+
+    Logger::logDebug("Daemon: configuration saved succesfully, call execve() ");
+    execve(argv[0], argv, environ);
+
+    // Not reached.
+    Logger::logDebug("Daemon: Failed to execute execve(),  re-exec failed, exiting.");
+    _exit(1);
+}
+
+void Daemon::restoreState()
+{
+#ifdef HAVE_AEGIS_CRYPTO
+    aegis_system_mode_t aegisMode;
+    if (aegis_crypto_verify_aegisfs(m_stateDir, &aegisMode) != 0
+        || aegisMode != aegis_system_protected)
+    {
+#ifndef DEBUG_BUILD
+        Logger::logError("Daemon: State file not on aegis protected file system, exiting.");
+        _exit(1);
+#else
+        Logger::logDebug("Daemon: State file not on aegis protected file system, on non-debug build I would die now.");
+#endif
+    }
+#endif
+
+    try
+    {
+        // We have saved state, try to restore it.
+        std::ifstream ss(m_stateFile);
+        ss.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+
+        std::string token;
+
+        ss >> token;
+
+        // Bit of defensive programming. Read the pid of the process
+        // that left the state file. If it is different from my pid,
+        // then something is wrong, and we better exit.
+        if (token != "my-pid")
+        {
+            throw "Daemon: malformed state file, exiting.";
+        }
+        else
+        {
+            int pid;
+            ss >> pid;
+            if (pid != getpid())
+            {
+                throw "Daemon: stale state file, exiting.";
+            }
+        }
+        
+        // Do not check for eof, instead trigger an exception
+        // if reading past end of file. When state restore is
+        // successful we read the "end" token and return from
+        // this method.
+        while (true) 
+        {
+            ss >> token;
+            
+            if (token == "end")
+            {
+                // successfully restored state
+                ss.close();
+
+                // In debug mode it is better to leave the file there
+                // so it can be examined.
+                if (!m_debugMode && remove(m_stateFile) == -1)
+                {
+                    Logger::logError("Daemon: could not remove state file %s", m_stateFile);
+                }
+                Logger::logDebug("Daemon: state restore completed");
+                return;
+            } 
+            else if (token == "child")
+            {
+                int arg1;
+                ss >> arg1;
+                Logger::logDebug("Daemon: restored child %d", arg1);
+                m_children.push_back(arg1);
+            } 
+            else if (token == "booster-invoker-pid")
+            {
+                int arg1, arg2;
+                ss >> arg1;
+                ss >> arg2;
+                Logger::logDebug("Daemon: restored m_boosterPidToInvokerPid[%d] = %d", arg1, arg2);
+                m_boosterPidToInvokerPid[arg1] = arg2;
+            } 
+            else if (token == "booster-invoker-fd")
+            {
+                int arg1, arg2;
+                ss >> arg1;
+                ss >> arg2;
+                Logger::logDebug("Daemon: restored m_boosterPidToInvokerFd[%d] = %d", arg1, arg2);
+                m_boosterPidToInvokerFd[arg1] = arg2;
+            } 
+            else if (token == "booster-type")
+            {
+                std::string arg1;
+                int arg2;
+                ss >> arg1;
+                ss >> arg2;
+                Logger::logDebug("Daemon: restored m_boosterTypeToPid[%c] = %d", arg1[0], arg2);
+
+                m_boosterTypeToPid[arg1[0]] = arg2;
+            } 
+            else if (token == "launcher-socket")
+            {
+                int arg1, arg2;
+                ss >> arg1;
+                ss >> arg2;
+                Logger::logDebug("Daemon: restored m_boosterLauncherSocket[] = {%d, %d}", arg1, arg2);
+                m_boosterLauncherSocket[0] = arg1;
+                m_boosterLauncherSocket[1] = arg2;
+            } 
+            else if (token == "sigpipe-fd")
+            {
+                int arg1, arg2;
+                ss >> arg1;
+                ss >> arg2;
+                Logger::logDebug("Daemon: restored m_sigPipeFd[] = {%d, %d}", arg1, arg2);
+                m_sigPipeFd[0] = arg1;
+                m_sigPipeFd[1] = arg2;
+            } 
+            else if (token == "lock-file")
+            {
+                int arg1;
+                ss >> arg1;
+                Logger::logDebug("Daemon: restored m_lockFd = %d", arg1);
+                Daemon::m_lockFd = arg1;
+            } 
+            else if (token == "socket-hash")
+            {
+                std::string arg1;
+                int arg2;
+                ss >> arg1;
+                ss >> arg2;
+                m_socketManager->addMapping(arg1, arg2);
+                Logger::logDebug("Daemon: restored socketHash[%s] = %d", arg1.c_str(), arg2);
+            }
+            else if (token == "debug-mode")
+            {
+                bool arg1;
+                ss >> arg1;
+                m_debugMode = arg1;
+                Logger::setDebugMode(m_debugMode);
+                Logger::logDebug("Daemon: restored m_debugMode = %d", arg1);
+            }
+            else if (token == "boot-mode")
+            {
+                bool arg1;
+                ss >> arg1;
+                m_bootMode = arg1;
+                Logger::logDebug("Daemon: restored m_bootMode = %d", arg1);
+            }
+        }
+    } 
+    catch (std::ifstream::failure e)
+    {
+        // Ran out of saved state before "end" token
+        // or there was some other error in restoring the sate.
+        Logger::logError("Daemon: Failed to restore saved state, exiting."); 
+    }
+    catch (char *err)
+    {
+        // Some other error, e.g. stale state file
+        Logger::logError(err);
+    }
+
+    // In debug mode it is better to leave the file there
+    // so it can be examined.
+    if (!m_debugMode && remove(m_stateFile) == -1)
+    {
+        Logger::logError("Daemon: could not remove state file %s", m_stateFile);
+    }
+
+    // This is only reached if state restore was unsuccessful.
+    _exit(1);
 }

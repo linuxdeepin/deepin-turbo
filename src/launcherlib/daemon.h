@@ -169,8 +169,17 @@ private:
     //! Prints the usage and exits with given status
     void usage(int status);
 
+    //! Re-exec applauncherd.bin
+    void reExec();
+
+    //! Restore state.
+    void restoreState();
+
     //! Daemonize flag (--fork). Daemon forks if true.
     bool m_daemon;
+
+    //! Debug mode flag (--debug). 
+    bool m_debugMode;
 
     /*! Flag indicating boot mode (--boot-mode). If true, then:
      *  - Caches won't be initialized.
@@ -227,6 +236,13 @@ private:
     //! Original unix signal handlers are saved here
     typedef map<int, sighandler_t> SigHandlerMap;
     SigHandlerMap m_originalSigHandlers;
+
+    //! True if re-execing
+    bool m_reExec;
+
+    //! Name of the state saving directory and file
+    static const char *m_stateDir;
+    static const char *m_stateFile;
 
 #ifdef UNIT_TEST
     friend class Ut_Daemon;

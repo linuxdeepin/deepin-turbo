@@ -7,3 +7,4 @@ usr/lib/applauncherd/libqtbooster.so
 usr/lib/applauncherd/libqdeclarativebooster.so
 usr/lib/libmdeclarativecache.so
 usr/lib/libmdeclarativecache.so.*
+/etc/aegisfs.d

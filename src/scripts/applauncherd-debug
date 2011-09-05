@@ -6,4 +6,4 @@
 # If the length of the application name with parameters is longer than space 
 # available, parameters will be cut off. The main function will still always
 # get the complete argument list.
-exec /usr/bin/applauncherd.bin $@ "                                                  "
+exec /usr/bin/applauncherd.bin --debug $@ "                                                  "

@@ -38,6 +38,7 @@ char g_pipeDataSigTerm = SIGTERM;
 char g_pipeDataSigUsr1 = SIGUSR1;
 char g_pipeDataSigUsr2 = SIGUSR2;
 char g_pipeDataSigPipe = SIGPIPE;
+char g_pipeDataSigHup  = SIGHUP;
 
 static void sigChldHandler(int)
 {
@@ -62,6 +63,11 @@ static void sigUsr2Handler(int)
 static void sigPipeHandler(int)
 {
     write(g_sigPipeFd, &g_pipeDataSigPipe, 1);
+}
+
+static void sigHupHandler(int)
+{
+    write(g_sigPipeFd, &g_pipeDataSigHup, 1);
 }
 
 //! Main function
@@ -100,6 +106,7 @@ DECL_EXPORT int main(int argc, char * argv[])
         myDaemon.setUnixSignalHandler(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
         myDaemon.setUnixSignalHandler(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
         myDaemon.setUnixSignalHandler(SIGPIPE, sigPipeHandler); // broken invoker's pipe
+        myDaemon.setUnixSignalHandler(SIGHUP,  sigHupHandler);  // re-exec
 
         // Run the main loop
         myDaemon.run();

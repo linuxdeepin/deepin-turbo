@@ -1,6 +1,6 @@
 applauncherd (2.0.5) unstable; urgency=low
 
-  * 
+  * Changes: Implementation of re-exec functionality, trigger is disabled
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 10 Oct 2011 16:03:44 +0300
 

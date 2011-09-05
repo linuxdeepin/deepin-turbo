@@ -133,3 +133,12 @@ unsigned int SocketManager::socketCount() const
     return m_socketHash.size();
 }
 
+SocketManager::SocketHash SocketManager::getState()
+{
+    return m_socketHash;
+}
+
+void SocketManager::addMapping(const string & socketId, int fd)
+{
+    m_socketHash[socketId] = fd;
+}
