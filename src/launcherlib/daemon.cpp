@@ -694,7 +694,7 @@ void Daemon::daemonize()
 
 void Daemon::parseArgs(const ArgVect & args)
 {
-    for (ArgVect::const_iterator i(args.begin()); i != args.end(); i++)
+    for (ArgVect::const_iterator i(args.begin() + 1); i != args.end(); i++)
     {
         if ((*i) == "--boot-mode" || (*i) == "-b")
         {
@@ -717,6 +717,11 @@ void Daemon::parseArgs(const ArgVect & args)
         else if ((*i) == "--re-exec")
         {
             m_reExec = true;
+        }
+        else
+        {
+            if ((*i).find_first_not_of(' ') != string::npos)
+               usage(EXIT_FAILURE);
         }
     }
 }

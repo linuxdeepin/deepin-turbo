@@ -1,3 +1,10 @@
+applauncherd (3.0.1) unstable; urgency=low
+
+  * Fixes: NB#273361 - Applaucherd is possible to start with wrong parameters
+  * Changes: Updated list of libraries to preload
+
+ -- Alexey Shilov <alexey@trdhcp147241>  Mon, 14 Nov 2011 13:39:38 +0200
+
 applauncherd (2.0.12) unstable; urgency=low
 
   * Changes: new test case added for /usr/lib trigger
