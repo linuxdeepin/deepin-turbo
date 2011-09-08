@@ -5,6 +5,7 @@ applauncherd (2.0.0) unstable; urgency=low
   * Fixes: NB#274400 - [TASK] Remove legacy code from applauncherd
   * Fixes: NB#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
   * Changes: Add unit test for Logger - open log twice
+  * Changes: Add functional test - invoker kills application when applauncherd dies
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 18 Aug 2011 15:43:02 +0300
 
