@@ -513,7 +513,29 @@ class InvokerTests(unittest.TestCase):
 
         kill_process(PREFERED_APP) 
 
-        
+
+    def test_invoker_applauncherd_dies(self):
+        """
+        Test that invoker kills application and exits if applauncherd dies
+        """
+        if get_pid(PREFERED_APP) != None:
+            kill_process(PREFERED_APP)  #just to be sure application is not running prior the test
+
+        if get_pid('applauncherd') == None:
+            start_applauncherd() #just to be sure applauncherd is running
+
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm')
+
+        pid = wait_for_app(PREFERED_APP)
+        self.assert_(pid != None, "The application was not launched")
+
+        stop_applauncherd()
+        time.sleep(20) #wait app to be terminated and invoker to exit
+
+        pid = wait_for_app(PREFERED_APP, timeout = 2) #don't need to wait long since the app supposed not running
+        if pid != None:
+            kill_process(PREFERED_APP)
+        self.assert_(pid == None, "The application is still running!")
 
 # main
 if __name__ == '__main__':
