@@ -93,6 +93,18 @@ class launcher_tests (unittest.TestCase):
     
     #Testcases
 
+    def test_only_one_applauncherd_exist(self):
+        """
+        test_only_one_applauncherd_can_start
+        """
+        stop_applauncherd()
+        st, op = commands.getstatusoutput("initctl start xsession/applauncherd")
+        time.sleep(2)
+        st_new, op = commands.getstatusoutput("initctl start xsession/applauncherd")
+ 
+        self.assert_(st == 0, "Applauncherd do not start")
+        self.assert_(st_new != 0, "Applauncherd even force start second time")   
+
     def test_applications_exist(self):
         """
         test_launchable_application_exists
@@ -842,16 +854,16 @@ class launcher_tests (unittest.TestCase):
         Test that launched application have correct WM_CLASS Xproperty booster m
         """
         #For booster-m MApplicationWindow from MComponentCache
-        self._test_launched_app_wm_class_helper("m","fala_wl","-faulty","fala_wl",1)
+        self._test_launched_app_wm_class_helper("m","fala_wl","-faulty","fala_wl",2)
 
-        #For booster-m MApplicationWindow NOT from cache. 2 windows (1 for application + 1 is created by cache but not used)
-        self._test_launched_app_wm_class_helper("m","fala_ft_hello","-window-not-from-cache","fala_ft_hello",2)
+        #For booster-m MApplicationWindow NOT from cache. 3 windows (2 for application + 1 is created by cache but not used)
+        self._test_launched_app_wm_class_helper("m","fala_ft_hello","-window-not-from-cache","fala_ft_hello",3)
 
-        #For booster-m multiple MApplicationWindow (2 windows + 1)
-        self._test_launched_app_wm_class_helper("m","fala_multi-window","","fala_multi-window",3)
+        #For booster-m multiple MApplicationWindow (3 windows + 1)
+        self._test_launched_app_wm_class_helper("m","fala_multi-window","","fala_multi-window",4)
 
-        #For booster-m multiple MApplicationWindow NOT from cache (2 windows + 1 + 1 created by cache but not used)
-        self._test_launched_app_wm_class_helper("m","fala_multi-window","-window-not-from-cache","fala_multi-window",4)
+        #For booster-m multiple MApplicationWindow NOT from cache (3 windows + 1 + 1 created by cache but not used)
+        self._test_launched_app_wm_class_helper("m","fala_multi-window","-window-not-from-cache","fala_multi-window",5)
 
     def test_launched_app_wm_class_d(self):
         """

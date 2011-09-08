@@ -15,6 +15,10 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_unix_signal_handlers</step>
       </case>
 
+      <case name="applauncherd__test_only_one_applauncherd_exist" type="Functional" description=" test_only_one_applauncherd_can_start" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_only_one_applauncherd_exist</step>
+      </case>
+
       <case name="applauncherd__test_applications_exist" type="Functional" description="test_launchable_application_exists " timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_applications_exist</step>
       </case>
