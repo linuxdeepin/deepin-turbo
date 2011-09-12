@@ -91,6 +91,10 @@
       <case name="applauncherd__test_invoker_bogus_apptype" type="Functional" description="test giving bogus apptype to invoker" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_bogus_apptype</step>
       </case>
+
+      <case name="applauncherd__test_invoker_applauncherd_dies" type="Functional" description="test invoker kills app if applauncherd dies" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_applauncherd_dies</step>
+      </case>
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
       </post_steps>

@@ -1,6 +1,6 @@
 applauncherd (1.1.1) unstable; urgency=low
 
-  * 
+  * Changes: Add functional test - invoker kills application when applauncherd dies
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Wed, 7 Sep 2011 15:12:13 +0300
 
