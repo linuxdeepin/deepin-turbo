@@ -9,6 +9,19 @@ applauncherd (2.0.0) unstable; urgency=low
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Thu, 18 Aug 2011 15:43:02 +0300
 
+applauncherd (1.1.1) unstable; urgency=low
+
+  * Changes: Add functional test - invoker kills application when applauncherd dies
+
+ -- Olli Leppanen <olli.leppanen@nokia.com>  Wed, 7 Sep 2011 15:12:13 +0300
+
+applauncherd (1.1.0) stable; urgency=low
+
+  * Changes: Add unit test for Logger - open log twice
+  * Fixes: NB#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
+
+ -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Mon, 5 Sep 2011 13:33:55 +0300
+
 applauncherd (1.0.9) stable; urgency=low
 
   * Changes: Improve test debug output.

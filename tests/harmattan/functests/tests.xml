@@ -19,6 +19,11 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_applications_exist</step>
       </case>
 
+      <case name="applauncherd__test_only_one_applauncherd_exist" type="Functional" description="test_only_one_applauncherd_exist " timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_only_one_applauncherd_exist</step>
+      </case>
+
+
 
       <case name="applauncherd__test_restart_booster" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_restart_booster</step>

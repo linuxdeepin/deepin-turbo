@@ -403,6 +403,14 @@ class InvokerTests(unittest.TestCase):
         p = run_cmd_as_user('invoker --help')
         self.assert_(p.wait() == 0, "'invoker --help' failed")
 
+    def test_invoker_help_printing(self):
+        """
+        Test that applauncherd invoker usage printing ok
+        """
+
+        p = run_cmd_as_user('invoker')
+        self.assert_(p.wait() == 1, "'invoker' failed")
+
     def test_app_link(self):
         """
         Test that symlink of an application can be launched.

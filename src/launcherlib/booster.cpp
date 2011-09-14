@@ -536,6 +536,10 @@ int Booster::launchProcess()
     if (!m_bootMode)
         preinit();
 
+    // make booster specific initializations unless booster is in boot mode
+    if (!m_bootMode)
+        preinit();
+
 #ifdef WITH_COVERAGE
     __gcov_flush();
 #endif

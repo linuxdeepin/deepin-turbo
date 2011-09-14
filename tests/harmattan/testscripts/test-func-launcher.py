@@ -103,6 +103,18 @@ class launcher_tests (unittest.TestCase):
                 failed_apps.append(app)
         self.assert_(failed_apps == [], "Some applications do not have the launch files, list: %s" % str(failed_apps))
 
+    def test_only_one_applauncherd_exist(self):
+        """
+        test_only_one_applauncherd_can_start
+        """
+        stop_applauncherd()
+        st, op = commands.getstatusoutput("initctl start xsession/applauncherd")
+        time.sleep(2)
+        st_new, op = commands.getstatusoutput("initctl start xsession/applauncherd")
+ 
+        self.assert_(st == 0, "Applauncherd do not start")
+        self.assert_(st_new != 0, "Applauncherd even force start second time")
+
     def test_zombie_state_m(self):
         self._test_zombie_state(PREFERED_APP,'m')
 
