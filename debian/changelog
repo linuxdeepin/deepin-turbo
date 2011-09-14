@@ -3,7 +3,7 @@ applauncherd (2.0.0) stable; urgency=low
   * Fixes: NB#274302 - don't unload the main binary
   * Fixes: NB#275522 - Booster::requestSplash() segfault
   * Fixes: NB#274400 - [TASK] Remove legacy code from applauncherd
-  * REMOVE_ME_Fixes: NB#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
+  * F_REMOVE_ME_ixes: N_REMOVE_ME_B#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
   * Changes: Add unit test for Logger - open log twice
   * Changes: Add functional test - invoker kills application when applauncherd dies
 
@@ -18,20 +18,20 @@ applauncherd (1.1.1) unstable; urgency=low
 applauncherd (1.1.0) stable; urgency=low
 
   * Changes: Add unit test for Logger - open log twice
-  * REMOVE_ME_Fixes: NB#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
+  * F_REMOVE_ME_ixes: N_REMOVE_ME_B#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
 
  -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Mon, 5 Sep 2011 13:33:55 +0300
 
 applauncherd (1.0.9) stable; urgency=low
 
   * Changes: Improve test debug output.
-  * REMOVE_ME_Fixes: NB#277092 - With Applauncher Gallery process does not release ~10 MB dirty memory when in background
+  * F_REMOVE_ME_ixes: N_REMOVE_ME_B#277092 - With Applauncher Gallery process does not release ~10 MB dirty memory when in background
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Thu, 1 Sep 2011 10:30:06 +0300
 
 applauncherd (1.0.8) stable; urgency=low
 
-  * REMOVE_ME_Fixes: NB#263622 - [TASK] applauncherd-launcher should depend on libmeegotouchpreloader0
+  * F_REMOVE_ME_ixes: N_REMOVE_ME_B#263622 - [TASK] applauncherd-launcher should depend on libmeegotouchpreloader0
 
  -- Pertti Kellomaki <pertti.kellomaki@nokia.com>  Wed, 31 Aug 2011 09:32:28 +0300
 
@@ -43,14 +43,14 @@ applauncherd (1.0.7) stable; urgency=low
 
 applauncherd (1.0.6) stable; urgency=low
 
-  * REMOVE_ME_Fixes: NB#269073 - Precached (QML) applications do not set WM_CLASS window atom properly
+  * F_REMOVE_ME_ixes: N_REMOVE_ME_B#269073 - Precached (QML) applications do not set WM_CLASS window atom properly
   * Changes: Added functional tests for WM_CLASS
 
  -- Nimika Keshri <nimika.1.keshri@nokia.com>  Mon, 22 Aug 2011 11:22:42 +0300
 
 applauncherd (1.0.5) stable; urgency=low
 
-  * REMOVE_ME_Fixes: NB#276265 - After SSU with build version 20.2011.32-0.REQ.759009, applications running in the background and foreground are crashing
+  * F_REMOVE_ME_ixes: N_REMOVE_ME_B#276265 - After SSU with build version 20.2011.32-0.REQ.759009, applications running in the background and foreground are crashing
   * Changes: XB-Maemo-CI-Packages for art-tests changed from applauncherd to applauncherd-launcher and applauncherd-invoker
 
  -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Tue, 19 Aug 2011 13:23:55 +0300
