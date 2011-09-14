@@ -1,4 +1,4 @@
-applauncherd (2.0.0) unstable; urgency=low
+applauncherd (2.0.0) stable; urgency=low
 
   * Fixes: NB#274302 - don't unload the main binary
   * Fixes: NB#275522 - Booster::requestSplash() segfault
