@@ -538,6 +538,9 @@ int Booster::launchProcess()
     __gcov_flush();
 #endif
 
+    // Close syslog
+    closelog();
+
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
     dlclose(handle);

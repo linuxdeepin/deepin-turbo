@@ -26,9 +26,7 @@ const char * const gLibs[] =
     // Include the generated set of libraries.
 #include "preload-h-libraries.h"
 
-    "/usr/bin/single-instance",
-    // Library to trigger LMT font and style initializations
-    "/usr/lib/libmeegotouchpreloader.so.0"
+    "/usr/bin/single-instance"
 };
 
 #endif // PRELOAD_H
