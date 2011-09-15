@@ -56,6 +56,7 @@
     <set name="TC_Bootmode" description="functional tests for boot mode" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
       </pre_steps>
 
       <case name="applauncherd__test_change_to_normal_mode" type="Functional" description="To test change from boot mode to normal mode" timeout="360" level="System" insignificant="false">
@@ -74,6 +75,9 @@
       <case name="applauncherd__test_SIGUSR1" type="Functional" description="Test for SIGUSR1" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR1 </step>
       </case>
+      <post_steps>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+      </post_steps>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    

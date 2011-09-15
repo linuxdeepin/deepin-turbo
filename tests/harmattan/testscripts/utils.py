@@ -8,7 +8,7 @@ from subprocess import Popen
 from os.path import basename
 
 DEV_NULL = file("/dev/null","w")
-DAEMONS_TO_BE_STOPPED = ['xsession/applifed', 'xsession/conndlgs']
+DAEMONS_TO_BE_STOPPED = ['xsession/applifed']
 LAUNCHER_BINARY='/usr/bin/applauncherd'
 DEV_NULL = file("/dev/null","w")
 LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin/fala_ft_hello2']
@@ -32,7 +32,9 @@ def start_daemons():
     for daemon in DAEMONS_TO_BE_STOPPED:
         os.system('initctl start %s'%(daemon))
     wait_for_single_applauncherd()
-    get_booster_pid()
+#Wait for the camera-ui to be up and running so that no more boosters are used
+    wait_for_app('camera-ui')
+
 
 def daemons_running():
      st, op = commands.getstatusoutput('pgrep %s'%DAEMONS_TO_BE_STOPPED[0].split("/")[1])        
