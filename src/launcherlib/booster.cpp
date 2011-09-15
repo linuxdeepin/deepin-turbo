@@ -35,6 +35,7 @@
 #include <cstring>
 #include <sstream>
 #include <stdexcept>
+#include <syslog.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
