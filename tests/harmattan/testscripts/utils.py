@@ -32,9 +32,7 @@ def start_daemons():
     for daemon in DAEMONS_TO_BE_STOPPED:
         os.system('initctl start %s'%(daemon))
     wait_for_single_applauncherd()
-#Wait for the camera-ui to be up and running so that no more boosters are used
-    wait_for_app('camera-ui')
-
+    get_booster_pid()
 
 def daemons_running():
      st, op = commands.getstatusoutput('pgrep %s'%DAEMONS_TO_BE_STOPPED[0].split("/")[1])        
