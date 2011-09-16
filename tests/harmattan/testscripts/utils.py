@@ -8,7 +8,7 @@ from subprocess import Popen
 from os.path import basename
 
 DEV_NULL = file("/dev/null","w")
-DAEMONS_TO_BE_STOPPED = ['xsession/applifed', 'xsession/conndlgs']
+DAEMONS_TO_BE_STOPPED = ['xsession/applifed','xsession/conndlgs']
 LAUNCHER_BINARY='/usr/bin/applauncherd'
 DEV_NULL = file("/dev/null","w")
 LAUNCHABLE_APPS = ['/usr/bin/fala_ft_hello','/usr/bin/fala_ft_hello1', '/usr/bin/fala_ft_hello2']

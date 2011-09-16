@@ -35,6 +35,7 @@
 #include <cstring>
 #include <sstream>
 #include <stdexcept>
+#include <syslog.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -543,6 +544,9 @@ int Booster::launchProcess()
 #ifdef WITH_COVERAGE
     __gcov_flush();
 #endif
+
+    // Close syslog
+    closelog();
 
     // Jump to main()
     const int retVal = m_appData->entry()(m_appData->argc(), const_cast<char **>(m_appData->argv()));
