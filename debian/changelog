@@ -1,6 +1,6 @@
 applauncherd (2.0.1) unstable; urgency=low
 
-  * 
+  * Changes: Fix performance tests
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Thu, 15 Sep 2011 16:05:02 +0300
 

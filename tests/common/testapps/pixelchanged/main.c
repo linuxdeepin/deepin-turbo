@@ -256,7 +256,8 @@ int main(int argc, char **argv)
 
     int repeat = 1;
     while (repeat) {
-        usleep(50000);
+        //usleep(50000);
+        usleep(5000);
 
         image = XGetImage(dpy, rootw, pixel_x, pixel_y, 1, 1, AllPlanes, ZPixmap);
         pixel = XGetPixel(image, 0, 0);

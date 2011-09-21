@@ -50,6 +50,23 @@ class TC_PerformanceTests < Test::Unit::TestCase
     puts message
   end
 
+  def waitload(treshold)
+    pLoad = 100;
+    counter = 1;
+    print_debug("Wait system load < #{treshold}")
+    pLoad_part = []
+    #if system is loaded during long time then this loop iterates forever and the whole testcase will be stoped by testrunner on timeout
+    while (pLoad > treshold)
+        for i in 0..4
+            pLoad_part.push( (100 - %x[sar -u 1 1|grep Average:|awk '{print $8}'].to_f)/100 ) #since in per cent
+        end
+        pLoad = pLoad_part.max
+        print_debug("#{counter} Pload: #{pLoad}")
+        counter = counter + 1
+        pLoad_part.clear
+    end
+  end
+
   def get_pid(app)
       pid = `pgrep #{app}`.split(/\s/).collect { |x| x.strip() }.delete_if { |x| x.empty? }
       print_debug("The Pid of #{app} is #{pid}")
@@ -263,23 +280,27 @@ class TC_PerformanceTests < Test::Unit::TestCase
 
     if @options[:command] != nil
       # Check that the average system load is under 0.3
-      print_debug("Check the avarage system load is under 0.3")
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100 -d"
+      #print_debug("Check the avarage system load is under 0.3")
+      #system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100"
 
       start_command ="`#{PIXELCHANGED_BINARY} -t 101x4 -t 845x473 -q >> #{PIXELCHANGED_LOG} &`; #{FALA_GETTIME_BINARY} \"Started from command line\" >>  #{PIXELCHANGED_LOG}; #{@options[:command]} &"
       print_debug ("start command: #{start_command}")
+      #Check the system load is under 0.1
+      waitload(0.1)
       system start_command
 
       sleep (4)
     else
+      #Check the system load is under 0.1
+      waitload(0.1)
       @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
       @pos = @pos.split("\n")[-1]
       print_debug ("Co-ordinates: #{@pos}")
       x_val = Integer(@pos.split("x")[0])
       y_val = Integer(@pos.split("x")[1])
 
-      print_debug("Check the avarage system load is under 0.3")
-      system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 50 -d"
+      #print_debug("Check the avarage system load is under 0.3")
+      #system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100"
       cmd = 0
       if (x_val >= 0 && x_val <= 420)   
           if (y_val >= 240 && y_val <= 480)
@@ -296,6 +317,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
       end
 
       print_debug("pixel changed command is : #{cmd}")
+      #Check the system load is under 0.1
+      waitload(0.1)
       system cmd
       sleep (4)
       # Raise meegotouchhome to the top.
