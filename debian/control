@@ -65,7 +65,7 @@ Description: applauncherd unit tests
 Package: applauncherd-testscripts
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner-lite, applauncherd, ci-testing, testability-driver, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40), rdoc, python2.6, ruby, xresponse, x11-utils, python-pyside.qtcore, python-pyside.qtdeclarative, python-pyside.qtgui
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, testrunner-lite, applauncherd, ci-testing, testability-driver, libcreds2 [arm armel], libcreds2-tools [arm armel], meego-env, mcetools (>= 1.10.40), rdoc, python2.6, ruby, xresponse, x11-utils, python-pyside.qtcore, python-pyside.qtdeclarative, python-pyside.qtgui, sysstat
 Description: applauncherd testscripts
  Testscripts for testing applauncherd
 
@@ -138,7 +138,7 @@ Description: Tests related to bugs and new features for applauncherd
 Package: applauncherd-libmeegotouch-perf-tests
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts, sysstat
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast
 Description: applauncherd performance tests for libmeegotouch applications
@@ -146,7 +146,7 @@ Description: applauncherd performance tests for libmeegotouch applications
 Package: applauncherd-qml-perf-tests
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts, sysstat
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast
 Description: applauncherd performance tests for qml applications
@@ -154,7 +154,7 @@ Description: applauncherd performance tests for qml applications
 Package: applauncherd-reference-perf-tests
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts, sysstat
+Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts
 XB-Maemo-CI-Packages: applauncherd
 XB-Maemo-CI-Stage: fast
 Description: applauncherd performance tests for libmeegotouch applications without launcher
