@@ -308,7 +308,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
           elsif (y_val >= 0 && y_val <= 239)
               cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x473 -t 845x4 -f #{PIXELCHANGED_LOG} -q"
           end
-      elsif (x_val >= 421 && x_val <= 900)
+      elsif (x_val >= 421 && x_val <= 1000)
           if (y_val >= 240 && y_val <= 480)
               cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x473 -t 845x4 -f #{PIXELCHANGED_LOG} -q"
           elsif (y_val >= 0 && y_val <= 239)
