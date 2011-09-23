@@ -67,6 +67,15 @@ class daemon_handling (unittest.TestCase):
     def start_daemons(self):
         start_daemons()
 
+def has_GL_context(processId):
+    processMapsFile = open("/proc/" + processId + "/maps")
+    processMapsLines = processMapsFile.readlines()
+    for i in processMapsLines :
+        if "/dev/pvrsrvkm" in i :
+            return True
+
+    return False
+
 class launcher_tests (unittest.TestCase):
     def setUp(self):
         if daemons_running():
@@ -896,6 +905,28 @@ class launcher_tests (unittest.TestCase):
 
         for property in xProperties:
                 self.assert_(op1 == wm_class_xproperty_string,'Application WM_CLASS 1 is incorrect: %s' %property)
+
+
+    def test_q_booster_dont_have_GL_context(self):
+        qpid = get_pid('booster-q')
+        self.assert_(qpid != None, "Process 'booster-q' is not running")
+        self.assert_(not has_GL_context(qpid), "booster-q has GL context!")
+
+    def test_m_booster_dont_have_GL_context(self):
+        mpid = get_pid('booster-m')
+        self.assert_(mpid != None, "Process 'booster-m' is not running")
+        self.assert_(not has_GL_context(mpid), "booster-m has GL context!")
+
+    def test_e_booster_dont_have_GL_context(self):
+        epid = get_pid('booster-e')
+        self.assert_(epid != None, "Process 'booster-e' is not running")
+        self.assert_(not has_GL_context(epid), "booster-e has GL context!")
+
+    def test_d_booster_dont_have_GL_context(self):
+        dpid = get_pid('booster-d')
+        self.assert_(dpid != None, "Process 'booster-d' is not running")
+        self.assert_(not has_GL_context(dpid), "booster-d has GL context!")
+
 
 # main
 if __name__ == '__main__':

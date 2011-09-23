@@ -46,6 +46,22 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launched_app_wm_class_q</step>
       </case>
 
+      <case name="applauncherd__test_q_booster_dont_have_GL_context" type="Functional" description="Test that q-booster don't have GL context" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_q_booster_dont_have_GL_context</step>
+      </case>
+
+      <case name="applauncherd__test_m_booster_dont_have_GL_context" type="Functional" description="Test that m-booster don't have GL context" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_m_booster_dont_have_GL_context</step>
+      </case>
+
+      <case name="applauncherd__test_e_booster_dont_have_GL_context" type="Functional" description="Test that e-booster don't have GL context" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_e_booster_dont_have_GL_context</step>
+      </case>
+
+      <case name="applauncherd__test_d_booster_dont_have_GL_context" type="Functional" description="Test that d-booster don't have GL context" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_d_booster_dont_have_GL_context</step>
+      </case>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
