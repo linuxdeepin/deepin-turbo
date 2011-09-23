@@ -759,37 +759,52 @@ class launcher_tests (unittest.TestCase):
         is same for both boosted and non boosted applications
         """
         #Get status for non boosted apps
+        debug("Restart home ")
         os.system("initctl restart xsession/mthome")
         time.sleep(5)
+        debug("Get the co-ordinates of the application from the grid")
         st, op = commands.getstatusoutput("%s -a %s" %(GET_COORDINATE_SCRIPT, app_wol))
         time.sleep(2)
         pos = op.split("\n")[-1]
+        debug("The co-ordinates of %s is %s" %(app_wol, pos))
         
+        debug("Now tap to launch the application")
         os.system("%s -c %s -q" %(PIXELCHANHED_BINARY, pos))
         time.sleep(2)
 
-        pid = get_pid(app_wol)
+        pid = wait_for_app(app_wol)
+        self.assert_(pid != None, "The application was not launched")
+
         st, SigBlk_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigBlk" %pid)
         st, SigIgn_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigIgn" %pid)
         st, SigCgt_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigCgt" %pid)
+
+        debug("The SigBlk is %s, SigIgn is %s and SigCgt is %s for %s" %(SigBlk_wol, SigIgn_wol, SigCgt_wol, app_wol))
 
         kill_process(app_wol)
         time.sleep(2)
         
         #Get status for booster application
+        debug("Restart home ")
         os.system("initctl restart xsession/mthome")
         time.sleep(5)
+        debug("Get the co-ordinates of the application from the grid")
         st, op = commands.getstatusoutput("%s -a %s" %(GET_COORDINATE_SCRIPT, app_wl))
         time.sleep(2)
         pos = op.split("\n")[-1]
+        debug("The co-ordinates of %s is %s" %(app_wl, pos))
 
+        debug("Now tap to launch the application")
         os.system("%s -c %s -q" %(PIXELCHANHED_BINARY, pos))
         time.sleep(2)
 
-        pid = get_pid(app_wl)
+        pid = wait_for_app(app_wl)
+        self.assert_(pid != None, "The application was not launched")
         st, SigBlk_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigBlk" %pid)
         st, SigIgn_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigIgn" %pid)
         st, SigCgt_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigCgt" %pid)
+
+        debug("The SigBlk is %s, SigIgn is %s and SigCgt is %s for %s" %(SigBlk_wl, SigIgn_wl, SigCgt_wl, app_wl))
 
         kill_process(app_wl)
         time.sleep(2)
@@ -798,56 +813,6 @@ class launcher_tests (unittest.TestCase):
         self.assert_(SigIgn_wol == SigIgn_wl, "The SigIgn is not same for both apps")
         self.assert_(SigCgt_wol == SigCgt_wl, "The SigCgt is not same for both apps")
 
-    def test_signal_status_m(self):
-        self._test_signal_status("fala_wl", "fala_wol")
-
-    def test_signal_status_qml(self):
-        self._test_signal_status("fala_qml_wl", "fala_qml_wol")
-
-    def _test_signal_status(self, app_wl, app_wol):
-        """
-        Test that values of SigBlk, SigIgn and SigCgt in /proc/pid/status 
-        is same for both boosted and non boosted applications
-        """
-        #Get status for non boosted apps
-        os.system("initctl restart xsession/mthome")
-        time.sleep(5)
-        st, op = commands.getstatusoutput("%s -a %s" %(GET_COORDINATE_SCRIPT, app_wol))
-        time.sleep(2)
-        pos = op.split("\n")[-1]
-        
-        os.system("%s -c %s -q" %(PIXELCHANHED_BINARY, pos))
-        time.sleep(2)
-
-        pid = get_pid(app_wol)
-        st, SigBlk_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigBlk" %pid)
-        st, SigIgn_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigIgn" %pid)
-        st, SigCgt_wol = commands.getstatusoutput("cat /proc/%s/status | grep SigCgt" %pid)
-
-        kill_process(app_wol)
-        time.sleep(2)
-        
-        #Get status for booster application
-        os.system("initctl restart xsession/mthome")
-        time.sleep(5)
-        st, op = commands.getstatusoutput("%s -a %s" %(GET_COORDINATE_SCRIPT, app_wl))
-        time.sleep(2)
-        pos = op.split("\n")[-1]
-
-        os.system("%s -c %s -q" %(PIXELCHANHED_BINARY, pos))
-        time.sleep(2)
-
-        pid = get_pid(app_wl)
-        st, SigBlk_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigBlk" %pid)
-        st, SigIgn_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigIgn" %pid)
-        st, SigCgt_wl = commands.getstatusoutput("cat /proc/%s/status | grep SigCgt" %pid)
-
-        kill_process(app_wl)
-        time.sleep(2)
-        
-        self.assert_(SigBlk_wol == SigBlk_wl, "The SigBlk is not same for both apps")
-        self.assert_(SigIgn_wol == SigIgn_wl, "The SigIgn is not same for both apps")
-        self.assert_(SigCgt_wol == SigCgt_wl, "The SigCgt is not same for both apps")
 
     def test_launched_app_wm_class_m(self):
         """

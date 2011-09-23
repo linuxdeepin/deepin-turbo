@@ -75,10 +75,10 @@ class BootModeTests(unittest.TestCase):
         
         if get_pid('applauncherd') != None:
             kill_process('applauncherd')
+        start_applauncherd()
         if get_pid('applifed') == None:
             os.system("initctl start xsession/applifed")
             wait_for_app('camera-ui')
-        start_applauncherd()
 
     def start_applauncherd_in_boot_mode(self):
         remove_applauncherd_runtime_files()
@@ -126,10 +126,10 @@ class BootModeTests(unittest.TestCase):
         self.assert_(pids[0] != pids2[0], "pid of booster-m didn't change")
         self.assert_(pids[1] != pids2[1], "pid of booster-m didn't change")
 
-    def launch_apps(self, n = 6):
+    def launch_apps(self, n = 6, btype = 'm'):
         # check that launching works and the apps are there
         for i in range(n):
-            run_cmd_as_user('/usr/bin/invoker -n -r 2 --type=m fala_multi-instance %d' % i)
+            run_cmd_as_user('/usr/bin/invoker -n -r 2 --type=%s fala_multi-instance %d' % (btype, i))
             time.sleep(4)
 
         # give the applications time to really start
@@ -156,16 +156,20 @@ class BootModeTests(unittest.TestCase):
 
         # launch apps in boot mode
         res_boot = self.launch_apps(6)
-        debug("Res at boot : %s" %res_boot)
+        res_boot_d = self.launch_apps(6, 'd')
+        debug("Res at boot for booster-m: %s" %res_boot)
+        debug("Res at boot for booster-d : %s" %res_boot_d)
 
         # switch to normal mode and give boosters some time to start
         kill_process('applauncherd', signum=10)
         wait_for_app('booster-m')
-        wait_for_app('booster-q')
+        wait_for_app('booster-d')
 
         # launch apps in normal mode
         res_norm = self.launch_apps(6)
-        debug("Res at normal : %s" %res_norm)
+        res_norm_d = self.launch_apps(6, 'd')
+        debug("Res at normal for booster-m: %s" %res_norm)
+        debug("Res at normal for booster-d : %s" %res_norm_d)
 
         # and finally, terminate applauncherd
         kill_process('applauncherd', signum=15)
@@ -174,15 +178,23 @@ class BootModeTests(unittest.TestCase):
 
         # assert that the boot mode results are correct
         self.assert_(res_boot[0] == 6 and res_boot[1] == 6,
-                     "%d apps, %d windows. Expected %d apps, %d windows (boot mode)" % (res_boot[0],
+                     "With booster-m %d apps, %d windows. Expected %d apps, %d windows (boot mode)" % (res_boot[0],
                                                                                         res_boot[1],
+                                                                                        6, 6))
+        self.assert_(res_boot_d[0] == 6 and res_boot_d[1] == 6,
+                     "With booster-d %d apps, %d windows. Expected %d apps, %d windows (boot mode)" % (res_boot_d[0],
+                                                                                        res_boot_d[1],
                                                                                         6, 6))
 
         # assert that the normal mode results are correct
         self.assert_(res_norm[0] == 6 and res_norm[1] == 12,
-                     "%d apps, %d windows. Expected %d apps, %d windows (normal mode)" % (res_norm[0],
+                     "With booster-m %d apps, %d windows. Expected %d apps, %d windows (normal mode)" % (res_norm[0],
                                                                                           res_norm[1],
                                                                                           6, 12))
+        self.assert_(res_norm_d[0] == 6 and res_norm_d[1] == 6,
+                     "With booster-d %d apps, %d windows. Expected %d apps, %d windows (normal mode)" % (res_norm_d[0],
+                                                                                          res_norm_d[1],
+                                                                                          6, 6))
 
     def test_SIGUSR2(self):
         """
@@ -250,8 +262,8 @@ if __name__ == '__main__':
     result = unittest.TextTestRunner(verbosity=2).run(mysuite)
 
     # kill applauncherd if it's left running and restart it
-    kill_process('applauncherd')
-    restart_applauncherd()
+    if get_pid('applauncherd') == None:
+        start_applauncherd()
 
     if not result.wasSuccessful():
         sys.exit(1)
