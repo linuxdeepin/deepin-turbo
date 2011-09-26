@@ -1,9 +1,10 @@
-applauncherd (2.0.1) unstable; urgency=low
+applauncherd (2.0.1) stable; urgency=low
 
   * Changes: Fix performance tests
   * Changes: Fix dependency for testscripts
+  * Changes: Add tests for detecting unexpected GL context in boosters
 
- -- Olli Leppanen <olli.leppanen@nokia.com>  Thu, 15 Sep 2011 16:05:02 +0300
+ -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Thu, 26 Sep 2011 13:30:00 +0300
 
 applauncherd (2.0.0) stable; urgency=low
 
