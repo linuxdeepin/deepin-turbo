@@ -1,3 +1,9 @@
+applauncherd (2.0.2) stable; urgency=low
+
+  * Fixes: NB#274400 - [TASK] Remove legacy code from applauncherd
+
+ -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Mon, 26 Sep 2011 13:59:20 +0300
+
 applauncherd (2.0.1) stable; urgency=low
 
   * Changes: Fix performance tests
