@@ -1,6 +1,6 @@
-applauncherd (2.0.3) unstable; urgency=low
+applauncherd (2.0.3) stable; urgency=low
 
-  * 
+  * Fixes: NB#274400 - [TASK] Remove legacy code from applauncherd
 
  -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Tue, 27 Sep 2011 15:48:27 +0300
 
@@ -23,7 +23,6 @@ applauncherd (2.0.0) stable; urgency=low
   * Fixes: NB#274302 - don't unload the main binary
   * Fixes: NB#275522 - Booster::requestSplash() segfault
   * Fixes: NB#274400 - [TASK] Remove legacy code from applauncherd
-  * Fixes: NB#269075 - Precached (LibMeegotouch) applications do not set WM_CLASS window atom properly
   * Changes: Add unit test for Logger - open log twice
   * Changes: Add functional test - invoker kills application when applauncherd dies
 
