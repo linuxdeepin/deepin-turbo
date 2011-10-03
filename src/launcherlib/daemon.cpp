@@ -673,10 +673,6 @@ void Daemon::parseArgs(const ArgVect & args)
         {
             usage(EXIT_SUCCESS);
         }
-        else if ((*i) == "--quiet" || (*i) == "-q")
-        {
-            m_quiet = true;
-        }
         else
         {
             if ((*i).find_first_not_of(' ') != string::npos)
