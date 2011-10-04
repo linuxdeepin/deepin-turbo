@@ -927,6 +927,53 @@ class launcher_tests (unittest.TestCase):
         self.assert_(dpid != None, "Process 'booster-d' is not running")
         self.assert_(not has_GL_context(dpid), "booster-d has GL context!")
 
+    def test_q_boosted_has_glcontext(self):
+        qpid = get_pid('booster-q')
+        self.assert_(qpid != None, "Process 'booster-q' is not running")
+        self.assert_(not has_GL_context(qpid), "booster-q has GL context!")
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'q', arg = '--no-wait')
+        time.sleep(4)
+        app_pid = get_pid('fala_ft_hello')
+        self.assert_(app_pid != None, "Process 'fala_ft_hello' is not running")
+        glcontext = has_GL_context(app_pid)
+        kill_process('fala_ft_hello')
+        self.assert_(glcontext, "fala_ft_hello does not have GL context!")
+        
+    def test_m_boosted_has_glcontext(self):
+        mpid = get_pid('booster-m')
+        self.assert_(mpid != None, "Process 'booster-m' is not running")
+        self.assert_(not has_GL_context(mpid), "booster-m has GL context!")
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm', arg = '--no-wait')
+        time.sleep(4)
+        app_pid = get_pid('fala_ft_hello')
+        self.assert_(app_pid != None, "Process 'fala_ft_hello' is not running")
+        glcontext = has_GL_context(app_pid)
+        kill_process('fala_ft_hello')
+        self.assert_(glcontext, "fala_ft_hello does not have GL context!")
+        
+    def test_e_boosted_has_glcontext(self):
+        epid = get_pid('booster-e')
+        self.assert_(epid != None, "Process 'booster-e' is not running")
+        self.assert_(not has_GL_context(epid), "booster-e has GL context!")
+        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'e', arg = '--no-wait')
+        time.sleep(4)
+        app_pid = get_pid('fala_ft_hello')
+        self.assert_(app_pid != None, "Process 'fala_ft_hello' is not running")
+        glcontext = has_GL_context(app_pid)
+        kill_process('fala_ft_hello')
+        self.assert_(glcontext, "fala_ft_hello does not have GL context!")
+
+    def test_d_boosted_has_glcontext(self):
+        dpid = get_pid('booster-d')
+        self.assert_(dpid != None, "Process 'booster-d' is not running")
+        self.assert_(not has_GL_context(dpid), "booster-d has GL context!")
+        p = run_app_as_user_with_invoker(PREFERED_APP_QML, booster = 'd', arg = '--no-wait')
+        time.sleep(4)
+        app_pid = get_pid('fala_qml_helloworld')
+        self.assert_(app_pid != None, "Process 'fala_qml_helloworld' is not running")
+        glcontext = has_GL_context(app_pid)
+        kill_process('fala_qml_helloworld')
+        self.assert_(glcontext, "fala_qml_helloworld does not have GL context!")
 
 # main
 if __name__ == '__main__':

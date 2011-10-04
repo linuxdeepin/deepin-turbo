@@ -68,6 +68,33 @@
       </environments>
     </set>
 
+    <set name="TC_GLContext" description="functional tests for glcontext" feature="AF Basic Launcher daemon support" requirement="300168">   
+      <pre_steps>
+          <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+      </pre_steps>
+
+      <case name="applauncherd__test_q_boosted_has_GL_context" type="Functional" description="Test that q-boosted app has GL context and q-booster doesn't have" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_q_boosted_has_glcontext</step>
+      </case>
+
+      <case name="applauncherd__test_m_boosted_has_GL_context" type="Functional" description="Test that m-boosted app has GL context and m-booster doesn't have" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_m_boosted_has_glcontext</step>
+      </case>
+
+      <case name="applauncherd__test_d_boosted_has_GL_context" type="Functional" description="Test that d-boosted app has GL context and d-booster doesn't have" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_d_boosted_has_glcontext</step>
+      </case>
+
+      <case name="applauncherd__test_e_boosted_has_GL_context" type="Functional" description="Test that e-boosted app has GL context and e-booster doesn't have" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_e_boosted_has_glcontext</step>
+      </case>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
   </suite>
 </testdefinition>
 
