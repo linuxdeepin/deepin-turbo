@@ -120,6 +120,7 @@ void Ut_Logger::testOpenLogTwice() {
 
 bool Ut_Logger::_findPhraseInSyslog()
 {
+    QTest::qSleep(delay);
     int exitCode = QProcess::execute("grep", QStringList() << QString(m_testPhrase) << syslogFile);
     return exitCode == 0;
 }
