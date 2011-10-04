@@ -247,7 +247,7 @@ class launcher_tests (unittest.TestCase):
             #in a global dictionary, append the pid
             process_handle = run_app_as_user_with_invoker(app, booster = btype)
 
-        time.sleep(8)
+        time.sleep(15)
 
         process_id = get_pid(app_common_prefix)
         pid_list = process_id.split()
