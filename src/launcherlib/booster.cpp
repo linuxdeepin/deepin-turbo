@@ -133,7 +133,7 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
 
         // Run process as single instance if requested
         if (m_appData->singleInstance())
-        {  
+        {
             // Check if instance is already running
             SingleInstancePluginEntry * pluginEntry = singleInstance->pluginEntry();
             if (pluginEntry)
@@ -255,6 +255,14 @@ void Booster::sendDataToParent()
 
 bool Booster::receiveDataFromInvoker(int socketFd)
 {
+    // delete previous connection instance because booster can
+    // connect with several invokers due to single-instance feature
+    if (m_connection != NULL)
+    {
+        delete  m_connection;
+        m_connection = NULL;
+    }
+
     // Setup the conversation channel with the invoker.
     m_connection = new Connection(socketFd);
 

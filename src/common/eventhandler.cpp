@@ -14,6 +14,17 @@ struct sigaction EventHandler::m_oldSigAction;
 
 EventHandler::EventHandler(Booster* parent,  EventHandlerType type) : m_item(0), m_parent(parent), m_type(type)
 {
+    m_sighupFd[0] = -1;
+    m_sighupFd[1] = -1;
+}
+
+EventHandler::~EventHandler()
+{
+    if (m_sighupFd[0] != -1)
+        ::close(m_sighupFd[0]);
+
+    if (m_sighupFd[1] != -1)
+        ::close(m_sighupFd[1]);
 }
 
 void EventHandler::runEventLoop()

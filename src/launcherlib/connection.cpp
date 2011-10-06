@@ -75,6 +75,21 @@ Connection::Connection(int socketFd, bool testMode) :
 #endif
 }
 
+Connection::~Connection()
+{
+    close();
+
+    for (int i = 0; i < IO_DESCRIPTOR_COUNT; i++)
+    {
+        if (m_io[i] != -1)
+        {
+            ::close(m_io[i]);
+            m_io[i] = -1;
+        }
+    }
+}
+
+
 int Connection::getFd() const
 {
     return m_fd;

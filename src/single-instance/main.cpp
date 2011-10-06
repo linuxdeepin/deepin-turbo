@@ -281,8 +281,10 @@ extern "C"
         }
 
         if(fcntl(g_lockFd, F_SETLK, &fl) == -1)
+        {
+            close(g_lockFd);
             return false;
-
+        }
         return true;
     }
 
@@ -304,11 +306,13 @@ extern "C"
             if (Window winId = windowIdForBinary(dpy, binaryName))
             {
                 raiseWindow(dpy, winId);
+                XCloseDisplay(dpy);
                 return true;
             }
             else
             {
                 std::cerr << "ERROR!!: Lock reserved but no window id for binary name found." << std::endl;
+                XCloseDisplay(dpy);
                 return false;
             }
         }

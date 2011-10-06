@@ -25,7 +25,7 @@ public:
     EventHandler(Booster* parent, EventHandlerType type);
 
     //! \brief Destructor
-    virtual ~EventHandler() {}
+    virtual ~EventHandler();
 
     void runEventLoop();
 

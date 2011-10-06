@@ -1,6 +1,6 @@
 applauncherd (2.0.4) unstable; urgency=low
 
-  * 
+  * Fixes: NB#284949 - m & d app boosters are leaking FDs 
 
  -- Olli Leppanen <olli.leppanen@nokia.com>  Mon, 3 Oct 2011 11:18:27 +0300
 

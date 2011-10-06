@@ -52,6 +52,10 @@ public:
      */
     explicit Connection(int socketFd, bool testMode = false);
 
+    //! Destructor
+    virtual ~Connection();
+
+
     /*! \brief Accept connection.
      * Accept a socket connection from the invoker.
      * Stores security credentials of the connected
