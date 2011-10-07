@@ -35,7 +35,7 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="Perf-Test-Grid-QML-launcher" type="Performance" description="Measure startup time of the QML application using launcher" timeout="840" level="System" insignificant="false">>
+      <case name="Perf-Test-Grid-QML-launcher" type="Performance" description="Measure startup time of the QML application using launcher" timeout="840" level="System" insignificant="false">
 	      <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 /usr/share/applauncherd-testscripts/test-perf.rb name test_performance -- -a fala_qml_wl -b fala_qml_wl -s 750 -m 150 -f "/tmp/fala_qml_wl.log" &gt; /tmp/perf_grid_qml_with_launcher.txt</step>
       </case>
 

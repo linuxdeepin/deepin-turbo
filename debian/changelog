@@ -1,4 +1,4 @@
-applauncherd (2.0.4) unstable; urgency=low
+applauncherd (2.0.4) stable; urgency=low
 
   * Fixes: NB#284949 - m & d app boosters are leaking FDs 
   * Changes: Insignificant returned false in qml perf tests
