@@ -59,6 +59,13 @@ def check_prerequisites():
     for app in LAUNCHABLE_APPS: 
         assert len(basename(app)) <= 15, "For app: %s , base name !<= 14" %app
 
+def number_of_file_descriptors_for_pid(pid) :
+    command = 'lsof -p %s' %(pid)
+    p = run_cmd_as_user(command, out = subprocess.PIPE)
+    output, errors = p.communicate()
+    debug("File descriptor count: %s for proces PID: %s" %(output.count('\n')-1, pid))
+    return output.count('\n')-1
+
 class daemon_handling (unittest.TestCase):
 
     def stop_daemons(self):
@@ -974,6 +981,55 @@ class launcher_tests (unittest.TestCase):
         glcontext = has_GL_context(app_pid)
         kill_process('fala_qml_helloworld')
         self.assert_(glcontext, "fala_qml_helloworld does not have GL context!")
+
+    # detects bug
+    def test_detect_booster_m_leaks_file_descriptor_when_invoker_is_using_app_directly(self) :
+        self._test_detect_booster_leaks_file_descriptor_when_invoker_is_using_app_directly('m', 'fala_ft_hello')
+
+    def test_detect_booster_d_leaks_file_descriptor_when_invoker_is_using_app_directly(self) :
+        self._test_detect_booster_leaks_file_descriptor_when_invoker_is_using_app_directly('d', 'fala_qml_helloworld')
+
+    def test_detect_booster_q_leaks_file_descriptor_when_invoker_is_using_app_directly(self) :
+        self._test_detect_booster_leaks_file_descriptor_when_invoker_is_using_app_directly('q', 'fala_ft_hello')
+
+    def test_detect_booster_e_leaks_file_descriptor_when_invoker_is_using_app_directly(self) :
+        self._test_detect_booster_leaks_file_descriptor_when_invoker_is_using_app_directly('e', 'fala_ft_hello')
+
+    def _test_detect_booster_leaks_file_descriptor_when_invoker_is_using_app_directly(self, boosterType, testAppName) :
+        boosterName = 'booster-%s' %(boosterType)
+
+        debug("Boster name: %s    app name: %s" %(boosterName, testAppName))
+
+        # note that application is run by direct invacation not by calling the service
+        run_command = 'invoker --single-instance --type=%s /usr/bin/%s' %(boosterType, testAppName)
+        p = run_cmd_as_user(run_command)
+        time.sleep(1)
+
+        debug("First run command result is: %s" %(p))
+
+        boosterPid = wait_for_app(boosterName, 10)
+        self.assertNotEqual(boosterPid, None, "Test incoclusive, the booster is not ready - timeout.")
+
+        startFileDescriptorCount = number_of_file_descriptors_for_pid(boosterPid)
+
+        p = run_cmd_as_user(run_command)
+        time.sleep(1)
+        p = run_cmd_as_user(run_command)
+        time.sleep(1)
+        p = run_cmd_as_user(run_command)
+        time.sleep(1)
+
+        debug("Last run command result is: %s" %(p))
+
+        self.assertEqual(boosterPid, get_pid(boosterName), "Test incoclusive, the booster has been changed.")
+        
+        endFileDescriptorCount = number_of_file_descriptors_for_pid(boosterPid)
+
+        kill_process(testAppName)
+        self.assertEqual(startFileDescriptorCount, endFileDescriptorCount, 
+                         "State of booster should remain unchanged (no file descriptor leaks). File descriptor count changed by: %s." 
+                             %(endFileDescriptorCount-startFileDescriptorCount))
+
 
 # main
 if __name__ == '__main__':
