@@ -62,19 +62,19 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_d_booster_dont_have_GL_context</step>
       </case>
 
-      <case name="applauncherd__test_detect_booster_m_leaks_file_descriptor" type="Functional" description="Test that booster-m doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="10" level="System" insignificant="true">
+      <case name="applauncherd__test_detect_booster_m_leaks_file_descriptor" type="Functional" description="Test that booster-m doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_m_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
-      <case name="applauncherd__test_detect_booster_d_leaks_file_descriptor" type="Functional" description="Test that booster-d doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="10" level="System" insignificant="true">
+      <case name="applauncherd__test_detect_booster_d_leaks_file_descriptor" type="Functional" description="Test that booster-d doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_d_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
-      <case name="applauncherd__test_detect_booster_q_leaks_file_descriptor" type="Functional" description="Test that booster-q doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="10" level="System" insignificant="true">
+      <case name="applauncherd__test_detect_booster_q_leaks_file_descriptor" type="Functional" description="Test that booster-q doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_q_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
-      <case name="applauncherd__test_detect_booster_e_leaks_file_descriptor" type="Functional" description="Test that booster-e doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="10" level="System" insignificant="true">
+      <case name="applauncherd__test_detect_booster_e_leaks_file_descriptor" type="Functional" description="Test that booster-e doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_e_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
