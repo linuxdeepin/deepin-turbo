@@ -1030,6 +1030,55 @@ class launcher_tests (unittest.TestCase):
                          "State of booster should remain unchanged (no file descriptor leaks). File descriptor count changed by: %s." 
                              %(endFileDescriptorCount-startFileDescriptorCount))
 
+    def test_check_applauncherd_sighup_effects_m(self) :
+        self._test_check_applauncherd_sighup_effects(LAUNCHABLE_APPS,'m')
+
+    def test_check_applauncherd_sighup_effects_d(self) :
+        self._test_check_applauncherd_sighup_effects(LAUNCHABLE_APPS_QML,'d')
+
+    def test_check_applauncherd_sighup_effects_e(self) :
+        self._test_check_applauncherd_sighup_effects(LAUNCHABLE_APPS, 'e')
+
+    def test_check_applauncherd_sighup_effects_q(self) :
+        self._test_check_applauncherd_sighup_effects(LAUNCHABLE_APPS, 'q')
+
+    def _test_check_applauncherd_sighup_effects(self, launchable_apps, btype) :
+        """
+        Test that applaucher-d is reinitilized afret sighup has been resived.
+        This means
+            - applaucherd is not killed just reinitilized 
+            - killing old boosters and creating new one
+            - not other child processes should be killed
+        """
+        daemonPid = wait_for_app('applauncherd', 10)
+
+        appList = []
+
+        try:
+            for app in launchable_apps:
+                p = run_app_as_user_with_invoker(app, booster = btype)
+                pid = wait_for_app(app, timeout = 10, sleep = 1)
+                if pid == None:
+                    self.fail("%s was not launched using applauncherd")
+                appList.append((pid, app))
+
+            boosterPid = wait_for_app("booster-%s" %(btype))
+
+            # send SIGHUP signal to applaucherd:
+            kill_process(apppid=daemonPid, signum=1)
+            time.sleep(5)
+
+            self.assertNotEqual(wait_for_app("booster-%s" %(btype)), boosterPid, "Booster should be restarted by applaucherd with SIGHUP.")
+            self.assertEqual(wait_for_app('applauncherd', 10), daemonPid, "applaucherd shouldn't be restarted after reciving SIGHUP.")
+
+            for pid in appList :
+                state = process_state(pid[0])
+                self.assertNotEqual(state, None, 
+                                    "Child process '%s' PID=%s has been killed after applaucherd recived SIGHUP!" %(pid[1], pid[0]))
+        finally:
+            for pid in appList:
+                kill_process(apppid = pid[0])
+
 
 # main
 if __name__ == '__main__':

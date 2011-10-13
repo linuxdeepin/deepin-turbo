@@ -111,6 +111,29 @@
       </environments>
     </set>
 
+    <set name="TC_SigHUP" description="functional tests for HUP signal for applaucherd" feature="AF Basic Launcher daemon support">
+      <case name="applauncherd__test_check_applauncherd_sighup_m" type="Functional" description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-m and doesn't kill other child processes." timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_m</step>
+      </case>
+
+      <case name="applauncherd__test_check_applauncherd_sighup_d" type="Functional" description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-d and doesn't kill other child processes." timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_d</step>
+      </case>
+
+      <case name="applauncherd__test_check_applauncherd_sighup_q" type="Functional" description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-q and doesn't kill other child processes." timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_q</step>
+      </case>
+
+      <case name="applauncherd__test_check_applauncherd_sighup_e" type="Functional" description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-e and doesn't kill other child processes." timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_e</step>
+      </case>
+
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>    
+      </environments>
+    </set>
+
   </suite>
 </testdefinition>
 
