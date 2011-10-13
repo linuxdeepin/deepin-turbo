@@ -91,7 +91,7 @@ static int clientMsg(Display *disp, Window win, const char *msg,
     event.xclient.type = ClientMessage;
     event.xclient.serial = 0;
     event.xclient.send_event = True;
-    event.xclient.message_type = XInternAtom(disp, msg, False);
+    event.xclient.message_type = XInternAtom(disp, msg, True);
     event.xclient.window = win;
     event.xclient.format = 32;
     event.xclient.data.l[0] = data0;
@@ -100,7 +100,8 @@ static int clientMsg(Display *disp, Window win, const char *msg,
     event.xclient.data.l[3] = data3;
     event.xclient.data.l[4] = data4;
     
-    if (XSendEvent(disp, DefaultRootWindow(disp), False, mask, &event))
+    // XInternAtom will return None if atom does not exists
+    if (event.xclient.message_type && XSendEvent(disp, DefaultRootWindow(disp), False, mask, &event))
     {
         return EXIT_SUCCESS;
     }
@@ -205,16 +206,18 @@ Window windowIdForBinary(Display *dpy, const char *binaryName)
         Atom           netClientListAtom = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
         Atom           type;
         int            format;
-        unsigned long  nItems;
+        unsigned long  nItems = 0;
         unsigned long  bytesAfter;
         unsigned char *prop = 0;
         char           **wmCommand = NULL;
         int            wmCommandCount = 0;
 
         // Get the client list of the root window
-        if(XGetWindowProperty(dpy, XDefaultRootWindow(dpy), netClientListAtom,
-                              0, 0x7fffffff, False, XA_WINDOW,
-                              &type, &format, &nItems, &bytesAfter, &prop) == Success) 
+        int status = XGetWindowProperty(dpy, XDefaultRootWindow(dpy), netClientListAtom,
+                                        0, 0x7fffffff, False, XA_WINDOW,
+                                        &type, &format, &nItems, &bytesAfter, &prop);
+
+        if ((status == Success) && (prop != NULL))
         {
             Window * clients = reinterpret_cast<Window *>(prop);
             for (unsigned long i = 0; i < nItems; i++) 
