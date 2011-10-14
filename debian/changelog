@@ -1,3 +1,9 @@
+applauncherd (2.0.6) unstable; urgency=low
+
+  * 
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Fri, 14 Oct 2011 14:40:32 +0300
+
 applauncherd (2.0.5) stable; urgency=low
 
   * Changes: Implementation of re-exec functionality, trigger is disabled
@@ -10,7 +16,7 @@ applauncherd (2.0.4) stable; urgency=low
 
   * Fixes: NB#284949 - m & d app boosters are leaking FDs 
   * Changes: Insignificant returned false in qml perf tests
-	
+
  -- Olli Leppanen <olli.leppanen@nokia.com>  Mon, 3 Oct 2011 11:18:27 +0300
 
 applauncherd (2.0.3) stable; urgency=low
