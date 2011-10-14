@@ -134,6 +134,15 @@ def get_pid(appname):
     else:
         return None
 
+def get_oldest_pid(appname):
+    temp = basename(appname)[:14]
+    st, op = commands.getstatusoutput("pgrep -o %s" % temp)
+    debug("The Pid of %s is %s" %(appname, op))
+    if st == 0:
+        return op
+    else:
+        return None
+    
 def get_newest_pid(app):
     p = subprocess.Popen(['pgrep', '-n', app], shell = False,
                          stdout = subprocess.PIPE, stderr = DEV_NULL)
@@ -187,10 +196,11 @@ def wait_for_single_applauncherd(timeout = 20, sleep = 1):
     return pid
 
 def get_booster_pid():
-    wait_for_app('booster-q')
-    wait_for_app('booster-e')
-    wait_for_app('booster-d')
-    wait_for_app('booster-m')
+    qpid = wait_for_app('booster-q')
+    epid = wait_for_app('booster-e')
+    dpid = wait_for_app('booster-d')
+    mpid = wait_for_app('booster-m')
+    return (epid, dpid, qpid, mpid)
 
 def kill_process(appname=None, apppid=None, signum=15):
     # obtained by running 'kill -l'
@@ -339,3 +349,16 @@ def get_groups_for_user():
     p.wait()
     
     return groups
+
+def send_sighup_to_applauncherd():
+    pid1 = get_oldest_pid('applauncherd')
+    (e1, d1, q1, m1) = get_booster_pid()
+    debug("before sighup, applauncherd pid = ", pid1)
+
+    kill_process(None, pid1, 1)
+    time.sleep(5)
+    pid2 = wait_for_single_applauncherd()
+    (e2, d2, q2, m2) = get_booster_pid()
+    debug("after sighup, applauncherd pid = ", pid2)
+
+    return (pid1==pid2, m1!=m2 and q1!=q2 and d1!=d2 and e1!=e2)

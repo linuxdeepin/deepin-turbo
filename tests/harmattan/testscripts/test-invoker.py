@@ -51,15 +51,29 @@ class InvokerTests(unittest.TestCase):
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
 
+    def sighup_applauncherd(self): 
+        same_pid, booster_status = send_sighup_to_applauncherd()
+        self.assert_(same_pid, "Applauncherd has new pid after SIGHUP")
+        self.assert_(booster_status, "Atleast one of the boosters is not restarted")
+
     #Testcases
-    def test_wait_term_m(self):
+    def test_wait_term_m(self, sighup = True):
         self._test_wait_term('/usr/bin/fala_ft_hello', 'fala_ft_hello', 'm')
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_wait_term_m(False)
 
-    def test_wait_term_qml(self):
+    def test_wait_term_qml(self, sighup = True):
         self._test_wait_term('/usr/bin/fala_qml_helloworld', 'fala_qml_helloworld', 'd')
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_wait_term_qml(False)
 
-    def test_wait_term_e(self):
+    def test_wait_term_e(self, sighup = True):
         self._test_wait_term('/usr/bin/fala_ft_hello', 'fala_ft_hello', 'e')
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_wait_term_e(False)
 
     def _test_wait_term(self, app_path, app_name, btype):
         """
@@ -123,7 +137,7 @@ class InvokerTests(unittest.TestCase):
 
         start_applauncherd()
 
-    def test_signal_forwarding(self):
+    def test_signal_forwarding(self, sighup = True):
         """
         To test that invoker is killed by the same signal as the application
         """
@@ -163,9 +177,13 @@ class InvokerTests(unittest.TestCase):
     
         self.assert_(op.split('\n')[-1].startswith('Aborted') == True, "The invoker(q-booster) was not killed by the same signal")
         time.sleep(2)
+        
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_signal_forwarding(False)
 
 
-    def test_invoker_delay(self):
+    def test_invoker_delay(self, sighup = True):
         """
         Test the --delay parameter of the invoker.
         """
@@ -197,7 +215,11 @@ class InvokerTests(unittest.TestCase):
 
         self.assert_(success, "invoker terminated before delay elapsed")
 
-    def test_invoker_exit_status(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_delay(False)
+
+    def test_invoker_exit_status(self, sighup = True):
         """
         To test that invoker returns the same exit status as the application
         """
@@ -222,7 +244,11 @@ class InvokerTests(unittest.TestCase):
         self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status for booster-m")
         self.assert_(app_st_wo_inv == app_st_we_inv, "The invoker returns a wrong exit status for booster-e")
 
-    def test_invoker_search_prog(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_exit_status(False)
+
+    def test_invoker_search_prog(self, sighup = True):
         """
         Test that invoker can find programs from directories listed in
         PATH environment variable and that it doesn't find something
@@ -249,8 +275,12 @@ class InvokerTests(unittest.TestCase):
         self.assert_(p.wait() != 127, "Found spam_cakefor some reason")
         time.sleep(2)
         kill_process('spam_cake')
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_search_prog(False)
     
-    def test_invoker_gid_uid(self):
+    def test_invoker_gid_uid(self, sighup = True):
         """
         To Test that the set gid and uid is passed from invoker process to launcher
         """
@@ -312,13 +342,17 @@ class InvokerTests(unittest.TestCase):
 
         self.assert_(usr_id == usr_id2, "The correct UID is not passed by invoker")
         self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_gid_uid(False)
        
 
     def test_invoker_param_creds(self):
         p = run_cmd_as_user('invoker --creds')
         self.assert_(p.wait() == 0, "'invoker --creds' failed")
 
-    def test_invoker_param_respawn_delay(self):
+    def test_invoker_param_respawn_delay(self, sighup = True):
         p = run_cmd_as_user('invoker --respawn 10 --type=q --no-wait fala_ft_hello')
 
         time.sleep(7)
@@ -335,6 +369,10 @@ class InvokerTests(unittest.TestCase):
         self.assert_(p.wait() != 0, "invoker didn't die with too big respawn delay")
         kill_process('fala_ft_hello')
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_param_respawn_delay(False)
+
     def test_invoker_bogus_apptype(self):
         p = run_cmd_as_user('invoker --type=foobar fala_ft_hello')
         self.assert_(p.wait() != 0, "invoker didn't die with bogus apptype")
@@ -342,7 +380,7 @@ class InvokerTests(unittest.TestCase):
         p = run_cmd_as_user('invoker fala_ft_hello')
         self.assert_(p.wait() != 0, "invoker didn't die with empty apptype")
 
-    def test_invoker_signal_forward(self):
+    def test_invoker_signal_forward(self, sighup = True):
         """
         Test that UNIX signals are forwarded from 
         invoker to the invoked process
@@ -353,6 +391,10 @@ class InvokerTests(unittest.TestCase):
     
         self.assert_(op.startswith('Segmentation fault') == True, "The invoker(m-booster) was not killed by the same signal")
         time.sleep(2)
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_signal_forward(False)
 
     def test_wrong_type(self):
         """
@@ -411,7 +453,7 @@ class InvokerTests(unittest.TestCase):
         p = run_cmd_as_user('invoker')
         self.assert_(p.wait() == 1, "'invoker' failed")
 
-    def test_app_link(self):
+    def test_app_link(self, sighup = True):
         """
         Test that symlink of an application can be launched.
         """
@@ -424,7 +466,11 @@ class InvokerTests(unittest.TestCase):
         kill_process("fala_link")
         self.assert_(pid != None ,"The application was not launched")
 
-    def test_D_and_G_option(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_app_link(False)
+
+    def test_D_and_G_option(self, sighup = True):
         """
         Test that -D and -G options work and applications are launcherd
         -G = INVOKER_MSG_MAGIC_OPTION_DLOPEN_GLOBAL
@@ -442,7 +488,11 @@ class InvokerTests(unittest.TestCase):
         kill_process("fala_wl")
         self.assert_(pid != None ,"The application was not launched")
 
-    def test_app_directory(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_D_and_G_option(False)
+
+    def test_app_directory(self, sighup = True):
         """
         Test that invoker is unable to launch a application which is a directory 
         """
@@ -453,6 +503,10 @@ class InvokerTests(unittest.TestCase):
         os.system("rm -rf /usr/bin/fala_dir")
         self.assert_(st != 0 ,"The application was not launched")
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_app_directory(False)
+
     def test_unsetPATH_launch(self):
         """
         Unset the PATH env variable and try to launch an application with
@@ -462,7 +516,7 @@ class InvokerTests(unittest.TestCase):
         self.assert_(st != 0, "The application was launched")
         self.assert_(op == "invoker: died: could not get PATH environment variable", "The application was launched")
 
-    def test_invoker_wait_term(self):
+    def test_invoker_wait_term(self, sighup = True):
         """
         start application with --wait-term parameter.
         Check that application is started and invoker is waiting termination before exit
@@ -494,7 +548,11 @@ class InvokerTests(unittest.TestCase):
 
         self.assert_(success, "invoker terminated before delay elapsed")
 
-    def test_relative_path_search(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_wait_term(False)
+
+    def test_relative_path_search(self, sighup = True):
         """
         Test that invoker searches the application through relative path
         """
@@ -503,7 +561,11 @@ class InvokerTests(unittest.TestCase):
         kill_process("fala_wl")
         self.assert_(pid != None ,"The application was not launched")
 
-    def test_oom_adj_minus_two(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_relative_path_search(False)
+
+    def test_oom_adj_minus_two(self, sighup = True):
         """
         Test that oom.adj is -2 for launched application process when using
         invokers -o param
@@ -520,6 +582,10 @@ class InvokerTests(unittest.TestCase):
         self.assert_(op == '-2', "oom.adj of the launched process is not -1")
 
         kill_process(PREFERED_APP) 
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_oom_adj_minus_two(False)
 
 
     def test_invoker_applauncherd_dies(self):

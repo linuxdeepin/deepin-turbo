@@ -31,12 +31,21 @@ class DaemonTests(unittest.TestCase):
     def tearDown(self):
         debug("tearDown")
 
-    def test_launcher_exist(self):
+    def sighup_applauncherd(self): 
+        same_pid, booster_status = send_sighup_to_applauncherd()
+        self.assert_(same_pid, "Applauncherd has new pid after SIGHUP")
+        self.assert_(booster_status, "Atleast one of the boosters is not restarted")
+
+    def test_launcher_exist(self, sighup = True):
         """
         To test if the launcher exists and is executable or not
         """
         self.assert_(os.path.isfile(LAUNCHER_BINARY), "Launcher file does not exist")
         self.assert_(os.access(LAUNCHER_BINARY, os.X_OK), "Launcher exists, but is not executable")
+        
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_launcher_exist(False)
 
     def test_daemon_list(self):
         """
@@ -93,7 +102,7 @@ class DaemonTests(unittest.TestCase):
 
         start_applauncherd()
 
-    def test_daemon_second_instance(self):
+    def test_daemon_second_instance(self, sighup = True):
         """
         Test that second instance of applauncherd cannot be started
         """
@@ -108,7 +117,11 @@ class DaemonTests(unittest.TestCase):
         self.assert_(daemon_pid == daemon_pid_new, "New instance of applauncherd started")
         self.assert_(st != 0, "Second instance of applauncherd started")
         
-    def test_writable_executable_mem(self):
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_daemon_second_instance(False)
+        
+    def test_writable_executable_mem(self, sighup = True):
         """
         Test that applauncherd does not have the writable and executable memory
         """
@@ -118,12 +131,22 @@ class DaemonTests(unittest.TestCase):
         debug("The value of status is %d" %st)
         debug("The value of output is %s" %op)
         self.assert_(st != 0, "applauncherd has writable and executable memory")
+        
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_writable_executable_mem(False)
 
-    def test_applauncherd_fd_close(self):
+    def test_applauncherd_fd_close(self, sighup = True):
         self._test_applauncherd_fd()
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_applauncherd_fd_close(False)
 
-    def test_applauncherd_fd_kill(self):
+    def test_applauncherd_fd_kill(self, sighup = True):
         self._test_applauncherd_fd(False)
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_applauncherd_fd_kill(False)
 
     def _test_applauncherd_fd(self, close = True):
         """
@@ -218,7 +241,7 @@ class DaemonTests(unittest.TestCase):
         self.assert_(op == 'FATAL!!: DISPLAY environment variable not set.',\
                 "Applauncherd was started even when DISPLAY was not set")
 
-    def test_app_exits_clean(self):
+    def test_app_exits_clean(self, sighup = True):
         """
         Test that a test applications exits clean.
         """
@@ -239,7 +262,9 @@ class DaemonTests(unittest.TestCase):
 
         launcher_pid_new = wait_for_single_applauncherd
         self.assert_(launcher_pid == launcher_pid_new, "The Pid of applauncherd has changed")
-
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_app_exits_clean(False)
 
 
 if __name__ == '__main__':

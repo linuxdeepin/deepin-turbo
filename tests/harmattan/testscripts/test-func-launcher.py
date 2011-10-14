@@ -107,6 +107,11 @@ class launcher_tests (unittest.TestCase):
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
     
+    def sighup_applauncherd(self):
+        same_pid, booster_status = send_sighup_to_applauncherd()
+        self.assert_(same_pid, "Applauncherd has new pid after SIGHUP")
+        self.assert_(booster_status, "Atleast one of the boosters is not restarted")
+
     #Testcases
 
     def test_applications_exist(self):
@@ -140,7 +145,7 @@ class launcher_tests (unittest.TestCase):
     def test_zombie_state_e(self):
         self._test_zombie_state(PREFERED_APP, 'e')
 
-    def _test_zombie_state(self, prefered_app, btype):
+    def _test_zombie_state(self, prefered_app, btype, sighup = True):
         """
         To test that no Zombie process exist after the application is killed
         """
@@ -167,6 +172,9 @@ class launcher_tests (unittest.TestCase):
 
         self.assert_(process_id != process_id1 , "New Process not launched")
         self.assert_(process_id1 == None , "Process still running")
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_zombie_state(prefered_app, btype, False)
     
     def test_launch_multiple_apps_m(self):
         self._test_launch_multiple_apps(LAUNCHABLE_APPS, 'm')
@@ -177,7 +185,7 @@ class launcher_tests (unittest.TestCase):
     def test_launch_multiple_apps_e(self):
         self._test_launch_multiple_apps(LAUNCHABLE_APPS, 'e')
 
-    def _test_launch_multiple_apps(self, launchable_apps, btype):
+    def _test_launch_multiple_apps(self, launchable_apps, btype, sighup = True):
         """
         To test that more than one applications are launched by the launcher 
         """
@@ -199,6 +207,9 @@ class launcher_tests (unittest.TestCase):
             pidlist.append(pid)
         kill_launched(pidlist)
         self.assert_(len(pidlist) == len(launchable_apps),"All apps were not launched")
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_launch_multiple_apps(launchable_apps, btype, False)
     
     def test_one_instance_m(self):
         self._test_one_instance(PREFERED_APP, 'm')
@@ -209,7 +220,7 @@ class launcher_tests (unittest.TestCase):
     def test_one_instance_e(self):
         self._test_one_instance(PREFERED_APP, 'e')
 
-    def _test_one_instance(self, prefered_app, btype):
+    def _test_one_instance(self, prefered_app, btype, sighup = True):
         """
         To test that only one instance of a application exist 
         """
@@ -233,6 +244,9 @@ class launcher_tests (unittest.TestCase):
         kill_process(prefered_app)
 
         self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_one_instance(prefered_app, btype, False)
         
     def test_launch_multiple_apps_cont_m(self):
         self._test_launch_multiple_apps_cont(LAUNCHABLE_APPS, 'fala_ft_hello', 'm')
@@ -243,7 +257,7 @@ class launcher_tests (unittest.TestCase):
     def test_launch_multiple_apps_cont_e(self):
         self._test_launch_multiple_apps_cont(LAUNCHABLE_APPS, 'fala_ft_hello', 'e')
 
-    def _test_launch_multiple_apps_cont(self, launchable_apps, app_common_prefix, btype):
+    def _test_launch_multiple_apps_cont(self, launchable_apps, app_common_prefix, btype, sighup = True):
         """
         To test that more than one applications are launched by the launcher 
         """
@@ -262,37 +276,52 @@ class launcher_tests (unittest.TestCase):
             kill_process(apppid=pid)
 
         self.assert_(len(pid_list) == len(launchable_apps), "All Applications were not launched using launcher")
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_launch_multiple_apps_cont(launchable_apps, app_common_prefix, btype, False)
 
 
-    def test_fd_booster_m(self):
+    def test_fd_booster_m(self, sighup = True):
         """
         File descriptor test for booster-m
         """
         count = get_file_descriptor("booster-m", "m", "fala_ft_hello")
         self.assert_(count != 0, "None of the file descriptors were changed")
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_fd_booster_m(False)
 
-    def test_fd_booster_q(self):
+    def test_fd_booster_q(self, sighup = True):
         """
         File descriptor test for booster-q
         """
         count = get_file_descriptor("booster-q", "qt", "fala_ft_hello")
         self.assert_(count != 0, "None of the file descriptors were changed")
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_fd_booster_q(False)
 
-    def test_fd_booster_d(self):
+    def test_fd_booster_d(self, sighup = True):
         """
         File descriptor test for booster-d
         """
         count = get_file_descriptor("booster-d", "d", "fala_qml_helloworld")
         self.assert_(count != 0, "None of the file descriptors were changed")
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_fd_booster_d(False)
 
-    def test_fd_booster_e(self):
+    def test_fd_booster_e(self, sighup = True):
         """
         File descriptor test for booster-e
         """
         count = get_file_descriptor("booster-e", "e", "fala_ft_hello")
         self.assert_(count != 0, "None of the file descriptors were changed")
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_fd_booster_e(False)
 
-    def test_restart_booster(self):
+    def test_restart_booster(self, sighup = True):
         """
         Test that booster is restarted if it is killed 
         """
@@ -338,6 +367,10 @@ class launcher_tests (unittest.TestCase):
         epid_new = get_pid('booster-e')
         self.assert_(epid_new != None, "No booster process running")
         self.assert_(epid_new != epid, "booster process was not killed")
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_restart_booster(False)
 
     def test_booster_killed_or_restarted(self):
         """
@@ -434,8 +467,8 @@ class launcher_tests (unittest.TestCase):
         self.assert_(len(epid_new.split("\n")) == 1, "multiple instances of booster-e running")
         self.assert_(epid_new != None, "No booster process running")
         self.assert_(epid_new != epid, "booster process was not killed")
-            
-    def test_booster_pid_change(self):
+
+    def test_booster_pid_change(self, sighup = True):
         """
         Test that application pid changes to the booster 'x' when application 
         is started with invoker --type='x'
@@ -489,6 +522,10 @@ class launcher_tests (unittest.TestCase):
             self.assert_(qpid_new != None, "No booster process running")
             self.assert_(qpid_new != qpid, "booster-q process did not receive the new pid")
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_booster_pid_change(False)
+
         
     def test_stress_boosted_apps(self):
         self._test_stress_boosted_apps('m', 'fala_ft_hello')
@@ -498,7 +535,7 @@ class launcher_tests (unittest.TestCase):
         self._test_stress_boosted_apps('e', 'fala_ft_hello')
         time.sleep(5)
 
-    def _test_stress_boosted_apps(self, booster_type, app_name, invoker_extra_flags=''):
+    def _test_stress_boosted_apps(self, booster_type, app_name, invoker_extra_flags='', sighup = True):
         """
         Stress test for boosted applications to check only one instance is running.
         """
@@ -524,8 +561,11 @@ class launcher_tests (unittest.TestCase):
             self.assert_(pid == app_pid, "Same instance of application not running")
             st, op = commands.getstatusoutput('ps ax | grep invoker | grep %s| grep -v -- -sh | wc -l' % app_name)
             count = int(op)
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_stress_boosted_apps(booster_type, app_name, invoker_extra_flags, False)
 
-    def test_launched_app_name(self):
+    def test_launched_app_name(self, sighup = True):
         """
         Test that launched application have correct applicationname 
         """
@@ -585,11 +625,14 @@ class launcher_tests (unittest.TestCase):
         kill_process('fala_wl') 
         self.assert_(op1.split(",")[0] == '"fala_wl"','Application name is incorrect')   
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_launched_app_name(False)
 
 
-    def test_unix_signal_handlers(self):
+    def test_unix_signal_handlers(self, sighup = True):
         """
-        Test unixSignalHAndlers by killing booster-m and booster-d, singnal hub 
+        Test unixSignalHandlers by killing booster-m and booster-d, signal hup
         """
 
         mpid = get_pid('booster-m')
@@ -605,13 +648,17 @@ class launcher_tests (unittest.TestCase):
         dpid_new = wait_for_app('booster-d')
         self.assert_(dpid != dpid_new, "booster-d pid is not changed")
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_unix_signal_handlers(False)
+
     def test_qttas_load_booster_d(self):
         self._test_qttas_load_booster(PREFERED_APP_QML, 'd')
 
     def test_qttas_load_booster_m(self):
         self._test_qttas_load_booster(PREFERED_APP, 'm')
 
-    def _test_qttas_load_booster(self, testapp, btype):
+    def _test_qttas_load_booster(self, testapp, btype, sighup = True):
         """
         To test invoker that qttestability plugin is loaded with -testability argument for booster-d
         """
@@ -638,13 +685,17 @@ class launcher_tests (unittest.TestCase):
 
                 time.sleep(2)
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_qttas_load_booster(testapp, btype, False)
+
     def test_qttas_load_env_booster_d(self):
         self._test_qttas_load_env_booster(PREFERED_APP_QML, 'd')
 
     def test_qttas_load_env_booster_m(self):
         self._test_qttas_load_env_booster(PREFERED_APP, 'm')
 
-    def _test_qttas_load_env_booster(self, testapp, btype):
+    def _test_qttas_load_env_booster(self, testapp, btype, sighup = True):
         """
         To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-d
         """
@@ -676,6 +727,10 @@ class launcher_tests (unittest.TestCase):
 
                 time.sleep(2)
 
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_qttas_load_env_booster(testapp, btype, False)
+
 
     def test_dirPath_filePath_m(self):
         self._test_dirPath_filePath('m', "/usr/share/fala_images", "fala_hello")
@@ -689,7 +744,7 @@ class launcher_tests (unittest.TestCase):
     def test_dirPath_filePath_e(self):
         self._test_dirPath_filePath('e', "/usr/share/fala_images", "fala_qml_helloworld")
 
-    def _test_dirPath_filePath(self, btype, path, testapp):
+    def _test_dirPath_filePath(self, btype, path, testapp, sighup = True):
         """
         Test that correct file path and dir path is passed
         """
@@ -708,6 +763,10 @@ class launcher_tests (unittest.TestCase):
         filepath = op.split("\n")[1].split(" ")[2]
         kill_process(apppid=pid)
         self.assert_(filepath == "%s/%s" % (path, testapp), "Wrong filePath: %s" % filepath)
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_dirPath_filePath(btype, path, testapp, False)
         
     def test_argv_mbooster_limit(self):
         self._test_argv_booster_limit("m", "fala_wl")
@@ -715,7 +774,7 @@ class launcher_tests (unittest.TestCase):
     def test_argv_dbooster_limit(self):
         self._test_argv_booster_limit("d", "fala_qml_helloworld")
 
-    def _test_argv_booster_limit(self, btype, testapp):
+    def _test_argv_booster_limit(self, btype, testapp, sighup = True):
         """
         Test that ARGV_LIMIT (32) arguments are successfully passed to cached [QM]Application.
         """
@@ -734,13 +793,17 @@ class launcher_tests (unittest.TestCase):
         kill_process(apppid=pid)
         self.assert_(original_argv == cache_argv, "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
         
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_argv_booster_limit(btype, testapp, False)
+        
     def test_argv_mbooster_over_limit(self):
         self._test_argv_booster_over_limit("m", "fala_wl")
 
     def test_argv_dbooster_over_limit(self):
         self._test_argv_booster_over_limit("d", "fala_qml_helloworld")
 
-    def _test_argv_booster_over_limit(self, btype, testapp):
+    def _test_argv_booster_over_limit(self, btype, testapp, sighup = True):
         """
         Test that if more than ARGV_LIMIT (32) arguments are passed to cached [QM]Application,
         the application is still launched and ARGV_LIMIT arguments are successfully passed.
@@ -762,6 +825,10 @@ class launcher_tests (unittest.TestCase):
         self.assert_(len(cache_argv) == ARGV_LIMIT, "Wrong number of arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
         for i in range(ARGV_LIMIT):
             self.assert_(original_argv[i] == cache_argv[i], "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_argv_booster_over_limit(btype, testapp, False)
 
     def test_signal_status_m(self):
         self._test_signal_status("fala_wl", "fala_wol")
@@ -915,72 +982,57 @@ class launcher_tests (unittest.TestCase):
 
 
     def test_q_booster_dont_have_GL_context(self):
-        qpid = get_pid('booster-q')
-        self.assert_(qpid != None, "Process 'booster-q' is not running")
-        self.assert_(not has_GL_context(qpid), "booster-q has GL context!")
+        self._test_booster_dont_have_glcontext('q')
 
     def test_m_booster_dont_have_GL_context(self):
-        mpid = get_pid('booster-m')
-        self.assert_(mpid != None, "Process 'booster-m' is not running")
-        self.assert_(not has_GL_context(mpid), "booster-m has GL context!")
+        self._test_booster_dont_have_glcontext('m')
 
     def test_e_booster_dont_have_GL_context(self):
-        epid = get_pid('booster-e')
-        self.assert_(epid != None, "Process 'booster-e' is not running")
-        self.assert_(not has_GL_context(epid), "booster-e has GL context!")
+        self._test_booster_dont_have_glcontext('e')
 
     def test_d_booster_dont_have_GL_context(self):
-        dpid = get_pid('booster-d')
-        self.assert_(dpid != None, "Process 'booster-d' is not running")
-        self.assert_(not has_GL_context(dpid), "booster-d has GL context!")
+        self._test_booster_dont_have_glcontext('d')
 
+    def _test_booster_dont_have_glcontext(self, btype, sighup = True):
+        pid = get_pid('booster-%s'%btype)
+        self.assert_(pid != None, "Process 'booster-%s' is not running"%btype)
+        self.assert_(not has_GL_context(pid), "booster-%s has GL context!"%btype)
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_booster_dont_have_glcontext(btype, False)
+        
     def test_q_boosted_has_glcontext(self):
-        qpid = get_pid('booster-q')
-        self.assert_(qpid != None, "Process 'booster-q' is not running")
-        self.assert_(not has_GL_context(qpid), "booster-q has GL context!")
-        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'q', arg = '--no-wait')
-        time.sleep(4)
-        app_pid = get_pid('fala_ft_hello')
-        self.assert_(app_pid != None, "Process 'fala_ft_hello' is not running")
-        glcontext = has_GL_context(app_pid)
-        kill_process('fala_ft_hello')
-        self.assert_(glcontext, "fala_ft_hello does not have GL context!")
+        self._test_boosted_app_has_glcontext(PREFERED_APP, 'q')
         
     def test_m_boosted_has_glcontext(self):
-        mpid = get_pid('booster-m')
-        self.assert_(mpid != None, "Process 'booster-m' is not running")
-        self.assert_(not has_GL_context(mpid), "booster-m has GL context!")
-        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm', arg = '--no-wait')
-        time.sleep(4)
-        app_pid = get_pid('fala_ft_hello')
-        self.assert_(app_pid != None, "Process 'fala_ft_hello' is not running")
-        glcontext = has_GL_context(app_pid)
-        kill_process('fala_ft_hello')
-        self.assert_(glcontext, "fala_ft_hello does not have GL context!")
+        self._test_boosted_app_has_glcontext(PREFERED_APP, 'm')
         
     def test_e_boosted_has_glcontext(self):
-        epid = get_pid('booster-e')
-        self.assert_(epid != None, "Process 'booster-e' is not running")
-        self.assert_(not has_GL_context(epid), "booster-e has GL context!")
-        p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'e', arg = '--no-wait')
-        time.sleep(4)
-        app_pid = get_pid('fala_ft_hello')
-        self.assert_(app_pid != None, "Process 'fala_ft_hello' is not running")
-        glcontext = has_GL_context(app_pid)
-        kill_process('fala_ft_hello')
-        self.assert_(glcontext, "fala_ft_hello does not have GL context!")
+        self._test_boosted_app_has_glcontext(PREFERED_APP, 'e')
 
     def test_d_boosted_has_glcontext(self):
-        dpid = get_pid('booster-d')
-        self.assert_(dpid != None, "Process 'booster-d' is not running")
-        self.assert_(not has_GL_context(dpid), "booster-d has GL context!")
-        p = run_app_as_user_with_invoker(PREFERED_APP_QML, booster = 'd', arg = '--no-wait')
+        self._test_boosted_app_has_glcontext(PREFERED_APP_QML, 'd')
+
+    def _test_boosted_app_has_glcontext(self, testapp, btype, sighup = True):
+        #check booster does not have GL context
+        booster_pid = get_pid('booster-%s'%btype)
+        self.assert_(booster_pid != None, "Process 'booster-%s' is not running"%btype)
+        self.assert_(not has_GL_context(booster_pid), "booster-%s has GL context!"%btype)
+        
+        # run app which has GL context
+        p = run_app_as_user_with_invoker(testapp, booster = btype, arg = '--no-wait')
         time.sleep(4)
-        app_pid = get_pid('fala_qml_helloworld')
-        self.assert_(app_pid != None, "Process 'fala_qml_helloworld' is not running")
+        app_pid = get_pid(testapp)
+        self.assert_(app_pid != None, "Process '%s' is not running"%testapp)
+        self.assert_(app_pid == booster_pid, "Process '%s' is not a boosted app"%testapp)
+        
+        #check if app has GL context
         glcontext = has_GL_context(app_pid)
-        kill_process('fala_qml_helloworld')
-        self.assert_(glcontext, "fala_qml_helloworld does not have GL context!")
+        kill_process(apppid=app_pid)
+        self.assert_(glcontext, "%s does not have GL context!"%testapp)
+        if(sighup):
+            self.sighup_applauncherd()
+            self._test_boosted_app_has_glcontext(testapp, btype, False)
 
     # detects bug
     def test_detect_booster_m_leaks_file_descriptor_when_invoker_is_using_app_directly(self) :
