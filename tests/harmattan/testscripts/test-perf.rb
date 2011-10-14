@@ -64,6 +64,8 @@ class TC_PerformanceTests < Test::Unit::TestCase
         print_debug("#{counter} Pload: #{pLoad}")
         counter = counter + 1
         pLoad_part.clear
+        print_debug("Topmost 5 apps:")
+        print %x[top -b -n 1 | grep -v top | sed -e "1,4 d 10,1000 d"]
     end
   end
 
