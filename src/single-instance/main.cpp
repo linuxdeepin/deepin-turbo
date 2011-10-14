@@ -66,6 +66,14 @@ static bool mkpath(const std::string & path)
     return true;
 }
 
+int handleXError(Display *dpy, XErrorEvent *e)
+{
+    char errorText[1024];
+    XGetErrorText( dpy, e->error_code, errorText, sizeof(errorText) );
+    std::cerr << ( "X ERROR!!: %s\n", errorText );
+    return 0;
+}
+
 //! Print help.
 static void printHelp()
 {
@@ -344,7 +352,10 @@ int main(int argc, char **argv)
     {
         if (!lock(argv[1]))
         {
-            if (!activateExistingInstance(argv[1]))
+            XErrorHandler oldHandler = XSetErrorHandler(handleXError);
+            bool success = activateExistingInstance(argv[1]);
+            XSetErrorHandler(oldHandler);
+            if (!success)
             {
                 return EXIT_FAILURE;
             }
