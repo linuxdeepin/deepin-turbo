@@ -10,7 +10,7 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <case name="applauncherd__test_no_aegis_invoker_creds" type="Functional" description="Test that no extra credentials are passed to invoker" timeout="360" level="System" insignificant="true">
+      <case name="applauncherd__test_no_aegis_invoker_creds" type="Functional" description="Test that no extra credentials are passed to invoker" timeout="360" level="System" insignificant="false">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_no_aegis_invoker_creds </step>
       </case>
 
