@@ -45,6 +45,10 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
+      <case name="applauncherd__test_m_booster_dont_have_GL_context" type="Functional" description="Test that m-booster don't have GL context" timeout="100" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_m_booster_dont_have_GL_context</step>
+      </case>
+
       <case name="applauncherd__test_q_boosted_has_GL_context" type="Functional" description="Test that q-boosted app has GL context and q-booster doesn't have" timeout="100" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_q_boosted_has_glcontext</step>
       </case>
