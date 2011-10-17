@@ -23,6 +23,11 @@ import commands
 import unittest
 from utils import *
 
+def fileDescriptorCountForPID(pid) :
+    status, result = commands.getstatusoutput('ls -l /proc/%s/fd/' % str(pid))
+    assert(status==0)
+    return result.count('\n')+1
+
 
 class DaemonTests(unittest.TestCase):
     def setUp(self):
@@ -155,7 +160,7 @@ class DaemonTests(unittest.TestCase):
         #get fd of booster before launching application
         debug("get fd of applauncherd before launching application")
         pid = commands.getoutput("pgrep applauncherd")
-        init_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+        init_count = fileDescriptorCountForPID(pid)
         debug("\nThe count of initial file descriptors is : %s\n" %init_count)
         time.sleep(3)
         
@@ -165,9 +170,11 @@ class DaemonTests(unittest.TestCase):
 
         #get fd of booster after launching the application
         debug("get fd of booster after launching the application")
-        if status == 0:
-            launch_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
-            debug("\nThe count of file descriptors after launch : %s\n" %launch_count)
+        self.assertEqual(status, 0, "Application not invoked successfuly")
+        wait_for_app('fala_wl', timeout = 3)
+
+        launch_count = fileDescriptorCountForPID(pid)
+        debug("\nThe count of file descriptors after launch : %s\n" %launch_count)
         time.sleep(3)
         
         #Close application
@@ -181,11 +188,17 @@ class DaemonTests(unittest.TestCase):
         time.sleep(3)
 
         #get fd of booster after closing the application
-        debug("get fd of booster after closing the application")
-        close_count = commands.getoutput('ls -l /proc/%s/fd/ | wc -l' % str(pid))
+        close_count = fileDescriptorCountForPID(pid)
         debug("\nThe count file descriptors after close: %s\n" %close_count)
-        self.assert_(int(launch_count) == int(init_count) +1, "The file descriptors was not changed")
-        self.assert_(close_count == init_count, "The file descriptors was changed")
+
+        self.assertEqual(close_count, init_count, "The file descriptors was changed.\n"
+                                                  "\tExpected value was: %s\n"
+                                                  "\t Actual result was: %s" %(close_count, init_count))
+
+        self.assertEqual(launch_count, init_count+1, "The file descriptors was not changed.\n"
+                                                     "\tExpected value was: %s\n"
+                                                     "\t Actual result was: %s" %(launch_count, init_count+1))
+
 
     def test_nonlaunchable_apps(self):
         """
