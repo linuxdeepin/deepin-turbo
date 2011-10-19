@@ -56,7 +56,13 @@ MDeclarativeCache.
 \section gettingstarted Getting started
 
 This section gives a quick introduction on \c invoker usage and
-boosting applications.
+boosting applications. 
+
+Note: The QML booster and single instance
+support are currently included in the Qt Quick application template
+provided by the Qt SDK. To enable these features in your application,
+select Make application boostable checkbox when creating a new project
+with the template.
 
 \subsection boostingqtquick Boosting Qt Quick applications
 
@@ -114,12 +120,14 @@ and \ref libmeegotouchboost "Using the MeeGo Touch booster".
 The \c invoker can be used to get a splash screen for the application
 and to implement single instance behaviour. If the \a exec \a booster
 is used, no modifications to the application source code are needed. 
-(Note that \a exec \a booster is meant to make splash screen and single 
-instance usage easier. If you need to reduce application startup time 
-significantly, use other boosters instead.)
-Simply specify the name of the splash image on the invoker command line as
-follows. For more details, see \ref eboost "Using the exec booster" and
+For more details, see \ref eboost "Using the exec booster" and
 \ref splash "Enabling a splash screen for an application".
+Note that the \a exec booster facilitates the use of the splash 
+screen and single instance. If you need to reduce application startup
+time significantly, use other boosters instead.
+
+Simply specify the name of the splash image on the invoker command line as
+follows.
 
 \code 
 invoker --type=e --splash=/usr/share/images/myAppSplash.jpg /usr/bin/myApp

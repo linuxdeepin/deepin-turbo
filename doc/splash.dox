@@ -22,8 +22,8 @@ Otherwise splash-l.jpg is shown. If only --splash is given, that
 image is shown in both orientations.
 
 The dimensions of both portrait and landscape images should be the same
-&lt;screen width&gt; X &lt;screen height&gt;; i.e. mcompositor does not rotate
-the splash image, it should be drawn rotated.
+&lt;screen width&gt; X &lt;screen height&gt;; it means that mcompositor 
+does not rotate the splash image, it should be drawn rotated.
 
 Invoker passes the splash request to the booster. The booster sends
 the splash request to the window manager by setting a window property
@@ -33,8 +33,16 @@ If the filenames do not include absolute paths, the window manager
 looks for the files from a default location.
 
 The file should be in a format recognised by QPixmap, preferably JPEG
-as it is fast to load. The size of the image should not be larger than
-the screen. If it is smaller, it is stretched.
+as it is fast to load. Splash screen is always scaled to fit the full
+screen, hiding the status bar. Thus, the recommended size for the screen
+is 854 x 480 pixels. However, the figure is displayed even if the size is
+different.
+
+Create a splash screen that resembles as much as possible the window that is
+shown when your application is launched. For instance, the splash screen
+can have the same background colour and toolbar as the application window.
+If the application window displays the status area, we recommend adding a
+black box with the same size to the splash screen of your application.
 
 \subsection splashndbus Splash and D-Bus interaction
 

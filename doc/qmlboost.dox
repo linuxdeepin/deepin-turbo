@@ -5,6 +5,11 @@ booster provides the application with the key libraries already
 present in the process, and instances of \c QApplication and \c
 QDeclarativeView waiting in the cache.
 
+Note: This functionality is currently included in the Qt Quick application
+template provided by the Qt SDK. To enable QML booster in your application,
+select Make application boostable checkbox when creating a new project with
+the template.
+
 \section qmlboostprereq Prerequisites
 
 The launcher can start an application if the following prerequisites are met:

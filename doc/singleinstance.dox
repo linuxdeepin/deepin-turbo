@@ -4,8 +4,13 @@ Usually a user wants an application to be run as a single instance. This means
 that if the launched application is already running, the existing application
 window is activated and no new application processes are started.
 
-This can be achieved by adding --single-instance to the invoker
-command in the .desktop file:
+Note: This functionality is currently included in the Qt Quick application template
+provided by the Qt SDK. To enable  single instance support for your application,
+select Make application boostable checkbox when creating a new project with the
+template.
+
+When not using the template provided by the Qt SDK, this can be achieved by adding 
+--single-instance to the invoker command in the .desktop file:
 
 \verbatim
 [Desktop Entry]
