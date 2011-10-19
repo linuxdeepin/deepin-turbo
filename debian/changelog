@@ -1,6 +1,6 @@
 applauncherd (2.0.6) unstable; urgency=low
 
-  * 
+  * Changes: test fixed test_launched_app_wm_class_m
 
  -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Fri, 14 Oct 2011 14:40:32 +0300
 
