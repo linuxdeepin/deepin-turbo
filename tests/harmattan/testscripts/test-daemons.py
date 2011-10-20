@@ -52,16 +52,6 @@ class DaemonTests(unittest.TestCase):
             self.sighup_applauncherd()
             self.test_launcher_exist(False)
 
-    def test_daemon_list(self):
-        """
-        To List the daemons running using invoker after boot
-        """
-        st, op = commands.getstatusoutput("ps ax | grep invoker")
-        count = len(op.split("\n"))
-        for i in xrange(count-2):
-            if op.split("\n")[i].find("prestart") == -1:
-                debug("%s" %op.split("\n")[i])
-
     def test_daemon(self):
         """
         Test that the --daemon parameter works for applauncherd

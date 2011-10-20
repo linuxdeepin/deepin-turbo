@@ -142,6 +142,9 @@ class launcher_tests (unittest.TestCase):
     def test_zombie_state_qml(self):
         self._test_zombie_state(PREFERED_APP_QML,'d')
 
+    def test_zombie_state_q(self):
+        self._test_zombie_state(PREFERED_APP,'q')
+
     def test_zombie_state_e(self):
         self._test_zombie_state(PREFERED_APP, 'e')
 
@@ -167,11 +170,11 @@ class launcher_tests (unittest.TestCase):
         kill_process(prefered_app)
         time.sleep(4)
 
-        process_id1 = get_pid(prefered_app)
+        process_id2 = get_pid(prefered_app)
         debug("The pid of %s id %s" %(prefered_app, process_id1))
 
-        self.assert_(process_id != process_id1 , "New Process not launched")
-        self.assert_(process_id1 == None , "Process still running")
+        self.assert_(process_id != process_id1 , "New Process not launched (zombie exists)")
+        self.assert_(process_id2 == None , "Process still running")
         if(sighup):
             self.sighup_applauncherd()
             self._test_zombie_state(prefered_app, btype, False)
@@ -214,12 +217,6 @@ class launcher_tests (unittest.TestCase):
     def test_one_instance_m(self):
         self._test_one_instance(PREFERED_APP, 'm')
 
-    def test_one_instance_qml(self):
-        self._test_one_instance(PREFERED_APP_QML, 'd')
-
-    def test_one_instance_e(self):
-        self._test_one_instance(PREFERED_APP, 'e')
-
     def _test_one_instance(self, prefered_app, btype, sighup = True):
         """
         To test that only one instance of a application exist 
@@ -234,16 +231,16 @@ class launcher_tests (unittest.TestCase):
         process_handle = run_app_as_user_with_invoker(prefered_app, booster=btype)
         process_id = wait_for_app(prefered_app)
         debug("PID of first %s" % process_id)
-        time.sleep(3)
 
         process_handle1 = run_app_as_user_with_invoker(prefered_app, booster=btype)
         time.sleep(3)
-        process_id = wait_for_app(prefered_app)
-        debug("PID of 2nd %s" % process_id)
+        process_id1 = wait_for_app(prefered_app)
+        debug("PID of 2nd %s" % process_id1)
 
+        st, pids = commands.getstatusoutput("pgrep %s" % prefered_app) #get all pids of the app
         kill_process(prefered_app)
 
-        self.assert_( len(process_id.split(' ')) == 1, "Only one instance of app not running")
+        self.assert_( len(pids.split()) == 1, "Only one instance of app not running")
         if(sighup):
             self.sighup_applauncherd()
             self._test_one_instance(prefered_app, btype, False)
@@ -632,31 +629,33 @@ class launcher_tests (unittest.TestCase):
 
     def test_unix_signal_handlers(self, sighup = True):
         """
-        Test unixSignalHandlers by killing booster-m and booster-d, signal hup
+        Test unixSignalHandlers by killing booster-m,d,q,e with signal hup
         """
 
-        mpid = get_pid('booster-m')
-        st, op = commands.getstatusoutput('kill -hup %s' % mpid)
-        time.sleep(2)
-        mpid_new = wait_for_app('booster-m')
-        self.assert_(mpid != mpid_new, "booster-m pid is not changed")
-        
-        
-        dpid = get_pid('booster-d')
-        st, op = commands.getstatusoutput('kill -hup %s' % dpid)
-        time.sleep(2)
-        dpid_new = wait_for_app('booster-d')
-        self.assert_(dpid != dpid_new, "booster-d pid is not changed")
+        self._test_sighup_booster('m')
+        self._test_sighup_booster('d')
+        self._test_sighup_booster('q')
+        self._test_sighup_booster('e')
 
         if(sighup):
             self.sighup_applauncherd()
             self.test_unix_signal_handlers(False)
+
+    def _test_sighup_booster(self, btype):
+        pid = get_pid('booster-%s' % btype)
+        st, op = commands.getstatusoutput('kill -hup %s' % pid)
+        time.sleep(2)
+        pid_new = wait_for_app('booster-%s' % btype)
+        self.assert_(pid != pid_new, "booster-%s pid is not changed" % btype)
 
     def test_qttas_load_booster_d(self):
         self._test_qttas_load_booster(PREFERED_APP_QML, 'd')
 
     def test_qttas_load_booster_m(self):
         self._test_qttas_load_booster(PREFERED_APP, 'm')
+
+    def test_qttas_load_booster_q(self):
+        self._test_qttas_load_booster(PREFERED_APP, 'q')
 
     def _test_qttas_load_booster(self, testapp, btype, sighup = True):
         """

@@ -16,10 +16,6 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_launcher_exist</step>
       </case>
 
-      <case name="applauncherd__test_daemon_list" type="Functional" description="To list the running daemons using invoker after boot" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon_list</step>
-      </case>
-
       <case name="applauncherd__test_daemon_second_instance" type="Functional" description="Test that 2nd instance of daemon cannot be started" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-daemons.py test_daemon_second_instance </step>
       </case>

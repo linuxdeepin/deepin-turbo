@@ -166,12 +166,20 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
+      <case name="applauncherd__test_zombie_state_q" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state_q</step>
+      </case>
+
       <case name="applauncherd__test_fd_booster_q" type="Functional" description="File descriptor test for booster-q" timeout="560" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_q</step>
       </case>
 
       <case name="applauncherd__test_dirPath_filePath_q" type="Functional" description="Test that correct file path and dir path is passed by booster q" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_q</step>
+      </case>
+
+      <case name="applauncherd__test_qttas_load_booster_q" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-q" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_q</step>
       </case>
 
       <environments>
@@ -193,10 +201,6 @@
 
       <case name="applauncherd__test_launch_multiple_apps_qml" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_qml</step>
-      </case>
-
-      <case name="applauncherd__test_one_instance_qml" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance_qml</step>
       </case>
 
       <case name="applauncherd__test_launch_multiple_apps_cont_qml" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
@@ -258,10 +262,6 @@
 
       <case name="applauncherd__test_launch_multiple_apps_e" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_e</step>
-      </case>
-
-      <case name="applauncherd__test_one_instance_e" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance_e</step>
       </case>
 
       <case name="applauncherd__test_fd_booster_e" type="Functional" description="File descriptor test for booster-d" timeout="560" level="System" insignificant="false">
