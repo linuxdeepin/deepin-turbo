@@ -122,7 +122,8 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 
     window->setResizeMode(QDeclarativeView::SizeRootObjectToView);
 
-    window->setSource(QUrl::fromLocalFile("/usr/share/fala_qml_helloworld/main.qml"));
+    //window->setSource(QUrl::fromLocalFile("/usr/share/fala_qml_helloworld/main.qml"));
+    window->setSource(QUrl("qrc:/main.qml"));
     window->showFullScreen();
     
     timestamp("Calling app->exec()");

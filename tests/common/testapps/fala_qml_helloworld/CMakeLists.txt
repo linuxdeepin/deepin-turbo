@@ -22,19 +22,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${booster_cflags}")
 
 include_directories(${CMAKE_SOURCE_DIR}/src/qdeclarativebooster)
 
+# Compile resources
+QT4_ADD_RESOURCES(RESOURCE_SRC main.qrc)
+
 # Enable Qt-support
 include(${QT_USE_FILE})
 
 link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} "-L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster ${booster_libs}")
-add_executable(fala_qml ${SRC})
+add_executable(fala_qml ${SRC} ${RESOURCE_SRC})
 
 # Install
 install(PROGRAMS fala_qml DESTINATION /usr/bin/ RENAME fala_qml_wol)
 install(PROGRAMS fala_qml DESTINATION /usr/bin/ RENAME fala_qml_helloworld)
 install(PROGRAMS fala_qml DESTINATION /usr/bin/ RENAME fala_qml_wl)
 install(PROGRAMS fala_qml DESTINATION /usr/share/fala_images RENAME fala_qml_helloworld)
-install(FILES main.qml DESTINATION /usr/share/fala_qml_helloworld)
-install(FILES main.qml DESTINATION /usr/share/fala_images)
 install(FILES fala_qml_wl.desktop DESTINATION /usr/share/applications)
 install(FILES fala_qml_wol.desktop DESTINATION /usr/share/applications)
 install(SCRIPT scripts/create_links.cmake)

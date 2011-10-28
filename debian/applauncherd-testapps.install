@@ -30,7 +30,6 @@ usr/bin/fala_ft_themetest
 usr/share/themes/base/meegotouch/fala_ft_themetest/*
 usr/share/applications/fala_wl.desktop
 usr/share/applications/fala_wol.desktop
-usr/share/fala_qml_helloworld/main.qml
 usr/share/applications/fala_qml_wl.desktop
 usr/share/applications/fala_qml_wol.desktop
 usr/share/fala_images/*
