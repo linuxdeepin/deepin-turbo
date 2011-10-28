@@ -150,6 +150,10 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont_m</step>
       </case>
 
+      <case name="applauncherd__test_detect_booster_m_leaks_file_descriptor" type="Functional" description="Test that booster-m doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_m_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
+      </case>
+
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
       </post_steps>
@@ -180,6 +184,10 @@
 
       <case name="applauncherd__test_qttas_load_booster_q" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-q" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_q</step>
+      </case>
+
+      <case name="applauncherd__test_detect_booster_q_leaks_file_descriptor" type="Functional" description="Test that booster-q doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_q_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
       <environments>
@@ -214,6 +222,7 @@
       <case name="applauncherd__test_fd_booster_d" type="Functional" description="File descriptor test for booster-d" timeout="560" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_d</step>
       </case>
+
       <case name="applauncherd__test_qttas_load_booster_d" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_d</step>
       </case>
@@ -221,17 +230,25 @@
       <case name="applauncherd__test_qttas_load_env_booster_d" type="Functional" description="To test invoker that qttestability plugin is loaded with QT_LOAD_TESTABILITY env variable for booster-d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_env_booster_d</step>
       </case>
+
       <case name="applauncherd__test_signal_status_qml" type="Functional" description="Test that SigBlk, SigIgn and SigCgt is same for launched and non launched applications" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_signal_status_qml</step>
       </case>
+
       <case name="applauncherd__test_argv_dbooster_limit" type="Functional" description="Test that ARGV_LIMIT (32) arguments are successfully passed to cached [QM]Application." timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_argv_dbooster_limit</step>
       </case>
+
       <case name="applauncherd__test_argv_dbooster_over_limit" type="Functional" description="Test that extra arguments than ARGV_LIMIT are ignored " timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_argv_mbooster_over_limit </step>
       </case>
+
       <case name="applauncherd__test_dirPath_filePath_d" type="Functional" description="Test that correct file path and dir path is passed by booster d" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_d</step>
+      </case>
+
+      <case name="applauncherd__test_detect_booster_d_leaks_file_descriptor" type="Functional" description="Test that booster-d doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_d_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
       <post_steps>
@@ -273,6 +290,10 @@
 
       <case name="applauncherd__test_launch_multiple_apps_cont_e" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_cont_e</step>
+      </case>
+
+      <case name="applauncherd__test_detect_booster_e_leaks_file_descriptor" type="Functional" description="Test that booster-e doesn't leak file descriptors when invoker is used by calling application directly not by the d-Bus service" timeout="60" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_e_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
       <post_steps>
