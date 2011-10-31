@@ -351,14 +351,19 @@ def get_groups_for_user():
     return groups
 
 def send_sighup_to_applauncherd():
-    pid1 = get_oldest_pid('applauncherd')
+    wait_for_single_applauncherd()
     (e1, d1, q1, m1) = get_booster_pid()
+    pid1 = get_oldest_pid('applauncherd')
     debug("before sighup, applauncherd pid = ", pid1)
 
-    kill_process(None, pid1, 1)
-    time.sleep(5)
-    pid2 = wait_for_single_applauncherd()
+    kill_process(None, pid1, 1) #sending sighup to applauncherd
+
+    # give sometime for applauncherd to react
+    wait_for_single_applauncherd()
     (e2, d2, q2, m2) = get_booster_pid()
+    pid2 = get_oldest_pid('applauncherd')
     debug("after sighup, applauncherd pid = ", pid2)
 
+    #check if applauncherd has same pid before and after sighup
+    #check if all boosters have different pids before and after sighup
     return (pid1==pid2, m1!=m2 and q1!=q2 and d1!=d2 and e1!=e2)
