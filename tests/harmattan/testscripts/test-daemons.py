@@ -63,7 +63,8 @@ class DaemonTests(unittest.TestCase):
 
         p = run_cmd_as_user('/usr/bin/applauncherd.bin --daemon')
 
-        time.sleep(5)
+        # wait until boosters are ready
+        get_booster_pid()
 
         st, op = commands.getstatusoutput('pgrep -lf "applauncherd.bin --daemon"')
         p_id = op.split(" ")[0]
@@ -76,7 +77,7 @@ class DaemonTests(unittest.TestCase):
 
         debug("count = %d" % count)
 
-        self.assert_(count == 1, "applauncherd was not daemonized (or too many instances running ..)")
+        self.assert_(count == 1, "applauncherd was not daemonized (or too many instances running ..), see: \n%s" %op)
 
         # try to launch an app
         run_cmd_as_user('/usr/bin/fala_ft_hello')

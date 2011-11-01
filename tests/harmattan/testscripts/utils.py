@@ -167,16 +167,22 @@ def wait_for_app(app = None, timeout = 40, sleep = 1):
     pid = None
     start = time.time()
 
+    debug("Waiting for '%s' to startup in %ss time" %(app, timeout))
     while pid == None and time.time() < start + timeout:
-        pid = get_newest_pid(app)
-
-        if pid != None:
+        p = subprocess.Popen(['pgrep', '-n', app], shell = False,
+                         stdout = subprocess.PIPE, stderr = DEV_NULL)
+        op = p.communicate()[0]
+        if p.wait() == 0:
+            pid = op.strip()
             break
-
-        debug("waiting %s secs for %s" % (sleep, app))
 
         time.sleep(sleep)
 
+    if (pid==None):
+        debug("Failed to fetch PID for '%s' in %ss time" %(app, timeout))
+    else:
+        debug("Application '%s' has started with PID: %s in time of %.1fs."  %(app, pid, time.time()-start))
+    
     return pid
 
 def wait_for_single_applauncherd(timeout = 20, sleep = 1):
@@ -195,11 +201,11 @@ def wait_for_single_applauncherd(timeout = 20, sleep = 1):
             break
     return pid
 
-def get_booster_pid():
-    qpid = wait_for_app('booster-q')
-    epid = wait_for_app('booster-e')
-    dpid = wait_for_app('booster-d')
-    mpid = wait_for_app('booster-m')
+def get_booster_pid(timeout = 20):
+    qpid = wait_for_app('booster-q', timeout=timeout)
+    epid = wait_for_app('booster-e', timeout=timeout)
+    dpid = wait_for_app('booster-d', timeout=timeout)
+    mpid = wait_for_app('booster-m', timeout=timeout)
     return (epid, dpid, qpid, mpid)
 
 def kill_process(appname=None, apppid=None, signum=15):
@@ -367,3 +373,28 @@ def send_sighup_to_applauncherd():
     #check if applauncherd has same pid before and after sighup
     #check if all boosters have different pids before and after sighup
     return (pid1==pid2, m1!=m2 and q1!=q2 and d1!=d2 and e1!=e2)
+
+def wait_for_windows(windowName, minCount=1, timeout=20) :
+    """
+    Waits 'timeout' seconds of time until at least minCount windows with windowName appears.
+    Returns ids of those windows in list.
+    """
+    debug("Searching for window with name %s (with timeout %ss)" %(windowName, timeout))
+    xwininfocommand = "xwininfo -root -tree | awk '/%s/ {print $1}'" %(windowName)
+
+    start = time.time()
+    while time.time() < start + timeout :
+        st, op = commands.getstatusoutput(xwininfocommand)
+        if op :
+            op = op.split()
+            if (len(op)>=minCount) :
+                break
+        time.sleep(1)
+
+    if op :
+        debug("Window '%s' has been found in time of %.1fs" %(op, time.time()-start))
+    else :
+        debug("Command '%s' didn't detect any windows with name %s. Timeout in %ss!" %(xwininfocommand, windowName, timeout))
+        op = None
+
+    return op

@@ -324,16 +324,10 @@ class launcher_tests (unittest.TestCase):
         """
         #get the pids of boosters and make sure they are running
         debug("get the pids of boosters and make sure they are running")
-        qpid = get_pid('booster-q')
+        epid, dpid, qpid, mpid = get_booster_pid(timeout=10)
         self.assert_(qpid != None, "No booster process running")
-
-        mpid = get_pid('booster-m')
         self.assert_(mpid != None, "No booster process running")
-
-        dpid = get_pid('booster-d')
         self.assert_(dpid != None, "No booster process running")
-
-        epid = get_pid('booster-e')
         self.assert_(epid != None, "No booster process running")
 
         #Kill the booster processes
@@ -344,24 +338,19 @@ class launcher_tests (unittest.TestCase):
         kill_process(apppid=epid)
         
         #wait for the boosters to be restarted
-        debug("wait for the boosters to be restarted")
-        time.sleep(6)
+        epid_new, dpid_new, qpid_new, mpid_new = get_booster_pid(timeout=10)
 
         #check that the new boosters are started
         debug("check that the new boosters are started")
-        qpid_new = get_pid('booster-q')
         self.assert_(qpid_new != None, "No booster process running")
         self.assert_(qpid_new != qpid, "booster process was not killed")
 
-        mpid_new = get_pid('booster-m')
         self.assert_(mpid_new != None, "No booster process running")
         self.assert_(mpid_new != mpid, "booster process was not killed")
 
-        dpid_new = get_pid('booster-d')
         self.assert_(dpid_new != None, "No booster process running")
         self.assert_(dpid_new != dpid, "booster process was not killed")
 
-        epid_new = get_pid('booster-e')
         self.assert_(epid_new != None, "No booster process running")
         self.assert_(epid_new != epid, "booster process was not killed")
 
@@ -374,96 +363,54 @@ class launcher_tests (unittest.TestCase):
         Test that boosters are killed if applauncherd is stopped
         and restarted if applauncherd is killed
         """
+        boosterTypes = ('e', 'd', 'q', 'm')
+        
         #get the pids of boosters and make sure they are running
         debug("get the pids of boosters and make sure they are running")
-        qpid = get_pid('booster-q')
-        self.assert_(len(qpid.split("\n")) == 1, "multiple instances of booster-q running")
-        self.assert_(qpid != None, "No booster process running")
-
-        dpid = get_pid('booster-d')
-        self.assert_(len(dpid.split("\n")) == 1, "multiple instances of booster-d running")
-        self.assert_(dpid != None, "No booster process running")
-
-        mpid = get_pid('booster-m')
-        self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
-        self.assert_(mpid != None, "No booster process running")
-
-        epid = get_pid('booster-e')
-        self.assert_(len(epid.split("\n")) == 1, "multiple instances of booster-e running")
-        self.assert_(epid != None, "No booster process running")
+        for bType in boosterTypes :
+            bpid = get_pid('booster-%s' %bType)
+            self.assertNotEqual(bpid, None, "No booster process running")
+            self.assertEqual(len(bpid.split("\n")), 1, "multiple instances of booster-%s running: %s" %(bType, bpid.split()))
 
         #stop applauncherd
         stop_applauncherd()
  
-        #wait for the boosters to be killed 
-        time.sleep(2)
+        #wait for the applauncherd to be closed
+        for i in range(5) :
+            if (get_pid('applauncherd')==None) :
+                break
+            time.sleep(1)
 
         #check that the none of the booster is running
         debug("check that the none of the booster is running")
-        qpid_new = get_pid('booster-q')
-        self.assert_(qpid_new == None, "booster-q still running")
         
-        dpid_new = get_pid('booster-d')
-        self.assert_(dpid_new == None, "booster-d still running")
-        
-        mpid_new = get_pid('booster-m')
-        self.assert_(mpid_new == None, "booster-m still running")
-
-        epid_new = get_pid('booster-e')
-        self.assert_(epid_new == None, "booster-e still running")
+        for bType in boosterTypes :
+            bpid = get_pid('booster-%s' %bType)
+            self.assertEqual(bpid, None, "booster-%s still running" %bType)
 
         #Now start the applauncherd
         start_applauncherd()
         
         #wait for the boosters to be restarted
-        time.sleep(6)
+        boostersPids = get_booster_pid(timeout = 40)
 
         #get the pids of boosters and make sure they are running
         debug("get the pids of boosters and make sure they are running")
-        qpid = get_pid('booster-q')
-        self.assert_(len(qpid.split("\n")) == 1, "multiple instances of booster-q running")
-        self.assert_(qpid != None, "No booster process running")
-
-        dpid = get_pid('booster-d')
-        self.assert_(len(dpid.split("\n")) == 1, "multiple instances of booster-d running")
-        self.assert_(dpid != None, "No booster process running")
-
-        mpid = get_pid('booster-m')
-        self.assert_(len(mpid.split("\n")) == 1, "multiple instances of booster-m running")
-        self.assert_(mpid != None, "No booster process running")
-
-        epid = get_pid('booster-e')
-        self.assert_(len(epid.split("\n")) == 1, "multiple instances of booster-e running")
-        self.assert_(epid != None, "No booster process running")
+        for bType in boosterTypes :
+            bpid = get_pid('booster-%s' %bType)
+            self.assertNotEqual(bpid, None, "No booster process running")
+            self.assertEqual(len(bpid.split("\n")), 1, "multiple instances of booster-%s running: %s" %(bType, bpid.split()))
 
         #Now kill applauncherd
         debug("Now kill applauncherd")
         kill_process('applauncherd')
         
         #wait for the boosters to be restarted
-        time.sleep(6)
+        newBoostersPids = get_booster_pid(timeout = 10)
         
-        #check that the new boosters are started
-        debug("check that the new boosters are started")
-        qpid_new = get_pid('booster-q')
-        self.assert_(len(qpid_new.split("\n")) == 1, "multiple instances of booster-q running")
-        self.assert_(qpid_new != None, "No booster process running")
-        self.assert_(qpid_new != qpid, "booster process was not killed")
-
-        dpid_new = get_pid('booster-d')
-        self.assert_(len(dpid_new.split("\n")) == 1, "multiple instances of booster-d running")
-        self.assert_(dpid_new != None, "No booster process running")
-        self.assert_(dpid_new != dpid, "booster process was not killed")
-
-        mpid_new = get_pid('booster-m')
-        self.assert_(len(mpid_new.split("\n")) == 1, "multiple instances of booster-m running")
-        self.assert_(mpid_new != None, "No booster process running")
-        self.assert_(mpid_new != mpid, "booster process was not killed")
-            
-        epid_new = get_pid('booster-e')
-        self.assert_(len(epid_new.split("\n")) == 1, "multiple instances of booster-e running")
-        self.assert_(epid_new != None, "No booster process running")
-        self.assert_(epid_new != epid, "booster process was not killed")
+        for i in range(len(boosterTypes)) :
+            self.assertNotEqual(newBoostersPids[i], None, "No booster-%s process running" %boosterTypes[i])
+            self.assertNotEqual(newBoostersPids[i], boostersPids[i], "booster-%s process was not restarted" %boosterTypes[i])
 
     def test_booster_pid_change(self, sighup = True):
         """
@@ -471,53 +418,17 @@ class launcher_tests (unittest.TestCase):
         is started with invoker --type='x'
         """
         for i in xrange(3):
-            #Launching application with booster-m
-            mpid = get_pid('booster-m') 
-            p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm', arg = '--no-wait')
-            time.sleep(4)
-            app_pid = get_pid('fala_ft_hello')
-            mpid_new = get_pid('booster-m')
-            self.assert_(app_pid != None, "Application is not running")
-            self.assert_(app_pid == mpid, "Application is not assigned the booster-m pid")
-            self.assert_(mpid_new != None, "No booster process running")
-            self.assert_(mpid_new != mpid, "booster-m process did not receive the new pid")
-            kill_process('fala_ft_hello')
-            
-            #Launching application with booster-d
-            dpid = get_pid('booster-d') 
-            p = run_app_as_user_with_invoker(PREFERED_APP_QML, booster = 'd', arg = '--no-wait')
-            time.sleep(4)
-            app_pid = get_pid('fala_qml_helloworld')
-            dpid_new = get_pid('booster-d')
-            kill_process('fala_qml_helloworld')
-            self.assert_(app_pid != None, "Application is not running")
-            self.assert_(app_pid == dpid, "Application is not assigned the booster-d pid")
-            self.assert_(dpid_new != None, "No booster process running")
-            self.assert_(dpid_new != dpid, "booster-d process did not receive the new pid")
-            
-            #Launching application with booster-e
-            epid = get_pid('booster-e') 
-            p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'e', arg = '--no-wait')
-            time.sleep(4)
-            app_pid = get_pid('fala_ft_hello')
-            epid_new = get_pid('booster-e')
-            kill_process('fala_ft_hello')
-            self.assert_(app_pid != None, "Application is not running")
-            self.assert_(app_pid == epid, "Application is not assigned the booster-e pid")
-            self.assert_(epid_new != None, "No booster process running")
-            self.assert_(epid_new != epid, "booster-e process did not receive the new pid")
-
-            #Launching application with booster-q
-            qpid = get_pid('booster-q') 
-            p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'q', arg = '--no-wait')
-            time.sleep(4)
-            app_pid = get_pid('fala_ft_hello')
-            qpid_new = get_pid('booster-q')
-            kill_process('fala_ft_hello')
-            self.assert_(app_pid != None, "Application is not running")
-            self.assert_(app_pid == qpid, "Application is not assigned the booster-q pid")
-            self.assert_(qpid_new != None, "No booster process running")
-            self.assert_(qpid_new != qpid, "booster-q process did not receive the new pid")
+            for bType in ('m', 'd', 'e', 'q') :
+                #Launching application with booster-m
+                bpid = wait_for_app('booster-%s' %bType, timeout = 10)
+                p = run_app_as_user_with_invoker(bType!='d' and PREFERED_APP or PREFERED_APP_QML, booster = bType, arg = '--no-wait')
+                app_pid = wait_for_app(bType!='d' and 'fala_ft_hello' or 'fala_qml_helloworld', timeout = 10)
+                bpid_new = wait_for_app('booster-%s' %bType, timeout = 10)
+                self.assertNotEqual(app_pid, None, "Application is not running")
+                self.assertEqual(app_pid, bpid, "Application is not assigned the booster-%s pid" %bType)
+                self.assertNotEqual(bpid_new, None, "No booster process running")
+                self.assertNotEqual(bpid_new, bpid, "booster-%s process did not receive the new pid" %bType)
+                kill_process(apppid = app_pid)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -567,60 +478,26 @@ class launcher_tests (unittest.TestCase):
         Test that launched application have correct applicationname 
         """
         #For booster-m        
-        #Check though the process list
-        p = run_cmd_as_user('invoker --type=m --no-wait fala_wl -faulty')
-        time.sleep(5)
-        pid = get_pid('fala_wl')
-        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('\0')[0] == "fala_wl",'Application name is incorrect')    
-    
-        #check through the window property
-        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
-        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
-        kill_process('fala_wl') 
-        self.assert_(op1.split(",")[0] == '"fala_wl"','Application name is incorrect')   
-        
-        #For booster-d
-        #Check though the process list
-        p = run_cmd_as_user('invoker --type=d --no-wait fala_qml_helloworld -faulty')
-        time.sleep(2)
-        pid = get_pid('fala_qml_helloworld')
-        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('\0')[0] == "fala_qml_helloworld",'Application name is incorrect')    
-    
-        #check through the window property
-        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd QML testapp/ {print $1}'")
-        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
-        kill_process('fala_qml_helloworld') 
-        self.assert_(op1.split(",")[0] == '"fala_qml_helloworld"','Application name is incorrect')   
-        
-        #For booster-e
-        #Check though the process list
-        p = run_cmd_as_user('invoker --type=e --no-wait fala_wl -faulty')
-        time.sleep(2)
-        pid = get_pid('fala_wl')
-        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('\0')[0] == "fala_wl",'Application name is incorrect')    
-    
-        #check through the window property
-        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
-        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
-        kill_process('fala_wl') 
-        self.assert_(op1.split(",")[0] == '"fala_wl"','Application name is incorrect')   
+        for bType in ('m', 'd', 'q', 'e') :
+            appName = bType != 'd' and 'fala_wl' or 'fala_qml_helloworld'
+            p = run_cmd_as_user('invoker --type=%s --no-wait %s -faulty' %(bType, appName))
+            pid = wait_for_app(appName, timeout = 40)
+            self.assert_(pid, "Fail to launch '%s' application" %appName)
+            try :
+                #Check though the process list
+                st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
+                self.assertEqual(op.split('\0')[0], appName, 'Application name in the process list is incorrect')
 
-        #For booster-q        
-        #Check though the process list
-        p = run_cmd_as_user( 'invoker --type=qt --no-wait fala_wl -faulty')
-        time.sleep(2)
-        pid = get_pid('fala_wl')
-        st, op = commands.getstatusoutput('cat /proc/%s/cmdline' %pid)
-        self.assert_(op.split('\0')[0] == "fala_wl",'Application name is incorrect')    
+                #check through the window property
+                winName = bType == 'd' and "Applauncherd QML testapp" or "Applauncherd testapp"
+                windows = wait_for_windows(winName)
+                self.assert_(windows, "Fail to find any window: %s!" %winName)
+                self.assertEqual(len(windows), 1, "To many windows '%s' has been found: %s!" %(winName, windows))
     
-        #check through the window property
-        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/Applauncherd testapp/ {print $1}'")
-        st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %op)
-        kill_process('fala_wl') 
-        self.assert_(op1.split(",")[0] == '"fala_wl"','Application name is incorrect')   
+                st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %(windows[0]))
+                self.assertEqual(op1.split(",")[0], '"%s"'%appName, 'Application name in the window property is incorrect: "%s" vs ""%s""' %(op1.split(",")[0], appName))
+            finally:
+                kill_process(apppid=pid)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -642,7 +519,7 @@ class launcher_tests (unittest.TestCase):
             self.test_unix_signal_handlers(False)
 
     def _test_sighup_booster(self, btype):
-        pid = get_pid('booster-%s' % btype)
+        pid = wait_for_app('booster-%s' % btype)
         st, op = commands.getstatusoutput('kill -hup %s' % pid)
         time.sleep(2)
         pid_new = wait_for_app('booster-%s' % btype)
@@ -955,29 +832,28 @@ class launcher_tests (unittest.TestCase):
     def _test_launched_app_wm_class_helper(self,btype,test_application,cmd_arguments,window_name,window_count):
         run_command = 'invoker --type=%s --no-wait %s %s' %(btype, test_application, cmd_arguments)
         p = run_cmd_as_user(run_command)
-        time.sleep(5)
 
-        pid = get_pid(test_application)
+        pid = wait_for_app(test_application)
         self.assert_(pid != None, "Can't start application %s" %test_application)
 
-        st, op = commands.getstatusoutput("xwininfo -root -tree| awk '/%s/ {print $1}'" %window_name)
-        ids = op.split("\n")
+        windowsIds = wait_for_windows(window_name, minCount = window_count)
         xProperties=[]
-        for wid in ids:
+        for wid in windowsIds:
                 st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_CLASS/{print $3$4}'" %wid)
                 xProperties.append(op1)
 
         kill_process(apppid=pid)
 
         #check that we catch exac number of windows
-        numwind = len(ids)
-        self.assert_(window_count == numwind, 'Got wrong number of windows: %s' %numwind)
+        numwind = len(windowsIds)
+        self.assertEqual(window_count, numwind, 'Got wrong number of windows: %s insted of: %s\nids = %s' 
+                         %(numwind, window_count, windowsIds))
 
         wm_class_xproperty_string = '"' + test_application + '","' + string.capwords(test_application) + '"'
         debug("Looking for '%s'" %wm_class_xproperty_string)
 
         for property in xProperties:
-                self.assert_(op1 == wm_class_xproperty_string,'Application WM_CLASS 1 is incorrect: %s' %property)
+            self.assert_(op1 == wm_class_xproperty_string,'Application WM_CLASS 1 is incorrect: %s' %property)
 
 
     def test_q_booster_dont_have_GL_context(self):
