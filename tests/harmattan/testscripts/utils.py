@@ -357,22 +357,34 @@ def get_groups_for_user():
     return groups
 
 def send_sighup_to_applauncherd():
+
+    #checks if there is a change in booster pids until 5 seconds
+    def wait_for_new_boosters(ref_pids):
+      boosterpids2 = ref_pids
+      for count in range(4):
+        boosterpids2 = get_pid('booster')
+        if(ref_pids != boosterpids2):
+            break
+        time.sleep(1)
+      return boosterpids2
+
     wait_for_single_applauncherd()
     (e1, d1, q1, m1) = get_booster_pid()
-    pid1 = get_oldest_pid('applauncherd')
-    debug("before sighup, applauncherd pid = ", pid1)
+    launcher_pid1 = get_oldest_pid('applauncherd')
+    debug("before sighup, applauncherd pid = ", launcher_pid1)
 
-    kill_process(None, pid1, 1) #sending sighup to applauncherd
+    boosterpids1 = get_pid('booster') # get the list of booster pids b4 sighup
+    kill_process(None, launcher_pid1, 1) #sending sighup to applauncherd
+    wait_for_new_boosters(boosterpids1) # give sometime for applauncherd to react
 
-    time.sleep(4) # give sometime for applauncherd to react
     wait_for_single_applauncherd()
     (e2, d2, q2, m2) = get_booster_pid()
-    pid2 = get_oldest_pid('applauncherd')
-    debug("after sighup, applauncherd pid = ", pid2)
+    launcher_pid2 = get_oldest_pid('applauncherd')
+    debug("after sighup, applauncherd pid = ", launcher_pid2)
 
     #check if applauncherd has same pid before and after sighup
     #check if all boosters have different pids before and after sighup
-    return (pid1==pid2, m1!=m2 and q1!=q2 and d1!=d2 and e1!=e2)
+    return (launcher_pid1==launcher_pid2, m1!=m2 and q1!=q2 and d1!=d2 and e1!=e2)
 
 def wait_for_windows(windowName, minCount=1, timeout=20) :
     """
