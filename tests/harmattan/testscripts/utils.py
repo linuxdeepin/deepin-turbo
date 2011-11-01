@@ -364,7 +364,7 @@ def send_sighup_to_applauncherd():
 
     kill_process(None, pid1, 1) #sending sighup to applauncherd
 
-    # give sometime for applauncherd to react
+    time.sleep(4) # give sometime for applauncherd to react
     wait_for_single_applauncherd()
     (e2, d2, q2, m2) = get_booster_pid()
     pid2 = get_oldest_pid('applauncherd')
