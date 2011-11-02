@@ -1,11 +1,11 @@
-applauncherd (2.0.6) unstable; urgency=low
+applauncherd (2.0.6) stable; urgency=low
 
   * Changes: test fixed test_launched_app_wm_class_m
   * Changes: updated invalid test cases in func-tests and removed 1 invalid test case in daemon-tests
   * Changes: QML test application updated to store QML in resource file
   * Fixes: NB#287488 - Boosted QML application startup time is above requirements
  
- -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Fri, 14 Oct 2011 14:40:32 +0300
+ -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Wed, 02 Oct 2011 14:04:32 +0300
 
 applauncherd (2.0.5) stable; urgency=low
 
