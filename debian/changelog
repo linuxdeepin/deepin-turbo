@@ -1,3 +1,9 @@
+applauncherd (2.0.7) unstable; urgency=low
+
+   *
+
+ -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Wed, 02 Nov 2011 14:07:21 +0300
+
 applauncherd (2.0.6) stable; urgency=low
 
   * Changes: test fixed test_launched_app_wm_class_m
