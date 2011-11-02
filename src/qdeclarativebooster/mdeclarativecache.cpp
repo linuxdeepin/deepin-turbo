@@ -83,7 +83,6 @@ void MDeclarativeCachePrivate::populate()
         qApplicationInstance = new QApplication(initialArgc, initialArgv);
     }
 
-    qDeclarativeViewInstance = new QDeclarativeView();
 }
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
@@ -206,13 +205,7 @@ void MDeclarativeCachePrivate::testabilityInit()
 
 QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
 {
-    QDeclarativeView *returnValue;
-    if (qDeclarativeViewInstance != 0) {
-        returnValue = qDeclarativeViewInstance;
-        qDeclarativeViewInstance = 0;
-    } else {
-        returnValue = new QDeclarativeView();
-    }
+    QDeclarativeView *returnValue = new QDeclarativeView();
 
 #ifdef WITH_COVERAGE
     __gcov_flush();

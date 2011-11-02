@@ -497,7 +497,7 @@ class launcher_tests (unittest.TestCase):
                 st, op1 = commands.getstatusoutput("xprop -id %s | awk '/WM_COMMAND/{print $4}'" %(windows[0]))
                 self.assertEqual(op1.split(",")[0], '"%s"'%appName, 'Application name in the window property is incorrect: "%s" vs ""%s""' %(op1.split(",")[0], appName))
             finally:
-                kill_process(apppid=pid)
+                kill_process(appname=appName)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -797,7 +797,8 @@ class launcher_tests (unittest.TestCase):
         self._test_launched_app_wm_class_helper("d","fala_qml_helloworld","-faulty","fala_qml_helloworld",2)
 
         #For booster-d QDeclarativeView NOT from cache (2 windows + 1 is created by cache but not used)
-        self._test_launched_app_wm_class_helper("d","fala_qml_helloworld","-window-not-from-cache","fala_qml_helloworld",3)
+        #Number of windows changed to 2 QDeclarativeView actually is no longer created in cache
+        self._test_launched_app_wm_class_helper("d","fala_qml_helloworld","-window-not-from-cache","fala_qml_helloworld",2)
 
 
     def test_launched_app_wm_class_e(self):
