@@ -924,10 +924,10 @@ void Daemon::reExec()
         _exit(1);
     }
     
-    char *argv[] = {"/usr/bin/applauncherd.bin",
-                    "--re-exec",
-                    "                                                  ",
-                    NULL};
+    char* argv[] = { const_cast<char*>("/usr/bin/applauncherd.bin"),
+                     const_cast<char*>("--re-exec"),
+                     const_cast<char*>("                                                  "),
+                     NULL};
 
     // The boosters have state which will become stale, so kill them.
     // The dead boosters will be reaped when the re-execed applauncherd
