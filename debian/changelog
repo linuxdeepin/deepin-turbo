@@ -1,4 +1,10 @@
-applauncherd (2.0.7) unstable; urgency=low
+applauncherd (2.0.8) unstable; urgency=low
+
+  * 
+
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Fri, 04 Nov 2011 17:06:18 +0200
+
+applauncherd (2.0.7) stable; urgency=low
 
    * Fixes: NB#283676 - running processes are not granted new credentials until restarted
 
