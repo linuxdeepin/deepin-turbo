@@ -33,7 +33,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
   FALA_GETTIME_BINARY = '/usr/bin/fala_gettime_ms'
   MATTI_LOCATION='/usr/lib/qt4/plugins/testability/libtestability.so'
   TEMPORARY_MATTI_LOCATION='/root/libtestability.so'
-  
+  # MCompositor does XGrabServer for about 300 ms (doing startup animation), during this time pixelchanged can't connect to XServer and just waits.
+  # So we're substracting 300 ms from results.
+  MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT = 300
 
   @start_time = 0
   @end_time = 0
@@ -407,9 +409,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
         win_cache_sum += @win_from_cache
       end
 
-      start_time_sum += @end_time - @start_time
+      start_time_sum += @end_time - @start_time - MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT
     end
     
+    print_debug ("MCompositor does XGrabServer for about #{MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT} ms (doing startup animation), during this time pixelchanged can't connect to XServer and just waits.")
+    print_debug ("So we're substracting #{MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT} ms from startup time!\n")
     print_debug ("Startup time in milliseconds\n")
     print_debug ("Application: #{@options[:application]} \n")
     

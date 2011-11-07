@@ -1,6 +1,7 @@
 applauncherd (2.0.8) stable; urgency=low
 
   * Fixes: NB#288982 - COREWEB: booster '__assert_fail append_pending_request _XReply'
+  * Changes: Updated testscript for performance measurement (workaround for MCompositor XGrabServer delay)
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Fri, 04 Nov 2011 17:06:18 +0200
 
