@@ -1,4 +1,4 @@
-applauncherd (2.0.8) unstable; urgency=low
+applauncherd (2.0.8) stable; urgency=low
 
   * Fixes: NB#288982 - COREWEB: booster '__assert_fail append_pending_request _XReply'
 
