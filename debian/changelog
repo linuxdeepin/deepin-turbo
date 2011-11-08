@@ -1,6 +1,7 @@
-applauncherd (2.0.9) unstable; urgency=low
+applauncherd (2.0.9) stable; urgency=low
 
   * Changes: Updated testscript for performance measurement (workaround for MCompositor XGrabServer delay)
+  * Fixes: NB#289792 - Upgrade from PR1.1 aborts around 66% due to applauncherd-launcher
 
  -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balarishnan@nokia.com>  Mon, 07 Nov 2011 14:55:11 +0200
 
