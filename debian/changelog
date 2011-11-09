@@ -1,6 +1,7 @@
-applauncherd (2.0.10) unstable; urgency=low
+applauncherd (2.0.10) stable; urgency=low
 
-  * 
+  * Fixes: NB#283676 - running processes are not granted new credentials until restarted
+  * Changes: Adds new test for applauncherd re-exec. In test new package is installed with custom credential token.
 
  -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Wed, 09 Nov 2011 09:23:18 +0200
 
@@ -19,7 +20,7 @@ applauncherd (2.0.8) stable; urgency=low
 
 applauncherd (2.0.7) stable; urgency=low
 
-   * Fixes: NB#283676 - running processes are not granted new credentials until restarted
+  * Fixes: NB#283676 - running processes are not granted new credentials until restarted
 
  -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Wed, 02 Nov 2011 14:07:21 +0300
 

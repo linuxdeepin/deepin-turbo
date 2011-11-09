@@ -1,2 +1,3 @@
 # aegis-install generates this trigger when there is a potential policy change for applauncherd
 interest aegis.applauncherd-launcher.
+interest /usr/lib
