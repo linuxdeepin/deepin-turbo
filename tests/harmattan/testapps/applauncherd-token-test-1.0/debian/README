@@ -1,0 +1,6 @@
+The Debian Package applauncherd-token-test
+----------------------------
+
+This packeged is used to test that applauncherd is gaining custom tokens when installed appliaction is using a booster.
+
+ -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Fri, 04 Nov 2011 16:05:43 +0200

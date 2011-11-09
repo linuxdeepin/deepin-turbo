@@ -78,6 +78,15 @@
       </environments>
     </set>
 
+    <set name="TC_REEXEC" description="functional tests for security of applaucherd" feature="AF Basic Launcher daemon support">
+      <case name="applauncherd__test_reexec_when_new_token_is_installed" type="Functional" description="Checks that when new application is installed (facebookqml) containing new security token, then applauncherd gains this new security token" timeout="200" level="System" insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_reexec_when_new_token_is_installed</step>
+      </case>
+      <environments>
+          <scratchbox>false</scratchbox>
+          <hardware>true</hardware>
+      </environments>
+    </set>
   </suite>
 </testdefinition>
 

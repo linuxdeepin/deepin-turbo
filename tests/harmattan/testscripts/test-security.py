@@ -377,7 +377,87 @@ class SecurityTests(unittest.TestCase):
         req_creds.sort()                                                                         
         debug("The required creds for invoker is %s" %req_creds)                                          
         self.assert_(creds == req_creds,                                                         
-                "invoker has incorrect credentials")  
+                "invoker has incorrect credentials")
+
+
+    def __test_reexec_remove_test_package(self, packageName):
+        st, op = commands.getstatusoutput('dpkg -r %s' %(packageName))
+        if st!=0 :
+            debug('Fail to remove "%s" package! Returned error code is: %s. Check remove log:\n%s\n<<<<<<remove log.' %(packageName, st, op))
+        else :
+            debug('Deinstalation of "%s" was successful' %(packageName))
+
+        # self.assertEqual(st, 0, 'Fail to remove "%s" package! Returned error code is: %s. Check remove log:\n%s\n<<<<<<remove log.' %(packageName, st, op))
+
+    def test_reexec_when_new_token_is_installed(self) :
+        """
+        Checks that when new application is installed (facebookqml) containing new security token, then
+        applauncherd gains this new security token.
+        Triger is activated and sighup is send to applauncherd.
+        """
+        packageFileName = '/usr/share/fala_images/applauncherd-token-test_1.0_armel.deb'
+        packageName = 'applauncherd-token-test'
+        token = 'applauncherd-token-test::applauncherd-test-token'
+        
+        #check that facebook is NOT installed
+        notInstaled, op = commands.getstatusoutput('dpkg -l %s' %(packageName))
+        if (notInstaled==0) :
+            debug('Tested package "%s" is isntalled, removing it.' %(packageName))
+            self.__test_reexec_remove_test_package(packageName)
+
+        initialBoosters = get_booster_pid()
+        
+        def waitFoNewBoosters(oldBoosters) :
+            oldBoosters = set(oldBoosters)
+            for i in range(3) :
+                newBoosters = get_booster_pid()
+                if len(oldBoosters & set(newBoosters))==0 :
+                    return newBoosters
+                time.sleep(1)
+            return None
+        
+        #send sighup just in case to clear capabilites of applaucherd (prevent problems from other bugy installations)
+        commands.getstatusoutput('kill -hup `pgrep applauncherd`')
+
+        try:
+            #wait for new boosters
+            oldBoostersPids = waitFoNewBoosters(initialBoosters)
+            self.assertNotEqual(oldBoostersPids, None, "Sighup for applauncherd doesn't work at all!")
+
+            #real test starts here
+            applauncherPid = wait_for_single_applauncherd()
+
+            debug("Requesting credentials for applauncherd (%s):" %applauncherPid)
+            # strore credentials for applaucherd
+            oldCredentials = get_creds(pid = applauncherPid)
+
+            debug('Installing test packege "%s"...' %(packageName))
+            st, op = commands.getstatusoutput('dpkg -i %s' %(packageFileName))
+            self.assertEqual(st, 0, 'Installation of "%s" failed see:\n%s'  %(packageName, op))
+            debug('...Instalation was successful.')
+
+            newBoostersPids = waitFoNewBoosters(oldBoostersPids)
+            self.assertNotEqual(newBoostersPids, None, "Boosters were not changed! So reexec was not performed!")
+
+            applauncherNewPid = wait_for_single_applauncherd()
+            self.assertEqual(applauncherPid, applauncherNewPid, "Deamon has crush during installation! Its pid has changed."
+                             "\nWas %s now is %s." %(applauncherPid, applauncherNewPid))
+
+            debug("Requesting credentials for applauncherd (%s):" %applauncherPid)
+            newCredentials = get_creds(pid = applauncherPid)
+
+            credDiff = filter(lambda token: not (token in oldCredentials), newCredentials)
+
+            self.assert_(len(credDiff)>0, "No new credential were detected!")
+            debug('New credentials in applauncherd has been detected: %s' %credDiff)
+
+            # verify specyfic credential
+            self.assertEqual(len(credDiff), 1, "To many new credential were detected!")
+            self.assertEqual(token, credDiff[0], "Expected credentials '%s' not found! Insted '%s' was detected." %(token, credDiff[0]))
+
+        finally:
+            debug('Restoring system to initial state: removing test package after test was complleted.')
+            self.__test_reexec_remove_test_package(packageName)
 
 # main
 if __name__ == '__main__':

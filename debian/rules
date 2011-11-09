@@ -40,14 +40,19 @@ clean:
 	rm -f build-stamp configure-stamp
 	rm -f CMakeCache.txt
 	dh_clean
-    
+
 install: build
+#install: build tests/harmattan/testapps/applauncherd-token-test_1.0_armel.deb
 	dh_testdir
 	dh_testroot
 	dh_prep
 	dh_installdirs
 
 	DESTDIR=debian/tmp make install
+	cp tests/harmattan/testapps/applauncherd-token-test_1.0_armel.deb debian/tmp/usr/share/fala_images
+
+#tests/harmattan/testapps/applauncherd-token-test_1.0_armel.deb:
+#	cd tests/harmattan/testapps/applauncherd-token-test-1.0 && dpkg-buildpackage
 
 # Build architecture-independent files here.
 binary-indep: build install
