@@ -83,6 +83,8 @@ void MDeclarativeCachePrivate::populate()
         qApplicationInstance = new QApplication(initialArgc, initialArgv);
     }
 
+    qDeclarativeViewInstance = new QDeclarativeView();
+
 }
 
 QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
@@ -129,6 +131,10 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
             testabilityInit();
 
 #ifdef Q_WS_X11
+        // Currently QDeclarativeView is "Alien" widget and doesn't have it's XWindow. The procedure below is not needed.
+        // Call to winId() converts the widget to "Native" and makes it slow.
+        // If things get changed to use the procedure need to define QDV_USE_NATIVE_WIDGETS
+#ifdef QDV_USE_NATIVE_WIDGETS
         // reinit WM_COMMAND X11 property
         if (qDeclarativeViewInstance) 
         {
@@ -154,6 +160,7 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
                 XSetClassHint(display, qDeclarativeViewInstance->effectiveWinId(), &class_hint);
             }
         }
+#endif
 #endif
         if (cachePopulated) 
         {
@@ -205,7 +212,13 @@ void MDeclarativeCachePrivate::testabilityInit()
 
 QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
 {
-    QDeclarativeView *returnValue = new QDeclarativeView();
+    QDeclarativeView *returnValue = 0;
+    if (qDeclarativeViewInstance != 0) {
+        returnValue = qDeclarativeViewInstance;
+        qDeclarativeViewInstance = 0;
+    } else {
+        returnValue = new QDeclarativeView();
+    }
 
 #ifdef WITH_COVERAGE
     __gcov_flush();
