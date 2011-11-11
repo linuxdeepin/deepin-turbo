@@ -1,0 +1,6 @@
+The Debian Package applauncherd-usrlib-test
+----------------------------
+
+This package is used to test that applauncherd is triggered for re-exec when installed application is adding/modifying a file in /usr/lib directory.
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Wed, 09 Nov 2011 16:05:43 +0200

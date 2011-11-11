@@ -125,10 +125,11 @@ def run_cmd_as_user(cmnd, out = DEV_NULL, err = DEV_NULL):
             stdout = out, stderr = err)
     return p
 
-def get_pid(appname):
+def get_pid(appname, printdebug=True):
     temp = basename(appname)[:14]
     st, op = commands.getstatusoutput("pgrep %s" % temp)
-    debug("The Pid of %s is %s" %(appname, op))
+    if(printdebug):
+        debug("The Pid of %s is %s" %(appname, op))
     if st == 0:
         return op
     else:
@@ -186,19 +187,17 @@ def wait_for_app(app = None, timeout = 40, sleep = 1):
     return pid
 
 def wait_for_single_applauncherd(timeout = 20, sleep = 1):
-    pid = get_pid('applauncherd') 
+    pid = get_pid('applauncherd', False)
     count = len(pid.split("\n"))
     start = time.time()
 
     while count > 1 and time.time() < start + timeout:
-
-        debug("waiting %s secs for single applauncherd" %sleep)
         time.sleep(sleep)
-
-        pid = get_pid('applauncherd') 
+        pid = get_pid('applauncherd', False)
         count = len(pid.split("\n"))
         if count == 1:
             break
+    debug("got single applauncherd pid %s in %.1fs" % (pid, time.time()-start))
     return pid
 
 def get_booster_pid(timeout = 20):
@@ -356,18 +355,17 @@ def get_groups_for_user():
     
     return groups
 
-def send_sighup_to_applauncherd():
-
-    #checks if there is a change in booster pids until 5 seconds
-    def wait_for_new_boosters(ref_pids):
-      boosterpids2 = ref_pids
-      for count in range(4):
-        boosterpids2 = get_pid('booster')
-        if(ref_pids != boosterpids2):
+#checks if there is a change in booster pids until 5 seconds
+def wait_for_new_boosters(old_booster_pids):
+    new_booster_pids = old_booster_pids
+    for count in range(4):
+        new_booster_pids = get_pid('booster')
+        if(old_booster_pids != new_booster_pids):
             break
         time.sleep(1)
-      return boosterpids2
+    return new_booster_pids
 
+def send_sighup_to_applauncherd():
     wait_for_single_applauncherd()
     (e1, d1, q1, m1) = get_booster_pid()
     launcher_pid1 = get_oldest_pid('applauncherd')
@@ -410,3 +408,11 @@ def wait_for_windows(windowName, minCount=1, timeout=20) :
         op = None
 
     return op
+
+def isPackageInstalled(packageName):
+    st, op = commands.getstatusoutput("dpkg -l %s" % packageName)
+    if(st == 0): # success, check if version is "<none>" or a valid version
+        m = re.search('.*%s\s*(\S*)\s*.*'%packageName, op)
+        if(m and m.group(1).find("none")==-1): #m.group(1) contains version
+            return True
+    return False

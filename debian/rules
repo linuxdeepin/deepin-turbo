@@ -50,6 +50,7 @@ install: build
 
 	DESTDIR=debian/tmp make install
 	cp tests/harmattan/testapps/applauncherd-token-test_1.0_armel.deb debian/tmp/usr/share/fala_images
+	cp tests/harmattan/testapps/applauncherd-usrlib-test_1.?_armel.deb debian/tmp/usr/share/fala_images
 
 #tests/harmattan/testapps/applauncherd-token-test_1.0_armel.deb:
 #	cd tests/harmattan/testapps/applauncherd-token-test-1.0 && dpkg-buildpackage

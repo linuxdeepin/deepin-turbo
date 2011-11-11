@@ -1007,6 +1007,83 @@ class launcher_tests (unittest.TestCase):
             for pid in appList:
                 kill_process(apppid = pid[0])
 
+    def _test_reexec_remove_test_package(self, packageName):
+        st, op = commands.getstatusoutput('dpkg -r %s' %(packageName))
+        if st!=0 :
+            debug('Fail to remove "%s" package! Returned error code is: %s. '
+                  'Check remove log:\n%s\n<<<<<<remove log.' %(packageName, st, op))
+        else :
+            debug('Uninstallation of "%s" was successful' %(packageName))
+
+    def _wait_and_check_for_new_boosters(self, oldBoosterPids, oldApplauncherPid):
+        wait_for_new_boosters(oldBoosterPids)
+        wait_for_single_applauncherd()
+        newBoosterPids = get_booster_pid()
+
+        num_of_same_pids = len(set(oldBoosterPids) & set(newBoosterPids))
+        self.assertEqual(num_of_same_pids, 0, "Boosters pids did not change")
+
+        newApplauncherPid = wait_for_single_applauncherd()
+        self.assertEqual(oldApplauncherPid, newApplauncherPid,
+                         "applauncherd has crashed. Its pid has changed from "
+                         "%s to %s." %(oldApplauncherPid, newApplauncherPid))
+        return (newApplauncherPid, newBoosterPids)
+
+    def test_reexec_when_file_in_usrlib_modified(self) :
+        """
+        Checks that when a file is installed/modified/removed from /usr/lib
+        trigger is activated and sighup is send to applauncherd.
+        """
+
+        packageFileName = '/usr/share/fala_images/applauncherd-usrlib-test_1.0_armel.deb'
+        updatePackageFileName = '/usr/share/fala_images/applauncherd-usrlib-test_1.1_armel.deb'
+        packageName = 'applauncherd-usrlib-test'
+
+        applauncherPid = wait_for_single_applauncherd()
+        boosterPids = get_booster_pid()
+
+        #check that test package is NOT installed
+        installed = isPackageInstalled(packageName)
+        if (installed) :
+            debug('Tested package "%s" is installed, removing it.' %(packageName))
+            self._test_reexec_remove_test_package(packageName)
+            wait_for_new_boosters(boosterPids)
+            applauncherPid = wait_for_single_applauncherd()
+            boosterPids = get_booster_pid()
+
+        try:
+            #real test starts here
+            debug('Installing test package "%s"...' %(packageName))
+            debug('This installs new file to /usr/lib/')
+            st, op = commands.getstatusoutput('dpkg -i %s' %(packageFileName))
+            self.assertEqual(st, 0, 'Installation of "%s" failed see:\n%s'  %(packageName, op))
+            debug('...Installation was successful.')
+            applauncherPid, boosterPids = self._wait_and_check_for_new_boosters(boosterPids, applauncherPid)
+
+            debug('Upgrading test package to "%s"' % (updatePackageFileName))
+            debug('This modifies the file existing in /usr/lib/ to a new verison')
+            st, op = commands.getstatusoutput('dpkg -i %s' %(updatePackageFileName))
+            self.assertEqual(st, 0, 'Upgrading of "%s" failed see:\n%s'  %(packageName, op))
+            debug('...Upgrading was successful.')
+            applauncherPid, boosterPids = self._wait_and_check_for_new_boosters(boosterPids, applauncherPid)
+
+            debug('Downgrading test package to "%s"' % (packageFileName))
+            debug('This modifies the file existing in /usr/lib/ to a old verison')
+            st, op = commands.getstatusoutput('dpkg -i %s' %(packageFileName))
+            self.assertEqual(st, 0, 'Downgrading of "%s" failed see:\n%s'  %(packageName, op))
+            debug('...Downgrading was successful.')
+            applauncherPid, boosterPids = self._wait_and_check_for_new_boosters(boosterPids, applauncherPid)
+
+        except:
+            debug('Restoring system to initial state: removing test package after test was asserted.')
+            self._test_reexec_remove_test_package(packageName)
+            raise
+
+        # now remove the package
+        debug('Uninstalling test package "%s"...' %(packageName))
+        debug('This deletes the file from /usr/lib')
+        self._test_reexec_remove_test_package(packageName)
+        applauncherPid, boosterPids = self._wait_and_check_for_new_boosters(boosterPids, applauncherPid)
 
 # main
 if __name__ == '__main__':
