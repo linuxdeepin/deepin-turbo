@@ -190,6 +190,7 @@ libraries_nokia = [
     #(L, "/usr/lib/libXrender.so.1",                                        "-lXrender", "libxrender1", "libxrender-dev"),
     #(L, "/usr/lib/libicuuc.so.44",                                         "-licuuc", "libicu44", "libicu-dev"),
     (L, "/lib/librt.so.1",                                                 "-lrt", "libc6", "libc6"),
+    (D, "/usr/lib/libmlocale.so",                                          "-lmlocale", "libmlocale0", "libmlocale-dev"),
 ]
 
 # Choose library list based on build environment
