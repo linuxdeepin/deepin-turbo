@@ -282,41 +282,70 @@ class launcher_tests (unittest.TestCase):
         """
         File descriptor test for booster-m
         """
-        count = get_file_descriptor("booster-m", "m", "fala_ft_hello")
-        self.assert_(count != 0, "None of the file descriptors were changed")
-        if(sighup):
-            self.sighup_applauncherd()
-            self.test_fd_booster_m(False)
+        self._check_changed_fd_count("m", PREFERED_APP)
 
     def test_fd_booster_q(self, sighup = True):
         """
         File descriptor test for booster-q
         """
-        count = get_file_descriptor("booster-q", "qt", "fala_ft_hello")
-        self.assert_(count != 0, "None of the file descriptors were changed")
-        if(sighup):
-            self.sighup_applauncherd()
-            self.test_fd_booster_q(False)
+        self._check_changed_fd_count("q", PREFERED_APP)
 
     def test_fd_booster_d(self, sighup = True):
         """
         File descriptor test for booster-d
         """
-        count = get_file_descriptor("booster-d", "d", "fala_qml_helloworld")
-        self.assert_(count != 0, "None of the file descriptors were changed")
-        if(sighup):
-            self.sighup_applauncherd()
-            self.test_fd_booster_d(False)
+        self._check_changed_fd_count("d", PREFERED_APP_QML)
 
     def test_fd_booster_e(self, sighup = True):
         """
         File descriptor test for booster-e
         """
-        count = get_file_descriptor("booster-e", "e", "fala_ft_hello")
+        self._check_changed_fd_count("e", PREFERED_APP)
+
+    def _check_changed_fd_count(self, btype, app_name, sighup = True):
+        """
+        To test that file descriptors are closed before calling application main
+        """
+        #get fd of booster before launching application
+        debug("get fd of booster before launching application")
+        pid = get_pid('booster-%s'%btype)
+        init = get_fd_dict(pid)
+        debug("\nThe initial file descriptors are : %s\n" %init)
+    
+        #launch application using booster
+        debug("kill %s if it already exists" % app_name)
+        kill_process(app_name)
+        time.sleep(1) # give sometime for app to get killed
+        debug("launch %s using booster" % app_name)
+        st = os.system('invoker --type=%s --no-wait %s' % (btype, app_name))
+        self.assert_(st == 0, "failed to start %s,%s" % (app_name,st))
+    
+        # wait for new booster and app to start
+        wait_for_app(app_name)
+    
+        #get fd of booster after launching the application
+        debug("get fd of booster after launching the application")
+        final = get_fd_dict(pid)
+        debug("\nThe final file descriptors are : %s\n" %final)
+        pid = get_pid(app_name)    
+    
+        mykeys = init.keys()
+        count = 0
+    
+        for key in mykeys:
+            try:
+                if init[key] != final[key]:
+                    count = count + 1
+            except KeyError:
+                print "some key in init is not in final" 
+
+        debug("The number of changed file descriptors %d" %count)
+        kill_process(apppid=pid) 
         self.assert_(count != 0, "None of the file descriptors were changed")
+
         if(sighup):
             self.sighup_applauncherd()
-            self.test_fd_booster_e(False)
+            self._check_changed_fd_count(btype, app_name, False)
 
     def test_restart_booster(self, sighup = True):
         """
@@ -974,11 +1003,11 @@ class launcher_tests (unittest.TestCase):
         """
         Test that applaucher-d is reinitilized afret sighup has been resived.
         This means
-            - applaucherd is not killed just reinitilized 
+            - applauncherd is not killed just reinitilized 
             - killing old boosters and creating new one
             - not other child processes should be killed
         """
-        daemonPid = wait_for_app('applauncherd', 10)
+        daemonPid = wait_for_single_applauncherd()
 
         appList = []
 
@@ -987,22 +1016,23 @@ class launcher_tests (unittest.TestCase):
                 p = run_app_as_user_with_invoker(app, booster = btype)
                 pid = wait_for_app(app, timeout = 10, sleep = 1)
                 if pid == None:
-                    self.fail("%s was not launched using applauncherd")
+                    self.fail("%s was not launched using applauncherd" % app)
                 appList.append((pid, app))
 
             boosterPid = wait_for_app("booster-%s" %(btype))
 
             # send SIGHUP signal to applaucherd:
+            oldBoosters = get_pid('booster')
             kill_process(apppid=daemonPid, signum=1)
-            time.sleep(5)
+            wait_for_new_boosters(oldBoosters)
 
-            self.assertNotEqual(wait_for_app("booster-%s" %(btype)), boosterPid, "Booster should be restarted by applaucherd with SIGHUP.")
-            self.assertEqual(wait_for_app('applauncherd', 10), daemonPid, "applaucherd shouldn't be restarted after reciving SIGHUP.")
+            self.assertNotEqual(wait_for_app("booster-%s" %(btype)), boosterPid, "Booster should be restarted by applauncherd with SIGHUP.")
+            self.assertEqual(wait_for_single_applauncherd(), daemonPid, "applauncherd shouldn't be restarted after reciving SIGHUP.")
 
             for pid in appList :
                 state = process_state(pid[0])
                 self.assertNotEqual(state, None, 
-                                    "Child process '%s' PID=%s has been killed after applaucherd recived SIGHUP!" %(pid[1], pid[0]))
+                                    "Child process '%s' PID=%s has been killed after applauncherd recived SIGHUP!" %(pid[1], pid[0]))
         finally:
             for pid in appList:
                 kill_process(apppid = pid[0])
@@ -1016,9 +1046,13 @@ class launcher_tests (unittest.TestCase):
             debug('Uninstallation of "%s" was successful' %(packageName))
 
     def _wait_and_check_for_new_boosters(self, oldBoosterPids, oldApplauncherPid):
-        wait_for_new_boosters(oldBoosterPids)
-        wait_for_single_applauncherd()
-        newBoosterPids = get_booster_pid()
+        oldBoosters = set(oldBoosterPids)
+        newBoosterPids = None
+        for i in range(3) :
+            tmp = get_booster_pid()
+            if len(oldBoosters & set(tmp))==0 :
+                newBoosterPids = tmp
+            time.sleep(1)
 
         num_of_same_pids = len(set(oldBoosterPids) & set(newBoosterPids))
         self.assertEqual(num_of_same_pids, 0, "Boosters pids did not change")
