@@ -557,7 +557,7 @@ class InvokerTests(unittest.TestCase):
         Test that invoker searches the application through relative path
         """
         os.system("(cd /usr;export PATH=bin;/usr/bin/invoker --type=m fala_wl&)")
-        pid = get_pid("fala_wl")
+        pid = wait_for_app("fala_wl")
         kill_process("fala_wl")
         self.assert_(pid != None ,"The application was not launched")
 
