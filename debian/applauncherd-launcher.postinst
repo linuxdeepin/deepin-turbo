@@ -8,7 +8,7 @@ elif [ "$1" = "triggered" ]; then
 
     # Installation of some other package may have caused applauncherd credentials to go stale,
     # ask applauncherd to re-exec to refresh the credentials.
-    if [ -s /var/run/applauncherd.lock ]; then
+    if [ -s /var/run/applauncherd.lock ] && [ -d /proc/`cat /var/run/applauncherd.lock` ]; then
 	kill -HUP `cat /var/run/applauncherd.lock`
     fi
 fi
