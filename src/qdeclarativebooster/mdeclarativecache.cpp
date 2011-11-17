@@ -135,6 +135,8 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
         // Currently QDeclarativeView is "Alien" widget and doesn't have it's XWindow. The procedure below is not needed.
         // Call to winId() converts the widget to "Native" and makes it slow.
         // If things get changed to use the procedure need to define QDV_USE_NATIVE_WIDGETS
+        // In this case it should be considered to add XErrorHandler around XSetCommand and XSetClassHint
+        // because those can generate BadAlloc and BadWindow errors.
 #ifdef QDV_USE_NATIVE_WIDGETS
         // reinit WM_COMMAND X11 property
         if (qDeclarativeViewInstance) 
