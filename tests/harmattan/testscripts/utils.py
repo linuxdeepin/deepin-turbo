@@ -298,53 +298,15 @@ def launch_and_get_creds(path):
 
     return creds
 
-def get_file_descriptor(booster, type, app_name):
-    """
-    To test that file descriptors are closed before calling application main
-    """
-    #get fd of booster before launching application
-    debug("get fd of booster before launching application")
-    pid = commands.getoutput("pgrep '%s$'" %booster)
-    fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
-    fd_info = fd_info.split('\n')
-    init = {}
-    final = {}
-
+# returns the fd list of a process as a dict
+def get_fd_dict(pid):
+    fd_dict = {}
+    fd_info = commands.getoutput('ls -l /proc/%s/fd/' % pid).splitlines()
     for fd in fd_info:
         if "->" in fd:
-            init[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
-    debug("\nThe initial file descriptors are : %s\n" %init)
-
-    #launch application using booster
-    debug("launch %s using booster" % app_name)
-    st = os.system('invoker --type=%s --no-wait /usr/bin/%s' % (type, app_name))
-    time.sleep(4)
-
-    #get fd of booster after launching the application
-    debug("get fd of booster after launching the application")
-    if st == 0:
-        fd_info = commands.getoutput('ls -l /proc/%s/fd/' % str(pid))
-        fd_info = fd_info.split('\n')
-        for fd in fd_info:
-            if "->" in fd:
-                final[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
-    debug("\nThe final file descriptors are : %s\n" %final)
-    pid = commands.getoutput('pgrep %s' % app_name)    
-
-    mykeys = init.keys()
-    count = 0
-
-    for key in mykeys:
-        try:
-            if init[key] != final[key]:
-                count = count + 1
-        except KeyError:
-            print "some key in init is not in final" 
-    time.sleep(4)
-    debug("The number of changed file descriptors %d" %count)
-    kill_process(apppid=pid) 
-    return count
-
+            fd_dict[fd.split(" -> ")[0].split(' ')[-1]] = fd.split(" -> ")[-1]
+    return fd_dict
+        
 def get_groups_for_user():
     # get supplementary groups user belongs to (doesn't return
     # the gid group)
@@ -356,6 +318,7 @@ def get_groups_for_user():
     return groups
 
 #checks if there is a change in booster pids until 5 seconds
+# the param must be a string - output of get_pid('booster')
 def wait_for_new_boosters(old_booster_pids):
     new_booster_pids = old_booster_pids
     for count in range(4):
