@@ -22,11 +22,10 @@
 
 Ut_Daemon::Ut_Daemon()
 {
-    int argc = 3;
+    int argc = 2;
     char **argv = new char * [argc];
     argv[0] = strdup("app");
-    argv[1] = strdup("--testParameter");
-    argv[2] = strdup("--123");
+    argv[1] = strdup("--boot-mode");
 
     m_subject.reset(new Daemon( argc, argv ));
 }
@@ -42,11 +41,12 @@ void Ut_Daemon::cleanupTestCase()
 
 void Ut_Daemon::testInitialArguments()
 {
-    QVERIFY(m_subject->m_initialArgc == 3);
+
+    QVERIFY(m_subject->m_initialArgc == 2);
 
     QCOMPARE(m_subject->m_initialArgv[0], "app");
-    QCOMPARE(m_subject->m_initialArgv[1], "--testParameter");
-    QCOMPARE(m_subject->m_initialArgv[2], "--123");
+    QCOMPARE(m_subject->m_initialArgv[1], "--boot-mode");
+
 }
 
 void Ut_Daemon::testParseArgs()
