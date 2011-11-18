@@ -16,6 +16,7 @@
 # of this file.
 
 import unittest
+import re
 from utils import *
 
 class SecurityTests(unittest.TestCase):
@@ -398,15 +399,14 @@ class SecurityTests(unittest.TestCase):
         packageFileName = '/usr/share/fala_images/applauncherd-token-test_1.0_armel.deb'
         packageName = 'applauncherd-token-test'
         token = 'applauncherd-token-test::applauncherd-test-token'
-        
-        #check that facebook is NOT installed
-        notInstaled, op = commands.getstatusoutput('dpkg -l %s' %(packageName))
-        if (notInstaled==0) :
+
+        #check that test package is NOT installed
+        if (isPackageInstalled(packageName)) :
             debug('Tested package "%s" is isntalled, removing it.' %(packageName))
             self.__test_reexec_remove_test_package(packageName)
 
         initialBoosters = get_booster_pid()
-        
+
         def waitFoNewBoosters(oldBoosters) :
             oldBoosters = set(oldBoosters)
             for i in range(3) :
@@ -415,7 +415,7 @@ class SecurityTests(unittest.TestCase):
                     return newBoosters
                 time.sleep(1)
             return None
-        
+
         #send sighup just in case to clear capabilites of applaucherd (prevent problems from other bugy installations)
         commands.getstatusoutput('kill -hup `pgrep applauncherd`')
 
@@ -433,7 +433,7 @@ class SecurityTests(unittest.TestCase):
 
             debug('Installing test packege "%s"...' %(packageName))
             st, op = commands.getstatusoutput('dpkg -i %s' %(packageFileName))
-            self.assertEqual(st, 0, 'Installation of "%s" failed see:\n%s'  %(packageName, op))
+            self.assertEqual(st, 0, 'Installation of "%s" failed (error code: %s) see:\n%s'  %(packageName, st, op))
             debug('...Instalation was successful.')
 
             newBoostersPids = waitFoNewBoosters(oldBoostersPids)
@@ -458,6 +458,75 @@ class SecurityTests(unittest.TestCase):
         finally:
             debug('Restoring system to initial state: removing test package after test was complleted.')
             self.__test_reexec_remove_test_package(packageName)
+
+    def test_that_other_apps_dont_gain_new_token(self) :
+        """
+        Checks that when running application is upgraded and upgrade contains new token, then
+        this runing application doesn't gain new token until it is restarted  (re-exec of
+        applauncherd don't have impact on child processes).
+        It is assumed that application is boosted (run by invoker).
+        """
+
+        package1FileName = '/usr/share/fala_images/applauncherd-token-test_1.0_armel.deb'
+        package2FileName = '/usr/share/fala_images/applauncherd-token-test_1.1_armel.deb'
+        packageName = 'applauncherd-token-test'
+        firstToken = 'applauncherd-token-test::applauncherd-test-token'
+        secondToken = 'applauncherd-token-test::applauncherd-test-second-token'
+        appName = "fala-token-test-app"
+
+        #check that test package is NOT installed
+        if (isPackageInstalled(packageName)) :
+            debug('Tested package "%s" is isntalled, removing it.' %(packageName))
+            self.__test_reexec_remove_test_package(packageName)
+
+        versionSearch = re.compile(r"_(\d+(\.\d+)+)_\w+\.deb")
+        debug("Installing '%s' in version: %s" %(packageName, versionSearch.search(package1FileName).group(1)))
+        st, op = commands.getstatusoutput('dpkg -i %s' %(package1FileName))
+        self.assertEqual(st, 0, 'Installation of "%s" failed (error code: %s) see:\n%s'  %(packageName, st, op))
+        debug('...Instalation was successful.')
+
+        try :
+            p = run_app_as_user_with_invoker(appName, 'e')
+            appPid = wait_for_app(appName)
+            self.assert_(appPid, "Application '%s' was not launched successfuly" %(appName))
+
+            oldCredentials = get_creds(pid = appPid)
+            self.assert_(oldCredentials, "Failed to fetch credentials for application '%s' with pid: %s." %(appName, appPid))
+            self.assert_(firstToken in oldCredentials, "Expected credential '%s' not found for '%s' application."
+                         %(firstToken, appName))
+            self.assert_((packageName+"::"+packageName) in oldCredentials, "Default package credential '%s' not found for '%s' application."
+                         %(packageName+"::"+packageName, appName))
+            self.assert_(not (secondToken in oldCredentials), "Old version of %s shouldn't have '%s' token"
+                         %(appName, secondToken))
+
+            debug("Instaling upgrade of package '%s' with version %s" %(packageName, versionSearch.search(package2FileName).group(1)))
+            st, op = commands.getstatusoutput('dpkg -i %s' %(package2FileName))
+            self.assertEqual(st, 0, 'Upgrade of package "%s" failed (error code: %s) see:\n%s'  %(packageName, st, op))
+            debug('...Instalation was successful.')
+
+            newCredentials = get_creds(pid = appPid)
+            self.assert_(newCredentials, "Failed to fetch credentials for application '%s' with pid: %s. Application might have crush." %(appName, appPid))
+
+            credDiff = set(oldCredentials).symmetric_difference(set(newCredentials))
+            self.assertEqual(len(credDiff), 0, "Application '%s' has a diffrance in tokens: %s, after installing update (application was not restarted)."
+                         %(appName, credDiff))
+
+            kill_process(appName)
+            time.sleep(2)
+
+            p = run_app_as_user_with_invoker(appName, 'e')
+            appPid = wait_for_app(appName)
+            newCredentials = get_creds(pid = appPid)
+            credDiff = set(oldCredentials).symmetric_difference(set(newCredentials))
+            self.assertEqual(credDiff, set([secondToken]), "After rerun of '%s' it should gain only '%s' token, not: %s"
+                             %(appName, secondToken, credDiff))
+
+        finally:
+            debug('Restoring system to initial state: removing test package after test was complleted.')
+            kill_process(appName)
+            self.__test_reexec_remove_test_package(packageName)
+
+
 
 # main
 if __name__ == '__main__':

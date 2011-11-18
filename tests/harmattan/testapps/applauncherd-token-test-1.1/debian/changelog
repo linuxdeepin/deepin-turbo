@@ -1,0 +1,11 @@
+applauncherd-token-test (1.1) unstable; urgency=low
+
+  * adding additional custom credential token.
+
+ -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Tue, 15 Nov 2011 15:33:16 +0200
+
+applauncherd-token-test (1.0) stable; urgency=low
+
+  * Initial Release.
+
+ -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Fri, 04 Nov 2011 16:05:43 +0200

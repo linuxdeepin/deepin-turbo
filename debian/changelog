@@ -1,3 +1,9 @@
+applauncherd (3.0.1) unstable; urgency=low
+
+  * Changes: Adds new test for applauncherd re-exec. Checking state of running application when it is updated.
+
+ -- Alexey Shilov <alexey@trdhcp147241>  Mon, 14 Nov 2011 13:39:38 +0200
+
 applauncherd (2.0.16) stable; urgency=low
 
   * Fixes: NB#296154 - proprietary headers in applauncherd replaced to LGPL

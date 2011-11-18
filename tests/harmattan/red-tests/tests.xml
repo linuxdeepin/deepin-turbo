@@ -100,6 +100,14 @@
             insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_reexec_when_file_in_usrlib_modified</step>
       </case>
+      <case name="applauncherd__test_that_other_apps_dont_gain_new_token_on_update" 
+            type="Functional" 
+            description="Checks that when running application is upgraded and upgrade contains new token, then this runing application doesn't gain new token until it is restarted (re-exec of applauncherd don't have impact on child processes)." 
+            timeout="100" 
+            level="System" 
+            insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_that_other_apps_dont_gain_new_token</step>
+      </case>
       <post_steps>
         <step>initctl start xsession/pkgm-timed-checks</step>
       </post_steps>
