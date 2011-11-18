@@ -526,7 +526,29 @@ class SecurityTests(unittest.TestCase):
             kill_process(appName)
             self.__test_reexec_remove_test_package(packageName)
 
+    def test_installation_of_new_token_when_deamon_is_disabled(self):
+        """
+        Test that isntallation of new package with new security token is going well
+        when applauncherd daemon is disabled (stoped).
+        """
 
+        packageFileName = '/usr/share/fala_images/applauncherd-token-test_1.0_armel.deb'
+        packageName = 'applauncherd-token-test'
+
+        st = stop_applauncherd()
+        self.assertEqual(st, 0, "Fail to stop service 'xsession/applauncherd'. Error code: %s " %(st))
+        debug ("Service 'xsession/applauncherd' has been stoped.")
+
+        try :
+            debug('Installing test packege "%s"...' %(packageName))
+            st, op = commands.getstatusoutput('dpkg -i %s' %(packageFileName))
+            self.assertEqual(st, 0, 'Installation of "%s" failed see:\n%s'  %(packageName, op))
+            debug('...Instalation was successful.')
+
+            self.__test_reexec_remove_test_package(packageName)
+
+        finally :
+            self.assert_(start_applauncherd(), "Fail to restore service 'xsession/applauncherd'")
 
 # main
 if __name__ == '__main__':

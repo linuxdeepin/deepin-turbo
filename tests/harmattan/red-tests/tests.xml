@@ -106,6 +106,14 @@
             insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_that_other_apps_dont_gain_new_token</step>
       </case>
+      <case name="applauncherd__test_installation_of_new_token_when_deamon_is_disabled" 
+            type="Functional" 
+            description="Test that isntallation of new package with new security token is going well when applauncherd daemon is disabled (stoped)"
+            timeout="200"
+            level="System"
+            insignificant="true">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_installation_of_new_token_when_deamon_is_disabled</step>
+      </case>
       <post_steps>
         <step>initctl start xsession/pkgm-timed-checks</step>
       </post_steps>
