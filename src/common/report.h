@@ -41,7 +41,7 @@ enum report_type {
 };
 
 extern void report_set_output(enum report_output new_output);
-extern void report(enum report_type type, char *msg, ...);
+extern void report(enum report_type type, const char *msg, ...);
 
 #ifndef DEBUG_LOGGING_DISABLED
 #define debug(msg, ...) report(report_debug, msg, ##__VA_ARGS__)
@@ -53,7 +53,7 @@ extern void report(enum report_type type, char *msg, ...);
 #define warning(msg, ...) report(report_warning, msg, ##__VA_ARGS__)
 #define error(msg, ...) report(report_error, msg, ##__VA_ARGS__)
 
-extern void ATTR_NORET die(int status, char *msg, ...);
+extern void ATTR_NORET die(int status, const char *msg, ...);
 
 #endif
 

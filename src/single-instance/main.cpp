@@ -30,6 +30,9 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h> 
+extern "C" {
+    #include "report.h"
+}
 
 #define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
 
@@ -55,8 +58,7 @@ static bool mkpath(const std::string & path)
                 // are modified by umask
                 if (chmod(part.c_str(), 0777) == -1)
                 {
-                    std::cerr << "ERROR!!: chmod() failed: " <<
-                            strerror(errno) << std::endl;
+                    report(report_error, "chmod() failed: %s \n", strerror(errno));
                     return false;
                 }
             }
@@ -70,7 +72,7 @@ int handleXError(Display *dpy, XErrorEvent *e)
 {
     char errorText[1024];
     XGetErrorText( dpy, e->error_code, errorText, sizeof(errorText) );
-    std::cerr << ( "X ERROR!!: %s\n", errorText );
+    report(report_error, "Xerror: %s\n", errorText );
     return 0;
 }
 
@@ -115,7 +117,7 @@ static int clientMsg(Display *disp, Window win, const char *msg,
     }
     else
     {
-        std::cerr <<  "ERROR!!: Cannot send " << msg << " event." << std::endl;
+        report(report_error, "Cannot send %s event.\n", msg);
         return EXIT_FAILURE;
     }
 }
@@ -271,8 +273,7 @@ extern "C"
         std::string path(LOCK_PATH_BASE + binaryName);
         if (!mkpath(path))
         {
-            std::cerr << "ERROR!!: Couldn't create dir " <<
-                    path << std::endl;
+            report(report_error, "Couldn't create dir %s\n", path.c_str());
 
             return false;
         }
@@ -288,8 +289,8 @@ extern "C"
 
         if((g_lockFd = open(path.c_str(), O_WRONLY | O_CREAT, 0666)) == -1)
         {
-            std::cerr << "ERROR!!: Couldn't create/open lock file '" <<
-                    path << "' : " << strerror(errno) << std::endl;
+            report(report_error, "Couldn't create/open lock file '%s' : %s\n",
+                   path.c_str(), strerror(errno));
 
             return false;
         }
@@ -325,14 +326,14 @@ extern "C"
             }
             else
             {
-                std::cerr << "ERROR!!: Lock reserved but no window id for binary name found." << std::endl;
+                report(report_error, "Lock reserved but no window id for binary name found.\n");
                 XCloseDisplay(dpy);
                 return false;
             }
         }
         else
         {
-            std::cerr << "ERROR!!: Failed to open display!" << std::endl;
+            report(report_error, "Failed to open display!\n");
             return false;
         }
     }
@@ -367,8 +368,7 @@ int main(int argc, char **argv)
         {
             if (execve(argv[1], argv + 1, environ) == -1)
             {
-                std::cerr << "ERROR!!: Failed to exec binary '" <<
-                    argv[1] << "' : " << strerror(errno) << std::endl;
+                report(report_error, "Failed to exec binary '%s' : %s\n", argv[1], strerror(errno));
                 unlock();
                 
                 return EXIT_FAILURE;
