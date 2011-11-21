@@ -40,7 +40,7 @@ void report_set_output(enum report_output new_output)
     output = new_output;
 }
 
-static void vreport(enum report_type type, char *msg, va_list arg)
+static void vreport(enum report_type type, const char *msg, va_list arg)
 {
     char str[400];
     char *str_type = "";
@@ -87,7 +87,7 @@ static void vreport(enum report_type type, char *msg, va_list arg)
         syslog(log_type, "%s%s", str_type, str);
 }
 
-void report(enum report_type type, char *msg, ...)
+void report(enum report_type type, const char *msg, ...)
 {
     va_list arg;
 
@@ -96,7 +96,7 @@ void report(enum report_type type, char *msg, ...)
     va_end(arg);
 }
 
-void die(int status, char *msg, ...)
+void die(int status, const char *msg, ...)
 {
     va_list arg;
 
