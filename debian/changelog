@@ -1,4 +1,4 @@
-applauncherd (2.0.13) unstable; urgency=low
+applauncherd (2.0.13) stable; urgency=low
 
   * Fixes: NB#291039 - Integrated version of applauncherd is missing some important test cases
   * Changes: testcases added/fixed for code coverage
