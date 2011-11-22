@@ -240,7 +240,7 @@
       </case>
 
       <case name="applauncherd__test_argv_dbooster_over_limit" type="Functional" description="Test that extra arguments than ARGV_LIMIT are ignored " timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_argv_mbooster_over_limit </step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_argv_dbooster_over_limit </step>
       </case>
 
       <case name="applauncherd__test_dirPath_filePath_d" type="Functional" description="Test that correct file path and dir path is passed by booster d" timeout="360" level="System" insignificant="false">

@@ -5,6 +5,7 @@ applauncherd (3.0.1) unstable; urgency=low
   * Fixes: NB#291089 - Installation of clock application fails when applauncherd daemon stopped
   * Changes: Adds new test for applauncherd re-exec. Checking state of running application when it is updated.
   * Changes: single-instance library writes log messages to syslog instead of stderr
+  * Changes: testcases added/fixed for code coverage
 
  -- Alexey Shilov <alexey@trdhcp147241>  Mon, 14 Nov 2011 13:39:38 +0200
 
