@@ -1,3 +1,9 @@
+applauncherd (2.0.13) unstable; urgency=low
+
+  * 
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balarishnan@nokia.com>  Tue, 22 Nov 2011 11:27:40 +0200
+
 applauncherd (2.0.12) stable; urgency=low
 
   * Changes: new test case added for /usr/lib trigger
