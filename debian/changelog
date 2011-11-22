@@ -1,6 +1,7 @@
-applauncherd (2.0.12) unstable; urgency=low
+applauncherd (2.0.12) stable; urgency=low
 
   * Changes: new test case added for /usr/lib trigger
+  * fixes for nightly build test failures
 
  -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Wed, 11 Nov 2011 14:30:21 +0200
 
