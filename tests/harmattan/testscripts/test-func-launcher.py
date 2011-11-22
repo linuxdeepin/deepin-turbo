@@ -306,28 +306,30 @@ class launcher_tests (unittest.TestCase):
         """
         To test that file descriptors are closed before calling application main
         """
+        debug("kill %s if it already exists" % app_name)
+        kill_process(app_name)
+        time.sleep(1) # give sometime for app to get killed
+
         #get fd of booster before launching application
         debug("get fd of booster before launching application")
-        pid = get_pid('booster-%s'%btype)
+        pid = wait_for_app('booster-%s'%btype)
         init = get_fd_dict(pid)
         debug("\nThe initial file descriptors are : %s\n" %init)
     
         #launch application using booster
-        debug("kill %s if it already exists" % app_name)
-        kill_process(app_name)
-        time.sleep(1) # give sometime for app to get killed
         debug("launch %s using booster" % app_name)
         st = os.system('invoker --type=%s --no-wait %s' % (btype, app_name))
         self.assert_(st == 0, "failed to start %s,%s" % (app_name,st))
     
         # wait for new booster and app to start
-        wait_for_app(app_name)
+        pid1 = wait_for_app(app_name)
     
         #get fd of booster after launching the application
         debug("get fd of booster after launching the application")
         final = get_fd_dict(pid)
         debug("\nThe final file descriptors are : %s\n" %final)
-        pid = get_pid(app_name)    
+        kill_process(app_name) 
+        self.assert_(pid == pid1, "application did not start with same booster")
     
         mykeys = init.keys()
         count = 0
@@ -340,7 +342,6 @@ class launcher_tests (unittest.TestCase):
                 print "some key in init is not in final" 
 
         debug("The number of changed file descriptors %d" %count)
-        kill_process(apppid=pid) 
         self.assert_(count != 0, "None of the file descriptors were changed")
 
         if(sighup):
