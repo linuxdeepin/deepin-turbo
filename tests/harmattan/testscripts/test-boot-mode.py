@@ -243,6 +243,26 @@ class BootModeTests(unittest.TestCase):
         debug("The log msg is %s" %op1)
         self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
 
+    def test_SIGUSR2_AFTER_SIGUSR1(self):
+        """
+        send SIGUSR2 for applauncherd when it is NOT in boot mode.
+        This should turn it into boot mode.
+        """
+        #Send SIGUSR1 to unset boot mode
+        daemon_pid = wait_for_single_applauncherd()
+        st, op = commands.getstatusoutput("kill -SIGUSR1 %s" %daemon_pid)
+        time.sleep(3)
+        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Exited boot mode.' /var/log/syslog " %daemon_pid)
+        debug("The log msg is %s" %op1)
+        self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
+
+        #send SIGUSR2 for applauncherd to switch into boot mode
+        st, op = commands.getstatusoutput("kill -SIGUSR2 %s" %daemon_pid)
+        time.sleep(3)
+        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Entered boot mode.' /var/log/syslog " %daemon_pid)
+        debug("The log msg is %s" %op1)
+        self.assert_(st1 == 0, "Seems that SIGUSR2 was not send")
+
 
 if __name__ == '__main__':
     # When run with testrunner, for some reason the PATH doesn't include

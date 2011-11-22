@@ -70,6 +70,9 @@
       <case name="applauncherd__test_SIGUSR1" type="Functional" description="Test for SIGUSR1" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR1 </step>
       </case>
+      <case name="applauncherd__test_SIGUSR2_AFTER_SIGUSR1" type="Functional" description="Test for SIGUSR2 after SIGUSR1" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-boot-mode.py test_SIGUSR2_AFTER_SIGUSR1 </step>
+      </case>
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
