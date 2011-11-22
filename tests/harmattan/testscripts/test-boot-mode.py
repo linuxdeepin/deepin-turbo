@@ -109,22 +109,19 @@ class BootModeTests(unittest.TestCase):
         #self.start_applauncherd_in_boot_mode()
 
         # get booster pids in boot mode
-        pids = self.get_booster_pids()
+        oldBoosterPids = get_booster_pid()
+        self.assert_(all(oldBoosterPids), "atleast one of the boosters is not running") 
 
         # send SIGUSR1
         kill_process('applauncherd', signum=10)
-        wait_for_app('booster-q')
-        wait_for_app('booster-m')
-
-
-        # get booster pids in normal mode
-        pids2 = self.get_booster_pids()
+        newBoosterPids = get_booster_pid()
 
         # terminate applauncherd
         kill_process('applauncherd', signum=15)
 
-        self.assert_(pids[0] != pids2[0], "pid of booster-m didn't change")
-        self.assert_(pids[1] != pids2[1], "pid of booster-m didn't change")
+        self.assert_(all(newBoosterPids), "atleast one of the boosters is not running") 
+        self.assert_(len(set(oldBoosterPids) & set(newBoosterPids)) == 0, 
+                            "atleast one of the boosters was not killed/restarted")
 
     def launch_apps(self, n = 6, btype = 'm'):
         # check that launching works and the apps are there
