@@ -231,6 +231,35 @@ def kill_process(appname=None, apppid=None, signum=15):
             temp = basename(appname)[:14]
             st, op = commands.getstatusoutput("pkill -%s %s" % (str(signum), temp))
 
+def wait_for_process_end(appName = None, appPid = None, timeout = 10, sleep=1) :
+    if appName :
+        debug("Waiting for termination of '%s' application (time out %.1f)" %(appName, timeout))
+        startTime = time.time()
+        endTime = startTime + timeout
+        op = ""
+        while time.time()<endTime :
+            st, op = commands.getstatusoutput("pgrep -l %s" %appName)
+            if st!=0 :
+                debug("Application '%s' has been terminated after %.1fs" %(appName, time.time() - startTime))
+                return True
+            time.sleep(sleep)
+        debug("Application '%s' was not finished/terminated after %.1fs.\npgrep outcome:\n%s" %(appName, timeout, op))
+        return False
+
+    if appPid:
+        debug("Waiting for termination of process PID=%s (time out %.1f)" %(appPid, timeout))
+        startTime = time.time()
+        endTime = startTime + timeout
+        while time.time()<endTime :
+            if not os.path.exists("/proc/%s/cmdline" %appPid) :
+                debug("Process with PID=%s has been terminated after %.1fs" %(appPid, time.time() - startTime))
+                return True
+            time.sleep(sleep)
+        debug("Process with PID=%s was not finished/terminated after %.1fs" %(appPid, timeout))
+        return False
+
+    raise TypeError("Application name or process PID is expected.")
+    
 def process_state(processid):
     st, op = commands.getstatusoutput('cat /proc/%s/stat' %processid)
     debug("The Process State of %s is %s" %(processid, op))

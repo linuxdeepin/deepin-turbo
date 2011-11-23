@@ -130,7 +130,7 @@ class launcher_tests (unittest.TestCase):
         """
         stop_applauncherd()
         st, op = commands.getstatusoutput("initctl start xsession/applauncherd")
-        time.sleep(2)
+        wait_for_app('applauncherd')
         st_new, op = commands.getstatusoutput("initctl start xsession/applauncherd")
  
         self.assert_(st == 0, "Applauncherd do not start")
@@ -162,13 +162,13 @@ class launcher_tests (unittest.TestCase):
         process_id = wait_for_app(prefered_app, 5)
         debug("The pid of %s id %s" %(prefered_app, process_id))
         kill_process(prefered_app)
-        time.sleep(4)
+        wait_for_process_end(prefered_app)
 
         process_handle = run_app_as_user_with_invoker(prefered_app,booster = btype)
         process_id1 = wait_for_app(prefered_app, 5)
         debug("The pid of %s id %s" %(prefered_app, process_id1))
         kill_process(prefered_app)
-        time.sleep(4)
+        wait_for_process_end(prefered_app)
 
         process_id2 = get_pid(prefered_app)
         debug("The pid of %s id %s" %(prefered_app, process_id1))
@@ -233,14 +233,22 @@ class launcher_tests (unittest.TestCase):
         debug("PID of first %s" % process_id)
 
         process_handle1 = run_app_as_user_with_invoker(prefered_app, booster=btype)
-        time.sleep(3)
+
+        # second call of invoker should return immediately
+        for i in range(10) :
+            process_handle1.poll()
+            if process_handle1.returncode!=None :
+                debug("Second call of invoker has returned code: %s (loop run: %s)" %(process_handle1.returncode, i))
+                break
+            time.sleep(1)
+
         process_id1 = wait_for_app(prefered_app)
         debug("PID of 2nd %s" % process_id1)
 
-        st, pids = commands.getstatusoutput("pgrep %s" % prefered_app) #get all pids of the app
+        st, pids = commands.getstatusoutput("pgrep -l %s" % prefered_app) #get all pids of the app
         kill_process(prefered_app)
 
-        self.assert_( len(pids.split()) == 1, "Only one instance of app not running")
+        self.assert_( len(pids.split('\n')) == 1, "More then one instance of app is running: %s" %pids)
         if(sighup):
             self.sighup_applauncherd()
             self._test_one_instance(prefered_app, btype, False)
@@ -265,14 +273,23 @@ class launcher_tests (unittest.TestCase):
             #in a global dictionary, append the pid
             process_handle = run_app_as_user_with_invoker(app, booster = btype)
 
-        time.sleep(15)
+        startTime = time.time() + 30
+        debug("Waiting for %s apps with prefix '%s' to start up in 30s..." %(len(launchable_apps), app_common_prefix))
+        pid_list = None
+        while time.time() < startTime+30 :
+            process_id = get_pid(app_common_prefix)
+            if process_id :
+                pid_list = process_id.split('\n')
+                if len(pid_list) == len(launchable_apps) :
+                    break
+            time.sleep(2)
+        debug("Waiting process took %.1fs." %(time.time()-startTime))
 
-        process_id = get_pid(app_common_prefix)
-        pid_list = process_id.split()
         for pid in pid_list:
             kill_process(apppid=pid)
 
-        self.assert_(len(pid_list) == len(launchable_apps), "All Applications were not launched using launcher")
+        self.assert_(len(pid_list) == len(launchable_apps), "Not All Applications were launched using launcher")
+
         if(sighup):
             self.sighup_applauncherd()
             self._test_launch_multiple_apps_cont(launchable_apps, app_common_prefix, btype, False)
@@ -308,7 +325,7 @@ class launcher_tests (unittest.TestCase):
         """
         debug("kill %s if it already exists" % app_name)
         kill_process(app_name)
-        time.sleep(1) # give sometime for app to get killed
+        wait_for_process_end(app_name)
 
         #get fd of booster before launching application
         debug("get fd of booster before launching application")
@@ -406,10 +423,7 @@ class launcher_tests (unittest.TestCase):
         stop_applauncherd()
  
         #wait for the applauncherd to be closed
-        for i in range(5) :
-            if (get_pid('applauncherd')==None) :
-                break
-            time.sleep(1)
+        wait_for_process_end('applauncherd')
 
         #check that the none of the booster is running
         debug("check that the none of the booster is running")
@@ -479,7 +493,8 @@ class launcher_tests (unittest.TestCase):
         """
         if get_pid(app_name) != None:
             kill_process(app_name)
-        time.sleep(2)
+            wait_for_process_end(app_name)
+
         count = 0
         p = run_cmd_as_user('invoker --type=%s --no-wait %s %s' % (booster_type, invoker_extra_flags, app_name))
         pid = get_pid(app_name)
@@ -571,25 +586,33 @@ class launcher_tests (unittest.TestCase):
         for i in range(2):
                 debug("Running cycle %s" %i)
                 p = run_app_as_user_with_invoker("%s -testability" %testapp, booster = btype)
-                time.sleep(2)
-
-                pid = get_pid(testapp)
+                pid = wait_for_app(testapp)
                 self.assert_(pid != None, "Can't start application %s" %testapp)
 
-                st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                for j in range(3) :
+                    st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
+                    if st_tas == 0 :
+                        break
+                    time.sleep(1)
                 debug("The value of status is %d" %st_tas)
                 debug("The value of output is %s" %op_tas)
 
-                st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                for j in range(3) :
+                    st_tas_plug, op_tas_plug = commands.getstatusoutput("grep -c libqttestability.so /proc/%s/maps" %pid)
+                    if st_tas_plug == 0 :
+                        break
+                    time.sleep(1)
+
                 debug("The value of status is %d" %st_tas_plug)
                 debug("The value of output is %s" %op_tas_plug)
 
-                kill_process(apppid=pid)
+                kill_process(testapp)
+                # wait_for_process_end(testapp)
+                time.sleep(2)
 
                 self.assert_(st_tas == 0,"libtestability.so not loaded")
                 self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
 
-                time.sleep(2)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -613,9 +636,7 @@ class launcher_tests (unittest.TestCase):
 
                 p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL)
 
-                time.sleep(2)
-
-                pid = get_pid(testapp)
+                pid = wait_for_app(testapp)
                 self.assert_(pid != None, "Can't start application %s" %testapp)
 
                 st_tas, op_tas = commands.getstatusoutput("grep -c libtestability.so /proc/%s/maps" %pid)
@@ -626,12 +647,11 @@ class launcher_tests (unittest.TestCase):
                 debug("The value of status is %d" %st_tas_plug)
                 debug("The value of output is %s" %op_tas_plug)
 
-                kill_process(apppid=pid)
+                kill_process(testapp)
+                wait_for_process_end(testapp)
 
                 self.assert_(st_tas == 0,"libtestability.so not loaded")
                 self.assert_(st_tas_plug == 0,"libqttestability.so not loaded")
-
-                time.sleep(2)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -659,11 +679,15 @@ class launcher_tests (unittest.TestCase):
         if get_pid(testapp)!= None:
             kill_process(testapp)
         p = run_cmd_as_user('invoker --type=%s %s/%s' % (btype, path, testapp))
-        time.sleep(4)
-        pid = get_pid(testapp)
+        pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
-        debug("get filePath and dirPath from log file")
-        st, op = commands.getstatusoutput("grep Path /tmp/%s.log | tail -2" % testapp)
+        st, op = None, None
+        for i in range(5) :
+            st, op = commands.getstatusoutput("grep Path /tmp/%s.log | tail -2" % testapp)
+            if op and '\n' in op :
+                break
+            time.sleep(1)
+        debug("get filePath and dirPath from log file: >>>%s<<<" %(op))
         dirpath = op.split("\n")[0].split(" ")[2]
         self.assert_(dirpath == path, "Wrong dirPath: %s" % dirpath)
         filepath = op.split("\n")[1].split(" ")[2]
@@ -673,7 +697,7 @@ class launcher_tests (unittest.TestCase):
         if(sighup):
             self.sighup_applauncherd()
             self._test_dirPath_filePath(btype, path, testapp, False)
-        
+
     def test_argv_mbooster_limit(self):
         self._test_argv_booster_limit("m", "fala_wl")
 
@@ -689,13 +713,19 @@ class launcher_tests (unittest.TestCase):
         if get_pid(testapp)!= None:
             kill_process(testapp)
         p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t' % (btype, testapp))
-        time.sleep(4)
-        pid = get_pid(testapp)
+        pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
-        debug("get arguments from log file")
-        st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
-        original_argv = op.split("\n")[0]
-        cache_argv = op.split("\n")[1]
+
+        st, op = None, None
+        for i in range(5) :
+            st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+            if op and '\n' in op :
+                break
+            time.sleep(1)
+
+        debug("get arguments from log file: >>>%s<<<" %(op))
+        original_argv, cache_argv = op.split("\n")
+
         kill_process(apppid=pid)
         self.assert_(original_argv == cache_argv, "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
         
@@ -720,12 +750,17 @@ class launcher_tests (unittest.TestCase):
         if get_pid(testapp)!= None:
             kill_process(testapp)
         p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z' % (btype, testapp))
-        time.sleep(4)
-        pid = get_pid(testapp)
+        pid = wait_for_app(testapp)
         kill_process(apppid=pid)
         self.assert_(pid != None, "The application was not launched")
         debug("get arguments from log file")
-        st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+        st, op = None, None
+        for i in range(10) :
+            st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
+            if op and '\n' in op :
+                break
+            time.sleep(1)
+        debug("get arguments from log file: >>>%s<<<" %(op))
         original_argv = op.split("\n")[0].split(" ")[1:]
         cache_argv = op.split("\n")[1].split(" ")[1:]
         self.assert_(len(cache_argv) == ARGV_LIMIT, "Wrong number of arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
@@ -771,7 +806,7 @@ class launcher_tests (unittest.TestCase):
         debug("The SigBlk is %s, SigIgn is %s and SigCgt is %s for %s" %(SigBlk_wol, SigIgn_wol, SigCgt_wol, app_wol))
 
         kill_process(app_wol)
-        time.sleep(2)
+        wait_for_process_end(app_wol)
         
         #Get status for booster application
         debug("Restart home ")
@@ -796,7 +831,7 @@ class launcher_tests (unittest.TestCase):
         debug("The SigBlk is %s, SigIgn is %s and SigCgt is %s for %s" %(SigBlk_wl, SigIgn_wl, SigCgt_wl, app_wl))
 
         kill_process(app_wl)
-        time.sleep(2)
+        wait_for_process_end(app_wl)
         
         self.assert_(SigBlk_wol == SigBlk_wl, "The SigBlk is not same for both apps")
         self.assert_(SigIgn_wol == SigIgn_wl, "The SigIgn is not same for both apps")
@@ -927,8 +962,7 @@ class launcher_tests (unittest.TestCase):
         
         # run app which has GL context
         p = run_app_as_user_with_invoker(testapp, booster = btype, arg = '--no-wait')
-        time.sleep(4)
-        app_pid = get_pid(testapp)
+        app_pid = wait_for_app(testapp)
         self.assert_(app_pid != None, "Process '%s' is not running"%testapp)
         self.assert_(app_pid == booster_pid, "Process '%s' is not a boosted app"%testapp)
         
@@ -961,10 +995,13 @@ class launcher_tests (unittest.TestCase):
         # note that application is run by direct invacation not by calling the service
         run_command = 'invoker --single-instance --type=%s /usr/bin/%s' %(boosterType, testAppName)
         p = run_cmd_as_user(run_command)
-        time.sleep(1)
+
+        # wait for first use of booster
+        wait_for_app(testAppName)
 
         debug("First run command result is: %s" %(p))
 
+        # wait for NEW booster
         boosterPid = wait_for_app(boosterName, 10)
         self.assertNotEqual(boosterPid, None, "Test incoclusive, the booster is not ready - timeout.")
 
