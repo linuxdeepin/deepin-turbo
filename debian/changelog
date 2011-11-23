@@ -1,3 +1,9 @@
+applauncherd (2.0.14) unstable; urgency=low
+
+  * 
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balarishnan@nokia.com>  Wed, 23 Nov 2011 17:50:32 +0200
+
 applauncherd (2.0.13) stable; urgency=low
 
   * Fixes: NB#291039 - Integrated version of applauncherd is missing some important test cases
