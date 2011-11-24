@@ -82,7 +82,7 @@
       <case name="applauncherd__test_reexec_when_new_token_is_installed" type="Functional" description="Checks that when new application is installed (facebookqml) containing new security token, then applauncherd gains this new security token" timeout="200" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_reexec_when_new_token_is_installed</step>
       </case>
-      <case name="applauncherd__test_reexec_when_file_in_usrlib_modified" type="Functional" description="Test that reexec is triggered when a package modifies a file in /usr/lib" timeout="100" level="System" insignificant="true">
+      <case name="applauncherd__test_reexec_when_file_in_usrlib_modified" type="Functional" description="Test that reexec is triggered when a package modifies a file in /usr/lib" timeout="200" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_reexec_when_file_in_usrlib_modified</step>
       </case>
       <environments>
