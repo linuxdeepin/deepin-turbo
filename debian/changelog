@@ -9,9 +9,17 @@ applauncherd (3.0.1) unstable; urgency=low
 
  -- Alexey Shilov <alexey@trdhcp147241>  Mon, 14 Nov 2011 13:39:38 +0200
 
-applauncherd (2.0.12) unstable; urgency=low
+applauncherd (2.0.13) stable; urgency=low
+
+  * Fixes: NB#291039 - Integrated version of applauncherd is missing some important test cases
+  * Changes: testcases added/fixed for code coverage
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balarishnan@nokia.com>  Tue, 22 Nov 2011 11:27:40 +0200
+
+applauncherd (2.0.12) stable; urgency=low
 
   * Changes: new test case added for /usr/lib trigger
+  * fixes for nightly build test failures
 
  -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Wed, 11 Nov 2011 14:30:21 +0200
 

@@ -220,7 +220,7 @@ class SecurityTests(unittest.TestCase):
             print "launching application"
             invoker = run_app_as_user_with_invoker('/usr/bin/fala_ft_hello', booster = 'm', arg = '--wait-term')
 
-            time.sleep(2)
+            wait_for_app('fala_ft_hello')
 
             # get credentials
             invoker_creds = get_creds(path = 'invoker')
@@ -294,7 +294,7 @@ class SecurityTests(unittest.TestCase):
                            stdout = DEV_NULL, stderr = DEV_NULL)
 
             # give the application some time to launch up
-            time.sleep(2)
+            wait_for_app('fala_ft_hello')
             
             root = get_creds('fala_ft_hello')
             kill_process('fala_ft_hello')
@@ -361,7 +361,7 @@ class SecurityTests(unittest.TestCase):
         invoker_specific_creds = ['applauncherd-invoker::applauncherd-invoker',\
                 'applauncherd-launcher::access']
         p = run_app_as_user_with_invoker("/usr/bin/fala_wl")                                
-        time.sleep(3)                                                                       
+        wait_for_app('fala_wl')
         st, op = commands.getstatusoutput("pgrep -lf '/usr/bin/invoker --type=m /usr/bin/fala_wl'")
         pid = op.split("\n")[0].split(" ")[0]                                               
         debug("The pid of Invoker is %s" % pid)                                             
