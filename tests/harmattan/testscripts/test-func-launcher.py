@@ -74,13 +74,15 @@ class daemon_handling (unittest.TestCase):
     def start_daemons(self):
         start_daemons()
 
-def has_GL_context(processId):
-    processMapsFile = open("/proc/" + processId + "/maps")
-    processMapsLines = processMapsFile.readlines()
-    for i in processMapsLines :
-        if "/dev/pvrsrvkm" in i :
+def has_GL_context(processId, tries=2):
+    for i in range(tries):
+        processMapsFile = open("/proc/" + processId + "/maps")
+        processMapsData = processMapsFile.read()
+        m = re.search(r"/dev/pvrsrvkm", processMapsData)
+        processMapsFile.close()
+        if(m != None):
             return True
-
+        time.sleep(1)
     return False
 
 class launcher_tests (unittest.TestCase):
@@ -967,7 +969,7 @@ class launcher_tests (unittest.TestCase):
         self.assert_(app_pid == booster_pid, "Process '%s' is not a boosted app"%testapp)
         
         #check if app has GL context
-        glcontext = has_GL_context(app_pid)
+        glcontext = has_GL_context(app_pid, 3)
         kill_process(apppid=app_pid)
         self.assert_(glcontext, "%s does not have GL context!"%testapp)
         if(sighup):
