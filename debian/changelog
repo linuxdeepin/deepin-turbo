@@ -1,6 +1,7 @@
 applauncherd (2.0.14) unstable; urgency=low
 
-  * 
+  * Changes: updated some test cases in art-tests and test package dependencies
+  * Fixes: NB#291039 - Integrated version of applauncherd is missing some important test cases
 
  -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balarishnan@nokia.com>  Wed, 23 Nov 2011 17:50:32 +0200
 
