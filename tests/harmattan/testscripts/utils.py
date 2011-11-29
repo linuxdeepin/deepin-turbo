@@ -4,6 +4,7 @@ import commands
 import time
 import sys
 import re
+import unittest
 from subprocess import Popen
 from os.path import basename
 
@@ -17,6 +18,87 @@ PREFERED_APP = '/usr/bin/fala_ft_hello'
 PREFERED_APP_QML = '/usr/bin/fala_qml_helloworld'
 GET_COORDINATE_SCRIPT = '/usr/share/applauncherd-testscripts/get-coordinates.rb'
 PIXELCHANHED_BINARY = '/usr/bin/fala_pixelchanged'
+
+
+class CustomTestCase(unittest.TestCase) :
+    def waitForAsert(self, periodicCheck, msg="", timeout=20, sleep=1) :
+        assert(type(periodicCheck) == types.FunctionType or
+               type(periodicCheck) == types.LambdaType)
+        start = time.time()
+        stop = start + timeout
+        newValue = None
+        debug("Waiting for '%s' to return True value in time of %.1fs." %(periodicCheck.__doc__, timeout))
+        while stop > time.time() :
+            if periodicCheck() :
+                debug("'%s' has returned True after %.1fs." %(periodicCheck.__doc__, time.time()-start))
+                return
+            time.sleep(sleep)
+        debug("waitForAsert has timed out after %ss." %timeout)
+        self.assert_(periodicCheck(), msg)
+        return
+
+    def waitForAsertEqual(self, periodickCheck, expectedValue, msg="", timeout=20, sleep=1) :
+        assert(type(periodicCheck) == types.FunctionType or
+               type(periodicCheck) == types.LambdaType)
+        start = time.time()
+        stop = start + timeout
+        debug("Waiting for '%s' to return True value in time of %.1fs." %(periodicCheck.__doc__, timeout))
+
+        while stop > time.time() :
+            if periodicCheck() == expectedValue :
+                debug("'%s' has returned expected value: '%s' after %.1fs."
+                      %(periodicCheck.__doc__, expectedValue, time.time()-start))
+                return
+            time.sleep(sleep)
+        debug("waitForAsertEqual has timed out after %ss." %timeout)
+        value = periodicCheck()
+        self.assertEqual(value, expectedValue, "%s\n"
+                                               "Values are different, have value: %s\n"
+                                               "               expected value is: %s\n"
+                                               %(msg, value, expectedValue))
+        return
+
+    def waitForAssertLogFileContains(self, fileName, expContent, msg="", findCount = 1, timeout=20, sleep=1) :
+        start = time.time()
+        stop = start + timeout
+
+        file = None
+        # wait until file exists:
+        while stop > time.time() :
+            try :
+                file = open(fileName, "r")
+                break
+            except IOError:
+                time.sleep(sleep)
+        self.assert_(file, "Failed to open log file: '%s' in time of %.1f" %(fileName, timeout))
+
+        try :
+            if sleep < time.time()-start :
+                debug("File '%s' was opened after a period of: %.1fs." %(fileName, time.time() - start))
+
+            debug("File '%s' is opened. Waiting for '%s' to appear in file in time of %.1fs."
+                  %(fileName, expContent, timeout))
+            while stop > time.time() :
+                line = file.readline()
+                while line :
+                    if expContent in line :
+                        findCount = findCount - 1
+                        if findCount<=0 :
+                            line = line[:-1] #remove tailing end line character
+                            debug("String: '%s' has been found inside file: %s after %.1fs.\nDetected line contains: '%s'"
+                                  %(expContent, fileName, time.time()-start, line))
+                            return line
+                    line = file.readline()
+                time.sleep(sleep)
+
+        finally :
+            file.close()
+
+        debug("waitForAsert has timed out after %ss." %timeout)
+        self.assert_(False, "Content '%s' was not found in log file '%s'. %s"
+                            %(expContent, fileName, msg))
+        return
+
 
 # Function to stop desired daemons. This is also done in setup function
 # if stop_daemons is not called before.

@@ -53,7 +53,7 @@ def check_prerequisites():
         error("DBUS_SESSION_BUS_ADDRESS is not set.\n" +
               "You probably want to source /tmp/session_bus_address.user")
 
-class BootModeTests(unittest.TestCase):
+class BootModeTests(CustomTestCase):
     def setUp(self):
         debug("setUp")
 
@@ -64,8 +64,7 @@ class BootModeTests(unittest.TestCase):
 
         self.start_applauncherd_in_boot_mode()
 
-        for b in ['booster-m', 'booster-q', 'booster-d']:
-            get_pid(b)
+        get_booster_pid()
 
     def tearDown(self):
         debug("tearDown")
@@ -199,10 +198,10 @@ class BootModeTests(unittest.TestCase):
         """
         pid = wait_for_single_applauncherd()
         st, op = commands.getstatusoutput("kill -SIGUSR2 %s" %pid)
-        time.sleep(3)
-        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Already in boot mode' /var/log/syslog " %pid)
-        debug("The log msg is %s" %op1)
-        self.assert_(st1 == 0, "Seems that SIGUSR2 was not send")
+
+        self.waitForAssertLogFileContains("/var/log/syslog", 
+                                          "%s]: Daemon: Already in boot mode" %pid,
+                                          "Seems that SIGUSR2 was not send")
 
     def test_SIGUSR1(self):
         """
@@ -220,10 +219,9 @@ class BootModeTests(unittest.TestCase):
 
         #Send SIGUSR1 to daemon
         st, op = commands.getstatusoutput("kill -SIGUSR1 %s" %daemon_pid)
-        time.sleep(3)
-        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Exited boot mode.' /var/log/syslog " %daemon_pid)
-        debug("The log msg is %s" %op1)
-        self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
+        self.waitForAssertLogFileContains("/var/log/syslog",
+                                          "%s]: Daemon: Exited boot mode." %daemon_pid,
+                                          "Seems that SIGUSR1 was not send")
 
         #Get pids for boosters
         pid_q_1 = wait_for_app("booster-q")
@@ -238,10 +236,10 @@ class BootModeTests(unittest.TestCase):
 
         #Send SIGUSR1 for the second time
         st, op = commands.getstatusoutput("kill -SIGUSR1 %s" %daemon_pid)
-        time.sleep(3)
-        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Already in normal mode.' /var/log/syslog " %daemon_pid)
-        debug("The log msg is %s" %op1)
-        self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
+
+        self.waitForAssertLogFileContains("/var/log/syslog",
+                                          "%s]: Daemon: Already in normal mode." %daemon_pid, 
+                                          "Seems that SIGUSR1 was not send")
 
     def test_SIGUSR2_AFTER_SIGUSR1(self):
         """
@@ -251,17 +249,15 @@ class BootModeTests(unittest.TestCase):
         #Send SIGUSR1 to unset boot mode
         daemon_pid = wait_for_single_applauncherd()
         st, op = commands.getstatusoutput("kill -SIGUSR1 %s" %daemon_pid)
-        time.sleep(3)
-        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Exited boot mode.' /var/log/syslog " %daemon_pid)
-        debug("The log msg is %s" %op1)
-        self.assert_(st1 == 0, "Seems that SIGUSR1 was not send")
+        self.waitForAssertLogFileContains("/var/log/syslog",
+                                          "%s]: Daemon: Exited boot mode." %daemon_pid,
+                                          "Seems that SIGUSR1 was not send")
 
         #send SIGUSR2 for applauncherd to switch into boot mode
         st, op = commands.getstatusoutput("kill -SIGUSR2 %s" %daemon_pid)
-        time.sleep(3)
-        st1, op1 = commands.getstatusoutput("grep '%s]: Daemon: Entered boot mode.' /var/log/syslog " %daemon_pid)
-        debug("The log msg is %s" %op1)
-        self.assert_(st1 == 0, "Seems that SIGUSR2 was not send")
+        self.waitForAssertLogFileContains("/var/log/syslog",
+                                          "%s]: Daemon: Entered boot mode." %daemon_pid,
+                                          "Seems that SIGUSR2 was not send")
 
 
 if __name__ == '__main__':

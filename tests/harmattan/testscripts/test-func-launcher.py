@@ -85,7 +85,7 @@ def has_GL_context(processId, tries=2):
         time.sleep(1)
     return False
 
-class launcher_tests (unittest.TestCase):
+class launcher_tests (CustomTestCase):
     def setUp(self):
         if daemons_running():
             stop_daemons()
@@ -676,25 +676,31 @@ class launcher_tests (unittest.TestCase):
         """
         Test that correct file path and dir path is passed
         """
-        if os.path.isfile("/tmp/%s.log" % testapp):
-            os.system("rm /tmp/%s.log" % testapp)
+        logFileName = "/tmp/%s.log" % testapp
+        if os.path.isfile(logFileName):
+            os.system("rm %s" % logFileName)
         if get_pid(testapp)!= None:
             kill_process(testapp)
         p = run_cmd_as_user('invoker --type=%s %s/%s' % (btype, path, testapp))
         pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
-        st, op = None, None
-        for i in range(5) :
-            st, op = commands.getstatusoutput("grep Path /tmp/%s.log | tail -2" % testapp)
-            if op and '\n' in op :
-                break
-            time.sleep(1)
-        debug("get filePath and dirPath from log file: >>>%s<<<" %(op))
-        dirpath = op.split("\n")[0].split(" ")[2]
-        self.assert_(dirpath == path, "Wrong dirPath: %s" % dirpath)
-        filepath = op.split("\n")[1].split(" ")[2]
-        kill_process(apppid=pid)
-        self.assert_(filepath == "%s/%s" % (path, testapp), "Wrong filePath: %s" % filepath)
+        try :
+            dirPathLine = self.waitForAssertLogFileContains(logFileName,
+                                                            "applicationDirPath:",
+                                                            "Application directory path not found in log file: %s" %logFileName,
+                                                            timeout = 5)
+
+            fullPathLine = self.waitForAssertLogFileContains(logFileName,
+                                                            "applicationFilePath:",
+                                                            "Application path not found in log file: %s" %logFileName,
+                                                            timeout = 5)
+            dirpath = dirPathLine.split(" ")[2]
+            filepath = fullPathLine.split(" ")[2]
+            self.assert_(dirpath == path, "Wrong dirPath: %s" % dirpath)
+            self.assert_(filepath == "%s/%s" % (path, testapp), "Wrong filePath: %s" % filepath)
+
+        finally :
+            kill_process(apppid=pid)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -710,26 +716,26 @@ class launcher_tests (unittest.TestCase):
         """
         Test that ARGV_LIMIT (32) arguments are successfully passed to cached [QM]Application.
         """
-        if os.path.isfile("/tmp/%s.log" % testapp):
-            os.system("rm /tmp/%s.log" % testapp)
+        logFileName = "/tmp/%s.log" % testapp
+        if os.path.isfile(logFileName):
+            os.system("rm %s" % logFileName)
         if get_pid(testapp)!= None:
             kill_process(testapp)
         p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t' % (btype, testapp))
         pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
 
-        st, op = None, None
-        for i in range(5) :
-            st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
-            if op and '\n' in op :
-                break
-            time.sleep(1)
+        try:
+            original_argv = self.waitForAssertLogFileContains(logFileName, "argv:",
+                                                              "Arguments are not found in log file: %s" %logFileName,
+                                                              timeout = 5)
+            cache_argv = self.waitForAssertLogFileContains(logFileName, "argv:",
+                                                           "Arguments are not found in log file: %s" %logFileName,
+                                                           timeout = 5, findCount=2)
 
-        debug("get arguments from log file: >>>%s<<<" %(op))
-        original_argv, cache_argv = op.split("\n")
-
-        kill_process(apppid=pid)
-        self.assert_(original_argv == cache_argv, "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+            self.assert_(original_argv == cache_argv, "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        finally:
+            kill_process(apppid=pid)
         
         if(sighup):
             self.sighup_applauncherd()
@@ -747,27 +753,29 @@ class launcher_tests (unittest.TestCase):
         the application is still launched and ARGV_LIMIT arguments are successfully passed.
         """
         ARGV_LIMIT = 32
-        if os.path.isfile("/tmp/%s.log" % testapp):
-            os.system("rm /tmp/%s.log" % testapp)
+        logFileName = "/tmp/%s.log" % testapp
+        if os.path.isfile(logFileName):
+            os.system("rm %s" % logFileName)
         if get_pid(testapp)!= None:
             kill_process(testapp)
         p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z' % (btype, testapp))
         pid = wait_for_app(testapp)
-        kill_process(apppid=pid)
         self.assert_(pid != None, "The application was not launched")
-        debug("get arguments from log file")
-        st, op = None, None
-        for i in range(10) :
-            st, op = commands.getstatusoutput("grep argv: /tmp/%s.log | tail -2" % testapp)
-            if op and '\n' in op :
-                break
-            time.sleep(1)
-        debug("get arguments from log file: >>>%s<<<" %(op))
-        original_argv = op.split("\n")[0].split(" ")[1:]
-        cache_argv = op.split("\n")[1].split(" ")[1:]
-        self.assert_(len(cache_argv) == ARGV_LIMIT, "Wrong number of arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
-        for i in range(ARGV_LIMIT):
-            self.assert_(original_argv[i] == cache_argv[i], "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        try:
+            debug("get arguments from log file")
+            original_argv = self.waitForAssertLogFileContains(logFileName, "argv:",
+                                                              "Arguments are not found in log file: %s" %logFileName,
+                                                              timeout = 5)
+            cache_argv = self.waitForAssertLogFileContains(logFileName, "argv:",
+                                                           "Arguments are not found in log file: %s" %logFileName,
+                                                           timeout = 5, findCount=2)
+            original_argv = original_argv.split(" ")[1:]
+            cache_argv = cache_argv.split(" ")[1:]
+            self.assert_(len(cache_argv) == ARGV_LIMIT, "Wrong number of arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+            for i in range(ARGV_LIMIT):
+                self.assert_(original_argv[i] == cache_argv[i], "Wrong arguments passed.\nOriginal: %s\nCached: %s" % (original_argv, cache_argv))
+        finally:
+            kill_process(apppid=pid)
 
         if(sighup):
             self.sighup_applauncherd()
