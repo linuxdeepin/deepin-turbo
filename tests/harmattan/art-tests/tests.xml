@@ -38,10 +38,6 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_unix_signal_handlers</step>
       </case>
 
-      <case name="applauncherd__test_one_instance_m" type="Functional" description="To test that only one instance of a application exist" timeout="360" level="System" insignificant="false">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_one_instance_m</step>
-      </case>
-
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    
