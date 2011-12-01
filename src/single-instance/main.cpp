@@ -217,8 +217,6 @@ Window windowIdForBinary(Display *dpy, const char *binaryName)
         unsigned long  nItems = 0;
         unsigned long  bytesAfter;
         unsigned char *prop = 0;
-        char           **wmCommand = NULL;
-        int            wmCommandCount = 0;
 
         // Get the client list of the root window
         int status = XGetWindowProperty(dpy, XDefaultRootWindow(dpy), netClientListAtom,
@@ -230,17 +228,22 @@ Window windowIdForBinary(Display *dpy, const char *binaryName)
             Window * clients = reinterpret_cast<Window *>(prop);
             for (unsigned long i = 0; i < nItems; i++) 
             {
+                char **wmCommand = NULL;
+                int  wmCommandCount = 0;
+
                 if (binaryNameForPid(windowPid(dpy, clients[i])) == binaryName ||
                     (XGetCommand (dpy, clients[i], &wmCommand, &wmCommandCount) != 0 && 
                      wmCommandCount > 0 && strcmp(wmCommand[0], binaryName) == 0))
                 {
                     retValue = clients[i];
-                    break;
                 }
 
                 if (wmCommand) {
                     XFreeStringList(wmCommand);
                 }
+
+                if (retValue)
+                    break;
             }
             
             XFree(prop);

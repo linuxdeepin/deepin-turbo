@@ -44,7 +44,8 @@ MDeclarativeCachePrivate::MDeclarativeCachePrivate() :
     initialArgv(new char* [initialArgc]),
     appDirPath(QString()),
     appFilePath(QString()),
-    cachePopulated(false)
+    cachePopulated(false),
+    testabilityInterface(0)
 {
 }
 
