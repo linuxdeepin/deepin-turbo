@@ -193,7 +193,7 @@ class InvokerTests(unittest.TestCase):
         p = Popen(['/usr/bin/invoker', '--delay', '10', '--type=m', '--no-wait',
                    '/usr/bin/fala_ft_hello'],
                   shell=False, 
-                  stdout=DEV_NULL, stderr=DEV_NULL)
+                  stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
 
         # wait a little
         debug("waiting ...")
@@ -527,7 +527,7 @@ class InvokerTests(unittest.TestCase):
         p = Popen(['/usr/bin/invoker', '--type=m', '--wait-term',
                    '/usr/bin/fala_wait'],
                   shell=False, 
-                  stdout=DEV_NULL, stderr=DEV_NULL)
+                  stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
 
         # wait a little
         debug("waiting ...")

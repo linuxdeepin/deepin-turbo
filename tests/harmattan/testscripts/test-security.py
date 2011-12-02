@@ -291,7 +291,7 @@ class SecurityTests(unittest.TestCase):
             """
 
             handle = Popen(['/usr/bin/fala_ft_hello'],
-                           stdout = DEV_NULL, stderr = DEV_NULL)
+                           stdout = DEV_NULL, stderr = DEV_NULL, preexec_fn=permit_sigpipe)
 
             # give the application some time to launch up
             wait_for_app('fala_ft_hello')

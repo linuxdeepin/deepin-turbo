@@ -4,6 +4,7 @@ import commands
 import time
 import sys
 import re
+import signal
 from subprocess import Popen
 from os.path import basename
 
@@ -71,7 +72,7 @@ def start_applauncherd():
     debug("Starting applauncherd")
     handle = Popen(['initctl', 'start', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
-                   shell = False)
+                   shell = False, preexec_fn=permit_sigpipe)
     get_booster_pid()
     return handle.wait() == 0
 
@@ -79,7 +80,7 @@ def stop_applauncherd():
     debug("Stoping applauncherd")
     handle = Popen(['initctl', 'stop', 'xsession/applauncherd'],
                    stdout = DEV_NULL, stderr = DEV_NULL,
-                   shell = False)
+                   shell = False, preexec_fn=permit_sigpipe)
 
     time.sleep(1)
 
@@ -106,7 +107,7 @@ def run_app_as_user_with_invoker(appname, booster = 'm', arg = "", out = DEV_NUL
     else:
         raise TypeError("List or string expected")
     p = subprocess.Popen(cmd, shell = False, 
-            stdout = out, stderr = err)
+            stdout = out, stderr = err, preexec_fn=permit_sigpipe)
     return p
 
 def run_cmd_as_user(cmnd, out = DEV_NULL, err = DEV_NULL):
@@ -122,7 +123,7 @@ def run_cmd_as_user(cmnd, out = DEV_NULL, err = DEV_NULL):
     else:
         raise TypeError("List or string expected")
     p = subprocess.Popen(cmd, shell = False, 
-            stdout = out, stderr = err)
+            stdout = out, stderr = err, preexec_fn=permit_sigpipe)
     return p
 
 def get_pid(appname, printdebug=True):
@@ -146,7 +147,7 @@ def get_oldest_pid(appname):
     
 def get_newest_pid(app):
     p = subprocess.Popen(['pgrep', '-n', app], shell = False,
-                         stdout = subprocess.PIPE, stderr = DEV_NULL)
+                         stdout = subprocess.PIPE, stderr = DEV_NULL, preexec_fn=permit_sigpipe)
 
     op = p.communicate()[0]
 
@@ -171,7 +172,7 @@ def wait_for_app(app = None, timeout = 40, sleep = 1):
     debug("Waiting for '%s' to startup in %ss time" %(app, timeout))
     while pid == None and time.time() < start + timeout:
         p = subprocess.Popen(['pgrep', '-n', app], shell = False,
-                         stdout = subprocess.PIPE, stderr = DEV_NULL)
+                         stdout = subprocess.PIPE, stderr = DEV_NULL, preexec_fn=permit_sigpipe)
         op = p.communicate()[0]
         if p.wait() == 0:
             pid = op.strip()
@@ -284,7 +285,7 @@ def get_creds(path = None, pid = None):
         return None
 
     handle = Popen(['/usr/bin/creds-get', '-p', str(pid)],
-                   stdout = subprocess.PIPE)
+                   stdout = subprocess.PIPE, preexec_fn=permit_sigpipe)
 
     op = handle.communicate()[0].strip()
     handle.wait()
@@ -408,3 +409,8 @@ def isPackageInstalled(packageName):
         if(m and m.group(1).find("none")==-1): #m.group(1) contains version
             return True
     return False
+
+#trick to avoid broken pipe in Popen
+#use ,preexec_fn=permit_sigpipe in each Popen
+def permit_sigpipe():
+        signal.signal(signal.SIGPIPE, signal.SIG_DFL)
