@@ -5,6 +5,7 @@ import time
 import sys
 import re
 import unittest
+import types
 from subprocess import Popen
 from os.path import basename
 
@@ -26,28 +27,29 @@ class CustomTestCase(unittest.TestCase) :
                type(periodicCheck) == types.LambdaType)
         start = time.time()
         stop = start + timeout
-        newValue = None
-        debug("Waiting for '%s' to return True value in time of %.1fs." %(periodicCheck.__doc__, timeout))
+
+        debug("Waiting for '%s' to return True value in time of %.1fs." %(periodicCheck.__name__, timeout))
         while stop > time.time() :
             if periodicCheck() :
-                debug("'%s' has returned True after %.1fs." %(periodicCheck.__doc__, time.time()-start))
+                debug("'%s' has returned True after %.1fs." %(periodicCheck.__name__, time.time()-start))
                 return
             time.sleep(sleep)
         debug("waitForAsert has timed out after %ss." %timeout)
         self.assert_(periodicCheck(), msg)
         return
 
-    def waitForAsertEqual(self, periodickCheck, expectedValue, msg="", timeout=20, sleep=1) :
+    def waitForAsertEqual(self, periodicCheck, expectedValue, msg="", timeout=20, sleep=1) :
         assert(type(periodicCheck) == types.FunctionType or
                type(periodicCheck) == types.LambdaType)
         start = time.time()
         stop = start + timeout
-        debug("Waiting for '%s' to return True value in time of %.1fs." %(periodicCheck.__doc__, timeout))
+        debug("Waiting for '%s' to return expected value: '%s' in time of %.1fs."
+              %(periodicCheck.__name__, expectedValue, timeout))
 
         while stop > time.time() :
             if periodicCheck() == expectedValue :
                 debug("'%s' has returned expected value: '%s' after %.1fs."
-                      %(periodicCheck.__doc__, expectedValue, time.time()-start))
+                      %(periodicCheck.__name__, expectedValue, time.time()-start))
                 return
             time.sleep(sleep)
         debug("waitForAsertEqual has timed out after %ss." %timeout)
@@ -250,7 +252,7 @@ def wait_for_app(app = None, timeout = 40, sleep = 1):
     pid = None
     start = time.time()
 
-    debug("Waiting for '%s' to startup in %ss time" %(app, timeout))
+    debug("Waiting for '%s' to startup in %.1fs time" %(app, timeout))
     while pid == None and time.time() < start + timeout:
         p = subprocess.Popen(['pgrep', '-n', app], shell = False,
                          stdout = subprocess.PIPE, stderr = DEV_NULL)
