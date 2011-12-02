@@ -161,7 +161,7 @@ class SingleInstanceTests(unittest.TestCase):
 
     def get_pid_full(self, app):
         p = subprocess.Popen(['pgrep', '-f', app], shell = False,
-                             stdout = subprocess.PIPE, stderr = DEV_NULL)
+                             stdout = subprocess.PIPE, stderr = DEV_NULL, preexec_fn=permit_sigpipe)
 
         op = p.communicate()[0]
 

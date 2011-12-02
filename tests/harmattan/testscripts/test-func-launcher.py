@@ -636,7 +636,7 @@ class launcher_tests (CustomTestCase):
                 invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --type=%s %s" %(btype, testapp)
                 cmd.append(invoke)
 
-                p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL)
+                p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL, preexec_fn=permit_sigpipe)
 
                 pid = wait_for_app(testapp)
                 self.assert_(pid != None, "Can't start application %s" %testapp)

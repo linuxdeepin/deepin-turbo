@@ -189,7 +189,7 @@ class InvokerTests(CustomTestCase):
         p = Popen(['/usr/bin/invoker', '--delay', str(invokerDelay), '--type=m', '--no-wait',
                    '/usr/bin/fala_ft_hello'],
                   shell=False,
-                  stdout=DEV_NULL, stderr=DEV_NULL)
+                  stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
 
         pStartTime = time.time()
         appPid = wait_for_app('fala_ft_hello', timeout=7)
@@ -532,7 +532,7 @@ class InvokerTests(CustomTestCase):
         p = Popen(['/usr/bin/invoker', '--type=m', '--wait-term',
                    '/usr/bin/fala_wait'],
                   shell=False,
-                  stdout=DEV_NULL, stderr=DEV_NULL)
+                  stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
 
         # wait a little
         debug("waiting ...")
