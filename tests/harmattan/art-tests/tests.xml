@@ -10,7 +10,6 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-
       <case name="applauncherd__test_launch_multiple_apps_m" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_launch_multiple_apps_m</step>
       </case>
@@ -22,7 +21,23 @@
       <case name="applauncherd__test_zombie_state_m" type="Functional" description="To test that no Zombie process exist after the application is killed" timeout="360" level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_zombie_state_m</step>
       </case>
-      
+
+      <case name="applauncherd__test_invoker_wait_term" type="Functional" description="Test that invoker waits for the application to exit" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_wait_term</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_signal_forward" type="Functional" description="Test that UNIX signals are forwarded from invoker to the invoked process" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_signal_forward</step>
+      </case>
+
+      <case name="applauncherd__test_d_booster_dont_have_GL_context" type="Functional" description="Test that d-booster don't have GL context" timeout="100" level="System" insignificant="false">
+        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_d_booster_dont_have_GL_context</step>
+      </case>
+
+      <case name="applauncherd__test_unix_signal_handlers" type="Functional" description="Test unixSignalHAndlers by killing booster-m and booster-d, singnal hup" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_unix_signal_handlers</step>
+      </case>
+
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    

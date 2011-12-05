@@ -10,6 +10,13 @@ applauncherd (3.0.1) unstable; urgency=low
 
  -- Alexey Shilov <alexey@trdhcp147241>  Mon, 14 Nov 2011 13:39:38 +0200
 
+applauncherd (2.0.14) unstable; urgency=low
+
+  * Changes: updated some test cases in art-tests and test package dependencies
+  * Changes: improve perf test to detect failure
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balarishnan@nokia.com>  Wed, 23 Nov 2011 17:50:32 +0200
+
 applauncherd (2.0.13) stable; urgency=low
 
   * Fixes: NB#291039 - Integrated version of applauncherd is missing some important test cases

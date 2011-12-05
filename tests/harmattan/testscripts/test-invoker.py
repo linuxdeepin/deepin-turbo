@@ -16,7 +16,7 @@
 # of this file.
 
 """
-This program tests the functionalities of invoker 
+This program tests the functionalities of invoker
 Authors:   nimika.1.keshri@nokia.com
 """
 
@@ -31,7 +31,7 @@ from subprocess import Popen
 from utils import *
 from os.path import basename
 
-class InvokerTests(unittest.TestCase):
+class InvokerTests(CustomTestCase):
     def setUp(self):
         debug("setUp")
         if daemons_running():
@@ -51,7 +51,7 @@ class InvokerTests(unittest.TestCase):
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
 
-    def sighup_applauncherd(self): 
+    def sighup_applauncherd(self):
         same_pid, booster_status = send_sighup_to_applauncherd()
         self.assert_(same_pid, "Applauncherd has new pid after SIGHUP")
         self.assert_(booster_status, "Atleast one of the boosters is not restarted")
@@ -75,34 +75,37 @@ class InvokerTests(unittest.TestCase):
             self.sighup_applauncherd()
             self.test_wait_term_e(False)
 
-    def _test_wait_term(self, app_path, app_name, btype):
+    def _test_wait_term(self, app_path, app_name, btype, directlyKillInvoker=True):
         """
         When calling invoker with --wait-term and killing invoker,
         the launched application should die too.
         """
 
+        kill_process(app_name)
         # Launch the app with invoker using --wait-term
         p = run_app_as_user_with_invoker(app_path,booster = btype, arg = '--wait-term' )
 
-        time.sleep(4)
-
         # Retrieve their pids
-        invoker_pid = wait_for_app('invoker')
         app_pid = wait_for_app(app_name)
 
         # Make sure that both apps started
-        self.assert_(invoker_pid != None, "invoker not executed?")
         self.assert_(app_pid != None, "%s not launched by invoker?" % app_path)
 
         # Send SIGTERM to invoker, the launched app should die
-        debug(" Send SIGTERM to invoker, the launched app should die")
-        kill_process(None, invoker_pid, 15)
+        if directlyKillInvoker :
+            debug(" Send SIGTERM to invoker, the launched app should die")
+            kill_process('invoker', None, 15)
+            self.waitForAsertEqual(lambda: p.poll(), 143, "invoker was not killed.", timeout = 3)
+        else :
+            debug(" Send SIGTERM to shell which runs invoker, the launched app should die")
+            kill_process(None, p.pid, 15)
+            self.waitForAsertEqual(lambda: p.poll(), -15, "invoker was not killed.", timeout = 3)
 
-        time.sleep(4)
+        debug("Invoker return code: %s" %(p.poll()))
 
-        # This should be None
-        app_pid2 = get_pid(app_name)
-        self.assert_(app_pid2 == None, "%s was not killed" % app_path)
+        self.waitForAsertEqual(lambda: get_pid(app_name), None,
+                               "Application '%s' was not killed!" % app_path,
+                               timeout = 8)
 
     def test_launch_wo_applauncherd(self):
         """
@@ -114,7 +117,7 @@ class InvokerTests(unittest.TestCase):
         stop_applauncherd()
         if get_pid(PREFERED_APP) != None:
             kill_process(PREFERED_APP)
-        
+
         p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm')
         pid1 = wait_for_app(PREFERED_APP)
         self.assert_(pid1 != None, "Application was executed")
@@ -144,40 +147,32 @@ class InvokerTests(unittest.TestCase):
         #Test for m-booster
         debug("Test for m-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_m.py")
-        time.sleep(3)
         debug("The Invoker killed by : <%s>" %op.split ('\n')[-1])
-    
+
         self.assert_(op.split('\n')[-1].startswith('Segmentation fault') == True, "The invoker(m-booster) was not killed by the same signal")
-        time.sleep(2)
-         
+
         #Test for d-booster
         debug("Test for d-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_d.py")
-        time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
-    
+
         self.assert_(op.split('\n')[-1].startswith('Terminated') == True, "The invoker(d-booster) was not killed by the same signal")
-        time.sleep(2)
-         
+
         #Test for e-booster
         debug("Test for e-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_e.py")
-        time.sleep(3)
         debug("The Invoker killed by : %s" % op.split('\n')[-1])
-    
+
         self.assert_(op.split('\n')[-1].startswith('Terminated') == True, "The invoker(e-booster) was not killed by the same signal")
-        time.sleep(2)
 
         #This case is launching the application in user mode
         #Test for q-booster
         debug("Test for q-booster")
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_sf_qt.py")
-        time.sleep(3)
         debug("The Invoker killed by : %s" %op.split('\n')[-1])
-    
+
         self.assert_(op.split('\n')[-1].startswith('Aborted') == True, "The invoker(q-booster) was not killed by the same signal")
-        time.sleep(2)
-        
+
         if(sighup):
             self.sighup_applauncherd()
             self.test_signal_forwarding(False)
@@ -188,32 +183,39 @@ class InvokerTests(unittest.TestCase):
         Test the --delay parameter of the invoker.
         """
 
+        invokerDelay = 10
         # launch an app with invoker --delay n
         debug("launching fala_ft_hello ...")
-        p = Popen(['/usr/bin/invoker', '--delay', '10', '--type=m', '--no-wait',
+        p = Popen(['/usr/bin/invoker', '--delay', str(invokerDelay), '--type=m', '--no-wait',
                    '/usr/bin/fala_ft_hello'],
-                  shell=False, 
+                  shell=False,
                   stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
 
-        # wait a little
-        debug("waiting ...")
-        time.sleep(5)
+        pStartTime = time.time()
+        appPid = wait_for_app('fala_ft_hello', timeout=7)
+        try:
+            falaStartTime = time.time()
 
-        success = True
+            # wait a little
+            debug("Waiting for invoker to terminate after %.1fs..." %(invokerDelay))
+            # time out loop, if invoker runs longer then invokerDelay + 1 this means that something is wrong
+            while time.time()<pStartTime + invokerDelay + 1 and p.poll()==None :
+                time.sleep(0.5)
 
-        if p.poll() == None:
-            debug("NOT DEAD")
-        else:
-            debug("DEAD")
-            success = False
-
-        debug("waiting for invoker to terminate ...")
-        p.wait()
-
-        debug("terminating fala_ft_hello ...")
-        Popen(['pkill', 'fala_ft_hello']).wait()
-
-        self.assert_(success, "invoker terminated before delay elapsed")
+            endTime = time.time()
+            # check that invoker has terminated before timeout
+            if p.poll()==None :
+                p.terminate()
+                self.assert_(False, "invoker didn't terminate on time. "
+                             "It was running for: %.1fs (%.1fs was expected)."
+                             %(endTime - pStartTime, invokerDelay))
+            debug("Invoker has terminated after %.1fs." %(endTime - pStartTime))
+            self.assert_(endTime - pStartTime > invokerDelay - 1,
+                         "invoker has terminated to soon: %.1fs (%.1fs was expected)" %(endTime - pStartTime, invokerDelay))
+            self.assertEqual(get_pid('fala_ft_hello'), appPid, "Test application shouldn't be killed.")
+        finally:
+            kill_process('fala_ft_hello')
+        debug("Ok.")
 
         if(sighup):
             self.sighup_applauncherd()
@@ -228,19 +230,19 @@ class InvokerTests(unittest.TestCase):
         st, op = commands.getstatusoutput('/usr/bin/fala_status')
         app_st_wo_inv = os.WEXITSTATUS(st)
         debug("The exit status of app without invoker is : %d" %app_st_wo_inv)
-    
+
         #Run application with invoker and get the exit status - booster-m case
         debug("Run application with invoker and get the exit status")
         st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status')
         app_st_w_inv = os.WEXITSTATUS(st)
         debug("The exit status of app with invoker (booster-m) is : %d" %app_st_w_inv)
-        
+
         #Run application with invoker and get the exit status - booster-e case
         debug("Run application with invoker and get the exit status")
         st, op = commands.getstatusoutput('invoker --type=e --wait-term /usr/bin/fala_status')
         app_st_we_inv = os.WEXITSTATUS(st)
         debug("The exit status of app with invoker (booster-e) is : %d" %app_st_we_inv)
-        
+
         self.assert_(app_st_wo_inv == app_st_w_inv, "The invoker returns a wrong exit status for booster-m")
         self.assert_(app_st_wo_inv == app_st_we_inv, "The invoker returns a wrong exit status for booster-e")
 
@@ -257,35 +259,40 @@ class InvokerTests(unittest.TestCase):
 
         # invoker searches PATH for the executable
         p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm', arg = '--no-wait')
-        self.assert_(p.wait() == 0, "Couldn't launch fala_ft_hello")
-        time.sleep(2)
-        kill_process('fala_ft_hello')
+        try:
+            self.waitForAsertEqual(lambda: p.poll(), 0, "Couldn't launch fala_ft_hello")
+        finally:
+            wait_for_app('fala_ft_hello')
+            kill_process('fala_ft_hello')
 
         # launch with relative path
 
-        p = run_cmd_as_user('cd /usr/share/; invoker --type=m --no-wait ' + 
+        p = run_cmd_as_user('cd /usr/share/; invoker --type=m --no-wait ' +
                             "../bin/fala_ft_hello")
-        self.assert_(p.wait() == 0, "Couldnt launch fala_ft_hello" + 
-                    " with relative path")
-        time.sleep(2)
-        kill_process('fala_ft_hello')
+        try:
+            self.waitForAsertEqual(lambda: p.poll(), 0, "Couldn't launch fala_ft_hello" +
+                        " with relative path or invoker didn't terminate")
+        finally:
+            wait_for_app('fala_ft_hello')
+            kill_process('fala_ft_hello')
 
         # and finally, try to launch something that doesn't exist
         p = run_cmd_as_user('invoker --type=m --no-wait spam_cake')
-        self.assert_(p.wait() != 127, "Found spam_cakefor some reason")
-        time.sleep(2)
-        kill_process('spam_cake')
+        try :
+            self.waitForAsertEqual(lambda: p.poll(), 1, "spam_cake has been found!")
+        finally:
+            kill_process('spam_cake')
 
         if(sighup):
             self.sighup_applauncherd()
             self.test_invoker_search_prog(False)
-    
+
     def test_invoker_gid_uid(self, sighup = True):
         """
         To Test that the set gid and uid is passed from invoker process to launcher
         """
         debug("This test uses a test application that returns the uid and gid and exits")
-        #get the id in user mode 
+        #get the id in user mode
         debug("Get the system's uid and gid in User Mode \n")
         st, op =  commands.getstatusoutput('su user -c ' "id")
         usr_id1 = op.split(' ')[0].split('(')[0]
@@ -294,12 +301,12 @@ class InvokerTests(unittest.TestCase):
 
         #get invokers's uid and gid  by running the application using invoker in user mode
         debug("get invoker's uid and gid by running the application using invoker in user mode")
-        app = "invoker --type=m --no-wait /usr/bin/fala_status" 
+        app = "invoker --type=m --no-wait /usr/bin/fala_status"
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
         debug("Invoker %s \tInvoker %s" %(usr_id, grp_id))
-        
+
         #get application's uid and gid by running the application without invoker in user mode
         debug("get application's uid and gid by running the application without invoker in user mode")
         app = "/usr/bin/fala_status"
@@ -314,7 +321,7 @@ class InvokerTests(unittest.TestCase):
         self.assert_(usr_id == usr_id2, "The correct UID is not passed by invoker")
         self.assert_(grp_id == grp_id2, "The correct GID is not passed by invoker")
 
-        #get the id in root mode 
+        #get the id in root mode
         debug("Get the Sysem's uid and gid in Root Mode \n")
         st, op =  commands.getstatusoutput("id")
         usr_id1 = op.split(' ')[0].split('(')[0]
@@ -323,12 +330,12 @@ class InvokerTests(unittest.TestCase):
 
         #get id by running the application using invoker in root mode
         debug("get invoker's uid and gid by running the application using invoker in root mode")
-        app = "invoker --type=m --no-wait /usr/bin/fala_status" 
+        app = "invoker --type=m --no-wait /usr/bin/fala_status"
         st, op = commands.getstatusoutput("%s" %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
         debug("Invoker %s \tInvoker %s" %(usr_id, grp_id))
-        
+
         #get id by running the application without invoker in root mode
         debug("get application's uid and gid  by running the application without invoker in root mode")
         app = "/usr/bin/fala_status"
@@ -346,7 +353,7 @@ class InvokerTests(unittest.TestCase):
         if(sighup):
             self.sighup_applauncherd()
             self.test_invoker_gid_uid(False)
-       
+
 
     def test_invoker_param_creds(self):
         p = run_cmd_as_user('invoker --creds')
@@ -354,20 +361,18 @@ class InvokerTests(unittest.TestCase):
 
     def test_invoker_param_respawn_delay(self, sighup = True):
         p = run_cmd_as_user('invoker --respawn 10 --type=q --no-wait fala_ft_hello')
+        try :
+            startTime = time.time()
+            wait_for_app('fala_ft_hello')
+            pid = wait_for_app('booster-q', timeout = startTime - time.time() + 12)
+            endTime = time.time()
+            self.assert_(endTime-startTime>8, "'booster-q' was respawned too soon: %.1fs" %(endTime-startTime))
+            self.assert_(pid != None, "'booster-q' was not respawned on time.")
 
-        time.sleep(7)
-
-        pid = get_pid('booster-q')
-        self.assert_(pid == None, "'booster-q' was respawned too soon")
-
-        time.sleep(7)
-
-        pid = get_pid('booster-q')
-        self.assert_(pid != None, "'booster-q' was not respawned in time")
-
-        p = run_cmd_as_user('invoker --respawn 256 --type=q --no-wait fala_ft_hello')
-        self.assert_(p.wait() != 0, "invoker didn't die with too big respawn delay")
-        kill_process('fala_ft_hello')
+            p = run_cmd_as_user('invoker --respawn 256 --type=q --no-wait fala_ft_hello')
+            self.assert_(p.wait() != 0, "invoker didn't die with too big respawn delay")
+        finally:
+            kill_process('fala_ft_hello')
 
         if(sighup):
             self.sighup_applauncherd()
@@ -382,15 +387,13 @@ class InvokerTests(unittest.TestCase):
 
     def test_invoker_signal_forward(self, sighup = True):
         """
-        Test that UNIX signals are forwarded from 
+        Test that UNIX signals are forwarded from
         invoker to the invoked process
         """
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_inv_sf.py")
-        time.sleep(3)
         debug("The Invoker killed by : <%s>" %op)
-    
+
         self.assert_(op.startswith('Segmentation fault') == True, "The invoker(m-booster) was not killed by the same signal")
-        time.sleep(2)
 
         if(sighup):
             self.sighup_applauncherd()
@@ -409,7 +412,7 @@ class InvokerTests(unittest.TestCase):
 
     def test_unknown_parameter(self):
         """
-        Test that help is printed if unknown parameter 
+        Test that help is printed if unknown parameter
         is passed to invoker
         """
         cmd = '/usr/bin/invoker --type=m --x /usr/bin/fala_wl'
@@ -419,7 +422,7 @@ class InvokerTests(unittest.TestCase):
 
     def test_non_existing_binary_launch(self):
         """
-        Test that invoker gives error when it tries to launch 
+        Test that invoker gives error when it tries to launch
         a binary that does not exist
         """
         cmd = '/usr/bin/invoker --type=m /usr/bin/fala_foo'
@@ -460,8 +463,7 @@ class InvokerTests(unittest.TestCase):
         os.system("ln -s /usr/bin/fala_wl /usr/bin/fala_link")
         cmd = "/usr/bin/invoker --type=m /usr/bin/fala_link"
         os.system('su - user -c "%s"&' %cmd)
-        time.sleep(3)
-        pid = get_pid("fala_link")
+        pid = wait_for_app("fala_link")
         os.system("rm /usr/bin/fala_link")
         kill_process("fala_link")
         self.assert_(pid != None ,"The application was not launched")
@@ -477,16 +479,18 @@ class InvokerTests(unittest.TestCase):
         -D = INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP
         """
         p = run_app_as_user_with_invoker("/usr/bin/fala_wl", booster='m', arg = '-G')
-        time.sleep(3)
-        pid = p.pid
+        wait_for_app('fala_wl')
+        returnCode = p.poll()
         kill_process("fala_wl")
-        self.assert_(pid != None ,"The application was not launched")
+        p.wait()
+        self.assert_(returnCode == None ,"The application was not launched")
 
         p = run_app_as_user_with_invoker("/usr/bin/fala_wl", booster='m', arg = '-D')
-        time.sleep(3)
-        pid = p.pid
+        wait_for_app('fala_wl')
+        returnCode = p.poll()
         kill_process("fala_wl")
-        self.assert_(pid != None ,"The application was not launched")
+        p.wait()
+        self.assert_(returnCode == None ,"The application was not launched")
 
         if(sighup):
             self.sighup_applauncherd()
@@ -494,12 +498,11 @@ class InvokerTests(unittest.TestCase):
 
     def test_app_directory(self, sighup = True):
         """
-        Test that invoker is unable to launch a application which is a directory 
+        Test that invoker is unable to launch a application which is a directory
         """
         #Test for a directory
         os.system("mkdir /usr/bin/fala_dir")
-        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/bin/fala_dir") 
-        time.sleep(3)
+        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/bin/fala_dir")
         os.system("rm -rf /usr/bin/fala_dir")
         self.assert_(st != 0 ,"The application was not launched")
 
@@ -522,31 +525,36 @@ class InvokerTests(unittest.TestCase):
         Check that application is started and invoker is waiting termination before exit
         """
 
+        kill_process('fala_wait')
+
         # launch an app with invoker --wait-term
         debug("launching fala_wait ...")
         p = Popen(['/usr/bin/invoker', '--type=m', '--wait-term',
                    '/usr/bin/fala_wait'],
-                  shell=False, 
+                  shell=False,
                   stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
 
         # wait a little
         debug("waiting ...")
-        time.sleep(5)
+        wait_for_app('fala_wait', sleep = 0.3)
 
+        # fala_wait is quits after 6 seconds
+        endTime = time.time() + 6
         success = True
+        while time.time()<endTime-1 :
+            if p.poll() != None:
+                debug("invoker has end working before it was expected")
+                success = False
+                break
+            time.sleep(0.5)
 
-        if p.poll() == None:
-            debug("NOT DEAD")
-        else:
-            debug("DEAD")
-            success = False
-
-        debug("waiting for invoker to terminate ...")
-        p.wait()
-
-        debug("terminating fala_wait ...")
-
-        self.assert_(success, "invoker terminated before delay elapsed")
+        if success :
+            debug("waiting for invoker to terminate ...")
+        self.waitForAsert(lambda : p.poll() != None,
+                          "invoker didn't terminate")
+        debug("...invoker has been terminated.")
+        self.assertEqual(get_pid('fala_wait'), None, "invoker died before fala_wait application.")
+        self.assert_(success, "invoker has ended execution before expected time")
 
         if(sighup):
             self.sighup_applauncherd()
@@ -573,15 +581,11 @@ class InvokerTests(unittest.TestCase):
 
         p = run_app_as_user_with_invoker(PREFERED_APP, booster = 'm',
                                          arg = '-o')
-        time.sleep(4)
-
-        pid = get_pid(PREFERED_APP)
-
+        pid = wait_for_app(PREFERED_APP)
         st, op = commands.getstatusoutput('cat /proc/%s/oom_adj' % pid)
-
-        self.assert_(op == '-2', "oom.adj of the launched process is not -1")
-
-        kill_process(PREFERED_APP) 
+        kill_process(PREFERED_APP)
+        self.assert_(op == '-2', "oom.adj of the launched process is not -2."
+                     "cat return code: %s, oom_adj contains: '%s'" %(st, op))
 
         if(sighup):
             self.sighup_applauncherd()
@@ -604,12 +608,11 @@ class InvokerTests(unittest.TestCase):
         self.assert_(pid != None, "The application was not launched")
 
         stop_applauncherd()
-        time.sleep(20) #wait app to be terminated and invoker to exit
 
-        pid = wait_for_app(PREFERED_APP, timeout = 2) #don't need to wait long since the app supposed not running
-        if pid != None:
-            kill_process(PREFERED_APP)
-        self.assert_(pid == None, "The application is still running!")
+        self.assert_(wait_for_process_end('applauncherd'), "applauncherd was not stoped.")
+        self.waitForAsert(lambda:p.poll() != None, "Invoker didn't terminate.")
+        self.assert_(wait_for_process_end(PREFERED_APP), "invoker didn't kill application after applauncherd termination.")
+
 
 # main
 if __name__ == '__main__':

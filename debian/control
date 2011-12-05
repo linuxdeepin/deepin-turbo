@@ -114,8 +114,8 @@ Package: applauncherd-art-tests
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
-XB-Maemo-CI-Packages: applauncherd-launcher, applauncherd-invoker 
-XB-Maemo-CI-Stage:acceptance, validation
+XB-Maemo-CI-Packages: applauncherd-launcher, applauncherd-invoker, mcompositor, meegotouchhome-nokia, libqtcore4, libqtgui4, libqt4-opengl, libqt4-dbus
+XB-Maemo-CI-Stage: acceptance, validation
 Description: applauncherd art tests
  Art tests for testing applauncherd.
 
@@ -123,8 +123,8 @@ Package: applauncherd-apps-tests
 Priority: extra
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, applauncherd-testapps, applauncherd-testscripts 
-XB-Maemo-CI-Packages: facebookqml  
-XB-Maemo-CI-Stage:acceptance, validation
+XB-Maemo-CI-Packages: facebookqml
+XB-Maemo-CI-Stage: acceptance, validation
 Description: applauncherd tests for applications dependent on applauncherd
 
 Package: applauncherd-red-tests
