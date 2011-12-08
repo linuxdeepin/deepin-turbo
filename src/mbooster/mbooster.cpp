@@ -117,4 +117,8 @@ void MBooster::preinit()
 
     char* app_class = qstrdup(appClass.toLatin1().data());
     QApplication::setAppClass(app_class);
+
+    // Set the magic attribute so that paths are reinitialized
+    QApplication::setAttribute(Qt::AA_LinuxReinitPathsFromArgv0, true);
+
 }
