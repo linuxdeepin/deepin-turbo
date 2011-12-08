@@ -10,9 +10,9 @@
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
-      <!-- case name="applauncherd__test_dirPath_filePath_m" type="Functional" description="Test that correct file path and dir path is passed by booster m" timeout="360" level="System" insignificant="true">
+      <case name="applauncherd__test_dirPath_filePath_m" type="Functional" description="Test that correct file path and dir path is passed by booster m" timeout="360" level="System" insignificant="true">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_m</step>
-      </case -->
+      </case >
 
       <!--case name="applauncherd__test_stress_boosted_apps" type="Functional" description="Stress test for boosted applications to check only one instance is running." timeout="360" level="System" insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>

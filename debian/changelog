@@ -7,8 +7,9 @@ applauncherd (3.0.1) unstable; urgency=low
   * Changes: single-instance library writes log messages to syslog instead of stderr
   * Changes: testcases added/fixed for code coverage
   * Changes: Fix python broken pipe randomly happened for Popen
+  * Changes: Correct file path and dir path for applications started by booster-m
 
- -- Alexey Shilov <alexey@trdhcp147241>  Mon, 14 Nov 2011 13:39:38 +0200
+ -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 14 Nov 2011 13:39:38 +0200
 
 applauncherd (2.0.14) unstable; urgency=low
 
