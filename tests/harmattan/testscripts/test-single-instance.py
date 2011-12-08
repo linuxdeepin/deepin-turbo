@@ -54,9 +54,10 @@ def check_prerequisites():
         error("DBUS_SESSION_BUS_ADDRESS is not set.\n" +
               "You probably want to source /tmp/session_bus_address.user")
 
-class SingleInstanceTests(unittest.TestCase):
+class SingleInstanceTests(CustomTestCase):
 
     def setUp(self):
+        debug("Runing setUp ...")
         if daemons_running():
             stop_daemons()
             self.START_DAEMONS_AT_TEARDOWN = True
@@ -66,17 +67,18 @@ class SingleInstanceTests(unittest.TestCase):
         if wait_for_app('applauncherd') == None:
             start_applauncherd()
         #setup here
-        debug("Executing SetUp")
+        debug("... Done executing SetUp")
 
     def tearDown(self):
         #teardown here
-        debug("Executing TearDown")
+        debug("Executing TearDown...")
         if wait_for_app('applauncherd') == None:
             start_applauncherd()
         wait_for_single_applauncherd()
 
         if self.START_DAEMONS_AT_TEARDOWN:
             start_daemons()
+        debug("... Done executing tearDown")
 
     def sighup_applauncherd(self): 
         same_pid, booster_status = send_sighup_to_applauncherd()
@@ -86,12 +88,18 @@ class SingleInstanceTests(unittest.TestCase):
     #Testcases
     def minimize(self, app = None, pid = None):
         # get window id
-        if pid:
-            st, op = commands.getstatusoutput('fala_windowid %s' % pid)
-        else:
-            st, op = commands.getstatusoutput("xwininfo -root -tree| grep 854\
-                    |awk '/%s/ {print $1}'" %(basename(app)))
-        wid = op.splitlines()
+        wid = None
+        for i in range(3) :
+            if pid:
+                st, op = commands.getstatusoutput('fala_windowid %s' % pid)
+            else:
+                st, op = commands.getstatusoutput("xwininfo -root -tree| grep 854\
+                        |awk '/%s/ {print $1}'" %(basename(app)))
+            wid = op.splitlines()
+
+            if len(wid) > 0 :
+                break
+            time.sleep(1)
 
         self.assert_(len(wid) > 0, "no windows found ")
 
@@ -123,40 +131,41 @@ class SingleInstanceTests(unittest.TestCase):
         time.sleep(2)
 
         # get pid
-        pid1 = wait_for_app(app)
-        self.assert_(pid1 != None, "%s was not started")
-        pid1 = pid1.splitlines()[0]
+        wait_for_app(app)
+        pid1 = get_pid(app)
+        try :
+            self.assert_(pid1 != None, "%s was not started")
+            pid1 = pid1.splitlines()[0]
 
-        self.minimize(pid = pid1)
+            self.minimize(pid = pid1)
 
-        # start for the second time
-        p2 = run_cmd_as_user('%s %s bar' % (si_cmd, app))
+            # start for the second time
+            p2 = run_cmd_as_user('%s %s bar' % (si_cmd, app))
 
-        time.sleep(2)
+            # check  that there's only one instance running
+            wait_for_app(app)
+            pids = get_pid(app)
+            self.assert_(pids != None, "%s was not started" % app)
+            pids = pids.splitlines()
+            self.assert_(len(pids) == 1, "multiple instances of %s running" % app)
 
-        # check  that there's only one instance running
-        pids = wait_for_app(app)
-        self.assert_(pids != None, "%s was not started" % app)
-        pids = pids.splitlines()
-        self.assert_(len(pids) == 1, "multiple instances of %s running" % app)
+            # check that the pid is the same as the pid with 1st launch
+            self.assertEqual(pid1, pids[0], "pid was changed %s => %s" % (pid1, pids[0]))
 
-        # check that the pid is the same as the pid with 1st launch
-        self.assert_(int(pid1) == int(pids[0]), "pid was changed %s => %s" % (pid1, pids[0]))
+            kill_process(app, signum = 15)
 
-        kill_process(app, signum = 15)
+            # start for the third time and see that the pid has changed
+            run_cmd_as_user('%s %s baz' % (si_cmd, app))
 
-        # start for the third time and see that the pid has changed
-        run_cmd_as_user('%s %s baz' % (si_cmd, app))
+            wait_for_app(app)
+            pids = get_pid(app) 
+            self.assert_(pids != None, "%s was not started")
+            pid2 = pids.splitlines()[0]
 
-        time.sleep(2)
+            self.assertNotEqual(pid1, pid2, "pid was not changed")
 
-        pids = wait_for_app(app)
-        self.assert_(pids != None, "%s was not started")
-        pid2 = pids.splitlines()[0]
-
-        self.assert_(int(pid1) != int(pid2), "pid was not changed")
-
-        kill_process(app, signum = 15)
+        finally:
+            kill_process(app, signum = 15)
 
 
     def get_pid_full(self, app):
@@ -173,8 +182,10 @@ class SingleInstanceTests(unittest.TestCase):
 
     def wait_for_app(self, app = None, timeout = 10, sleep = 1):
         """
-        Waits for an application to start. Checks periodically if
+        Waits for an application to start. Checks periodically if 
         the app is running for a maximum wait set in timeout.
+        Note that app is a search pattern, whole command line is searched
+        including command line arguments.
 
         Returns the pid of the application if it was running before
         the timeout finished, otherwise None is returned.
@@ -205,6 +216,13 @@ class SingleInstanceTests(unittest.TestCase):
         # 5. Check that window is raised with correct pid (from log files written by test application)
         # 6. Close the application
 
+
+        def windowState(wind) :
+            st, op = commands.getstatusoutput("xprop -id %s | awk '/window state/ {print $3}'" %wind)
+            if st==0 :
+                return op
+            return None
+
         app = '/usr/bin/fala_focus'
         p = self.get_pid_full('/usr/bin/python /usr/bin/fala_focus')
         if p != None:
@@ -213,32 +231,41 @@ class SingleInstanceTests(unittest.TestCase):
         # start for the first time
         p1 = run_cmd_as_user('%s %s' % (si_cmd, app))
 
-        time.sleep(4)
-
         # get pid
         pid1 = self.wait_for_app('/usr/bin/python /usr/bin/fala_focus')
+        
         self.assert_(pid1 != None, "%s was not started")
 
         wid = self.minimize(app)
-        st, op = commands.getstatusoutput("xprop -id %s | awk '/window state/ {print $3}'" %wid)
-        self.assert_(op == 'Iconic', "%s was not minimized" % app)
+
+        self.waitForAsertEqual(lambda: windowState(wid), 'Iconic', 
+                               "%s was not minimized" % app)
 
         # start for the second time
         p2 = run_cmd_as_user('%s %s' % (si_cmd, app))
 
-        time.sleep(4)
+        for i in range(4) :
+            if p2.poll() != None :
+                break
+            time.sleep(1)
+        time.sleep(1)
 
         # check  that there's only one instance running
-        pids= self.wait_for_app('/usr/bin/python /usr/bin/fala_focus')
-        st, op = commands.getstatusoutput("xprop -id %s | awk '/window state/ {print $3}'" %wid)
-        self.assert_(op == 'Normal', "%s was not raised" % app)
-
-        self.assert_(pids != None, "%s was not started" % app)
-
-        # check that the pid is the same as the pid with 1st launch
-        self.assert_(int(pid1) == int(pids), "pid was changed %s => %s" % (pid1, pids))
-
-        kill_process(apppid=pids, signum = 15)
+        pids = self.wait_for_app('/usr/bin/python /usr/bin/fala_focus')
+            
+        try:
+            self.waitForAsertEqual(lambda: windowState(wid), 'Normal', 
+                                   "%s window was not raised." % app)
+    
+            self.assert_(pids != None, "%s was not started" % app)
+            self.assertEqual(len(pids.split("\n")), 1,
+                             "Multiple instances of '%s' application detected. pids = %s" 
+                             %(app, pids.split("\n")) )
+    
+            # check that the pid is the same as the pid with 1st launch
+            self.assertEqual(int(pid1), int(pids), "pid was changed %s => %s" % (pid1, pids))
+        finally:
+            kill_process(apppid=pids, signum = 15)
 
     def single_instance_and_non_single_instance(self, si_cmd):
         # 1. Start the multi-instance application without single-instance binary
