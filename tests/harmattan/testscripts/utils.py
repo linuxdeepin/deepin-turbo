@@ -285,12 +285,32 @@ def wait_for_single_applauncherd(timeout = 20, sleep = 1):
     debug("got single applauncherd pid %s in %.1fs" % (pid, time.time()-start))
     return pid
 
-def get_booster_pid(timeout = 20):
-    qpid = wait_for_app('booster-q', timeout=timeout)
-    epid = wait_for_app('booster-e', timeout=timeout)
-    dpid = wait_for_app('booster-d', timeout=timeout)
-    mpid = wait_for_app('booster-m', timeout=timeout)
-    return (epid, dpid, qpid, mpid)
+def get_booster_pid(timeout = 40):
+    boosters = ('e', 'd', 'q', 'm')
+    pids = [None, None, None, None]
+    start = time.time()
+    debug("Waiting for all booster to appear in time of %.1fs" %(timeout))
+    while time.time()<start + timeout :
+        p = subprocess.Popen(['pgrep', '-l', r"\bbooster-[mdqe]\b"], shell = False,
+                         stdout = subprocess.PIPE, stderr = DEV_NULL)
+        op = p.communicate()[0]
+        if p.wait() == 0:
+            pidInfos = op.splitlines()
+            for pidInfo in pidInfos :
+                if pidInfo :
+                    index = boosters.index(pidInfo[-1])
+                    boosterData = pidInfo.split()
+                    if pids[index] == None :
+                        debug("%s has been found with PID: %s" %(boosterData[1], boosterData[0]))
+                    pids[index] = boosterData[0]
+            if all(pids) :
+                debug("All boosters has been found after %.1fs." %(time.time()-start))
+                return pids
+
+        time.sleep(1)
+
+    debug("Not all boosters has been found: %s (order: %s)" %(pids, boosters))
+    return pids
 
 def kill_process(appname=None, apppid=None, signum=15):
     # obtained by running 'kill -l'
