@@ -483,13 +483,10 @@ class launcher_tests (CustomTestCase):
         
     def test_stress_boosted_apps(self):
         self._test_stress_boosted_apps('m', 'fala_ft_hello')
-        time.sleep(5)
-        self._test_stress_boosted_apps('d', 'fala_qml_helloworld', invoker_extra_flags='--single-instance')
-        time.sleep(5)
+        self._test_stress_boosted_apps('d', 'fala_qml_helloworld', singleInstanceArg = True)
         self._test_stress_boosted_apps('e', 'fala_ft_hello')
-        time.sleep(5)
 
-    def _test_stress_boosted_apps(self, booster_type, app_name, invoker_extra_flags='', sighup = True):
+    def _test_stress_boosted_apps(self, booster_type, app_name, singleInstanceArg = False, sighup = True):
         """
         Stress test for boosted applications to check only one instance is running.
         """
@@ -497,28 +494,55 @@ class launcher_tests (CustomTestCase):
             kill_process(app_name)
             wait_for_process_end(app_name)
 
-        count = 0
-        p = run_cmd_as_user('invoker --type=%s --no-wait %s %s' % (booster_type, invoker_extra_flags, app_name))
-        pid = get_pid(app_name)
-        for i in xrange(10):
-            p = run_cmd_as_user('invoker --type=%s --no-wait %s %s' % (booster_type, invoker_extra_flags, app_name))
-            app_pid = get_pid(app_name)
-            self.assert_(app_pid != None, "Application is not running")
-            self.assert_(pid == app_pid, "Same instance of application not running")
-        st, op = commands.getstatusoutput('ps ax | grep invoker | grep %s| grep -v -- -sh | wc -l' % app_name)
-        count = int(op)
-        while count != 0:
+        def countRuns(appName) :
+            st, op = commands.getstatusoutput('ps ax | grep invoker | grep %s | grep -v -- -sh' % appName)
+            # debug("What is it? %s: %s" %(st, op))
+            count = len(op.splitlines())
             debug("The value of queue is %d" %count)
-            time.sleep(3)
-            debug("Sleeping for 3 secs")
-            app_pid = get_pid(app_name)
+            return count
+
+        invokerCall = 'invoker --type=%s --no-wait %s %s' %(booster_type,
+                                                            singleInstanceArg and "--single-instance" or "",
+                                                            app_name)
+        debug("Starting stress test for boosted application with %s-boster and single-instance switch %s"
+              %(booster_type, singleInstanceArg and "active" or "disabled"))
+        p = run_cmd_as_user(invokerCall)
+        pid = wait_for_app(app_name)
+        try:
+            for i in xrange(10):
+                p = run_cmd_as_user(invokerCall)
+                app_pid = get_pid(app_name)
+                self.assert_(app_pid != None, "Application is not running")
+                if singleInstanceArg :
+                    self.assertEqual(pid, app_pid,
+                                     "Same instance of application not running."
+                                     "\nOrginal PID: '%s'\n    New PID: '%s'" %(pid, app_pid))
+
+            timeout = time.time() + 60
+            debug("Waiting for invokers to end exacution...")
+            while countRuns(app_name) > 0:
+                self.assert_(timeout>=time.time(), "Timeout of countRuns loop!")
+                if singleInstanceArg :
+                    app_pid = get_pid(app_name)
+                    self.assertEqual(pid, app_pid,
+                                     "Same instance of application not running."
+                                     "\nOrginal PID: '%s'\n    New PID: '%s'" %(pid, app_pid))
+                time.sleep(4)
+
+            self.waitForAsertEqual(lambda: len(get_pid(app_name).split()), 1,
+                                   "Mutiple instances of '%s' application. Only one PID is expected: %s"
+                                   %(app_name, pid),
+                                   timeout = 3)
+            app_pids = get_pid(app_name)
+            self.assertEqual(pid, app_pid, "Same instance of application '%s' is not running!"
+                             "\nOrginal PID: '%s'\n    New PID: '%s'" %(app_name, pid, app_pid))
+
+        finally:
             kill_process(app_name)
-            self.assert_(pid == app_pid, "Same instance of application not running")
-            st, op = commands.getstatusoutput('ps ax | grep invoker | grep %s| grep -v -- -sh | wc -l' % app_name)
-            count = int(op)
+
         if(sighup):
             self.sighup_applauncherd()
-            self._test_stress_boosted_apps(booster_type, app_name, invoker_extra_flags, False)
+            self._test_stress_boosted_apps(booster_type, app_name, singleInstanceArg, False)
 
     def test_launched_app_name(self, sighup = True):
         """
