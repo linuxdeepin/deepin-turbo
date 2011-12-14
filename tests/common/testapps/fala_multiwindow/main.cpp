@@ -20,6 +20,7 @@
 #include "multiwindowcontent.h"
 #include <QString>
 #include <MApplication>
+#include <exception>
 
 #ifdef HAVE_MCOMPONENTCACHE
 #include <mcomponentcache.h>
@@ -28,36 +29,46 @@
 
 M_EXPORT int main(int argc, char **argv)
 {
+    MApplication *app;
+
+    try
+    {
 #ifdef HAVE_MCOMPONENTCACHE
-    MApplication *app = MComponentCache::mApplication(argc, argv);
+        app = MComponentCache::mApplication(argc, argv);
 
-    bool bWindowNotFromCache = false;
-    const QString sWindowNotFromCache = "window-not-from-cache";
+        bool bWindowNotFromCache = false;
+        const QString sWindowNotFromCache = "window-not-from-cache";
 
-    for (int i = 1; i < argc; i++) {
-        QString sArg = QString(argv[i]);
-        if (sArg.contains(sWindowNotFromCache,Qt::CaseInsensitive)) {
-            bWindowNotFromCache = true;
-            break;
+        for (int i = 1; i < argc; i++) {
+            QString sArg = QString(argv[i]);
+            if (sArg.contains(sWindowNotFromCache,Qt::CaseInsensitive)) {
+                bWindowNotFromCache = true;
+                break;
+            }
         }
-    }
 
-    if (bWindowNotFromCache) {
+        if (bWindowNotFromCache) {
+            MultiWindowContent mwContent(false);
+            mwContent.createWindows();
+            mwContent.activateWindow(1);
+        } else {
+            MultiWindowContent mwContent(true);
+            mwContent.createWindows();
+            mwContent.activateWindow(1);
+        }
+
+#else
+        app = new MApplication(argc, argv);
         MultiWindowContent mwContent(false);
         mwContent.createWindows();
         mwContent.activateWindow(1);
-    } else {
-        MultiWindowContent mwContent(true);
-        mwContent.createWindows();
-        mwContent.activateWindow(1);
-    }
-
-#else
-    MApplication *app = new MApplication(argc, argv);
-    MultiWindowContent mwContent(false);
-    mwContent.createWindows();
-    mwContent.activateWindow(1);
 #endif
+        }
+
+    catch(std::exception& e)
+    {
+        return -1;
+    }
 
     return app->exec();
 }

@@ -21,6 +21,8 @@
 #include <QFile>
 #include <sys/time.h>
 #include "mdeclarativecache.h"
+#include <exception>
+
 
 QString log_file = "/tmp/fala_qml_helloworld.log";
 
@@ -64,69 +66,79 @@ void timestamp(const QString& s)
 
 Q_DECL_EXPORT int main(int argc, char **argv)
 {
-    QString appName(argv[0]); 
-    if (appName.endsWith("fala_qml_wl"))
+    QApplication *app;
+    try
     {
-        log_file = "/tmp/fala_qml_wl.log";
-    }
-    else if (appName.endsWith("fala_qml_wol"))
-    {
-        log_file = "/tmp/fala_qml_wol.log";
-    }
-    timestamp("application main");
 
-    QApplication *app = MDeclarativeCache::qApplication(argc, argv);
-    timestamp("QApplication from cache");
+        QString appName(argv[0]);
+        if (appName.endsWith("fala_qml_wl"))
+        {
+            log_file = "/tmp/fala_qml_wl.log";
+        }
+        else if (appName.endsWith("fala_qml_wol"))
+        {
+            log_file = "/tmp/fala_qml_wol.log";
+        }
+        timestamp("application main");
 
-    QDeclarativeView *window = NULL;
+        app = MDeclarativeCache::qApplication(argc, argv);
+        timestamp("QApplication from cache");
 
-    bool bWindowNotFromCache = false;
-    const QString sWindowNotFromCache = "window-not-from-cache";
-    for (int i = 1; i < argc; i++) {
-	QString sArg = QString(argv[i]);
-	if (sArg.contains(sWindowNotFromCache,Qt::CaseInsensitive)) {
+        QDeclarativeView *window = NULL;
+
+        bool bWindowNotFromCache = false;
+        const QString sWindowNotFromCache = "window-not-from-cache";
+        for (int i = 1; i < argc; i++) {
+            QString sArg = QString(argv[i]);
+            if (sArg.contains(sWindowNotFromCache,Qt::CaseInsensitive)) {
 		bWindowNotFromCache = true;
 		break;
-	}
-    }		
+            }
+        }
 
-    if (bWindowNotFromCache) {
-	window = new QDeclarativeView();
-        timestamp("QDeclarativeView NOT from cache");
-    } else {	
-       window = MDeclarativeCache::qDeclarativeView();
-       timestamp("QDeclarativeView from cache");
+        if (bWindowNotFromCache) {
+            window = new QDeclarativeView();
+            timestamp("QDeclarativeView NOT from cache");
+        } else {
+            window = MDeclarativeCache::qDeclarativeView();
+            timestamp("QDeclarativeView from cache");
+        }
+
+        timestamp(QString("applicationDirPath: ").append(QApplication::applicationDirPath()));
+        timestamp(QString("applicationFilePath: ").append(QApplication::applicationFilePath()));
+
+        if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
+            FANGORNLOG("argv:", false);
+            for (int i = 0; i < argc; i++) {
+                FANGORNLOG(" ", false);
+                FANGORNLOG(argv[i], false);
+            }
+            FANGORNLOG("");
+
+            FANGORNLOG("argv:", false);
+            QStringList args = QCoreApplication::arguments();
+            for (int i = 0; i < args.size(); i++) {
+                FANGORNLOG(" ", false);
+                FANGORNLOG(args.at(i), false);
+            }
+            FANGORNLOG("");
+        }
+
+        window->setWindowTitle("Applauncherd QML testapp");
+
+        window->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+
+        //window->setSource(QUrl::fromLocalFile("/usr/share/fala_qml_helloworld/main.qml"));
+        window->setSource(QUrl("qrc:/main.qml"));
+        window->showFullScreen();
+
+        timestamp("Calling app->exec()");
+    }
+    catch(std::exception& e)
+    {
+        return -1;
     }
 
-    timestamp(QString("applicationDirPath: ").append(QApplication::applicationDirPath()));
-    timestamp(QString("applicationFilePath: ").append(QApplication::applicationFilePath()));
-
-    if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
-        FANGORNLOG("argv:", false);
-        for (int i = 0; i < argc; i++) {
-            FANGORNLOG(" ", false);
-            FANGORNLOG(argv[i], false);
-        }
-        FANGORNLOG("");
-
-        FANGORNLOG("argv:", false);
-        QStringList args = QCoreApplication::arguments();
-        for (int i = 0; i < args.size(); i++) {
-            FANGORNLOG(" ", false);
-            FANGORNLOG(args.at(i), false);
-        }
-        FANGORNLOG("");
-    }
-
-    window->setWindowTitle("Applauncherd QML testapp");
-
-    window->setResizeMode(QDeclarativeView::SizeRootObjectToView);
-
-    //window->setSource(QUrl::fromLocalFile("/usr/share/fala_qml_helloworld/main.qml"));
-    window->setSource(QUrl("qrc:/main.qml"));
-    window->showFullScreen();
-    
-    timestamp("Calling app->exec()");
     _exit(app->exec());
 }
 

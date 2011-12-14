@@ -29,6 +29,8 @@
 #include <QFile>
 #include <sys/time.h>
 
+#include <exception>
+
 QString log_file = "/tmp/fala_testapp.log";
 
 void FANGORNLOG(const char* s, bool eol = true)
@@ -73,58 +75,68 @@ public:
 M_EXPORT int main(int, char**);
 
 int main(int argc, char **argv) {
-    QString appName(argv[0]);
-    if (appName.endsWith("fala_wl"))
+
+    MApplication *app;
+    try
     {
-        log_file = "/tmp/fala_wl.log";
-    }
-    else if (appName.endsWith("fala_wol"))
-    {
-        log_file = "/tmp/fala_wol.log";
-    }
-    timestamp("application main");
+
+        QString appName(argv[0]);
+        if (appName.endsWith("fala_wl"))
+        {
+            log_file = "/tmp/fala_wl.log";
+        }
+        else if (appName.endsWith("fala_wol"))
+        {
+            log_file = "/tmp/fala_wol.log";
+        }
+        timestamp("application main");
 #ifdef HAVE_MCOMPONENTCACHE
-    MApplication* app = MComponentCache::mApplication(argc, argv);
-    timestamp("app from cache");
-    MApplicationWindow* w = MComponentCache::mApplicationWindow();
-    timestamp("win from cache");
+        app = MComponentCache::mApplication(argc, argv);
+        timestamp("app from cache");
+        MApplicationWindow* w = MComponentCache::mApplicationWindow();
+        timestamp("win from cache");
 
 #else
-    MApplication* app = new MApplication(argc, argv);
-    timestamp("app created without cache");
+        app = new MApplication(argc, argv);
+        timestamp("app created without cache");
 
-    MApplicationWindow* w = new MApplicationWindow;
-    timestamp("win created without cache");
+        MApplicationWindow* w = new MApplicationWindow;
+        timestamp("win created without cache");
 #endif
 
-    if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
-        FANGORNLOG("argv:", false);
-        for (int i = 0; i < argc; i++) {
-            FANGORNLOG(" ", false);
-            FANGORNLOG(argv[i], false);
-        }
-        FANGORNLOG("");
+        if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
+            FANGORNLOG("argv:", false);
+            for (int i = 0; i < argc; i++) {
+                FANGORNLOG(" ", false);
+                FANGORNLOG(argv[i], false);
+            }
+            FANGORNLOG("");
 
-        FANGORNLOG("argv:", false);
-        QStringList args = QCoreApplication::arguments();
-        for (int i = 0; i < args.size(); i++) {
-            FANGORNLOG(" ", false);
-            FANGORNLOG(args.at(i), false);
+            FANGORNLOG("argv:", false);
+            QStringList args = QCoreApplication::arguments();
+            for (int i = 0; i < args.size(); i++) {
+                FANGORNLOG(" ", false);
+                FANGORNLOG(args.at(i), false);
+            }
+            FANGORNLOG("");
         }
-        FANGORNLOG("");
+
+        MyApplicationPage p;
+        timestamp("page created");
+
+        MApplication::setPrestartMode(M::LazyShutdown);
+        p.setTitle("Applauncherd testapp");
+
+        p.appear();
+        timestamp("page.appear() called");
+
+        w->show();
+        timestamp("w->show() called");
     }
-
-    MyApplicationPage p;
-    timestamp("page created");
-
-    MApplication::setPrestartMode(M::LazyShutdown);
-    p.setTitle("Applauncherd testapp");
-
-    p.appear();
-    timestamp("page.appear() called");
-
-    w->show();
-    timestamp("w->show() called");
+    catch(std::exception& e)
+    {
+        return -1;
+    }
 
     _exit(app->exec());
 }

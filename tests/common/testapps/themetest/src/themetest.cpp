@@ -26,7 +26,7 @@
 #include <MLinearLayoutPolicy>
 #include <MLayout>
 #include <MTheme>
-
+#include <exception>
 
 #include <mcomponentcache.h>
 
@@ -34,27 +34,35 @@ extern "C" __attribute__((visibility("default"))) int main(int, char**);
 
 int main(int argc, char ** argv)
 {
-    MApplication *app = MComponentCache::mApplication(argc, argv, "fala_ft_themetest");
-    MApplicationWindow *window = MComponentCache::mApplicationWindow();
-    MApplicationPage page;
-    page.setTitle("fala_ft_themetest");
+    MApplication *app;
+    try
+    {
+        MApplication *app = MComponentCache::mApplication(argc, argv, "fala_ft_themetest");
+        MApplicationWindow *window = MComponentCache::mApplicationWindow();
+        MApplicationPage page;
+        page.setTitle("fala_ft_themetest");
 
-    MLayout *layout = new MLayout;
-    MLinearLayoutPolicy *policy = new MLinearLayoutPolicy(layout, Qt::Vertical);
-    policy->setSpacing(10);
+        MLayout *layout = new MLayout;
+        MLinearLayoutPolicy *policy = new MLinearLayoutPolicy(layout, Qt::Vertical);
+        policy->setSpacing(10);
 
-    MLabel *label = new MLabel(QString("Hello, themed world!"));
-    label->setObjectName("themedlabel");
-    label->setAlignment(Qt::AlignCenter);
-    policy->addItem(label);
+        MLabel *label = new MLabel(QString("Hello, themed world!"));
+        label->setObjectName("themedlabel");
+        label->setAlignment(Qt::AlignCenter);
+        policy->addItem(label);
 
-    label = new MLabel(QString("With sheep"));
-    label->setObjectName("themedlabelwithgraphics");
-    label->setAlignment(Qt::AlignLeft);
-    policy->addItem(label);
+        label = new MLabel(QString("With sheep"));
+        label->setObjectName("themedlabelwithgraphics");
+        label->setAlignment(Qt::AlignLeft);
+        policy->addItem(label);
 
-    page.centralWidget()->setLayout(layout);
-    page.appear();
-    window->show();
+        page.centralWidget()->setLayout(layout);
+        page.appear();
+        window->show();
+    }
+    catch(std::exception& e)
+    {
+        return -1;
+    }
     _exit(app->exec());
 }
