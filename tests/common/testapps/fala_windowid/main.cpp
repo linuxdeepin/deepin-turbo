@@ -20,6 +20,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <cstdlib>
+#include <exception>
 
 using std::atoi;
 
@@ -94,18 +95,26 @@ int main(int argc, char **argv)
 {
     if(argc < 2) return EXIT_FAILURE;
 
-    const int pid = atoi(argv[1]);
+    try
+    {
+        const int pid = atoi(argv[1]);
 
-    // Start with the root window.
-    Display *display = XOpenDisplay(0);
+        // Start with the root window.
+        Display *display = XOpenDisplay(0);
 
-    WindowsMatchingPid match(display, XDefaultRootWindow(display), pid);
+        WindowsMatchingPid match(display, XDefaultRootWindow(display), pid);
 
-    // Print the resulting window id's
-    const list<Window> &result = match.result();
-    for(list<Window>::const_iterator it = result.begin(); it != result.end(); it++)
-        cout << "0x" << std::hex << (unsigned long)(*it) << std::dec << endl;
+        // Print the resulting window id's
+        const list<Window> &result = match.result();
+        for(list<Window>::const_iterator it = result.begin(); it != result.end(); it++)
+            cout << "0x" << std::hex << (unsigned long)(*it) << std::dec << endl;
 
-    return EXIT_SUCCESS;
+    }
+    catch(std::exception& e)
+    {
+        return -1;
+    }
+
+    return EXIT_FAILURE;
 }
 
