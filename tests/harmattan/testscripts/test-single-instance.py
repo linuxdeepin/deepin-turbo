@@ -277,18 +277,18 @@ class SingleInstanceTests(CustomTestCase):
         kill_process(app)
 
         run_cmd_as_user(app + " foo")
-        time.sleep(2)
+        wait_for_app(app)
 
         run_cmd_as_user("%s %s bar" % (si_cmd, app))
-        time.sleep(2)
+        try:
+            self.waitForAsert(lambda: get_pid(app)!=None,
+                              "nothing was started")
 
-        pids = get_pid(app)
-        self.assert_(pids != None, "nothing was started")
-        pids = pids.splitlines()
-
-        self.assert_(len(pids) == 2, "application count incorrect (%d)" % len(pids))
-
-        kill_process(app, signum = 15)
+            self.waitForAsertEqual(lambda: len(get_pid(app).splitlines()),
+                                   2,
+                                   "application count incorrect")
+        finally:
+            kill_process(app, signum = 15)
 
     def single_instance_stress_test(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
@@ -300,51 +300,49 @@ class SingleInstanceTests(CustomTestCase):
         # 5. Check that window is raised with correct pid (from log files written by test application)
 
         app = '/usr/bin/fala_multi-instance'
+        logFileName = '/tmp/fala_multi-instance.log'
 
         kill_process(app)
 
         try:
-            os.remove('/tmp/fala_multi-instance.log')
+            os.remove(logFileName)
         except:
             pass
 
         run_cmd_as_user("%s %s foo" % (si_cmd, app))
-
-        time.sleep(2)
-
         pid1 = wait_for_app(app)
         self.assert_(pid1 != None, "%s was not started" % app)
         pid1 = pid1.splitlines()[0]
 
         self.minimize(pid = pid1)
 
-        for i in range(20):
-            p = run_cmd_as_user("%s %s bar%d" % (si_cmd, app, i))
-            rc = p.wait()
-            self.assert_(rc == 0 or rc == 250,
-                         "[%d] return code was %d, should have been 0" % (i, p.returncode))
+        try:
+            for i in range(20):
+                p = run_cmd_as_user("%s %s bar%d" % (si_cmd, app, i))
+                self.waitForAsert(lambda: p.poll() in (0, 250),
+                             "[%d] return code should have been 0" % (i))
 
-        pid = wait_for_app(app)
-        self.assert_(pid != None, "%s was not started" % app)
-            
-        pid = pid.splitlines()
-        self.assert_(len(pid) == 1, "%d instances running, should be 1" % len(pid))
+            pid = wait_for_app(app)
+            self.assert_(pid != None, "%s was not started" % app)
 
-        self.assert_(pid[0] == pid1, "pid is not the same as the first pid")
+            pid = pid.splitlines()
+            self.assertEqual(len(pid), 1, "%d instances running, should be 1" % len(pid))
+            self.assertEqual(pid[0], pid1, "pid is not the same as the first pid")
 
-        kill_process(app, signum = 15)
+            with open(logFileName) as f:
+                for line in f:
+                    if line.find('Maximized'):
+                        # time pid event
+                        # 1277997459568 4180 Maximized
+                        pid = line.split()[1]
 
-        with open('/tmp/fala_multi-instance.log') as f:
-            for line in f:
-                if line.find('Maximized'):
-                    # time pid event
-                    # 1277997459568 4180 Maximized
-                    pid = line.split()[1]
+                        self.assertEqual(pid, pid1, "wrong app was raised")
 
-                    self.assert_(pid == pid1, "wrong app was raised")
+                        break
+        finally:
+            kill_process(app, signum = 15)
+            os.remove(logFileName)
 
-                    break
-        
     def single_instance_abnormal_lock_release(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
         #    -check the pid of started app
@@ -358,25 +356,26 @@ class SingleInstanceTests(CustomTestCase):
 
         run_cmd_as_user('%s %s foo' % (si_cmd, app))
 
-        time.sleep(2)
-
         pid = wait_for_app(app)
-        self.assert_(pid != None, "%s was not started" % app)
-        pid = pid.splitlines()[0]
+        try:
+            self.assert_(pid != None, "%s was not started" % app)
+            pid = pid.splitlines()[0]
 
-        kill_process(app, signum = 9)
+            kill_process(app, signum = 9)
+            wait_for_process_end(app)
 
-        run_cmd_as_user('%s %s bar' % (si_cmd, app))
+            run_cmd_as_user('%s %s bar' % (si_cmd, app))
 
-        time.sleep(2)
+            pid2 = wait_for_app(app)
+            self.assert_(pid2 != None, "%s was not started" % app)
+            pid2 = pid2.splitlines()[0]
 
-        pid2 = wait_for_app(app)
-        self.assert_(pid2 != None, "%s was not started" % app)
-        pid2 = pid2.splitlines()[0]
+            kill_process(app, signum = 15)
 
-        kill_process(app, signum = 15)
+            self.assertNotEqual(pid, pid2, "pid was not changed")
 
-        self.assert_(pid != pid2, "pid was not changed")
+        finally:
+            kill_process(app)
 
     def test_single_instance_window_raise_without_invoker(self):
         self.single_instance_window_raise('single-instance')
@@ -439,8 +438,9 @@ class SingleInstanceTests(CustomTestCase):
         st, op = commands.getstatusoutput('grep -c "]: Booster: Can\'t activate existing instance of the application!" /var/log/syslog ')
         debug("The errors count in syslog is: %s" %op)
         #run fala_windowless second time	
-        run_app_as_user_with_invoker(app, booster = 'm', arg = "--single-instance")
-        time.sleep(5)
+        p = run_app_as_user_with_invoker(app, booster = 'm', arg = "--single-instance")
+        self.waitForAsertEqual(lambda: p.poll(), 1,
+                                "Second call of invoker didn't returned proper value (1)")
         pid2 = get_pid(app)
         #count error messages in sislog once again
         st1, op1 = commands.getstatusoutput('grep -c "]: Booster: Can\'t activate existing instance of the application!" /var/log/syslog ')
@@ -466,10 +466,6 @@ if __name__ == '__main__':
         using_scratchbox = True
 
     check_prerequisites()
-
-    restart_applauncherd()
-
-    time.sleep(5)
 
     tests = sys.argv[1:]
 
