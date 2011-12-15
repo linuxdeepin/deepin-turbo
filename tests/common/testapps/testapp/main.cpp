@@ -27,6 +27,8 @@
 
 #include <MExport>
 #include <QFile>
+#include <QBrush>
+#include <QColor>
 #include <sys/time.h>
 
 #include <exception>
@@ -129,6 +131,10 @@ int main(int argc, char **argv) {
 
         p.appear();
         timestamp("page.appear() called");
+
+        //set background color
+        QBrush brush(QColor(0, 115, 125, 255));
+        w->setBackgroundBrush(brush);
 
         w->show();
         timestamp("w->show() called");
