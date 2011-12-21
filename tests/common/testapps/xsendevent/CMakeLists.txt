@@ -1,6 +1,6 @@
 # Set sources
 set(SRC main.cpp)
-link_libraries(${MEEGOTOUCH_LIBRARIES})
+link_libraries(${MEEGOTOUCH_LIBRARIES} -lX11)
 
 add_executable(xsendevent ${SRC})
 
