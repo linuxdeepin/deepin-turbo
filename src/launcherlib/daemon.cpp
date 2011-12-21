@@ -535,6 +535,7 @@ void Daemon::reapZombies()
 
                 if (WIFEXITED(status))
                 {
+                    Logger::logInfo("Boosted process (pid=%d) exited with status %d\n", pid, WEXITSTATUS(status));
                     Logger::logDebug("Daemon: child exited by exit(x), _exit(x) or return x\n");
                     Logger::logDebug("Daemon: x == %d\n", WEXITSTATUS(status));
                     FdMap::iterator fd = m_boosterPidToInvokerFd.find(pid);
@@ -552,6 +553,7 @@ void Daemon::reapZombies()
                     int signal = WTERMSIG(status);
                     pid_t invokerPid = (*it).second;
 
+                    Logger::logInfo("Boosted process (pid=%d) was terminated due to signal %d\n", pid, signal);
                     Logger::logDebug("Daemon: Booster (pid=%d) was terminated due to signal %d\n", pid, signal);
                     Logger::logDebug("Daemon: Killing invoker process (pid=%d) by signal %d..\n", invokerPid, signal);
 

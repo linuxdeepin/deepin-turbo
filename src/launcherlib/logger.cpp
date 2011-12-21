@@ -83,6 +83,8 @@ void Logger::logInfo(const char * format, ...)
     va_start(ap, format);
     writeLog(LOG_INFO, format, ap); 
     va_end(ap);
+    // To avoid extra file descriptors in forked boosters closing connection to syslog
+    Logger::closeLog();
 }
 
 void Logger::logWarning(const char * format, ...)
