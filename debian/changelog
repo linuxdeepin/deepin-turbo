@@ -8,6 +8,7 @@ applauncherd (3.0.1) unstable; urgency=low
   * Changes: testcases added/fixed for code coverage
   * Changes: Fix python broken pipe randomly happened for Popen
   * Changes: Correct file path and dir path for applications started by booster-m
+  * Fixes: NB#295360 - Report extended exit code from applifed/applauncher
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 14 Nov 2011 13:39:38 +0200
 
