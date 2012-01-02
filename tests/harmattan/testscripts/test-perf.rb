@@ -26,6 +26,7 @@ require 'optparse'
 
 class TC_PerformanceTests < Test::Unit::TestCase
   COUNT = 3
+  MAX_RUN = 5
   PIXELCHANGED_BINARY= '/usr/bin/fala_pixelchanged' 
   TEST_SCRIPT_LOCATION = '/usr/share/applauncherd-testscripts'
   GET_COORDINATES_SCRIPT="#{TEST_SCRIPT_LOCATION}/get-coordinates.rb"
@@ -42,8 +43,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   @app_from_cache = 0
   @win_from_cache = 0
   @pos = 0
-  @options = {}  
-  
+  @options = {}
 
   $path = string = `echo $PATH `
 
@@ -381,15 +381,61 @@ class TC_PerformanceTests < Test::Unit::TestCase
     print_debug("pixel changed: #{@end_time}")
   end
   
-  
+  #find the variance of the values in the array
+  def var(arr)
+    total = 0
+    arr.each { |x| total += x }
+    m = total / arr.length # mean of the values
+
+    #variance = [i=1 to n] (∑(x - m)) / (n-1)
+    total = 0
+    arr.each { |x| total += (x - m) ** 2 }
+    return (total / (arr.length - 1)) # variance
+  end
+
+  # finds the closest COUNT(3) values from the total MAX_RUN(5) values available
+  #
+  # this functions finds the 3 most consistent values out of the 5 values,
+  # which means the 3 values which are closer to each other.
+  # The other 2 values which have more deviation from the rest of values are discarded.
+  #
+  # At first, all possible combinations of 3 are collected and their variance is found.
+  # The combination with minimum variance is the closest collection.
+  def find_valid_indices(start_delay_list)
+    variances = []
+    v_list = []
+
+    # combination() provides all possible combinations of an array
+    # eg. [1, 2, 3].combination(2) => {[1,2], [1,3], [2,3]}
+    start_delay_list.combination(COUNT) do |list|
+      v = var(list)
+      variances.push(v) # store all the variances in an array
+      v_list.push(list) # store the corresponding list of 3 values as an array
+    end
+
+    # find the minimum variance and values which gave this variance
+    valid_values = v_list[variances.index(variances.min)]
+
+    # find the indexes of the valid values which gave the minimum variance
+    # this is used to reference the values from the original list
+    valid_indices = []
+    valid_values.each { |x| valid_indices.push( start_delay_list.index(x) ) }
+    valid_indices.compact!
+
+    return valid_indices
+  end
 
   def test_performance
     start_time_sum = 0
     app_cache_sum = 0
-    win_cache_sum = 0 
+    win_cache_sum = 0
+
+    start_time_list = [] 
+    app_cache_list = []
+    win_cache_list = []
 
     # run application and measure the times
-    for i in 1..COUNT
+    for i in 1..MAX_RUN
       print_debug ("Now Launching  #{@options[:application]} #{i} times" )
 
       print_debug("Kill #{PIXELCHANGED_BINARY} if any before launching ")
@@ -402,21 +448,38 @@ class TC_PerformanceTests < Test::Unit::TestCase
       read_file(@options[:application])
       
       if @options[:appCache] != nil
-        app_cache_sum += @app_from_cache
+        app_cache_list.push(@app_from_cache)
       end
 
       if @options[:winCache] != nil
-        win_cache_sum += @win_from_cache
+        win_cache_list.push(@win_from_cache)
       end
 
-      start_time_sum += @end_time - @start_time - MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT
+      delay = @end_time - @start_time - MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT
+      #start_time_sum += delay
+      start_time_list.push(delay)
+      print_debug("startup delay for count #{i} = #{delay}")
     end
     
+    # get the valid indexes for which the average is going to be computed
+    valid_indices = find_valid_indices(start_time_list)
+    
+    # compute the start_time_sum, app_cache_sum, win_cache_sum from the valid indexes
+    valid_values = []
+    valid_indices.each do |x|
+      valid_values.push(start_time_list[x])
+      start_time_sum += start_time_list[x]
+      app_cache_sum += app_cache_list[x] if @options[:appCache] != nil
+      win_cache_sum += win_cache_list[x] if @options[:winCache] != nil
+    end
+
     print_debug ("MCompositor does XGrabServer for about #{MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT} ms (doing startup animation), during this time pixelchanged can't connect to XServer and just waits.")
     print_debug ("So we're substracting #{MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT} ms from startup time!\n")
     print_debug ("Startup time in milliseconds\n")
     print_debug ("Application: #{@options[:application]} \n")
-    
+
+    print_debug ("startup times = #{start_time_list.join(',')}")
+    print_debug ("values to be used = [#{valid_values.join(',')}]")
     print_debug ("Average Startup : #{start_time_sum/COUNT}")
 
     print_debug("MApplication from cache: #{app_cache_sum/COUNT}") if @options[:appCache] != nil
