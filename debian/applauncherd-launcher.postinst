@@ -8,7 +8,12 @@ elif [ "$1" = "triggered" ]; then
 
     # Installation of some other package may have caused applauncherd credentials to go stale,
     # ask applauncherd to re-exec to refresh the credentials.
-    if [ -s /var/run/applauncherd.lock ] && [ -d /proc/`cat /var/run/applauncherd.lock` ]; then
-	kill -HUP `cat /var/run/applauncherd.lock`
+    if [ -s /var/run/applauncherd.lock ] && [ -d /proc/`cat /var/run/applauncherd.lock` ]; 
+    then
+	    if ! kill -HUP `cat /var/run/applauncherd.lock`
+        then
+            echo "Warning! Sending SIGHUP to pid $(cat /var/run/applauncherd.lock) failed."
+            exit 0
+        fi 
     fi
 fi
