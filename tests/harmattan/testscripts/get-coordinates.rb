@@ -134,33 +134,27 @@ end
 
 sleep(2)
 
-#run loop 4 times (4 seconds)
-4.times do
-  if @meegoHome.test_object_exists?(:text => appName)
-    icon = @meegoHome.SwipeLauncherButton(:text => appName)
-  
-    while icon.attribute('visibleOnScreen') == 'false' || icon.attribute('y').to_i > 400
-      @meegoHome.SwipePannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 350)
-      sleep(0.2)
-      icon.refresh
-    end
-    xpos = @meegoHome.SwipeLauncherButton(:text => appName).attribute('x')
-    xpos = xpos.to_i + 59
-    ypos = @meegoHome.SwipeLauncherButton(:text => appName).attribute('y')
-    ypos = ypos.to_i + 58
-    @pos = "#{xpos}x#{ypos}"
-    
-    puts @pos
-    exit 0 #exit gracefully
+if @meegoHome.test_object_exists?(:text => appName)
+  icon = @meegoHome.SwipeLauncherButton(:text => appName)
+
+  while icon.attribute('visibleOnScreen') == 'false' || icon.attribute('y').to_i > 400
+    @meegoHome.SwipePannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 350)
+    sleep(0.2)
+    icon.refresh
   end
-
-  sleep(1)
-end
-
-#icon does not exist
-#raise error and exit
-puts "app not found"
-raise "Application not found in Application grid"
-exit 1
+  xpos = @meegoHome.SwipeLauncherButton(:text => appName).attribute('x')
+  xpos = xpos.to_i + 59
+  ypos = @meegoHome.SwipeLauncherButton(:text => appName).attribute('y')
+  ypos = ypos.to_i + 58
+  @pos = "#{xpos}x#{ypos}"
   
+  puts @pos
+  exit 0 #exit gracefully
+else
+  #icon does not exist
+  #raise error and exit
+  puts "app not found"
+  raise "Application not found in Application grid"
+  exit 1
+end
 
