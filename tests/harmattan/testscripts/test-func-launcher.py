@@ -74,6 +74,16 @@ class daemon_handling (unittest.TestCase):
     def start_daemons(self):
         start_daemons()
 
+    def stop_applifed(self):
+        os.system("initctl stop xsession/applifed")
+
+    def start_applifed(self):
+        os.system("initctl start xsession/applifed")
+        #applifed start causes booster-m to be used to prestart applications.
+        #camera has the least priority and the last one to be prestarted.hence
+        #we wait for the camera to be up and running so that any more booster-m is not used up
+        wait_for_app('camera-ui')
+
 def has_GL_context(processId, tries=2):
     for i in range(tries):
         processMapsFile = open("/proc/" + processId + "/maps")

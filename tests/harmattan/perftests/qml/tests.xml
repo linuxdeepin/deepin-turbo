@@ -7,6 +7,7 @@
 
     <set name="test-command-line" description="Application startup time from command line" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
+      	  <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_applifed</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
@@ -16,6 +17,9 @@
 
       <post_steps>
           <step>cp /tmp/fala_qml_wl.log /tmp/cmdline_fala_qml_wl.log</step>
+<!--      starting applifed commented as it is started in the next set's post-step
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_applifed</step>
+-->
       </post_steps>
 
       <environments>
@@ -32,6 +36,9 @@
     
     <set name="test-applicationGrid" description="Application startup time from application grid" feature="AF DUI Booster for Launcher daemon" requirement="300195">   
       <pre_steps>
+<!--      stopping applifed commented as it is stopped in the previous set's pre-step
+      	  <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_applifed</step>
+-->
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
       </pre_steps>
 
@@ -41,6 +48,7 @@
 
       <post_steps>
           <step>cp /tmp/fala_qml_wl.log /tmp/grid_fala_qml_wl.log</step>
+          <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_applifed</step>
       </post_steps>
     
 <!-- /QML -->

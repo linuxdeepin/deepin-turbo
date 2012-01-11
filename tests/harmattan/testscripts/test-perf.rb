@@ -48,7 +48,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   $path = string = `echo $PATH `
 
   def print_debug(msg)
-    message = "[INFO]  #{msg}\n"
+    message = "[INFO] [#{Time.now.to_f}] #{msg}\n"
     puts message
   end
 
@@ -79,7 +79,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
   end
 
   def wait_for_app(app, timeout = 40, wait = 1)
-      pid = get_pid(app) 
+      pid = get_pid(app)
       start = Time.now
       while pid == nil and Time.now < start + timeout
           print_debug("Waiting for 1 sec")
@@ -91,16 +91,16 @@ class TC_PerformanceTests < Test::Unit::TestCase
       while  len > 1 and Time.now < start + timeout
           print_debug("Waiting for 1 sec")
           sleep(wait)
-          pid = get_pid(app) 
+          pid = get_pid(app)
           len = pid.length()
-          if len == 1 
+          if len == 1
               break
           end
       end
       return pid
   end
 
-  
+
   # method called before any test case
   def setup
 
@@ -108,11 +108,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
       system "echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
 
       optparse = OptionParser.new do|opts|
-      options = {}  
+      options = {}
       # Set a banner, displayed at the top
       # of the help screen.
-      opts.banner = "Usage: get-coordinates.rb [options] "
-      
+      opts.banner = "Usage: test-perf.rb [options] "
+
       options[:application] = nil
       opts.on( '-a', '--application APP', 'Application name in application grid' ) do|app|
         options[:application] = app
@@ -156,7 +156,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       opts.on( '-f', '--logFile LOG_FILE', 'Log file which stores the timestamps' ) do|logFile|
         options[:logFile] = logFile
       end
-      
+
       options[:pre_step] = nil
       opts.on( '-p', '--pre_step PRE_STEP', 'Command to be executed everytime before starting the application' ) do|pre_step|
         options[:pre_step] = pre_step
@@ -199,12 +199,14 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("Unlocking device")
       system "mcetool --set-tklock-mode=unlocked"
       system "mcetool --set-inhibit-mode=stay-on"
-    end        
+    end
 
-    print_debug("restart mthome")
-    system("initctl restart xsession/mthome")
-    print_debug("stop applifed")
-    system("initctl stop xsession/applifed")
+    #print_debug("restart mthome")
+    #system("initctl restart xsession/mthome")
+
+    #applifed stop/start moved test xml
+    #print_debug("stop applifed")
+    #system("initctl stop xsession/applifed")
 
     print_debug("move #{MATTI_LOCATION} to #{TEMPORARY_MATTI_LOCATION}")
     system "mv #{MATTI_LOCATION} #{TEMPORARY_MATTI_LOCATION}"
@@ -213,11 +215,11 @@ class TC_PerformanceTests < Test::Unit::TestCase
     system("initctl restart xsession/applauncherd")
 
     #waiting for applauncherd and boosters to stabalise and up and running
-    wait_for_app('applauncherd') 
-    wait_for_app('booster-q') 
-    wait_for_app('booster-e') 
-    wait_for_app('booster-d') 
-    wait_for_app('booster-m') 
+    wait_for_app('applauncherd')
+    wait_for_app('booster-q')
+    wait_for_app('booster-e')
+    wait_for_app('booster-d')
+    wait_for_app('booster-m')
     x = `ps ax | grep applauncherd`
     if x.split(/\n/)[0].include?("boot-mode")
         print_debug("The applauncherd is running in boot mode")
@@ -226,40 +228,40 @@ class TC_PerformanceTests < Test::Unit::TestCase
     end
 
   end
-  
 
-  
   # method called after any test case for cleanup purposes
   def teardown
     print_debug ("exit from teardown")
     print_debug("move #{TEMPORARY_MATTI_LOCATION} to #{MATTI_LOCATION}")
     system "mv #{TEMPORARY_MATTI_LOCATION} #{MATTI_LOCATION}"
 
-    if @options[:application] != nil     
-      print_debug("restart mthome")
-      system("initctl restart xsession/mthome")
-      sleep(10)
-    end
-    if not system "pgrep applauncherd"
-        system("initctl start xsession/applauncherd")
-    end
-    if not system "pgrep applifed"
-        system("initctl start xsession/applifed")
-        #applifed start causes booster-m to be used to prestart applications. 
-        #Camera has the least priority and the last one to be prestarted.Hence
-        #We wait for the camera to be up and running so that any more booster-m is not used up
-        wait_for_app('camera-ui')
-    end
-    wait_for_app('applauncherd') 
-    wait_for_app('booster-q') 
-    wait_for_app('booster-e') 
-    wait_for_app('booster-d') 
-    wait_for_app('booster-m') 
+    #if @options[:application] != nil
+    #  print_debug("restart mthome")
+    #  system("initctl restart xsession/mthome")
+    #  sleep(10)
+    #end
+    #if not system "pgrep applauncherd"
+    #    system("initctl start xsession/applauncherd")
+    #end
+
+    #applifed stop/start moved test xml
+    #if not system "pgrep applifed"
+    #    system("initctl start xsession/applifed")
+        #applifed start causes booster-m to be used to prestart applications.
+        #camera has the least priority and the last one to be prestarted.hence
+        #we wait for the camera to be up and running so that any more booster-m is not used up
+    #    wait_for_app('camera-ui')
+    #end
+    #wait_for_app('applauncherd')
+    #wait_for_app('booster-q')
+    #wait_for_app('booster-e')
+    #wait_for_app('booster-d')
+    #wait_for_app('booster-m')
   end
-  
 
 
-  def open_Apps(appName)
+
+  def open_Apps()
     # Remove the log files if they exist
     if FileTest.exists?(PIXELCHANGED_LOG)
       print_debug("remove #{PIXELCHANGED_LOG}")
@@ -277,7 +279,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     sleep(2)
 
     # execute the optional command if available
-    if @options[:pre_step] != nil 
+    if @options[:pre_step] != nil
       print_debug ("pre_step: #{@options[:pre_step]}")
       system "#{@options[:pre_step]}"
     end
@@ -306,7 +308,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       #print_debug("Check the avarage system load is under 0.3")
       #system "/usr/bin/waitloadavg.rb -l 0.3 -p 1.0 -t 100"
       cmd = 0
-      if (x_val >= 0 && x_val <= 420)   
+      if (x_val >= 0 && x_val <= 420)
           if (y_val >= 240 && y_val <= 480)
               cmd = "#{PIXELCHANGED_BINARY} -c #{@pos} -t 101x4 -t 845x473 -f #{PIXELCHANGED_LOG} -q"
           elsif (y_val >= 0 && y_val <= 239)
@@ -334,10 +336,10 @@ class TC_PerformanceTests < Test::Unit::TestCase
     print_debug("pkill :#{@options[:binary]}")
     system "pkill #{@options[:binary]}"
   end
-  
 
 
-  def read_file(appName)
+
+  def read_file()
     def get_matching_lines(lines, re)
       # return a list of lines that match re
       lines.collect { |x| if x[1] =~ re; x; else; nil; end }.compact
@@ -380,7 +382,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     print_debug("started at: #{@start_time}")
     print_debug("pixel changed: #{@end_time}")
   end
-  
+
   #find the variance of the values in the array
   def var(arr)
     total = 0
@@ -430,7 +432,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
     app_cache_sum = 0
     win_cache_sum = 0
 
-    start_time_list = [] 
+    start_time_list = []
     app_cache_list = []
     win_cache_list = []
 
@@ -441,29 +443,20 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("Kill #{PIXELCHANGED_BINARY} if any before launching ")
       system("pkill #{PIXELCHANGED_BINARY}")
 
-      open_Apps(@options[:application])
-
-      sleep (5)
-
-      read_file(@options[:application])
-      
-      if @options[:appCache] != nil
-        app_cache_list.push(@app_from_cache)
-      end
-
-      if @options[:winCache] != nil
-        win_cache_list.push(@win_from_cache)
-      end
+      open_Apps()
+      read_file()
+      app_cache_list.push(@app_from_cache) if @options[:appCache] != nil
+      win_cache_list.push(@win_from_cache) if @options[:winCache] != nil
 
       delay = @end_time - @start_time - MCOMPOSITOR_XGRABSERVER_DELAY_CONSTANT
       #start_time_sum += delay
       start_time_list.push(delay)
       print_debug("startup delay for count #{i} = #{delay}")
     end
-    
+
     # get the valid indexes for which the average is going to be computed
     valid_indices = find_valid_indices(start_time_list)
-    
+
     # compute the start_time_sum, app_cache_sum, win_cache_sum from the valid indexes
     valid_values = []
     valid_indices.each do |x|
@@ -503,7 +496,7 @@ class TC_PerformanceTests < Test::Unit::TestCase
       print_debug("Check that MApplicationWindow from cache takes less than #{@options[:winCache]} ms")
       assert((win_cache_sum/COUNT) < @options[:winCache], "Application: #{@options[:application]} avarage window-cache was slower than #{@options[:winCache]} ms")
     end
-    
+
   end
 end
 

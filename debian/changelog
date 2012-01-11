@@ -3,6 +3,7 @@ applauncherd (3.0.1) unstable; urgency=low
   * Changes: Adds new test for applauncherd re-exec. Checking state of running application when it is updated.
   * Changes: Fix python broken pipe randomly happened for Popen
   * Changes: performance tests are run 5 times; 3 consistent values are considered
+  * Changes: performance test optimization part1
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 14 Nov 2011 13:39:38 +0200
 
