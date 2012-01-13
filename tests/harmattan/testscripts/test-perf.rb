@@ -299,8 +299,9 @@ class TC_PerformanceTests < Test::Unit::TestCase
     else
       #Check the system load is under 0.1
       waitload(0.1)
-      @pos = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
-      @pos = @pos.split("\n")[-1]
+      op = `#{GET_COORDINATES_SCRIPT} -a #{@options[:application]}`
+      print_debug("#{op}")
+      @pos = op.split("\n")[-1]
       print_debug ("Co-ordinates: #{@pos}")
       x_val = Integer(@pos.split("x")[0])
       y_val = Integer(@pos.split("x")[1])

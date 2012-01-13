@@ -66,7 +66,7 @@ end
 
 pos = 0
 appName=options[:application]
-sut = TDriver.sut(:Id=> 'sut_qt_maemo')    
+@sut = TDriver.sut(:Id=> 'sut_qt_maemo')    
 
 # Check if TDriver can attach to meegotouch instance.
 # If not, this might be caused because MtHome is started
@@ -75,7 +75,7 @@ sut = TDriver.sut(:Id=> 'sut_qt_maemo')
 
 @meegoHome = nil
 begin
-  @meegoHome = sut.application(:name => 'meegotouchhome') 
+  @meegoHome = @sut.application(:name => 'meegotouchhome') 
   puts "Meegotouchhome found"
   
 rescue MobyBase::TestObjectNotFoundError
@@ -129,26 +129,44 @@ if options[:grid]
   exit 0;
 end
 
-@meegoHome = sut.application(:name => 'meegotouchhome')
+def swipe(direction) 
+  puts "swiping #{direction.to_s}"
+  glass = @meegoHome.SwipePannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' )
+  glass.gesture(direction, 1, 350)
+end
 
-
-sleep(2)
-
-if @meegoHome.test_object_exists?(:text => appName)
-  icon = @meegoHome.SwipeLauncherButton(:text => appName)
+def get_pos(app)
+  icon = @meegoHome.SwipeLauncherButton(:text => app)
+  icon.refresh #refreshing icon attributes
+  swipe(:Down) if icon.attribute('visibleOnScreen') == 'false' #swiping also refreshes attributes
 
   while icon.attribute('visibleOnScreen') == 'false' || icon.attribute('y').to_i > 400
-    @meegoHome.SwipePannableViewport( :name => 'SwipePage' ).MWidget( :name => 'glass' ).gesture(:Up, 1, 350)
+    swipe(:Up)
     sleep(0.2)
     icon.refresh
   end
-  xpos = @meegoHome.SwipeLauncherButton(:text => appName).attribute('x')
-  xpos = xpos.to_i + 59
-  ypos = @meegoHome.SwipeLauncherButton(:text => appName).attribute('y')
-  ypos = ypos.to_i + 58
+  xpos = icon.attribute('x').to_i + 59
+  ypos = icon.attribute('y').to_i + 58
   @pos = "#{xpos}x#{ypos}"
   
   puts @pos
+end
+
+@meegoHome = @sut.application(:name => 'meegotouchhome')
+sleep(1)
+
+if @meegoHome.test_object_exists?(:text => appName)
+  get_pos(appName)
+  exit 0 #exit gracefully
+end
+
+puts "initializing again"
+@sut = TDriver.sut(:Id=> 'sut_qt_maemo')
+@meegoHome = @sut.application(:name => 'meegotouchhome')
+
+puts "check object again"
+if @meegoHome.test_object_exists?(:text => appName)
+  get_pos(appName)
   exit 0 #exit gracefully
 else
   #icon does not exist
