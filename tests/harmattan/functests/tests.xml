@@ -130,6 +130,15 @@
       <case name="applauncherd__test_fd_booster_m" type="Functional" description="File descriptor test for booster-m" timeout="560" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_fd_booster_m</step>
       </case>
+
+      <case name="applauncherd__test_dirPath_filePath_m"
+            type="Functional"
+            description="Test that correct file path and dir path is passed by booster m"
+            timeout="360"
+            level="System">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_m</step>
+      </case >
+
       <case name="applauncherd__test_qttas_load_booster_m" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-m" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_m</step>
       </case>
@@ -361,6 +370,28 @@
       </environments>
     </set>
 
+
+    <set name="TC_Stress_test"
+         description="functional tests for bugs and new features"
+         feature="AF Basic Launcher daemon support"
+         requirement="300168">   
+        <pre_steps>
+            <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+        </pre_steps>
+
+        <case name="applauncherd__test_stress_boosted_apps"
+              type="Functional"
+              description="Stress test for boosted applications to check only one instance is running."
+              timeout="360"
+              level="System">
+            <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>
+        </case>
+
+        <environments>
+            <scratchbox>true</scratchbox>
+            <hardware>true</hardware>    
+        </environments>
+    </set>
   </suite>
 </testdefinition>
 
