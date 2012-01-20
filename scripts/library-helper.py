@@ -196,7 +196,7 @@ libraries_nokia = [
 # Choose library list based on build environment
 libraries = libraries_nokia
 try:
-    if "MeeGo" in file("/etc/meego-release").read():
+    if "MeeGo" in file("/etc/meego-release").read() or "Mer" in file("/etc/mer-release").read():
         import libraries_meego
         libraries=libraries_meego.libraries
 except: pass
