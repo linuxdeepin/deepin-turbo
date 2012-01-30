@@ -299,15 +299,17 @@ class SingleInstanceTests(CustomTestCase):
         # 4. Check that there in only one application pid and it has the same than with 1. launch
         # 5. Check that window is raised with correct pid (from log files written by test application)
 
+        def removefile(filename):
+            try:
+                os.remove(filename)
+            except:
+                pass
+            
         app = '/usr/bin/fala_multi-instance'
         logFileName = '/tmp/fala_multi-instance.log'
 
         kill_process(app)
-
-        try:
-            os.remove(logFileName)
-        except:
-            pass
+        removefile(logFileName)
 
         run_cmd_as_user("%s %s foo" % (si_cmd, app))
         pid1 = wait_for_app(app)
@@ -341,7 +343,7 @@ class SingleInstanceTests(CustomTestCase):
                         break
         finally:
             kill_process(app, signum = 15)
-            os.remove(logFileName)
+            removefile(logFileName)
 
     def single_instance_abnormal_lock_release(self, si_cmd):
         # 1. Start the multi-instance application with single-instance binary
