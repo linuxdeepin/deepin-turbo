@@ -14,8 +14,21 @@ applauncherd (3.0.1) unstable; urgency=low
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 14 Nov 2011 13:39:38 +0200
 
-applauncherd (2.0.14) unstable; urgency=low
+applauncherd (2.0.16) stable; urgency=low
 
+  * Fixes: NB#296154 - proprietary headers in applauncherd replaced to LGPL
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Tue, 03 Jan 2012 15:50:58 +0200
+
+applauncherd (2.0.15) stable; urgency=low
+
+  * Fixes: NB#295360 - Report extended exit code from applifed/applauncher
+
+ -- Juha Lintula <juha.lintula@nokia.com>  Wed, 21 Dec 2011 12:26:50 +0200
+
+applauncherd (2.0.14) stable; urgency=low
+
+  * Fixes: NB#288982 - COREWEB: booster '__assert_fail append_pending_request _XReply'
   * Changes: updated some test cases in art-tests and test package dependencies
   * Changes: improve perf test to detect failure
 
