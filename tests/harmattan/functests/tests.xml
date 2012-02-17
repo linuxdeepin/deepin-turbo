@@ -168,7 +168,7 @@
             timeout="360"
             level="System">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_dirPath_filePath_m</step>
-      </case >
+      </case>
 
       <case name="applauncherd__test_qttas_load_booster_m" type="Functional" description="To test invoker that qttestability plugin is loaded with -testability argument for booster-m" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_qttas_load_booster_m</step>
@@ -488,7 +488,4 @@
       </environments>
     </set>
   </suite>
-  </suite>
 </testdefinition>
-
-
