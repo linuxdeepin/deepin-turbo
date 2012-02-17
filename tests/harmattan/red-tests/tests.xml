@@ -14,16 +14,9 @@
             type="Functional"
             description="Test that m-booster don't have GL context"
             timeout="100"
-            level="System">
+            level="System"
+            insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_m_booster_dont_have_GL_context</step>
-      </case>
-
-      <case name="applauncherd__test_q_boosted_has_GL_context"
-            type="Functional"
-            description="Test that q-boosted app has GL context and q-booster doesn't have"
-            timeout="100"
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_q_boosted_has_glcontext</step>
       </case>
 
       <case name="applauncherd__test_m_boosted_has_GL_context"
@@ -33,63 +26,6 @@
             level="System"
             insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_m_boosted_has_glcontext</step>
-      </case>
-
-      <case name="applauncherd__test_d_boosted_has_GL_context"
-            type="Functional"
-            description="Test that d-boosted app has GL context and d-booster doesn't have"
-            timeout="100"
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_d_boosted_has_glcontext</step>
-      </case>
-
-      <case name="applauncherd__test_e_boosted_has_GL_context"
-            type="Functional"
-            description="Test that e-boosted app has GL context and e-booster doesn't have"
-            timeout="100"
-            level="System"
-            insignificant="true">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_e_boosted_has_glcontext</step>
-      </case>
-
-      <environments>
-          <scratchbox>false</scratchbox>
-          <hardware>true</hardware>    
-      </environments>
-    </set>
-
-    <set name="TC_SigHUP" description="functional tests for HUP signal for applaucherd" feature="AF Basic Launcher daemon support">
-      <case name="applauncherd__test_check_applauncherd_sighup_m"
-            type="Functional"
-            description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-m and doesn't kill other child processes."
-            timeout="100"
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_m</step>
-      </case>
-
-      <case name="applauncherd__test_check_applauncherd_sighup_d"
-            type="Functional"
-            description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-d and doesn't kill other child processes."
-            timeout="100"
-            level="System"
-            insignificant="true">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_d</step>
-      </case>
-
-      <case name="applauncherd__test_check_applauncherd_sighup_q"
-            type="Functional"
-            description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-q and doesn't kill other child processes."
-            timeout="100"
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_q</step>
-      </case>
-
-      <case name="applauncherd__test_check_applauncherd_sighup_e"
-            type="Functional"
-            description="Test that SIGHUP: doesn't restart applaucherd, restarts booster-e and doesn't kill other child processes."
-            timeout="100"
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_check_applauncherd_sighup_effects_e</step>
       </case>
 
       <environments>
@@ -104,33 +40,12 @@
         <step>rm /var/lib/dpkg/lock</step>
         <step>dpkg --configure -a</step>
       </pre_steps>
-      <case name="applauncherd__test_reexec_when_new_token_is_installed"
-            type="Functional" 
-            description="Checks that when new application is installed (facebookqml) containing new security token, then applauncherd gains this new security token" 
-            timeout="200" 
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_reexec_when_new_token_is_installed</step>
-      </case>
-      <case name="applauncherd__test_reexec_when_file_in_usrlib_modified" 
-            type="Functional" 
-            description="Test that reexec is triggered when a package modifies a file in /usr/lib"
-            timeout="200"
-            level="System"
-            insignificant="true">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_reexec_when_file_in_usrlib_modified</step>
-      </case>
-      <case name="applauncherd__test_that_other_apps_dont_gain_new_token_on_update" 
-            type="Functional" 
-            description="Checks that when running application is upgraded and upgrade contains new token, then this runing application doesn't gain new token until it is restarted (re-exec of applauncherd don't have impact on child processes)." 
-            timeout="100" 
-            level="System">
-        <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_that_other_apps_dont_gain_new_token</step>
-      </case>
       <case name="applauncherd__test_installation_of_new_token_when_deamon_is_disabled" 
             type="Functional" 
             description="Test that isntallation of new package with new security token is going well when applauncherd daemon is disabled (stoped)"
             timeout="200"
-            level="System">
+            level="System"
+            insignificant="true">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_installation_of_new_token_when_deamon_is_disabled</step>
       </case>
       <post_steps>
