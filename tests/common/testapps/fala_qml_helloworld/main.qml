@@ -1,7 +1,7 @@
 import Qt 4.7
 
 Rectangle {
-    width: 854
+    width: 853
     height: 480
     Text {
         id: text1
