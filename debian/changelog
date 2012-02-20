@@ -1,4 +1,4 @@
-applauncherd (3.0.1) unstable; urgency=low
+applauncherd (3.0.1) stable; urgency=low
 
   * Changes: Adds new test for applauncherd re-exec. Checking state of running application when it is updated.
   * Changes: Fix python broken pipe randomly happened for Popen
