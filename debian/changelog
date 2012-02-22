@@ -1,16 +1,20 @@
-applauncherd (3.0.1) unstable; urgency=low
+applauncherd (3.0.2) unstable; urgency=low
 
   * Fixes: NB#273361 - Applaucherd is possible to start with wrong parameters
-  * Fixes: NB#291089 - Installation of clock application fails when applauncherd daemon stopped
-  * Fixes: NB#295360 - Report extended exit code from applifed/applauncher
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Tue, 21 Feb 2012 11:36:40 +0200
+
+applauncherd (3.0.1) stable; urgency=low
+
   * Changes: Updated list of libraries to preload
   * Changes: Adds new test for applauncherd re-exec. Checking state of running application when it is updated.
-  * Changes: single-instance library writes log messages to syslog instead of stderr
   * Changes: testcases added/fixed for code coverage
   * Changes: Fix python broken pipe randomly happened for Popen
-  * Changes: Correct file path and dir path for applications started by booster-m
   * Changes: performance tests are run 5 times; 3 consistent values are considered
   * Changes: performance test optimization part1
+  * Fixes: NB#291089 - Installation of clock application fails when applauncherd daemon stopped
+  * Changes: Correct file path and dir path for applications started by booster-m
+  * Changes: single-instance library writes log messages to syslog instead of stderr
 
  -- Alexey Shilov <alexey.shilov@nokia.com>  Mon, 14 Nov 2011 13:39:38 +0200
 
