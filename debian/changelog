@@ -1,6 +1,14 @@
+applauncherd (3.0.2) unstable; urgency=low
+
+  * 
+
+ -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Tue, 21 Feb 2012 11:36:40 +0200
+
 applauncherd (3.0.1) stable; urgency=low
 
+  * Changes: Updated list of libraries to preload
   * Changes: Adds new test for applauncherd re-exec. Checking state of running application when it is updated.
+  * Changes: testcases added/fixed for code coverage
   * Changes: Fix python broken pipe randomly happened for Popen
   * Changes: performance tests are run 5 times; 3 consistent values are considered
   * Changes: performance test optimization part1
