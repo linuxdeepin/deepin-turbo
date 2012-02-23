@@ -1,8 +1,9 @@
 applauncherd (3.0.2) unstable; urgency=low
 
   * Fixes: NB#273361 - Applaucherd is possible to start with wrong parameters
+  * disabling xsession/crash-reporter-daemon in performance test (probably breaks test at random cases)
 
- -- Thyagarajan Balakrishnan <ext-thyagarajan.1.balakrishnan@nokia.com>  Tue, 21 Feb 2012 11:36:40 +0200
+ -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Thu, 23 Feb 2012 16:13:38 +0200
 
 applauncherd (3.0.1) stable; urgency=low
 
