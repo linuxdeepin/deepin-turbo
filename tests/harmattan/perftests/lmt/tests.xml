@@ -9,6 +9,7 @@
       <pre_steps>
       	  <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_applifed</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>initctl stop xsession/crash-reporter-daemon</step>
       </pre_steps>
 
       <case name="Perf-Test-Command-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="500" level="System" insignificant="false">
@@ -16,6 +17,7 @@
       </case>
 
       <post_steps>
+          <step>initctl start xsession/crash-reporter-daemon</step>
           <step>cp /tmp/fala_wl.log /tmp/cmdline_fala_wl.log</step>
 <!--      starting applifed commented as it is started in the next set's post-step
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_applifed</step>
@@ -40,6 +42,7 @@
       	  <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_applifed</step>
 -->
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>initctl stop xsession/crash-reporter-daemon</step>
       </pre_steps>
 
       <case name="Perf-Test-Grid-launcher" type="Performance" description="Measure startup time of the application using launcher" timeout="840" level="System" insignificant="false">
@@ -47,6 +50,7 @@
       </case>
 
       <post_steps>
+          <step>initctl start xsession/crash-reporter-daemon</step>
           <step>cp /tmp/fala_wl.log /tmp/grid_fala_wl.log</step>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_applifed</step>
       </post_steps>
