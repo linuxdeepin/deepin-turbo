@@ -393,7 +393,7 @@ class InvokerTests(CustomTestCase):
         st, op = commands.getstatusoutput("/usr/share/applauncherd-testscripts/signal-forward/fala_inv_sf.py")
         debug("The Invoker killed by : <%s>" %op)
 
-        self.assert_(op.startswith('Segmentation fault') == True, "The invoker(m-booster) was not killed by the same signal")
+        self.assert_(op.find('Segmentation fault')!=-1, "The invoker(m-booster) was not killed by the same signal. Result:\n%s" %(op))
 
         if(sighup):
             self.sighup_applauncherd()
