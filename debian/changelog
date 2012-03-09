@@ -1,8 +1,9 @@
-applauncherd (3.0.2) unstable; urgency=low
+applauncherd (3.0.2) stable; urgency=low
 
   * Fixes: NB#273361 - Applaucherd is possible to start with wrong parameters
   * disabling xsession/crash-reporter-daemon in performance test (probably breaks test at random cases)
   * Changes: Fixes test test_invoker_signal_forward (extra warnings has appeared in test application)
+  * Fixes: NB#296154 - reopened - proprietary headers to LGPL
 
  -- Marek Ruszczak <ext-marek.ruszczak@nokia.com>  Thu, 23 Feb 2012 16:13:38 +0200
 
