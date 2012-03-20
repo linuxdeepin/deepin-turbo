@@ -31,5 +31,8 @@ void invoke_send_str(int fd, char *str);
 #define INVOKER_QT_SOCK    "/tmp/boostq"
 #define INVOKER_QDECL_SOCK "/tmp/boostd"
 #define INVOKER_EXEC_SOCK  "/tmp/booste"
+// Existence of the test mode control file is checked
+// to enable test mode.
+#define TEST_MODE_CONTROL_FILE   "/root/.itm"
 
 #endif

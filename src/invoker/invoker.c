@@ -48,6 +48,8 @@
     #include <sys/creds.h>
 #endif
 
+#include "whitelist.h"
+
 // Delay before exit.
 static const unsigned int EXIT_DELAY     = 0;
 static const unsigned int MIN_EXIT_DELAY = 1;
@@ -473,6 +475,7 @@ static void usage(int status)
            "                         in case the device is in landscape orientation.\n"
            "  -o, --daemon-mode      Notify invoker that the launched process is a daemon.\n"
            "                         This resets the oom_adj of the process.\n"
+           "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
@@ -653,15 +656,53 @@ static void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
     exit(EXIT_FAILURE);
 }
 
+//Check if application (MeeGo Touch) is allowed to be boosted
+static bool is_application_whitelisted(const char *const prog_name)
+{
+    bool result = false;
+
+    if (prog_name == 0)
+    {
+        return result;
+    }
+
+    unsigned int list_size = sizeof(app_whitelist) / sizeof(char *);
+    unsigned int i;
+
+    for (i = 0; i < list_size; i++)
+    {
+        const char * app = app_whitelist[i];
+        if (strcmp(app, prog_name) == 0)
+        {
+            result = true;
+            break;
+        }
+    }
+
+    return result;
+}
+
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                   enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
-                  char *splash_file, char *landscape_splash_file)
+                  char *splash_file, char *landscape_splash_file, bool test_mode)
 {
     int status = 0;
-
     if (prog_name && prog_argv)
     {
+        //If TEST_MODE_CONTROL_FILE doesn't exists switch off test mode
+        if (test_mode && access(TEST_MODE_CONTROL_FILE, F_OK) != 0)
+        {
+            test_mode = false;
+            info("Invoker test mode is not enabled.\n");
+        }
+
+        // This is a check if MeeGo Touch application is not allowed to be boosted
+        if (app_type == M_APP && !test_mode && !is_application_whitelisted(prog_name))
+        {
+            info("Application '%s' is not allowed to use booster '--type=m', '--type=q' will be used instead.\n", prog_name);
+            app_type = QT_APP;
+        }
         // This is a fallback if connection with the launcher
         // process is broken       
         int fd = invoker_init(app_type);
@@ -695,6 +736,7 @@ int main(int argc, char *argv[])
     char         *splash_file   = NULL;
     char         *landscape_splash_file = NULL;
     struct stat   file_stat;
+    bool test_mode = false;
 
     // wait-term parameter by default
     magic_options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
@@ -720,6 +762,7 @@ int main(int argc, char *argv[])
         {"deep-syms",        no_argument,       NULL, 'D'},
         {"single-instance",  no_argument,       NULL, 's'},
         {"daemon-mode",      no_argument,       NULL, 'o'},
+        {"test-mode",        no_argument,       NULL, 'T'},
         {"type",             required_argument, NULL, 't'},
         {"delay",            required_argument, NULL, 'd'},
         {"respawn",          required_argument, NULL, 'r'},
@@ -731,7 +774,7 @@ int main(int argc, char *argv[])
     // Parse options
     // TODO: Move to a function
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwnGDsod:t:r:S:L:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "hcwnGDsoTd:t:r:S:L:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -762,6 +805,10 @@ int main(int argc, char *argv[])
 
         case 'D':
             magic_options |= INVOKER_MSG_MAGIC_OPTION_DLOPEN_DEEP;
+            break;
+
+        case 'T':
+            test_mode = true;
             break;
 
         case 't':
@@ -853,7 +900,7 @@ int main(int argc, char *argv[])
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file, test_mode);
 
     // Sleep for delay before exiting
     if (delay)

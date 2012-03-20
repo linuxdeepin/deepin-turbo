@@ -186,7 +186,7 @@ class InvokerTests(CustomTestCase):
         invokerDelay = 10
         # launch an app with invoker --delay n
         debug("launching fala_ft_hello ...")
-        p = Popen(['/usr/bin/invoker', '--delay', str(invokerDelay), '--type=m', '--no-wait',
+        p = Popen(['/usr/bin/invoker', '--delay', str(invokerDelay), '--type=m', '--test-mode', '--no-wait',
                    '/usr/bin/fala_ft_hello'],
                   shell=False,
                   stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
@@ -233,7 +233,7 @@ class InvokerTests(CustomTestCase):
 
         #Run application with invoker and get the exit status - booster-m case
         debug("Run application with invoker and get the exit status")
-        st, op = commands.getstatusoutput('invoker --type=m --wait-term /usr/bin/fala_status')
+        st, op = commands.getstatusoutput('invoker --test-mode  --type=m --wait-term /usr/bin/fala_status')
         app_st_w_inv = os.WEXITSTATUS(st)
         debug("The exit status of app with invoker (booster-m) is : %d" %app_st_w_inv)
 
@@ -267,7 +267,7 @@ class InvokerTests(CustomTestCase):
 
         # launch with relative path
 
-        p = run_cmd_as_user('cd /usr/share/; invoker --type=m --no-wait ' +
+        p = run_cmd_as_user('cd /usr/share/; invoker --test-mode --type=m --no-wait ' +
                             "../bin/fala_ft_hello")
         try:
             self.waitForAsertEqual(lambda: p.poll(), 0, "Couldn't launch fala_ft_hello" +
@@ -277,7 +277,7 @@ class InvokerTests(CustomTestCase):
             kill_process('fala_ft_hello')
 
         # and finally, try to launch something that doesn't exist
-        p = run_cmd_as_user('invoker --type=m --no-wait spam_cake')
+        p = run_cmd_as_user('invoker --test-mode --type=m --no-wait spam_cake')
         try :
             self.waitForAsertEqual(lambda: p.poll(), 1, "spam_cake has been found!")
         finally:
@@ -301,7 +301,7 @@ class InvokerTests(CustomTestCase):
 
         #get invokers's uid and gid  by running the application using invoker in user mode
         debug("get invoker's uid and gid by running the application using invoker in user mode")
-        app = "invoker --type=m --no-wait /usr/bin/fala_status"
+        app = "invoker --test-mode --type=m --no-wait /usr/bin/fala_status"
         st, op = commands.getstatusoutput('su user -c "%s"' %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
@@ -330,7 +330,7 @@ class InvokerTests(CustomTestCase):
 
         #get id by running the application using invoker in root mode
         debug("get invoker's uid and gid by running the application using invoker in root mode")
-        app = "invoker --type=m --no-wait /usr/bin/fala_status"
+        app = "invoker --test-mode --type=m --no-wait /usr/bin/fala_status"
         st, op = commands.getstatusoutput("%s" %app );
         usr_id = op.split('\n')[1]
         grp_id = op.split('\n')[2]
@@ -408,14 +408,14 @@ class InvokerTests(CustomTestCase):
         debug("Launch application with wrong type %s" %cmd)
         st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
         self.assert_(op.split("\n")[0] == 'invoker: error: Unknown application type: f ',"No Error displayed")
-        self.assert_(op.split("\n")[2] == 'Usage: invoker [options] [--type=TYPE] [file] [args]',"No usgae displayed")
+        self.assert_(op.split("\n")[2] == 'Usage: invoker [options] [--type=TYPE] [file] [args]',"No usage displayed")
 
     def test_unknown_parameter(self):
         """
         Test that help is printed if unknown parameter
         is passed to invoker
         """
-        cmd = '/usr/bin/invoker --type=m --x /usr/bin/fala_wl'
+        cmd = '/usr/bin/invoker --test-mode --type=m --x /usr/bin/fala_wl'
         debug("Launch application with wrong option %s" %cmd)
         st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
         self.assert_(op.split("\n")[2] == 'Usage: invoker [options] [--type=TYPE] [file] [args]',"No usage displayed")
@@ -425,7 +425,7 @@ class InvokerTests(CustomTestCase):
         Test that invoker gives error when it tries to launch
         a binary that does not exist
         """
-        cmd = '/usr/bin/invoker --type=m /usr/bin/fala_foo'
+        cmd = '/usr/bin/invoker --test-mode --type=m /usr/bin/fala_foo'
         debug("Launch a non existing application %s" %cmd)
         st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
         self.assert_(st != 0,"The application was launched")
@@ -435,7 +435,7 @@ class InvokerTests(CustomTestCase):
         Test that the symlink of invoker is unable to launch applications
         """
         os.system("ln -s /usr/bin/invoker /usr/bin/invoker_link")
-        cmd = "/usr/bin/invoker_link --type=m /usr/bin/fala_wl"
+        cmd = "/usr/bin/invoker_link --test-mode --type=m /usr/bin/fala_wl"
         st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
         os.system("rm /usr/bin/invoker_link")
         self.assert_(st != 0,"The application was launched")
@@ -461,7 +461,7 @@ class InvokerTests(CustomTestCase):
         Test that symlink of an application can be launched.
         """
         os.system("ln -s /usr/bin/fala_wl /usr/bin/fala_link")
-        cmd = "/usr/bin/invoker --type=m /usr/bin/fala_link"
+        cmd = "/usr/bin/invoker --test-mode --type=m /usr/bin/fala_link"
         os.system('su - user -c "%s"&' %cmd)
         pid = wait_for_app("fala_link")
         os.system("rm /usr/bin/fala_link")
@@ -502,7 +502,7 @@ class InvokerTests(CustomTestCase):
         """
         #Test for a directory
         os.system("mkdir /usr/bin/fala_dir")
-        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/bin/fala_dir")
+        st, op = commands.getstatusoutput("/usr/bin/invoker --test-mode --type=m /usr/bin/fala_dir")
         os.system("rm -rf /usr/bin/fala_dir")
         self.assert_(st != 0 ,"The application was not launched")
 
@@ -515,7 +515,7 @@ class InvokerTests(CustomTestCase):
         Unset the PATH env variable and try to launch an application with
         relative path. The launch should fail
         """
-        st, op = commands.getstatusoutput("(unset PATH;/usr/bin/invoker --type=m fala_wl)")
+        st, op = commands.getstatusoutput("(unset PATH;/usr/bin/invoker --test-mode --type=m fala_wl)")
         self.assert_(st != 0, "The application was launched")
         self.assert_(op == "invoker: died: could not get PATH environment variable", "The application was launched")
 
@@ -529,7 +529,7 @@ class InvokerTests(CustomTestCase):
 
         # launch an app with invoker --wait-term
         debug("launching fala_wait ...")
-        p = Popen(['/usr/bin/invoker', '--type=m', '--wait-term',
+        p = Popen(['/usr/bin/invoker', '--type=m', '--test-mode', '--wait-term',
                    '/usr/bin/fala_wait'],
                   shell=False,
                   stdout=DEV_NULL, stderr=DEV_NULL, preexec_fn=permit_sigpipe)
@@ -564,7 +564,7 @@ class InvokerTests(CustomTestCase):
         """
         Test that invoker searches the application through relative path
         """
-        os.system("(cd /usr;export PATH=bin;/usr/bin/invoker --type=m fala_wl&)")
+        os.system("(cd /usr;export PATH=bin;/usr/bin/invoker --test-mode --type=m fala_wl&)")
         pid = wait_for_app("fala_wl")
         kill_process("fala_wl")
         self.assert_(pid != None ,"The application was not launched")
@@ -613,6 +613,55 @@ class InvokerTests(CustomTestCase):
         self.waitForAsert(lambda:p.poll() != None, "Invoker didn't terminate.")
         self.assert_(wait_for_process_end(PREFERED_APP), "invoker didn't kill application after applauncherd termination.")
 
+    def test_invoker_dbus_security(self, sighup = True):
+        """
+        Test that invoker doesn't allow not-privileged application
+        to re-use restricted d-bus connection opened by m-booster
+        """
+	#run without launcher
+	cmd = '/usr/bin/fala_dbus'
+	st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
+	errorName = op.split('\n')[0]
+	self.assert_(errorName.endswith('Error.AccessDenied'),"fala_dbus was able to connect to restricted d-bus service\n output: %s" %op)
+
+	#run with launcher (m-booster). invoker not in test mode
+	cmd = 'invoker --type=m /usr/bin/fala_dbus'
+	st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
+	errorName = op.split('\n')[0]
+	self.assert_(errorName.endswith('Error.AccessDenied'),"fala_dbus was able to use m-booster to connect to restricted d-bus service \n output: %s" %op)
+
+	#run with launcher (m-booster). invoker in test mode
+	cmd = 'invoker --test-mode --type=m /usr/bin/fala_dbus'
+	st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
+	errorName = op.split('\n')[0]
+	self.assert_(errorName.endswith('Error.NoReply'),"fala_dbus was not able to use m-booster in test-mode to connect to restricted d-bus service \n output: %s" %op)
+
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_dbus_security(False)
+
+
+    def test_invoker_test_mode(self, sighup = True):
+        """
+        Test that invoker test mode is disabled if
+        test mode control file doesn't exist
+        """
+        #remove test mode control file
+	os.system("rm -f /root/.itm")		
+	#run with launcher (m-booster). Try to start invoker in test mode 
+	cmd = 'invoker --test-mode --type=m /usr/bin/fala_dbus'
+	st, op = commands.getstatusoutput('su - user -c "%s"' %cmd)
+        #restore test mode control file
+        os.system("touch /root/.itm")		
+	output = op.split('\n')
+	self.assert_(len(output) > 2, "No error reported by invoker running test mode without test mode control file. \n output: %s " %op)
+	error = output[2];
+        self.assert_(error.endswith("Invoker test mode is not enabled."), "Incorrect error reported by invoker running test mode without test mode control file. \n output: %s " %op)
+
+        if(sighup):
+            self.sighup_applauncherd()
+            self.test_invoker_dbus_security(False)
 
 # main
 if __name__ == '__main__':

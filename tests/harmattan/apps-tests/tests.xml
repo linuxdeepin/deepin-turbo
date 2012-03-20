@@ -8,11 +8,16 @@
     <set name="TC_APPS" description="functional tests for apps dependent on applauncherd" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_no_aegis_invoker_creds" type="Functional" description="Test that no extra credentials are passed to invoker" timeout="360" level="System" insignificant="false">
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-security.py test_no_aegis_invoker_creds </step>
       </case>
+
+      <post_steps>
+        <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
+      </post_steps>
 
       <environments>
           <scratchbox>true</scratchbox>

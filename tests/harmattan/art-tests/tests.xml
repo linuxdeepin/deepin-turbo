@@ -8,6 +8,7 @@
     <set name="applauncherd-art-tests" description="Launcher functional tests" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_launch_multiple_apps_m" type="Functional" description="To test that more than one applications are launched by the launcher" timeout="360" level="System">
@@ -37,6 +38,10 @@
       <case name="applauncherd__test_unix_signal_handlers" type="Functional" description="Test unixSignalHAndlers by killing booster-m and booster-d, singnal hup" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_unix_signal_handlers</step>
       </case>
+
+      <post_steps>
+        <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
+      </post_steps>
 
       <environments>
           <scratchbox>false</scratchbox>

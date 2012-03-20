@@ -347,7 +347,7 @@ class launcher_tests (CustomTestCase):
     
         #launch application using booster
         debug("launch %s using booster" % app_name)
-        st = os.system('invoker --type=%s --no-wait %s' % (btype, app_name))
+        st = os.system('invoker --test-mode --type=%s --no-wait %s' % (btype, app_name))
         self.assert_(st == 0, "failed to start %s,%s" % (app_name,st))
     
         # wait for new booster and app to start
@@ -477,7 +477,7 @@ class launcher_tests (CustomTestCase):
             for bType in ('m', 'd', 'e', 'q') :
                 #Launching application with booster-m
                 bpid = wait_for_app('booster-%s' %bType, timeout = 10)
-                p = run_app_as_user_with_invoker(bType!='d' and PREFERED_APP or PREFERED_APP_QML, booster = bType, arg = '--no-wait')
+                p = run_app_as_user_with_invoker(bType!='d' and PREFERED_APP or PREFERED_APP_QML, booster = bType, arg = '--no-wait --test-mode')
                 app_pid = wait_for_app(bType!='d' and 'fala_ft_hello' or 'fala_qml_helloworld', timeout = 10)
                 bpid_new = wait_for_app('booster-%s' %bType, timeout = 10)
                 self.assertNotEqual(app_pid, None, "Application is not running")
@@ -511,7 +511,7 @@ class launcher_tests (CustomTestCase):
             debug("The value of queue is %d" %count)
             return count
 
-        invokerCall = 'invoker --type=%s --no-wait %s %s' %(booster_type,
+        invokerCall = 'invoker --test-mode --type=%s --no-wait %s %s' %(booster_type,
                                                             singleInstanceArg and "--single-instance" or "",
                                                             app_name)
         debug("Starting stress test for boosted application with %s-boster and single-instance switch %s"
@@ -561,7 +561,7 @@ class launcher_tests (CustomTestCase):
         #For booster-m        
         for bType in ('m', 'd', 'q', 'e') :
             appName = bType != 'd' and 'fala_wl' or 'fala_qml_helloworld'
-            p = run_cmd_as_user('invoker --type=%s --no-wait %s -faulty' %(bType, appName))
+            p = run_cmd_as_user('invoker --type=%s --test-mode --no-wait %s -faulty' %(bType, appName))
             pid = wait_for_app(appName, timeout = 40)
             self.assert_(pid, "Fail to launch '%s' application" %appName)
             try :
@@ -667,7 +667,7 @@ class launcher_tests (CustomTestCase):
         for i in range(2):
                 debug("Running cycle %s" %i)
                 cmd = ['su', '-', 'user', '-c'] 
-                invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --type=%s %s" %(btype, testapp)
+                invoke="export QT_LOAD_TESTABILITY=1; /usr/bin/invoker --test-mode --type=%s %s" %(btype, testapp)
                 cmd.append(invoke)
 
                 p = subprocess.Popen(cmd, shell = False, stdout = DEV_NULL, stderr = DEV_NULL, preexec_fn=permit_sigpipe)
@@ -715,7 +715,7 @@ class launcher_tests (CustomTestCase):
             os.system("rm %s" % logFileName)
         if get_pid(testapp)!= None:
             kill_process(testapp)
-        p = run_cmd_as_user('invoker --type=%s %s/%s' % (btype, path, testapp))
+        p = run_cmd_as_user('invoker --test-mode --type=%s %s/%s' % (btype, path, testapp))
         pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
         try :
@@ -755,7 +755,7 @@ class launcher_tests (CustomTestCase):
             os.system("rm %s" % logFileName)
         if get_pid(testapp)!= None:
             kill_process(testapp)
-        p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t' % (btype, testapp))
+        p = run_cmd_as_user('invoker --test-mode --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t' % (btype, testapp))
         pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
 
@@ -792,7 +792,7 @@ class launcher_tests (CustomTestCase):
             os.system("rm %s" % logFileName)
         if get_pid(testapp)!= None:
             kill_process(testapp)
-        p = run_cmd_as_user('invoker --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z' % (btype, testapp))
+        p = run_cmd_as_user('invoker --test-mode --type=%s /usr/bin/%s --log-args 0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r s t u v w x y z' % (btype, testapp))
         pid = wait_for_app(testapp)
         self.assert_(pid != None, "The application was not launched")
         try:
@@ -940,7 +940,7 @@ class launcher_tests (CustomTestCase):
 
 
     def _test_launched_app_wm_class_helper(self,btype,test_application,cmd_arguments,window_name,window_count):
-        run_command = 'invoker --type=%s --no-wait %s %s' %(btype, test_application, cmd_arguments)
+        run_command = 'invoker --test-mode --type=%s --no-wait %s %s' %(btype, test_application, cmd_arguments)
         p = run_cmd_as_user(run_command)
 
         pid = wait_for_app(test_application)
@@ -1005,7 +1005,7 @@ class launcher_tests (CustomTestCase):
         self.assert_(not has_GL_context(booster_pid), "booster-%s has GL context!"%btype)
         
         # run app which has GL context
-        p = run_app_as_user_with_invoker(testapp, booster = btype, arg = '--no-wait')
+        p = run_app_as_user_with_invoker(testapp, booster = btype, arg = '--test-mode --no-wait')
         app_pid = wait_for_app(testapp)
         self.assert_(app_pid != None, "Process '%s' is not running"%testapp)
         self.assert_(app_pid == booster_pid, "Process '%s' is not a boosted app"%testapp)
@@ -1037,7 +1037,7 @@ class launcher_tests (CustomTestCase):
         debug("Boster name: %s    app name: %s" %(boosterName, testAppName))
 
         # note that application is run by direct invacation not by calling the service
-        run_command = 'invoker --single-instance --type=%s /usr/bin/%s' %(boosterType, testAppName)
+        run_command = 'invoker --test-mode --single-instance --type=%s /usr/bin/%s' %(boosterType, testAppName)
         p = run_cmd_as_user(run_command)
 
         # wait for first use of booster

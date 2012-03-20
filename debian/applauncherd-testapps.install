@@ -22,6 +22,7 @@ usr/bin/fala_focus
 usr/bin/fala_multi-window
 usr/bin/fala_windowless
 usr/bin/fala_multi-window
+usr/bin/fala_dbus
 usr/bin/xsendevent
 usr/share/dbus-1/services/com.nokia.fala_testapp.service
 usr/share/dbus-1/services/com.nokia.fala_wl.service

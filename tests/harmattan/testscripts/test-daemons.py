@@ -157,7 +157,7 @@ class DaemonTests(unittest.TestCase):
         
         #launch application using booster
         debug("launch fala_wl using booster")
-        status = os.system('invoker --type=m /usr/bin/fala_wl &')
+        status = os.system('invoker --test-mode --type=m /usr/bin/fala_wl &')
 
         #get fd of booster after launching the application
         debug("get fd of booster after launching the application")
@@ -196,12 +196,12 @@ class DaemonTests(unittest.TestCase):
         Test that Booster gives warning while trying to launch non launchable applications
         Here fala_wid is a shell script and libebooster.so is a library
         """
-        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/bin/fala_wid")
+        st, op = commands.getstatusoutput("/usr/bin/invoker --test-mode --type=m /usr/bin/fala_wid")
         debug("The Warning is %s" %(op.split("\n")[0]))
         pos = op.split("\n")[0].find("Booster: Loading invoked application failed:")
         self.assert_(pos != -1, "The booster did not give warning")
         
-        st, op = commands.getstatusoutput("/usr/bin/invoker --type=m /usr/lib/applauncherd/libebooster.so")
+        st, op = commands.getstatusoutput("/usr/bin/invoker --test-mode --type=m /usr/lib/applauncherd/libebooster.so")
         debug("The Warning is %s" %(op.split("\n")[0]))
         pos = op.split("\n")[0].find("Booster: Loading symbol 'main' failed:")
         self.assert_(pos != -1, "The booster did not give warning")
@@ -252,7 +252,7 @@ class DaemonTests(unittest.TestCase):
         launcher_pid = wait_for_single_applauncherd
         mbooster_pid = wait_for_app("booster-m")
 
-        cmd = '/usr/bin/invoker --type=m /usr/bin/fala_exit' 
+        cmd = '/usr/bin/invoker --test-mode --type=m /usr/bin/fala_exit' 
         st, op = commands.getstatusoutput(cmd)
         time.sleep(5)
         self.assert_(st == 0, "The application did not exit clean")

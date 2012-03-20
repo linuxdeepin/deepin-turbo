@@ -63,7 +63,7 @@ class TC_PRESTARTLAUNCHTESTS < Test::Unit::TestCase
 		system "pgrep #{@appname}"}
 
         #Prestart application using invoker
-        system("su - user -c '/usr/bin/invoker --type=m --no-wait #{@appname} -prestart'&") 
+        system("su - user -c '/usr/bin/invoker --type=m --test-mode --no-wait #{@appname} -prestart'&") 
         sleep(2)
      
         #verify that the application is prestarted and it has a valid pid
@@ -78,7 +78,7 @@ class TC_PRESTARTLAUNCHTESTS < Test::Unit::TestCase
         verify_equal("",2,"Application was Launched"){@switcher}
 
         #Now Launch the prestarted application 
-        system("su - user -c '/usr/bin/invoker --type=m --no-wait #{@appname}'")
+        system("su - user -c '/usr/bin/invoker --type=m --test-mode --no-wait #{@appname}'")
         sleep(2)
 
         #verify that Window state of applications is Normal as the application is launhced 

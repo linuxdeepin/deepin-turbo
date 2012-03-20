@@ -9,6 +9,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_oom_adj_minus_two" type="Functional" description="Test that oom.adj is -1 for launched application process when using invokers -o parameter" timeout="360" level="System" insignificant="false">
@@ -95,8 +96,18 @@
       <case name="applauncherd__test_invoker_applauncherd_dies" type="Functional" description="test invoker kills app if applauncherd dies" timeout="360" level="System" insignificant="false">
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_applauncherd_dies</step>
       </case>
+
+      <case name="applauncherd__test_invoker_dbus_security" type="Functional" description="Test that invoker doesn't allow not-privileged application to re-use restricted d-bus connection opened by m-booster" timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_dbus_security</step>
+      </case>
+
+      <case name="applauncherd__test_invoker_test_mode" type="Functional" description="Test that invoker test mode is disabled if test mode control file doesn't exist." timeout="360" level="System" insignificant="false">
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-invoker.py test_invoker_test_mode</step>
+      </case>
+
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
 
       <environments>
@@ -111,6 +122,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_single_instance_window_raise_wo_invoker" type="Functional" description="Test basic single instance functionality and window raising" timeout="360" level="System" insignificant="false">
@@ -130,6 +142,7 @@
       </case>
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
       <environments>
           <scratchbox>false</scratchbox>
@@ -142,6 +155,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_single_instance_window_raise_w_invoker" type="Functional" description="Test basic single instance functionality and window raising" timeout="360" level="System" insignificant="false">
@@ -165,6 +179,7 @@
       </case>
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
       <environments>
           <scratchbox>false</scratchbox>

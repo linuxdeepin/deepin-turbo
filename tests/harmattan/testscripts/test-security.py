@@ -185,7 +185,7 @@ class SecurityTests(unittest.TestCase):
         #launching the testapp with actual invoker
         debug("launching the testapp with actual invoker")
         
-        st = os.system('%s --type=m --no-wait %s'%(INVOKER_BINARY, Testapp))
+        st = os.system('%s --test-mode --type=m --no-wait %s'%(INVOKER_BINARY, Testapp))
         pid = get_pid(Testapp)
         self.assert_((st == 0), "Application was not launched using launcher")
         self.assert_(not (pid == None), "Application was not launched using launcher: actual pid%s" %pid)
@@ -196,7 +196,7 @@ class SecurityTests(unittest.TestCase):
         
         #launching the testapp with fake invoker
         debug("launching the testapp with fake invoker")
-        st = os.system('%s --type=m --no-wait %s'%(FAKE_INVOKER_BINARY, Testapp)) 
+        st = os.system('%s --test-mode --type=m --no-wait %s'%(FAKE_INVOKER_BINARY, Testapp)) 
         pid = get_pid(Testapp)
         self.assert_(not (st == 0), "Application was launched using fake launcher")
         self.assert_((pid == None), "Application was launched using fake launcher")
@@ -218,7 +218,7 @@ class SecurityTests(unittest.TestCase):
 
             # launch an application, leave invoker running
             print "launching application"
-            invoker = run_app_as_user_with_invoker('/usr/bin/fala_ft_hello', booster = 'm', arg = '--wait-term')
+            invoker = run_app_as_user_with_invoker('/usr/bin/fala_ft_hello', booster = 'm', arg = '--test-mode --wait-term')
 
             wait_for_app('fala_ft_hello')
 
@@ -360,9 +360,9 @@ class SecurityTests(unittest.TestCase):
         #Hardcoding the invoker specific credentials.Needs to be changed if invoker creds changes
         invoker_specific_creds = ['applauncherd-invoker::applauncherd-invoker',\
                 'applauncherd-launcher::access']
-        p = run_app_as_user_with_invoker("/usr/bin/fala_wl")                                
+        p = run_app_as_user_with_invoker("/usr/bin/fala_wl", arg = '--test-mode')                                
         wait_for_app('fala_wl')
-        st, op = commands.getstatusoutput("pgrep -lf '/usr/bin/invoker --type=m /usr/bin/fala_wl'")
+        st, op = commands.getstatusoutput("pgrep -lf '^/usr/bin/invoker --type=m --test-mode /usr/bin/fala_wl'")
         pid = op.split("\n")[0].split(" ")[0]                                               
         debug("The pid of Invoker is %s" % pid)                                             
 

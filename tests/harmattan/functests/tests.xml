@@ -8,6 +8,7 @@
     <set name="TC_GLContext" description="functional tests for glcontext" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_q_booster_dont_have_GL_context" type="Functional" description="Test that q-booster don't have GL context" timeout="100" level="System" insignificant="false">
@@ -46,6 +47,10 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_e_boosted_has_glcontext</step>
       </case>
 
+      <post_steps>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
+      </post_steps>
+
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    
@@ -56,6 +61,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_unix_signal_handlers" type="Functional" description="Test unixSignalHAndlers by killing booster-m and booster-d, singnal hup" timeout="360" level="System" insignificant="false">
@@ -120,6 +126,7 @@
 
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
 
       <environments>
@@ -132,6 +139,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_check_applauncherd_sighup_m"
@@ -196,6 +204,7 @@
 
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
       <environments>
           <scratchbox>false</scratchbox>
@@ -208,6 +217,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_check_applauncherd_sighup_q"
@@ -238,6 +248,10 @@
         <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_detect_booster_q_leaks_file_descriptor_when_invoker_is_using_app_directly</step>
       </case>
 
+      <post_steps>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
+      </post_steps>
+
       <environments>
           <scratchbox>false</scratchbox>
           <hardware>true</hardware>    
@@ -249,6 +263,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_check_applauncherd_sighup_d"
@@ -309,6 +324,7 @@
 
       <post_steps>
 	<step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+        <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
 
       <environments>
@@ -323,6 +339,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_check_applauncherd_sighup_e"
@@ -362,6 +379,7 @@
 
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
       <environments>
           <scratchbox>false</scratchbox>
@@ -374,6 +392,7 @@
       <pre_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py stop_daemons</step>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_no_aegis" type="Functional" description="Check that an application that doesn't have aegis file doesn't get any funny credentials." timeout="360" level="System" insignificant="false" >
@@ -394,6 +413,7 @@
 
       <post_steps>
           <step>source /tmp/session_bus_address.user; DISPLAY=:0  `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py start_daemons</step>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
      
       <environments>
@@ -405,6 +425,7 @@
     <set name="TC_Splash" description="functional tests for splash" feature="AF Basic Launcher daemon support" requirement="300168">   
       <pre_steps>
           <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+          <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_splash" type="Functional" description="To test --splash functionality" timeout="360" level="System" insignificant="false">
@@ -419,6 +440,10 @@
           <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0  /usr/share/applauncherd-testscripts/tc_splash.rb --name test_no_splash</step>
       </case>
 
+      <post_steps>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
+      </post_steps>
+
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
@@ -432,6 +457,7 @@
          requirement="300168">   
         <pre_steps>
             <step>/usr/bin/waitloadavg.rb -l 1.0 -p 1.0 -t 120</step>
+            <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
         </pre_steps>
 
         <case name="applauncherd__test_stress_boosted_apps"
@@ -441,6 +467,11 @@
               level="System">
             <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 `pyversions -d` /usr/share/applauncherd-testscripts/test-func-launcher.py test_stress_boosted_apps</step>
         </case>
+
+      <post_steps>
+          <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
+      </post_steps>
+
 
         <environments>
             <scratchbox>true</scratchbox>
@@ -453,6 +484,7 @@
         <step>initctl stop xsession/pkgm-timed-checks</step>
         <step>rm /var/lib/dpkg/lock</step>
         <step>dpkg --configure -a</step>
+        <step>touch /root/.itm</step> <!--Enable test mode for invoker -->
       </pre_steps>
 
       <case name="applauncherd__test_that_other_apps_dont_gain_new_token_on_update" 
@@ -481,6 +513,7 @@
 
       <post_steps>
         <step>initctl start xsession/pkgm-timed-checks</step>
+        <step>rm -f /root/.itm</step> <!--Disable test mode for invoker -->
       </post_steps>
       <environments>
           <scratchbox>false</scratchbox>

@@ -392,25 +392,25 @@ class SingleInstanceTests(CustomTestCase):
         self.single_instance_abnormal_lock_release('single-instance')
 
     def test_single_instance_window_raise_with_invoker(self, sighup = True):
-        self.single_instance_window_raise('invoker --type=m --single-instance')
+        self.single_instance_window_raise('invoker --test-mode --type=m --single-instance')
         if(sighup):
             self.sighup_applauncherd()
             self.test_single_instance_window_raise_with_invoker(False)
 
     def test_single_instance_and_non_single_instance_with_invoker(self, sighup = True):
-        self.single_instance_and_non_single_instance('invoker --type=m --single-instance')
+        self.single_instance_and_non_single_instance('invoker --test-mode --type=m --single-instance')
         if(sighup):
             self.sighup_applauncherd()
             self.test_single_instance_and_non_single_instance_with_invoker(False)
 
     def test_single_instance_stress_test_with_invoker(self, sighup = True):
-        self.single_instance_stress_test('invoker --type=m --single-instance')
+        self.single_instance_stress_test('invoker --test-mode --type=m --single-instance')
         if(sighup):
             self.sighup_applauncherd()
             self.test_single_instance_stress_test_with_invoker(False)
 
     def test_single_instance_abnormal_lock_release_with_invoker(self, sighup = True):
-        self.single_instance_abnormal_lock_release('invoker --type=m --single-instance')
+        self.single_instance_abnormal_lock_release('invoker --test-mode --type=m --single-instance')
         if(sighup):
             self.sighup_applauncherd()
             self.test_single_instance_abnormal_lock_release_with_invoker(False)

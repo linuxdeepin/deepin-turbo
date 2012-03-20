@@ -97,3 +97,6 @@ add_subdirectory(common/testapps/fala_multiwindow)
 # Sub build: common/testapps/fala_windowless
 add_subdirectory(common/testapps/fala_windowless)
 
+# Sub build: common/testapps/fala_dbus
+add_subdirectory(common/testapps/fala_dbus)
+

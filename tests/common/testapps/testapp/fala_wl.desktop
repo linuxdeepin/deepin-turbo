@@ -2,6 +2,6 @@
 Type=Application
 Name=fala_wl
 Icon=icon-l-video
-Exec=/usr/bin/invoker --type=m /usr/bin/fala_wl
+Exec=/usr/bin/invoker --test-mode --type=m /usr/bin/fala_wl
 Categories=X-MeeGo;X-Demos;
 OnlyShowIn=X-MeeGo;

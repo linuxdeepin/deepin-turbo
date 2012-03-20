@@ -98,7 +98,7 @@ class TC_Splash < Test::Unit::TestCase
         To Test that splash parameters are set when application is launched 
         using --splash
         """
-        system "invoker --splash #{PortraitImg} --type=m #{TestApp} &"
+        system "invoker --splash #{PortraitImg} --test-mode --type=m #{TestApp} &"
         sleep(2)
 
         p = wait_for_app(TestApp)
@@ -127,7 +127,7 @@ class TC_Splash < Test::Unit::TestCase
         To Test that splash-landscape parameters are set when application is launched 
         using --splash-landscape
         """
-        system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --type=m #{TestApp} &"
+        system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --test-mode --type=m #{TestApp} &"
         sleep(2)
 
         p = wait_for_app(TestApp)
@@ -156,11 +156,11 @@ class TC_Splash < Test::Unit::TestCase
         To Test that splash parameters remains the same even if application is  
         launched without using splash
         """
-        system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --type=m #{TestApp} &"
+        system "invoker --splash #{PortraitImg} --splash-landscape #{LandscapeImg} --test-mode --type=m #{TestApp} &"
         p = wait_for_app(TestApp)
         system "kill -15 #{p}"
         sleep(2)
-        system "invoker --type=m #{No_Splash_App} &" 
+        system "invoker --test-mode --type=m #{No_Splash_App} &" 
         pid = wait_for_app(No_Splash_App)
         w = get_compositor_wid
 

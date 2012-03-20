@@ -125,7 +125,7 @@ class BootModeTests(CustomTestCase):
     def launch_apps(self, n = 6, btype = 'm'):
         # check that launching works and the apps are there
         for i in range(n):
-            run_cmd_as_user('/usr/bin/invoker -n -r 2 --type=%s fala_multi-instance %d' % (btype, i))
+            run_cmd_as_user('/usr/bin/invoker --test-mode -n -r 2 --type=%s fala_multi-instance %d' % (btype, i))
             time.sleep(4)
 
         # give the applications time to really start
