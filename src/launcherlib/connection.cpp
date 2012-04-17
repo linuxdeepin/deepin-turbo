@@ -112,9 +112,6 @@ bool Connection::accept(AppData* appData)
         // Get credentials of assumed invoker
         creds_t ccreds = creds_getpeer(m_fd);
 
-        // Fetched peer creds will be free'd with appData->deletePeerCreds
-        appData->setPeerCreds(ccreds);
-
 #if ! defined (DISABLE_VERIFICATION)
 
         // This code checks if the assumed invoker has got enough
@@ -125,10 +122,14 @@ bool Connection::accept(AppData* appData)
 
             sendMsg(INVOKER_MSG_BAD_CREDS);
             close();
+            creds_free(ccreds);
             return false;
         }
 
 #endif // ! defined (DISABLE_VERIFICATION)
+
+        // Fetched peer creds will be free'd with appData->deletePeerCreds
+        appData->setPeerCreds(ccreds);
 
 #endif // defined (HAVE_CREDS)
     }

@@ -6,8 +6,9 @@ applauncherd (3.0.2) stable; urgency=low
   * Fixes: NB#296154 - reopened - proprietary headers to LGPL
   * Fixes: NB#299083 - apps started via invoker --type m retain applauncher's privileges on D-Bus
   * Fixes: NB#300255 - Non-safe applauncherd-launcher::access credential allows getting any UID/GIDs for 3rd party apps
+  * Fixes: NB#300267 - Memory leak at applauncherd during invoking
 
- -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Tue, 17 Apr 2012 09:30:21 +0200
+ -- Dmitry Rozenshtein <ext-dmitry.2.rozenshtein@nokia.com>  Tue, 17 Apr 2012 15:30:21 +0300
 
 applauncherd (3.0.1) stable; urgency=low
 
