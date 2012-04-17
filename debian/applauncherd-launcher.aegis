@@ -1,6 +1,6 @@
 <aegis>
     <provide>
-        <credential name="access"/>
+        <credential name="access" checkorigin="yes"/>
     </provide>
    
     <request>
