@@ -178,7 +178,7 @@ This can be achieved by adding --single-instance to the invoker command:
   Name=com.nokia.<application_name>
   Exec=/usr/bin/invoker --single-instance --type=d /usr/bin/<application_name>
  
-As a result, a lock file /var/run/single-instance-locks/<application_name>/instance.lock 
+As a result, a lock file $HOME/.single-instance-locks/<application_name>/instance.lock 
 is created.  If applauncherd cannot acquire the lock, it tries to find the
 corresponding window and activates it.
 

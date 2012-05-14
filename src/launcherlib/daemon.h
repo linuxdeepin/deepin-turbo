@@ -241,8 +241,8 @@ private:
     bool m_reExec;
 
     //! Name of the state saving directory and file
-    static const char *m_stateDir;
-    static const char *m_stateFile;
+    static const std::string m_stateDir;
+    static const std::string m_stateFile;
 
 #ifdef UNIT_TEST
     friend class Ut_Daemon;

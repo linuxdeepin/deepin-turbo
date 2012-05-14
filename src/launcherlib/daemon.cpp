@@ -40,6 +40,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
+#include <stdlib.h>
 
 #ifdef HAVE_AEGIS_CRYPTO
 #include <aegis_crypto.h>
@@ -53,8 +54,9 @@ extern char ** environ;
 Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
 const int Daemon::m_boosterSleepTime = 2;
-const char *Daemon::m_stateDir = "/var/run/applauncherd";
-const char *Daemon::m_stateFile = "/var/run/applauncherd/saved-state";
+
+const std::string Daemon::m_stateDir = std::string(getenv("HOME"))+"/.applauncherd";
+const std::string Daemon::m_stateFile = Daemon::m_stateDir + "/saved-state";
 
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
@@ -116,7 +118,10 @@ bool Daemon::lock()
     fl.l_start = 0;
     fl.l_len = 1;
 
-    if((m_lockFd = open("/var/run/applauncherd.lock", O_WRONLY | O_CREAT, 0666)) == -1)
+    std::stringstream lock_file;
+    lock_file << getenv("HOME") << "/applauncherd.lock";
+  
+    if((m_lockFd = open(lock_file.str().c_str(), O_WRONLY | O_CREAT, 0666)) == -1)
         return false;
 
     if(fcntl(m_lockFd, F_SETLK, &fl) == -1)
@@ -849,31 +854,31 @@ void Daemon::reExec()
     Logger::logInfo("Daemon: Re-exec requested.");
 
     struct stat st;
-    if (stat(m_stateDir, &st) != 0)
+    if (stat(m_stateDir.c_str(), &st) != 0)
     {
-        Logger::logDebug("Daemon: State saving directory %s does not exist", m_stateDir);
+        Logger::logDebug("Daemon: State saving directory %s does not exist", m_stateDir.c_str());
         Logger::logDebug("Daemon: Attempting to create it");
 
-        if (mkdir(m_stateDir, S_IRUSR | S_IWUSR | S_IXUSR) != 0)
+        if (mkdir(m_stateDir.c_str(), S_IRUSR | S_IWUSR | S_IXUSR) != 0)
         {
             Logger::logDebug("Daemon: Failed to create directory, re-exec failed, exiting.");
             _exit(1);
         }
     }
 
-    if (stat(m_stateDir, &st) != 0)
+    if (stat(m_stateDir.c_str(), &st) != 0)
     {
         Logger::logDebug("Daemon: Directory vanished, re-exec failed, exiting.");
         _exit(1);
     }
     if (!S_ISDIR(st.st_mode))
     {
-        Logger::logDebug("Daemon: %s exists but it is not a directory, re-exec failed, exiting.", m_stateDir);
+        Logger::logDebug("Daemon: %s exists but it is not a directory, re-exec failed, exiting.", m_stateDir.c_str());
         _exit(1);
     }
 
     try {
-        std::ofstream ss(m_stateFile);
+        std::ofstream ss(m_stateFile.c_str());
         ss.exceptions (std::ifstream::failbit | std::ifstream::badbit);
 
         // dump the pid to double check that the state file is from this process
@@ -959,7 +964,7 @@ void Daemon::restoreState()
 {
 #ifdef HAVE_AEGIS_CRYPTO
     aegis_system_mode_t aegisMode;
-    if (aegis_crypto_verify_aegisfs(m_stateDir, &aegisMode) != 0
+    if (aegis_crypto_verify_aegisfs(m_stateDir.c_str(), &aegisMode) != 0
         || aegisMode != aegis_system_protected)
     {
 #ifndef DEBUG_BUILD
@@ -974,7 +979,7 @@ void Daemon::restoreState()
     try
     {
         // We have saved state, try to restore it.
-        std::ifstream ss(m_stateFile);
+        std::ifstream ss(m_stateFile.c_str());
         ss.exceptions (std::ifstream::failbit | std::ifstream::badbit);
 
         std::string token;
@@ -1013,9 +1018,9 @@ void Daemon::restoreState()
 
                 // In debug mode it is better to leave the file there
                 // so it can be examined.
-                if (!m_debugMode && remove(m_stateFile) == -1)
+                if (!m_debugMode && remove(m_stateFile.c_str()) == -1)
                 {
-                    Logger::logError("Daemon: could not remove state file %s", m_stateFile);
+                    Logger::logError("Daemon: could not remove state file %s", m_stateFile.c_str());
                 }
                 Logger::logDebug("Daemon: state restore completed");
                 return;
@@ -1118,9 +1123,9 @@ void Daemon::restoreState()
 
     // In debug mode it is better to leave the file there
     // so it can be examined.
-    if (!m_debugMode && remove(m_stateFile) == -1)
+    if (!m_debugMode && remove(m_stateFile.c_str()) == -1)
     {
-        Logger::logError("Daemon: could not remove state file %s", m_stateFile);
+        Logger::logError("Daemon: could not remove state file %s", m_stateFile.c_str());
     }
 
     // This is only reached if state restore was unsuccessful.
