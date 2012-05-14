@@ -11,11 +11,11 @@
       </pre_steps>
 
       <case name="launch-multi-app-cont" type="Functional" description="Test that launcher and invoker have correct credentials" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_009_launch_multiple_apps_cont</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_009_launch_multiple_apps_cont</step>
       </case>
 
       <case name="launch-without-applauncherd" type="Functional" description="Test invoker can launch applications even when applauncherd is not running" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_020_launch_wo_applauncherd</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_020_launch_wo_applauncherd</step>
       </case>
 
       <environments>
@@ -58,19 +58,19 @@
       </pre_steps>
 
       <case name="invoker-wait-term" type="Functional" description="Test that the launched application is killed when killing invoker that is waiting for app to terminate" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_010</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_010</step>
       </case>
 
       <case name="invoker-status" type="Functional" description="To test that invoker returns the same exit status as the application" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_017_invoker_exit_status</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_017_invoker_exit_status</step>
       </case>
 
       <case name="gid-uid" type="Functional" description="To Test that the set gid and uid is passed from invoker process to launcher" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_018_invoker_gid_uid</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_018_invoker_gid_uid</step>
       </case>
 
       <case name="signal-forwarding" type="Functional" description="To Test that invoker is killed by the same signal as the application" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_019_signal_forwarding</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_019_signal_forwarding</step>
       </case>
 
       <environments>
@@ -85,15 +85,15 @@
       </pre_steps>
 
       <case name="fd-booster-m" type="Functional" description="File descriptor test for booster-m" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_014_fd_booster_m</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_014_fd_booster_m</step>
       </case>
 
       <case name="fd-booster-q" type="Functional" description="File descriptor test for booster-q" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_015_fd_booster_q</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_015_fd_booster_q</step>
       </case>
 
       <case name="kill-boosters" type="Functional" description="Test that booster is restarted if it is killed" timeout="360" level="System" insignificant="true">
-          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python2.6 /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_016_restart_booster</step>
+          <step expected_result="0">source /tmp/session_bus_address.user; DISPLAY=:0 python /usr/share/applauncherd-M-testscripts/test-func-launcher.py test_016_restart_booster</step>
       </case>
       <environments>
           <scratchbox>true</scratchbox>

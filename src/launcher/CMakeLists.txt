@@ -1,14 +1,14 @@
 # Generate list of libraries for preload.h
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/preload-h-libraries.h
-  COMMAND python2.6 ${CMAKE_HOME_DIRECTORY}/scripts/library-helper.py --preload-h-libraries
+  COMMAND python ${CMAKE_HOME_DIRECTORY}/scripts/library-helper.py --preload-h-libraries
   DEPENDS ${CMAKE_HOME_DIRECTORY}/scripts/library-helper.py
 )
 
 # Generate linker command line fragment
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/additional-linked-libraries.ld
-  COMMAND python2.6 ${CMAKE_HOME_DIRECTORY}/scripts/library-helper.py --linker-flags
+  COMMAND python ${CMAKE_HOME_DIRECTORY}/scripts/library-helper.py --linker-flags
   DEPENDS ${CMAKE_HOME_DIRECTORY}/scripts/library-helper.py
 )
 
