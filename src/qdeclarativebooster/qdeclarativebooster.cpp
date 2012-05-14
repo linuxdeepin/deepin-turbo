@@ -104,9 +104,9 @@ void QDeclarativeBooster::preinit()
     if (appName.length() > 1)
         appClass += appName.right(appName.length() - 1);
 
-    char* app_name = qstrdup(appName.toLatin1().data());
-    QApplication::setAppName(app_name);
+    // char* app_name = qstrdup(appName.toLatin1().data());
+    // QApplication::setAppName(app_name);
 
-    char* app_class = qstrdup(appClass.toLatin1().data());
-    QApplication::setAppClass(app_class);
+    // char* app_class = qstrdup(appClass.toLatin1().data());
+    // QApplication::setAppClass(app_class);
 }
