@@ -535,7 +535,7 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
             // sig_forwarder() handles signals.
             // We only have to receive those here.
             FD_SET(g_signal_pipe[0], &readfds);
-            ndfs = (socket_fd > ndfs) ? socket_fd : ndfs;
+            ndfs = (g_signal_pipe[0] > ndfs) ? g_signal_pipe[0] : ndfs;
 
             // Wait for something appearing in the pipes.
             if (select(ndfs + 1, &readfds, NULL, NULL, NULL) > 0)
@@ -576,6 +576,17 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
                         }
                     }
                     break;
+                }
+                // Check if we got a UNIX signal.
+                else if (FD_ISSET(g_signal_pipe[0], &readfds))
+                {
+                    // Clean up the pipe
+                    char signal_id;
+                    read(g_signal_pipe[0], &signal_id, sizeof(signal_id));
+
+                    // Set signals forwarding to the invoked process again
+                    // (they were reset by the signal forwarder).
+                    sigs_init();
                 }
             }
         }
