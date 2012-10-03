@@ -1,6 +1,5 @@
 #include <QtConcurrentRun>
 #include <QApplication>
-#include <MApplication>
 
 #include "coverage.h"
 #include "eventhandler.h"
@@ -29,21 +28,15 @@ EventHandler::~EventHandler()
 
 void EventHandler::runEventLoop()
 {
+    // Exit from event loop when invoker is ready to connect
+    connect(this, SIGNAL(connectionAccepted()), QApplication::instance(), SLOT(quit()));
+    connect(this, SIGNAL(connectionRejected()), QApplication::instance(), SLOT(quit()));
+
     if (m_type == MEventHandler)
     {
-        // Exit from event loop when invoker is ready to connect
-        connect(this, SIGNAL(connectionAccepted()), MApplication::instance(), SLOT(quit()));
-        connect(this, SIGNAL(connectionRejected()), MApplication::instance(), SLOT(quit()));
-
         // Enable theme change handler
         m_item = new MGConfItem(MEEGOTOUCH_THEME_GCONF_KEY, 0);
         connect(m_item, SIGNAL(valueChanged()), this, SLOT(notifyThemeChange()));
-    }
-    else if (m_type == QEventHandler)
-    {
-        // Exit from event loop when invoker is ready to connect
-        connect(this, SIGNAL(connectionAccepted()), QApplication::instance(), SLOT(quit()));
-        connect(this, SIGNAL(connectionRejected()), QApplication::instance(), SLOT(quit()));
     }
 
     // Start another thread to listen connection from invoker
@@ -69,10 +62,7 @@ void EventHandler::runEventLoop()
     }
 
     // Run event loop so application instance can receive notifications
-    if (m_type == MEventHandler)
-        MApplication::exec();
-    else if (m_type == QEventHandler)
-        QApplication::exec();
+    QApplication::exec();
 
     // Disable theme change handler
     disconnect(m_item, 0, this, 0);
@@ -105,7 +95,7 @@ void EventHandler::notifyThemeChange()
 #endif
 
     // only MApplication is connected to this signal
-    MApplication::quit();
+    QApplication::quit();
     _exit(EXIT_SUCCESS);
 }
 
@@ -126,11 +116,7 @@ void EventHandler::handleSigHup()
     __gcov_flush();
 #endif
 
-    if (m_type == MEventHandler)
-        MApplication::quit();
-    else if (m_type == QEventHandler)
-        QApplication::quit();
-
+    QApplication::quit();
     _exit(EXIT_SUCCESS);
 }
 
