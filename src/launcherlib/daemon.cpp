@@ -42,10 +42,6 @@
 #include <sstream>
 #include <stdlib.h>
 
-#ifdef HAVE_AEGIS_CRYPTO
-#include <aegis_crypto.h>
-#endif
-
 #include "coverage.h"
 
 // Environment
@@ -962,20 +958,6 @@ void Daemon::reExec()
 
 void Daemon::restoreState()
 {
-#ifdef HAVE_AEGIS_CRYPTO
-    aegis_system_mode_t aegisMode;
-    if (aegis_crypto_verify_aegisfs(m_stateDir.c_str(), &aegisMode) != 0
-        || aegisMode != aegis_system_protected)
-    {
-#ifndef DEBUG_BUILD
-        Logger::logError("Daemon: State file not on aegis protected file system, exiting.");
-        _exit(1);
-#else
-        Logger::logDebug("Daemon: State file not on aegis protected file system, on non-debug build I would die now.");
-#endif
-    }
-#endif
-
     try
     {
         // We have saved state, try to restore it.

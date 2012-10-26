@@ -3,14 +3,12 @@
 \section debugging Debugging
 
 To debug a launched application, the debugger must be attached to an
-already running booster process. Due to security limitations, it is
-required to use \c aegis-su tool from \c aegis-dss-tools package. 
-For instance:
+already running booster process.
 
 1. Run the following command:
 
 \code
-aegis-su -r tcb aegis-exec -p gdb -a CAP::sys_ptrace gdb /usr/bin/applauncherd.bin $(pgrep booster-d)
+gdb /usr/bin/applauncherd.bin $(pgrep booster-d)
 \endcode
 
 2. Set a breakpoint to the application code and let the process

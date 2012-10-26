@@ -20,10 +20,6 @@
 #ifndef APPDATA_H
 #define APPDATA_H
 
-#ifdef HAVE_CREDS
-    #include <sys/creds.h>
-#endif
-
 #include <stdint.h>
 
 #include <string>
@@ -134,17 +130,6 @@ public:
     //! Get group ID of calling process
     gid_t groupId() const;
 
-#if defined (HAVE_CREDS)
-    //! Store security credentials
-    void setPeerCreds(creds_t peerCreds);
-
-    //! Get the stored credentials
-    creds_t peerCreds() const;
-    
-    //! Free the memory reserved for credentials
-    void deletePeerCreds();
-#endif
-
 private:
 
     AppData(const AppData & r);
@@ -163,11 +148,6 @@ private:
     uid_t       m_uid;
     string      m_splashFileName;
     string      m_landscapeSplashFileName;
-
-#if defined (HAVE_CREDS)
-    creds_t     m_peerCreds;
-#endif
-
 };
 
 #endif // APPDATA_H

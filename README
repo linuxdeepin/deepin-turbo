@@ -52,10 +52,6 @@ The launcher itself is a library that is loaded by a small C-program (/usr/bin/a
 launcher binary to any libraries. This allows us to fully control how
 (with which flags) the preloaded libraries are opened with dlopen(). 
 
-Aegis platform security is used to protect the socket connection between
-invoker and launcher. Currently this works only on the target device. It
-is automatically disabled by the build scripts when compiling on x86. 
-
 Each application type (currently Qt and MeeGo Touch) has its own booster
 process. When booster launches the application by calling the "main()"
 function, applauncherd will create new booster process of that type.

@@ -46,20 +46,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <grp.h>
-#ifdef HAVE_CREDS
-#include <sys/creds.h>
-
-namespace 
-{
-    const char * const g_strCreds[] = 
-    {
-        "applauncherd-launcher::access",
-        "SRC::com.nokia.maemo",
-        "AID::com.nokia.maemo.applauncherd-invoker.client",
-        "applauncherd-invoker::applauncherd-invoker"
-    };
-}
-#endif // HAVE_CREDS
 
 #include "coverage.h"
 
@@ -85,11 +71,6 @@ Booster::Booster() :
     m_spaceAvailable(0),
     m_bootMode(false)
 {
-#ifdef HAVE_CREDS
-    // initialize credentials to be filtered out from boosted applications
-    convertStringsToCreds(g_strCreds, sizeof(g_strCreds) / sizeof(char*));
-#endif
-
     m_boosted_gid = getGroupId("boosted", FALLBACK_GID);
 }
 
@@ -478,27 +459,6 @@ void Booster::setEnvironmentBeforeLaunch()
     if (!m_appData->disableOutOfMemAdj())
         resetOomAdj();
 
-#ifdef HAVE_CREDS
-    // filter out invoker-specific credentials
-    Booster::filterOutCreds(m_appData->peerCreds());
-
-    // Set application's platform security credentials.
-    // creds_confine2() tries first to use application-specific credentials, but if they are missing
-    // from the system, it uses credentials inherited from the invoker.
-    int err = creds_confine2(m_appData->fileName().c_str(), credp_str2flags("set", NULL), m_appData->peerCreds());
-    m_appData->deletePeerCreds();
-
-    if (err < 0)
-    {
-        // Credential setup has failed, abort.
-        std::string msg("Booster: Failed to setup credentials for launching application: ");
-        std::stringstream ss;
-        ss << err;
-        msg += ss.str();
-        throw std::runtime_error(msg);
-    }
-#endif
-
     // Request splash screen from mcompositor if needed
     if (m_appData->splashFileName().length() > 0 || m_appData->landscapeSplashFileName().length() > 0)
     {
@@ -670,33 +630,6 @@ AppData* Booster::appData() const
 {
     return m_appData;
 }
-
-#ifdef HAVE_CREDS
-
-void Booster::convertStringsToCreds(const char * const strings[], unsigned int numStrings)
-{
-    // Convert string-formatted credentials into
-    // "binary"-formatted credentials
-
-    for (unsigned int i = 0; i < numStrings; i++)
-    {
-        creds_value_t value;
-        creds_value_t ret = creds_str2creds(strings[i], &value);
-
-        if (ret != CREDS_BAD)
-            m_extraCreds.push_back(BinCredsPair(ret, value));
-    }
-}
-
-void Booster::filterOutCreds(creds_t creds)
-{
-    for(unsigned int i = 0; i < m_extraCreds.size(); i++)
-    {
-        creds_sub(creds, m_extraCreds.at(i).first, m_extraCreds.at(i).second);
-    }
-}
-
-#endif //HAVE_CREDS
 
 void Booster::resetOomAdj()
 {

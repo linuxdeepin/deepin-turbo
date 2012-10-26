@@ -51,6 +51,7 @@ const uint32_t INVOKER_MSG_SPLASH             = 0x5b1a0000;
 const uint32_t INVOKER_MSG_LANDSCAPE_SPLASH   = 0x5b120000;
 const uint32_t INVOKER_MSG_EXIT               = 0xe4170000;
 const uint32_t INVOKER_MSG_ACK                = 0x600d0000;
-const uint32_t INVOKER_MSG_BAD_CREDS          = 0x60035800;
+// not used (Harmattan security stuff)
+// const uint32_t INVOKER_MSG_BAD_CREDS          = 0x60035800;
 
 #endif // PROTOCOL_H

@@ -1,4 +1,0 @@
-File to test triggering of applauncherd when a new file in /usr/lib is added
-
-version 1.1: test for file being modified
-

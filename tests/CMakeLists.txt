@@ -13,9 +13,6 @@ add_subdirectory(meego/functests)
 # Sub build: meego/perftests
 add_subdirectory(meego/perftests)
 
-# Sub build: harmattan/testapps/creds 
-add_subdirectory(harmattan/testapps/creds)
-
 # Sub build: harmattan/testscripts
 add_subdirectory(harmattan/testscripts)
 

@@ -28,10 +28,6 @@
 
 using std::string;
 
-#ifdef HAVE_CREDS
-    #include <sys/creds.h>
-#endif
-
 #define IO_DESCRIPTOR_COUNT 3
 
 /*!
@@ -168,13 +164,6 @@ private:
     uint32_t m_priority;
     uint32_t m_delay;
     bool     m_sendPid;
-
-#if defined (HAVE_CREDS)
-    static const char * m_credsStr;
-    creds_value_t m_credsValue;
-    creds_type_t  m_credsType;
-#endif
-
     gid_t    m_gid;
     uid_t    m_uid;
 

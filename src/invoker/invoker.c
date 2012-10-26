@@ -43,11 +43,6 @@
 #include "protocol.h"
 #include "invokelib.h"
 #include "search.h"
-
-#ifdef HAVE_CREDS
-    #include <sys/creds.h>
-#endif
-
 #include "whitelist.h"
 
 // Delay before exit.
@@ -176,30 +171,6 @@ static void sigs_restore(void)
     sigs_set(&sig);
 }
 
-// Shows a list of credentials that the client has
-static void show_credentials(void)
-{
-#ifdef HAVE_CREDS
-    creds_t creds;
-    creds_value_t value;
-    creds_type_t type;
-    int i;
-
-    creds = creds_gettask(0);
-    for (i = 0; (type = creds_list(creds, i,  &value)) != CREDS_BAD; ++i) {
-        char buf[200];
-        (void)creds_creds2str(type, value, buf, sizeof(buf));
-        buf[sizeof(buf)-1] = 0;
-        printf("\t%s\n", buf);
-    }
-    creds_free(creds);
-#else
-    printf("Security credential information isn't available.\n");
-#endif
-
-    exit(0);
-}
-
 // Receive ACK
 static bool invoke_recv_ack(int fd)
 {
@@ -207,11 +178,7 @@ static bool invoke_recv_ack(int fd)
 
     invoke_recv_msg(fd, &action);
 
-    if (action == INVOKER_MSG_BAD_CREDS)
-    {
-        die(1, "Security credential check failed.\n");
-    }
-    else if (action != INVOKER_MSG_ACK)
+    if (action != INVOKER_MSG_ACK)
     {
         die(1, "Received wrong ack (%08x)\n", action);
     }
@@ -456,7 +423,6 @@ static void usage(int status)
            "  e                      Launch any application, even if it's not a library.\n"
            "                         Can be used if only splash screen is wanted.\n\n"
            "Options:\n"
-           "  -c, --creds            Print Aegis security credentials (if enabled).\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
            "                         (default %d).\n"
            "  -r, --respawn SECS     After invoking respawn new booster after SECS seconds\n"
@@ -766,7 +732,6 @@ int main(int argc, char *argv[])
     // Options recognized
     struct option longopts[] = {
         {"help",             no_argument,       NULL, 'h'},
-        {"creds",            no_argument,       NULL, 'c'},
         {"wait-term",        no_argument,       NULL, 'w'},
         {"no-wait",          no_argument,       NULL, 'n'},
         {"global-syms",      no_argument,       NULL, 'G'},
@@ -791,10 +756,6 @@ int main(int argc, char *argv[])
         {
         case 'h':
             usage(0);
-            break;
-
-        case 'c':
-            show_credentials();
             break;
 
         case 'w':

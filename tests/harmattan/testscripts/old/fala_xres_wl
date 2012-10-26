@@ -1,5 +1,0 @@
-#!/bin/sh
-x=`sh /usr/share/applauncherd-testscripts/fala_wid`
-xresponse -a 'meegotouchhome' -w 0 -id $x -c $1 -u > /tmp/app_xresponse.log&
-echo $x
-                                      

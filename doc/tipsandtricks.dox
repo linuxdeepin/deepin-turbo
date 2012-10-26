@@ -14,8 +14,6 @@ This section contains miscellaneous tips and tricks for using \c invoker and \c 
 
 - \subpage dbus "Using the launcher with D-Bus"
 
-- \subpage aegis "Requesting protected resources for the launcher"
-
 - \subpage limitations "Limitations and known issues"
 
 - \subpage debianpackaging "Packaging boosted applications"

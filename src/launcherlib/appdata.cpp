@@ -21,10 +21,6 @@
 #include "protocol.h"
 #include <stdint.h>
 
-#ifdef HAVE_CREDS
-    #include <sys/creds.h>
-#endif
-
 AppData::AppData() :
     m_options(0),
     m_argc(0),
@@ -39,9 +35,6 @@ AppData::AppData() :
     m_uid(0),
     m_splashFileName(""),
     m_landscapeSplashFileName("")
-#if defined (HAVE_CREDS)
-  , m_peerCreds(NULL)
-#endif
 {}
 
 void AppData::setOptions(uint32_t newOptions)
@@ -190,27 +183,6 @@ gid_t AppData::groupId() const
     return m_gid;
 }
 
-#if defined (HAVE_CREDS)
-void AppData::setPeerCreds(creds_t peerCreds)
-{
-    m_peerCreds = peerCreds;
-}
-
-creds_t AppData::peerCreds() const
-{
-    return m_peerCreds;
-}
-
-void AppData::deletePeerCreds()
-{
-    creds_free(m_peerCreds);
-    m_peerCreds = NULL;
-}
-#endif // defined (HAVE_CREDS)
-
 AppData::~AppData()
 {
-#if defined (HAVE_CREDS)
-    deletePeerCreds();
-#endif
 }

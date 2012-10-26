@@ -144,64 +144,6 @@ def process_state(processid):
         debug(op)
         return None
 
-def get_creds(path = None, pid = None):
-    """
-    Tries to retrieve credentials for a running application
-    using either the pid or path. Credentials are returned
-    as a string list.
-    """
-
-    if path != None:
-        pid = get_pid(path)
-
-    if pid == None:
-        print 'invalid PID'
-        return None
-
-    handle = Popen(['/usr/bin/creds-get', '-p', str(pid)],
-                   stdout = subprocess.PIPE)
-
-    op = handle.communicate()[0].strip()
-    handle.wait()
-
-    if handle.returncode != 0:
-        print 'error retrieving credentials'
-        return None
-    
-    #self.assert_(handle.returncode == 0, "There was no such PID!")
-    debug("creds-get gave >>>>>\n%s\n<<<<<" % op)
-
-    creds = op.split("\n")[1:]
-
-    return creds
-
-def launch_and_get_creds(path):
-    """
-    Tries to launch an application and if successful, returns the
-    credentials the application has as a list. 
-    """
-
-    # try launch the specified application
-    handle = run_app_as_user(path)
-
-    # sleep for a moment to allow applauncherd to start the process
-    time.sleep(3)
-
-    # with luck, the process should have correct name by now
-    pid = get_pid(path)
-
-    debug("%s has PID %s" % (basename(path), pid,))
-
-    if pid == None:
-        print "couldn't launch %s" % basename(path)
-        return None
-
-    creds = get_creds(pid = pid)
-
-    kill_process(path)
-
-    return creds
-
 def get_file_descriptor(booster, type):
     """
     To test that file descriptors are closed before calling application main

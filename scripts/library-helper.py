@@ -9,8 +9,6 @@ real_build_deps = set(['cmake (>= 2.6.0)',
                        'debhelper (>= 7)', 
                        'libqt4-dev (>= 4.5.0)', 
                        'libmeegotouch-dev', 
-                       'libcreds2-dev [arm armel]', 
-                       'aegis-builder (>= 1.4) [arm armel]', 
                        'libxtst-dev', 
                        'libxext-dev', 
                        'libxi-dev', 
@@ -21,7 +19,6 @@ real_build_deps = set(['cmake (>= 2.6.0)',
 # Real runtime dependencies for applauncherd-launcher, you may need to update these as well
 real_runtime_deps = set(['${shlibs:Depends}', 
                          '${misc:Depends}', 
-                         'libcreds2 [arm armel]', 
                          'applauncherd-single-instance'])
 
 # Library statuses
@@ -121,7 +118,6 @@ libraries_nokia = [
     #(L, "/usr/lib/libQtXmlPatterns.so.4",                                  "-lQtXmlPatterns", "libqt4-xmlpatterns", "libqt4-dev"),
     #(L, "/usr/lib/libQtScript.so.4",                                       "-lQtScript", "libqt4-script", "libqt4-dev"),
     #(L, "/usr/lib/libssl.so.0.9.8",                                        "-lssl", "libssl0.9.8", "libssl-dev"),
-    #(L, "/usr/lib/libaegis_crypto.so.1",                                   "-laegis_crypto", "libaegis-crypto1", "libaegis-crypto-dev"),
     (L, "/usr/lib/libQtDeclarative.so.4",                                  "-lQtDeclarative", "libqt4-declarative", "libqt4-dev"),
     #(L, "/usr/lib/libxml2.so.2",                                           "-lxml2", "libxml2", "libxml2-dev"),
     #(L, "/lib/libcal.so.1",                                                "-lcal", "libcal1", "libcal-dev"),

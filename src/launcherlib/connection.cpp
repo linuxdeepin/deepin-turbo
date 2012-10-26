@@ -30,10 +30,6 @@
 #include <stdexcept>
 #include <sys/syslog.h>
 
-#if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
-    const char * Connection::m_credsStr = "applauncherd-launcher::access";
-#endif
-
 Connection::Connection(int socketFd, bool testMode) :
         m_testMode(testMode),
         m_fd(-1),
@@ -46,11 +42,6 @@ Connection::Connection(int socketFd, bool testMode) :
         m_priority(0),
         m_delay(0),
         m_sendPid(false),
-
-#if defined (HAVE_CREDS)
-        m_credsValue(0),
-        m_credsType(0),
-#endif
         m_gid(0),
         m_uid(0)
 {
@@ -60,19 +51,6 @@ Connection::Connection(int socketFd, bool testMode) :
 
     if (!m_testMode && m_curSocket == -1)
         throw std::runtime_error("Connection: Socket isn't initialized!\n");
-
-#if defined (HAVE_CREDS) && ! defined (DISABLE_VERIFICATION)
-
-    m_credsType = creds_str2creds(m_credsStr, &m_credsValue);
-
-    if (m_credsType == CREDS_BAD)
-    {
-        //while Logger is disabled in boosters need logging to syslog directly
-        syslog(LOG_ERR,"Connection: credentials %s conversion failed \n", m_credsStr);
-        Logger::logError("Connection: credentials %s conversion failed \n", m_credsStr);
-    }
-
-#endif
 }
 
 Connection::~Connection()
@@ -106,32 +84,6 @@ bool Connection::accept(AppData* appData)
             Logger::logError("Connection: Failed to accept a connection: %s\n", strerror(errno));
             return false;
         }
-
-#if defined (HAVE_CREDS)
-
-        // Get credentials of assumed invoker
-        creds_t ccreds = creds_getpeer(m_fd);
-
-#if ! defined (DISABLE_VERIFICATION)
-
-        // This code checks if the assumed invoker has got enough
-        // rights to communicate with us
-        if (!creds_have_p(ccreds, m_credsType, m_credsValue))
-        {
-            Logger::logError("Connection: invoker doesn't have enough credentials to call launcher \n");
-
-            sendMsg(INVOKER_MSG_BAD_CREDS);
-            close();
-            creds_free(ccreds);
-            return false;
-        }
-
-#endif // ! defined (DISABLE_VERIFICATION)
-
-        // Fetched peer creds will be free'd with appData->deletePeerCreds
-        appData->setPeerCreds(ccreds);
-
-#endif // defined (HAVE_CREDS)
     }
 
     return true;

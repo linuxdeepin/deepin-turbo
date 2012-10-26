@@ -20,17 +20,5 @@ tests/perftests/waitforwindow/wait_window
 tests/helloworld/helloworld
 tests/perftests/hello_no_launcher/hello_no_launcher
 tests/perftests/launcher_perf.txt
-debian/applauncherd-dev/
-debian/applauncherd-doc/
 build-stamp
 configure-stamp
-debian/applauncherd-functional-tests/
-debian/applauncherd-invoker/
-debian/applauncherd-launcher/
-debian/applauncherd-performance-tests/
-debian/applauncherd-tests/
-debian/applauncherd.aegis.more
-debian/applauncherd/
-debian/files
-debian/tmp/
-

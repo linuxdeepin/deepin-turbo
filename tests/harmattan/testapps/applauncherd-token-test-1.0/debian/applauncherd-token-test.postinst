@@ -1,3 +1,0 @@
-#!/bin/sh
-
-aegisfs --install /etc/aegisfs.d/applauncherd-token-test.conf

@@ -166,23 +166,6 @@ void Ut_Connection::testConnection()
         delete cn;
     QCOMPARE(exceptionTriggered, true);
     QVERIFY(exceptionDetails.compare("Connection: Socket isn't initialized!\n") == 0);
-
-#if defined (HAVE_CREDS)
-    //negative testcase for credentials
-    qsrand(QDateTime::currentMSecsSinceEpoch());
-    char invalidCredentials[255];
-    const char * correctCredentials = Connection::m_credsStr;
-    sprintf(invalidCredentials,"invalid-credentials-%i",qrand());
-    Connection::m_credsStr = invalidCredentials;
-    cn = new Connection(0);
-    Connection::m_credsStr = correctCredentials;
-    if (cn)
-        delete cn;
-    QString matchPattern = "Connection: credentials " + QString(invalidCredentials) +" conversion failed";
-    QTest::qSleep(delay); // wait for syslog
-    int exitCode = QProcess::execute("grep", QStringList() << matchPattern << syslogFile);
-    QVERIFY(exitCode == 0);
-#endif
 }
 
 void Ut_Connection::testReceiveArgs()

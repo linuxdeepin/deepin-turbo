@@ -37,18 +37,6 @@ class Connection;
 class SocketManager;
 class SingleInstance;
 
-#ifdef HAVE_CREDS
-
-    #include <sys/creds.h>
-    #include <vector>
-    #include <map>
-
-    // Storage types for "binary"-formatted credentials
-    typedef std::pair<creds_type_t, creds_value_t> BinCredsPair;
-    typedef std::vector<BinCredsPair> CredsList;
-
-#endif
-
 /*!
  *  \class Booster
  *  \brief Abstract base class for all boosters (Qt-booster, M-booster and so on..)
@@ -271,19 +259,6 @@ private:
     //! Group ID to flip to and back to generate an event for policy
     //! (re)classification.
     gid_t m_boosted_gid;
-
-#ifdef HAVE_CREDS
-    //! initialize invoker-specific credentials to be filtered out by filterOutCreds()
-    void convertStringsToCreds(const char * const strings[], unsigned int numStrings);
-
-    //! filter out invoker-specific credentials from boosted application
-    void filterOutCreds(creds_t creds);
-
-    //! set of credentials to be filtered out of credentials
-    //! inhereted from invoker process
-    CredsList m_extraCreds;
-
-#endif
 
 #ifdef UNIT_TEST
     friend class Ut_Booster;
