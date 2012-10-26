@@ -1,7 +1,7 @@
 # Set sources
 set(SRC fala_dbus.cpp)
 
-link_libraries(${MEEGOTOUCH_LIBRARIES})
+link_libraries(${MEEGOTOUCH_LIBRARIES} ${QT_QTDBUS_LIBRARY})
 
 include(${QT_USE_FILE})
 
