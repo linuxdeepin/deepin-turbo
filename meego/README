@@ -1,5 +1,0 @@
-This directory contains the packaging materials needed for packaging
-applauncherd for MeeGo. The files needed for packaging specific
-releases are contained in the corresponding directories. The script
-create-tarball.sh pulls a tar ball from a git repository, and the
-rest of the files are ready to be submitted to build.meego.com.
