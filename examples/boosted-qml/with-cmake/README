@@ -1,5 +1,0 @@
-This example shows how to build a booster-enabled QML Helloworld with cmake.
-
-Build the example:               cmake . && make
-Run the example without booster: ./qml-helloworld
-Run the example with booster:    invoker --type=d ./qml-helloworld

@@ -26,9 +26,6 @@ These instructions describe how to build your application so that it
 can be launched using applauncherd. Only Debian packaging is considered,
 you have to creatively apply the instructions if you are doing RPM packaging.
 
-If you are too impatient to read instructions, take a look at the
-examples in the source tree instead.
-
   Using QMake
   -----------
 
