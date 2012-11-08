@@ -10,12 +10,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC ebooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
-${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
-${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
+set(SRC ebooster.cpp pluginfactory.cpp)
 
 # Set libraries to be linked.
-link_libraries(${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY})
+link_libraries("-L../launcherlib -lapplauncherd" ${MEEGOTOUCH_LIBRARIES} ${LIBDL} ${QT_QTCORE_LIBRARY})
 
 # Set executable
 add_library(ebooster MODULE ${SRC} ${MOC_SRC})
