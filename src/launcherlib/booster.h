@@ -20,6 +20,7 @@
 #ifndef BOOSTER_H
 #define BOOSTER_H
 
+#include "launcherlib.h"
 #include <QX11Info>
 
 #include <cstdlib>
@@ -50,7 +51,7 @@ class SingleInstance;
  *  Booster instance dies with the launched application and a new one must be created
  *  in advance so as to launch a new application.
  */
-class Booster
+class DECL_EXPORT Booster
 {
 public:
 

@@ -20,6 +20,7 @@
 #ifndef APPDATA_H
 #define APPDATA_H
 
+#include "launcherlib.h"
 #include <stdint.h>
 
 #include <string>
@@ -33,7 +34,7 @@ using std::vector;
 typedef int (*entry_t)(int, char **);
 
 //! Structure for application data read from the invoker
-class AppData
+class DECL_EXPORT AppData
 {
 public:
 

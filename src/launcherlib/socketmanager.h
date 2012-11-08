@@ -20,12 +20,11 @@
 #ifndef SOCKETMANAGER_H
 #define SOCKETMANAGER_H
 
+#include "launcherlib.h"
 #include <map>
-
-using std::map;
-
 #include <string>
 
+using std::map;
 using std::string;
 
 /*!
@@ -34,7 +33,7 @@ using std::string;
  * SocketManager Manages sockets that are used in the invoker <-> booster
  * communication.
  */
-class SocketManager
+class DECL_EXPORT SocketManager
 {
 public:
 

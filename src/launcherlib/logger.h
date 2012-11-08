@@ -20,6 +20,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include "launcherlib.h"
 #include <cstdarg>
 
 /*!
@@ -27,7 +28,7 @@
  * \brief Logging utility class
  *
  */
-class Logger
+class DECL_EXPORT Logger
 {
 public:
 

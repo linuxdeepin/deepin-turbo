@@ -30,8 +30,6 @@
 #include <sys/file.h>
 #include <stdexcept>
 
-#define DECL_EXPORT extern "C" __attribute__ ((__visibility__("default")))
-
 int  g_sigPipeFd       = -1;
 char g_pipeDataSigChld = SIGCHLD;
 char g_pipeDataSigTerm = SIGTERM;
@@ -71,7 +69,7 @@ static void sigHupHandler(int)
 }
 
 //! Main function
-DECL_EXPORT int main(int argc, char * argv[])
+extern "C" DECL_EXPORT int main(int argc, char * argv[])
 {
     // Open the log
     Logger::openLog(PROG_NAME_LAUNCHER);

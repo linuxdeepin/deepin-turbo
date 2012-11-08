@@ -20,6 +20,7 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include "launcherlib.h"
 #include "appdata.h"
 #include "protocol.h"
 
@@ -38,7 +39,7 @@ using std::string;
  * and the launcher daemon. The low-level communication code is mostly taken
  * from the maemo-launcher used in Maemo 5. It might need a re-write.
  */
-class Connection
+class DECL_EXPORT Connection
 {
 public:
 

@@ -20,6 +20,7 @@
 #ifndef SINGLEINSTANCE_H
 #define SINGLEINSTANCE_H
 
+#include "launcherlib.h"
 #include <tr1/memory>
 
 using std::tr1::shared_ptr;
@@ -50,7 +51,7 @@ struct SingleInstancePluginEntry
 };
 
 //! Class that loads the single-instance binary as a plugin.
-class SingleInstance
+class DECL_EXPORT SingleInstance
 {
 public:
 
