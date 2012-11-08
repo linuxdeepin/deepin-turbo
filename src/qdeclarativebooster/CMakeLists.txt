@@ -37,5 +37,4 @@ install(TARGETS qdeclarativebooster DESTINATION /usr/lib/applauncherd/)
 install(TARGETS mdeclarativecache DESTINATION /usr/lib)
 install(FILES mdeclarativecache.h MDeclarativeCache DESTINATION /usr/include/applauncherd
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-install(FILES README-QDECLARATIVEBOOSTER DESTINATION /usr/share/doc/applauncherd)
 
