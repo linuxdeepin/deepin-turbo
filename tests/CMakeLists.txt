@@ -13,36 +13,6 @@ add_subdirectory(meego/functests)
 # Sub build: meego/perftests
 add_subdirectory(meego/perftests)
 
-# Sub build: harmattan/testscripts
-add_subdirectory(harmattan/testscripts)
-
-# Sub build: harmattan/art-tests
-add_subdirectory(harmattan/art-tests)
-
-# Sub build: harmattan/apps-tests
-add_subdirectory(harmattan/apps-tests)
-
-# Sub build: harmattan/red-tests
-add_subdirectory(harmattan/red-tests)
-
-# Sub build: harmattan/invoker-tests
-add_subdirectory(harmattan/invoker-tests)
-
-# Sub build: harmattan/daemon-tests
-add_subdirectory(harmattan/daemon-tests)
-
-# Sub build: harmattan/functests
-add_subdirectory(harmattan/functests)
-
-# Sub build: harmattan/perftests/qml
-add_subdirectory(harmattan/perftests/qml)
-
-# Sub build: harmattan/perftests/qml
-add_subdirectory(harmattan/perftests/lmt)
-
-# Sub build: harmattan/perftests/qml
-add_subdirectory(harmattan/perftests/reference)
-
 # Sub build: common/unittests
 add_subdirectory(common/unittests)
 

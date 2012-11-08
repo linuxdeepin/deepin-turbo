@@ -100,11 +100,6 @@ install(DIRECTORY doc/implementation-documentation DESTINATION /usr/share/doc/ap
 install(DIRECTORY doc/user-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
 install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
 
-
-# Install examples
-install(DIRECTORY examples
-        DESTINATION /usr/share/doc/applauncherd)
-
 # Install startup script
 if ($ENV{DEBUG_BUILD})
     install(PROGRAMS src/scripts/applauncherd-debug DESTINATION /usr/bin/ RENAME applauncherd)
@@ -125,7 +120,4 @@ install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
 install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
 install(FILES data/pkgconfig/qdeclarative-boostable.pc DESTINATION /usr/lib/pkgconfig)
 install(FILES data/mkspecs/features/qdeclarative-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
-if ($ENV{MEEGO})
-    install(FILES meego/applauncherd.desktop DESTINATION /etc/xdg/autostart)
-endif ($ENV{MEEGO})
 
