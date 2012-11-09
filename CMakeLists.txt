@@ -31,21 +31,10 @@ if (${QTVERSION} VERSION_LESS 4.6.0)
     message(FATAL_ERROR "You need Qt4.6, found ${QTVERSION}.")
 endif (${QTVERSION} VERSION_LESS 4.6.0)
 
-# Find libmeegotouch for MBooster and the test programs
+# Find libmeegotouch for the test programs
 include(FindPkgConfig) 
 pkg_check_modules(MEEGOTOUCH meegotouch>=0.20 REQUIRED)
 include_directories(${MEEGOTOUCH_INCLUDE_DIRS})
-
-# Check if it's possible to compile MBooster with MComponentCache. If so,
-# HAVE_MCOMPONENTCACHE is set.
-message(STATUS "checking for mcomponentcache.h")
-find_file(M_COMPONENT_CACHE NAMES mcomponentcache.h PATHS ${MEEGOTOUCH_INCLUDE_DIRS})
-if (EXISTS ${M_COMPONENT_CACHE})
-  message(STATUS "  found")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MCOMPONENTCACHE")
-else (EXISTS ${M_COMPONENT_CACHE})
-  message(STATUS "  not found")
-endif (EXISTS ${M_COMPONENT_CACHE})
 
 if ($ENV{DEBUG_BUILD})
     add_definitions(-DDEBUG_BUILD)
@@ -110,15 +99,7 @@ else ($ENV{DEBUG_BUILD})
     install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
 endif ($ENV{DEBUG_BUILD})
 
-# Install pkg-config and qmake feature files. Note that current packaging policy is such 
-# that applauncherd-dev installs only qt-boostable.pc which is intended for "all" 
-# non-MeeGo Touch applications. meegotouch-boostable.pc is installed by libmeegotouch-dev 
-# so as to make it easier for MeeGo Touch application developers. 
-#
-# TODO: Should meegotouch-boostable.* be removed completely from here since it's already included
-#       in meegotouch-dev ?
-install(FILES data/pkgconfig/meegotouch-boostable.pc DESTINATION /usr/lib/pkgconfig)
-install(FILES data/mkspecs/features/meegotouch-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
+# Install pkg-config and qmake feature files
 install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
 install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
 install(FILES data/pkgconfig/qdeclarative-boostable.pc DESTINATION /usr/lib/pkgconfig)

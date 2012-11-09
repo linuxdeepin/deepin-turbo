@@ -17,28 +17,19 @@
 **
 ****************************************************************************/
 
-#include <MApplication>
-#include <MApplicationPage>
-#include <MApplicationWindow>
-#include <MExport>
+#include <QApplication>
 #include <QTimer>
 #include <iostream>
 
-#ifdef HAVE_MCOMPONENTCACHE
-#include <mcomponentcache.h>
-#endif
-
-M_EXPORT int main(int argc, char ** argv)
+Q_DECL_EXPORT int main(int argc, char ** argv)
 {
-#ifdef HAVE_MCOMPONENTCACHE
-    MApplication *app = MComponentCache::mApplication(argc, argv);
-#endif
-    QTimer::singleShot(5, app, SLOT(quit()));
+    QApplication app(argc, argv);
+    QTimer::singleShot(5, &app, SLOT(quit()));
     int usr_id = getuid();
     int grp_id = getgid();
 
     std::cerr << "uid=" << usr_id <<"\n";
     std::cerr << "gid=" << grp_id <<"\n";
-    app->exec();
+    app.exec();
     _exit(29);
 }

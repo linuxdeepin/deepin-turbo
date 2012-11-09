@@ -1,3 +1,0 @@
-Do not move meegotouch-boostable.pc unless you modify the CMakeLists.txt files of
-the test applications accordingly. Building the test applications looks for the
-.pc file in this directory to get correct linker flags.

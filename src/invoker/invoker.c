@@ -397,7 +397,6 @@ static void usage(int status)
            "a position independent executable (-pie) through %s.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
-           "  m                      Launch a MeeGo Touch application.\n"
            "  q (or qt)              Launch a Qt application.\n"
            "  d                      Launch a Qt Declarative (QML) application.\n"
            "  e                      Launch any application, even if it's not a library.\n"

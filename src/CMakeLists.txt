@@ -10,9 +10,6 @@ add_subdirectory(launcherlib)
 # Sub build: ebooster plugin
 add_subdirectory(ebooster)
 
-# Sub build: mbooster plugin
-add_subdirectory(mbooster)
-
 # Sub build: qtbooster plugin
 add_subdirectory(qtbooster)
 

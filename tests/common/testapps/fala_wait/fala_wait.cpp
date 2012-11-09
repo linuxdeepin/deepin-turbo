@@ -17,20 +17,13 @@
 **
 ****************************************************************************/
 
-#include <MApplication>
-#include <MExport>
+#include <QApplication>
 #include <QTimer>
 #include <iostream>
 
-#ifdef HAVE_MCOMPONENTCACHE
-#include <mcomponentcache.h>
-#endif
-
-M_EXPORT int main(int argc, char ** argv)
+Q_DECL_EXPORT int main(int argc, char ** argv)
 {
-#ifdef HAVE_MCOMPONENTCACHE
-    MApplication *app = MComponentCache::mApplication(argc, argv);
-#endif
-    QTimer::singleShot(6000, app, SLOT(quit()));
-    app->exec();
+    QApplication app(argc, argv);
+    QTimer::singleShot(6000, &app, SLOT(quit()));
+    app.exec();
 }

@@ -29,7 +29,7 @@ is, at the same level as the desktop (MeeGo Touch homescreen).
 Applauncherd forks the will-be-application process, "booster", before
 knowing which application is going to be launched next. There can be
 different kinds of boosters optimized for different kinds of
-applications, e.g. Qt, Meego Touch, QML. 
+applications, e.g. Qt or QML. 
 
 In the current architecture boosters are loaded as plugins. Applauncherd
 searches for plugin libraries in /usr/lib/applaucherd/lib*booster.so and
@@ -60,19 +60,16 @@ The launcher itself is a library that is loaded by a small C-program (/usr/bin/a
 launcher binary to any libraries. This allows us to fully control how
 (with which flags) the preloaded libraries are opened with dlopen(). 
 
-Each application type (currently Qt and MeeGo Touch) has its own booster
+Each application type (currently Qt or QtDeclarative) has its own booster
 process. When booster launches the application by calling the "main()"
 function, applauncherd will create new booster process of that type.
 
 Booster processes do some initializations that cannot be shared among
 other processes and therefore have to be done after forking. This allows,
-for instance, instantiating a MeeGo Touch application before knowing the
+for instance, instantiating a application before knowing the
 name of the application. Then the booster process waits for a connection
 from the invoker with the information about which application should be
 launched. 
-
-With MeeGo Touch booster it's possible to fetch certain objects from a cache. This will significantly reduce the startup time of an application. 
-
 
 Contributors
 ==============================
