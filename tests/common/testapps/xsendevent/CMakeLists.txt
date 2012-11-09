@@ -1,6 +1,6 @@
 # Set sources
 set(SRC main.cpp)
-link_libraries(${MEEGOTOUCH_LIBRARIES} -lX11)
+link_libraries(-lX11 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 add_executable(xsendevent ${SRC})
 

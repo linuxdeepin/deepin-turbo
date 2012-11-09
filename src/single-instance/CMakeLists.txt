@@ -4,6 +4,7 @@ set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 set(SRC main.cpp  ${COMMON}/report.c)
 
 # Find X11
+include(FindPkgConfig)
 pkg_check_modules(X11 x11 REQUIRED)
 
 # Set include dirs
