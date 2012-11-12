@@ -19,7 +19,6 @@ of applications.
 <tr><th></th>		<th>boosting</th>	<th>splash</th>	<th>single instance</th></tr>
 <tr><td>QML</td>	<td>x</td>		<td>x</td>	<td>x</td></tr>
 <tr><td>Qt</td>		<td>x(1)</td>		<td>x</td>	<td>x</td></tr>
-<tr><td>MeeGo Touch</td><td>x</td>		<td>x</td>	<td>x</td></tr>
 <tr><td>other</td>	<td>-</td>		<td>x</td>	<td>x</td></tr>
 </table>
 
@@ -68,10 +67,9 @@ with the template.
 
 In order to boost Qt Quick applications with \c invoker, some changes
 in the application and the way it is built are needed. The process is
-similar for MeeGo Touch applications and plain Qt applications, for
-details see appropriate documentation below. The \c applauncherd-dev
-package needs to be installed to get the necessary headers and
-libraries.
+similar for plain Qt applications, for details see appropriate documentation
+below. The \c applauncherd-dev package needs to be installed to get the necessary
+headers and libraries.
 
 In the following example a QML application uses a simple C++ based runner. The
 first step is to modify the application so that it picks up instances
@@ -113,7 +111,6 @@ via \ref usingcmake "CMake" or \ref usingqmake "qmake".
 It is also a good idea to hide any unnecessary symbols in the
 application binary to speed up opening it in the booster. For instructions,
 see \ref qmlboost "Using the QML booster"
-and \ref libmeegotouchboost "Using the MeeGo Touch booster".
 
 \subsection gettingstartedebooster Splash screen and single instance
 
@@ -157,7 +154,6 @@ invoker --type=e --single-instance --splash=/usr/share/images/myAppSplash.jpg /u
 - How to enable boosted startup for different types of applications: 
   - \subpage qmlboost "Using the QML booster"
   - \subpage qtboost "Using the Qt booster"
-  - \subpage libmeegotouchboost "Using the MeeGo Touch booster"
   - \subpage eboost "Using the exec booster"
 
 - \subpage splash "Enabling a splash screen for an application"

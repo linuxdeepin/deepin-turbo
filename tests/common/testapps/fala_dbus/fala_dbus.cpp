@@ -17,26 +17,16 @@
 **
 ****************************************************************************/
 
-#include <MApplication>
+#include <QApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QString>
 #include <syslog.h>
 #include <iostream>
 
-#include <MExport>
-
-#ifdef HAVE_MCOMPONENTCACHE
-#include <mcomponentcache.h>
-#endif
-
-M_EXPORT int main(int argc, char ** argv)
+Q_DECL_EXPORT int main(int argc, char ** argv)
 {
-#ifdef HAVE_MCOMPONENTCACHE
-    MApplication *app = MComponentCache::mApplication(argc, argv);
-#else
-    MApplication *app = new MApplication(argc, argv);
-#endif
+    QApplication app(argc, argv);
     Q_UNUSED(app);
     QDBusConnection bus = QDBusConnection::systemBus();
     QDBusMessage msg = QDBusMessage::createMethodCall("com.nokia.dsme", "/com/nokia/dsme/request", "com.nokia.dsme.request", "req_powerup");

@@ -17,15 +17,7 @@
 **
 ****************************************************************************/
 
-#include <MApplication>
-#include <MApplicationWindow>
-#include <MApplicationPage>
-
-#ifdef HAVE_MCOMPONENTCACHE
-    #include <MComponentCache>
-#endif
-
-#include <MExport>
+#include <QApplication>
 #include <QFile>
 #include <QBrush>
 #include <QColor>
@@ -64,24 +56,11 @@ void timestamp(const char *s)
     FANGORNLOG(msg);
 }
 
-class MyApplicationPage: public MApplicationPage
+Q_DECL_EXPORT int main(int argc, char **argv)
 {
-public:
-    MyApplicationPage(): MApplicationPage() {}
-    virtual ~MyApplicationPage() {}
-    void enterDisplayEvent() {
-        timestamp("MyApplicationPage::enterDisplayEvent");
-    }
-};
-
-M_EXPORT int main(int, char**);
-
-int main(int argc, char **argv) {
-
-    MApplication *app;
+    QApplication *app;
     try
     {
-
         QString appName(argv[0]);
         if (appName.endsWith("fala_wl"))
         {
@@ -92,19 +71,9 @@ int main(int argc, char **argv) {
             log_file = "/tmp/fala_wol.log";
         }
         timestamp("application main");
-#ifdef HAVE_MCOMPONENTCACHE
-        app = MComponentCache::mApplication(argc, argv);
-        timestamp("app from cache");
-        MApplicationWindow* w = MComponentCache::mApplicationWindow();
-        timestamp("win from cache");
 
-#else
-        app = new MApplication(argc, argv);
+        app = new QApplication(argc, argv);
         timestamp("app created without cache");
-
-        MApplicationWindow* w = new MApplicationWindow;
-        timestamp("win created without cache");
-#endif
 
         if (argc > 2 && QString(argv[1]) == QString("--log-args")) {
             FANGORNLOG("argv:", false);
@@ -122,22 +91,6 @@ int main(int argc, char **argv) {
             }
             FANGORNLOG("");
         }
-
-        MyApplicationPage p;
-        timestamp("page created");
-
-        MApplication::setPrestartMode(M::LazyShutdown);
-        p.setTitle("Applauncherd testapp");
-
-        p.appear();
-        timestamp("page.appear() called");
-
-        //set background color
-        QBrush brush(QColor(0, 115, 125, 255));
-        w->setBackgroundBrush(brush);
-
-        w->show();
-        timestamp("w->show() called");
     }
     catch(std::exception& e)
     {

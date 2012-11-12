@@ -17,11 +17,10 @@
 **
 ****************************************************************************/
 
-#include <MApplication>
-#include <MExport>
+#include <QApplication>
 
-M_EXPORT int main(int argc, char ** argv)
+Q_DECL_EXPORT int main(int argc, char ** argv)
 {
-    MApplication *app = new MApplication(argc, argv);
-    app->exec();
+    QApplication app(argc, argv);
+    app.exec();
 }

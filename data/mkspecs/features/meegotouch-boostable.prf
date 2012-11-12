@@ -1,5 +1,0 @@
-# Tell qmake to use pkg-config to get correct compiler and linker
-# flags to make an application usable with applauncherd.
-
-CONFIG += link_pkgconfig
-PKGCONFIG += meegotouch-boostable

@@ -15,12 +15,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -Wextra -g -O3")
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-set(CMAKE_INSTALL_RPATH "/usr/lib/applauncherd/")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-
-
 # Find libdl
 find_library(LIBDL NAMES dl)
 
@@ -31,22 +25,6 @@ if (${QTVERSION} VERSION_LESS 4.6.0)
     message(FATAL_ERROR "You need Qt4.6, found ${QTVERSION}.")
 endif (${QTVERSION} VERSION_LESS 4.6.0)
 
-# Find libmeegotouch for MBooster and the test programs
-include(FindPkgConfig) 
-pkg_check_modules(MEEGOTOUCH meegotouch>=0.20 REQUIRED)
-include_directories(${MEEGOTOUCH_INCLUDE_DIRS})
-
-# Check if it's possible to compile MBooster with MComponentCache. If so,
-# HAVE_MCOMPONENTCACHE is set.
-message(STATUS "checking for mcomponentcache.h")
-find_file(M_COMPONENT_CACHE NAMES mcomponentcache.h PATHS ${MEEGOTOUCH_INCLUDE_DIRS})
-if (EXISTS ${M_COMPONENT_CACHE})
-  message(STATUS "  found")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MCOMPONENTCACHE")
-else (EXISTS ${M_COMPONENT_CACHE})
-  message(STATUS "  not found")
-endif (EXISTS ${M_COMPONENT_CACHE})
-
 if ($ENV{DEBUG_BUILD})
     add_definitions(-DDEBUG_BUILD)
 endif ($ENV{DEBUG_BUILD})
@@ -55,11 +33,6 @@ endif ($ENV{DEBUG_BUILD})
 add_definitions(-DPROG_NAME_INVOKER="invoker")
 add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
 add_definitions(-DPROG_NAME_SINGLE_INSTANCE="single-instance")
-
-# Set gconf key definitions. These are used by MonitorBooster to get
-# notifications when language / theme changes.
-add_definitions(-DMEEGOTOUCH_THEME_GCONF_KEY="/meegotouch/theme/name")
-add_definitions(-DMEEGOTOUCH_LANGUAGE_GCONF_KEY="/meegotouch/i18n/language")
 
 # applauncherd will find lib*booster.so from here
 add_definitions(-DBOOSTER_PLUGIN_DIR="/usr/lib/applauncherd")
@@ -110,15 +83,7 @@ else ($ENV{DEBUG_BUILD})
     install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
 endif ($ENV{DEBUG_BUILD})
 
-# Install pkg-config and qmake feature files. Note that current packaging policy is such 
-# that applauncherd-dev installs only qt-boostable.pc which is intended for "all" 
-# non-MeeGo Touch applications. meegotouch-boostable.pc is installed by libmeegotouch-dev 
-# so as to make it easier for MeeGo Touch application developers. 
-#
-# TODO: Should meegotouch-boostable.* be removed completely from here since it's already included
-#       in meegotouch-dev ?
-install(FILES data/pkgconfig/meegotouch-boostable.pc DESTINATION /usr/lib/pkgconfig)
-install(FILES data/mkspecs/features/meegotouch-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
+# Install pkg-config and qmake feature files
 install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
 install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
 install(FILES data/pkgconfig/qdeclarative-boostable.pc DESTINATION /usr/lib/pkgconfig)

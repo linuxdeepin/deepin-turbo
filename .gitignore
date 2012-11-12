@@ -11,7 +11,6 @@ CMakeFiles/
 tests/unittests/ut_booster/ut_booster
 tests/unittests/ut_connection/ut_connection
 tests/unittests/ut_daemon/ut_daemon
-tests/unittests/ut_mbooster/ut_mbooster
 tests/unittests/ut_qtbooster/ut_qtbooster
 src/invoker/invoker
 src/launcher/applauncherd.bin

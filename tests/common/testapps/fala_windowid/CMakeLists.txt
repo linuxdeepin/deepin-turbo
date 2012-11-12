@@ -1,6 +1,7 @@
 # Set sources
 set(SRC main.cpp)
 
+include(FindPkgConfig) 
 pkg_check_modules(X11 x11 REQUIRED)
 include_directories(${X11_INCLUDE_DIRS})
 

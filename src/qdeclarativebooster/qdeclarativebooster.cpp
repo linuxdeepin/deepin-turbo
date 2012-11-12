@@ -69,7 +69,7 @@ bool QDeclarativeBooster::receiveDataFromInvoker(int socketFd)
         // Setup the conversation channel with the invoker.
         setConnection(new Connection(socketFd));
 
-        EventHandler handler(this, EventHandler::QEventHandler);
+        EventHandler handler(this);
         handler.runEventLoop();
 
         if (!connection()->connected())

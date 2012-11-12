@@ -9,9 +9,7 @@ set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER})
 
 # Set sources
-set(PLUGINSRC qdeclarativebooster.cpp pluginfactory.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
-${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp
-${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp ${COMMON}/eventhandler.cpp)
+set(PLUGINSRC qdeclarativebooster.cpp pluginfactory.cpp ${COMMON}/eventhandler.cpp)
 set(MOC_HDRS ${COMMON}/eventhandler.h)
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
@@ -29,7 +27,7 @@ target_link_libraries(mdeclarativecache ${LIBDL} ${QT_QTCORE_LIBRARY} ${QT_QTDEC
 add_library(qdeclarativebooster MODULE ${PLUGINSRC} ${MOC_SRC})
 set_target_properties(qdeclarativebooster PROPERTIES 
   COMPILE_FLAGS -fvisibility=hidden)
-target_link_libraries(qdeclarativebooster ${LIBDL} "-L. -lmdeclarativecache")
+target_link_libraries(qdeclarativebooster ${LIBDL} "-L. -lmdeclarativecache -L../launcherlib -lapplauncherd")
 add_dependencies(qdeclarativebooster mdeclarativecache)
 
 # Add install rule

@@ -6,7 +6,6 @@ This section describes some of the invoker command line parameters. For a full l
 
 TYPE chooses the type of booster used. Qt booster may be used to     
 launch anything. Possible values for TYPE:
-- m = Launch a MeeGo Touch application.
 - q = Launch a Qt application.
 - d = Launch a Qt Declarative (QML) application.
 - e = Launch any application even if it is not a library.

@@ -1,6 +1,8 @@
 # Set sources
 set(SRC main.c)
 
+include(FindPkgConfig) 
+
 # This is needed for MeeGo only?
 pkg_check_modules(XI xi REQUIRED)
 include_directories(${XI_INCLUDE_DIRS})

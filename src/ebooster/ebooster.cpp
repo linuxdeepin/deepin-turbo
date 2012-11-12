@@ -19,13 +19,8 @@
 
 #include "ebooster.h"
 #include "logger.h"
-
 #include <errno.h>
-
-#ifdef HAVE_MCOMPONENTCACHE
-#include <mcomponentcache.h>
-#endif
-
+#include <string.h>
 #include "coverage.h"
 
 const string EBooster::m_socketId  = "/tmp/booste";

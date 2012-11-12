@@ -2,7 +2,6 @@
 #include <QSocketNotifier>
 #include <signal.h>
 #include <tr1/memory>
-#include <MGConfItem>
 
 using std::tr1::shared_ptr;
 
@@ -14,15 +13,8 @@ class EventHandler : public QObject
     Q_OBJECT
 
 public:
-
-    enum EventHandlerType 
-    {
-        QEventHandler,
-        MEventHandler
-    };
-
     //! \brief Constructor
-    EventHandler(Booster* parent, EventHandlerType type);
+    EventHandler(Booster* parent);
 
     //! \brief Destructor
     virtual ~EventHandler();
@@ -52,23 +44,13 @@ private:
     //! Old sigaction struct
     static struct sigaction m_oldSigAction;
 
-    //! GConf item to listen theme change
-    MGConfItem* m_item;
-
     // Parent object
     Booster* m_parent;
-
-    // type of application's event loop
-    const EventHandlerType m_type;
 
 private slots:
 
     //! Qt signal handler for SIGHUP.
     void handleSigHup();
-
-    //! Qt signal handler for theme change
-    //! Deprecated in MeeGo 1.2 Harmattan
-    void notifyThemeChange();
 
 signals:
     void connectionAccepted();

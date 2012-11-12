@@ -30,16 +30,8 @@
 
     <set name="booster-tests" description="Booster unit tests" feature="AF MBooster for Launcher daemon" requirement="300195" >   
 
-      <case name="BoosterFactory" type="Functional" description="Unit tests for BoosterFactory class" level="Component" timeout="20">
-          <step expected_result="0">/usr/share/applauncherd-tests/ut_boosterfactory</step>
-      </case>
-
       <case name="Booster" type="Functional" description="Unit tests for Booster class" level="Component" timeout="20">
           <step expected_result="0">/usr/share/applauncherd-tests/ut_booster</step>
-      </case>
-
-      <case name="MBooster" type="Functional" description="Unit tests for MBooster class" level="Component" timeout="20">
-          <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_mbooster'</step>
       </case>
 
       <case name="QtBooster" type="Functional" description="Unit tests for QtBooster class" level="Component" timeout="20">

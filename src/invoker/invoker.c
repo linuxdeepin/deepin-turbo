@@ -43,7 +43,6 @@
 #include "protocol.h"
 #include "invokelib.h"
 #include "search.h"
-#include "whitelist.h"
 
 // Delay before exit.
 static const unsigned int EXIT_DELAY     = 0;
@@ -58,14 +57,6 @@ static const unsigned int MAX_RESPAWN_DELAY = 10;
 
 static const unsigned char EXIT_STATUS_APPLICATION_CONNECTION_LOST = 0xfa;
 static const unsigned char EXIT_STATUS_APPLICATION_NOT_FOUND = 0x7f;
-
-// Enumeration of possible application types:
-// M_APP     : MeeGo Touch application
-// QT_APP    : Qt/generic application
-// QDECL_APP : QDeclarative (QML) application
-// EXEC_APP  : Executable generic application (can be used with splash screen)
-//
-enum APP_TYPE { M_APP, QT_APP, QDECL_APP, EXEC_APP, UNKNOWN_APP };
 
 // Environment
 extern char ** environ;
@@ -187,7 +178,7 @@ static bool invoke_recv_ack(int fd)
 }
 
 // Inits a socket connection for the given application type
-static int invoker_init(enum APP_TYPE app_type)
+static int invoker_init(char app_type)
 {
     int fd;
     struct sockaddr_un sun;
@@ -202,28 +193,17 @@ static int invoker_init(enum APP_TYPE app_type)
     sun.sun_family = AF_UNIX;  //AF_FILE;
 
     const int maxSize = sizeof(sun.sun_path) - 1;
-    if(app_type == M_APP)
+    if (app_type >= 'a' && app_type <= 'z')
     {
-        strncpy(sun.sun_path, INVOKER_M_SOCK, maxSize);
-    }
-    else if (app_type == QT_APP)
-    {
-        strncpy(sun.sun_path, INVOKER_QT_SOCK, maxSize);
-    }
-    else if (app_type == QDECL_APP)
-    {
-      strncpy(sun.sun_path, INVOKER_QDECL_SOCK, maxSize);
-    }
-    else if (app_type == EXEC_APP)
-    {
-      strncpy(sun.sun_path, INVOKER_EXEC_SOCK, maxSize);
+        strncpy(sun.sun_path, "/tmp/boost", maxSize - 1);
+        int len = strlen(sun.sun_path);
+        sun.sun_path[len++] = app_type;
+        sun.sun_path[len] = 0;
     }
     else
     {
-        die(1, "Unknown type of application: %d\n", app_type);
+        die(1, "Unknown type of application: %c\n", app_type);
     }
-
-    sun.sun_path[maxSize] = '\0';
 
     if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
     {
@@ -413,11 +393,10 @@ static void invoker_send_end(int fd)
 static void usage(int status)
 {
     printf("\nUsage: %s [options] [--type=TYPE] [file] [args]\n\n"
-           "Launch m, qt, or qdeclarative application compiled as a shared library (-shared) or\n"
+           "Launch applications compiled as a shared library (-shared) or\n"
            "a position independent executable (-pie) through %s.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
-           "  m                      Launch a MeeGo Touch application.\n"
            "  q (or qt)              Launch a Qt application.\n"
            "  d                      Launch a Qt Declarative (QML) application.\n"
            "  e                      Launch any application, even if it's not a library.\n"
@@ -633,35 +612,9 @@ static void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
     exit(EXIT_FAILURE);
 }
 
-//Check if application (MeeGo Touch) is allowed to be boosted
-static bool is_application_whitelisted(const char *const prog_name)
-{
-    bool result = false;
-
-    if (prog_name == 0)
-    {
-        return result;
-    }
-
-    unsigned int list_size = sizeof(app_whitelist) / sizeof(char *);
-    unsigned int i;
-
-    for (i = 0; i < list_size; i++)
-    {
-        const char * app = app_whitelist[i];
-        if (strcmp(app, prog_name) == 0)
-        {
-            result = true;
-            break;
-        }
-    }
-
-    return result;
-}
-
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
-                  enum APP_TYPE app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
+                  char app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
                   char *splash_file, char *landscape_splash_file, bool test_mode)
 {
     int status = 0;
@@ -674,12 +627,6 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             info("Invoker test mode is not enabled.\n");
         }
 
-        // This is a check if MeeGo Touch application is not allowed to be boosted
-        if (app_type == M_APP && !test_mode && !is_application_whitelisted(prog_name))
-        {
-            info("Application '%s' is not allowed to use booster '--type=m', '--type=q' will be used instead.\n", prog_name);
-            app_type = QT_APP;
-        }
         // This is a fallback if connection with the launcher
         // process is broken       
         int fd = invoker_init(app_type);
@@ -702,7 +649,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
 
 int main(int argc, char *argv[])
 {
-    enum APP_TYPE app_type      = UNKNOWN_APP;
+    const char   *app_type      = NULL;
     int           prog_argc     = 0;
     uint32_t      magic_options = 0;
     bool          wait_term     = true;
@@ -784,19 +731,7 @@ int main(int argc, char *argv[])
             break;
 
         case 't':
-            if (strcmp(optarg, "m") == 0)
-                app_type = M_APP;
-            else if (strcmp(optarg, "q") == 0 || strcmp(optarg, "qt") == 0)
-                app_type = QT_APP;
-            else if (strcmp(optarg, "d") == 0)
-                app_type = QDECL_APP;
-            else if (strcmp(optarg, "e") == 0)
-                app_type = EXEC_APP;
-            else
-            {
-                report(report_error, "Unknown application type: %s \n", optarg);
-                usage(1);
-            }
+            app_type = optarg;
             break;
 
         case 'd':
@@ -856,8 +791,12 @@ int main(int argc, char *argv[])
         return EXIT_STATUS_APPLICATION_NOT_FOUND;
     }
 
-    // Check if application type is unknown
-    if (app_type == UNKNOWN_APP)
+    // Translate 'qt' and 'm' types to 'q' for compatibility
+    if (!strcmp(app_type, "qt") || !strcmp(app_type, "m"))
+        app_type = "q";
+
+    // Check if application type is unknown. Only accept one character types.
+    if (!app_type || !app_type[0] || app_type[1])
     {
         report(report_error, "Application's type is unknown.\n");
         usage(1);
@@ -869,10 +808,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE); 
     }
 
-
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file, test_mode);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, *app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file, test_mode);
 
     // Sleep for delay before exiting
     if (delay)
