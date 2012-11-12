@@ -11,6 +11,9 @@ set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterpluginregistry.cpp
         connection.cpp daemon.cpp logger.cpp main.cpp 
         singleinstance.cpp socketmanager.cpp)
 
+set(HEADERS appdata.h booster.h boosterfactory.h boosterpluginregistry.h
+    connection.h daemon.h logger.h launcherlib.h singleinstance.h socketmanager.h)
+
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
@@ -19,7 +22,9 @@ link_libraries(${LIBDL} ${X11_LIBRARIES})
 
 # Set executable
 add_library(applauncherd MODULE ${SRC} ${MOC_SRC})
+set_target_properties(applauncherd PROPERTIES VERSION 0.1 SOVERSION 0)
 
 # Add install rule
-install(FILES libapplauncherd.so DESTINATION /usr/lib/applauncherd/)
-
+install(TARGETS applauncherd DESTINATION /usr/lib)
+install(FILES ${HEADERS} DESTINATION /usr/include/applauncherd
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)

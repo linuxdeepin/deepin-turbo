@@ -23,7 +23,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L -Wl,--no-
 
 # Set precompiler flags
 add_definitions(-DLIBRARIES_CONFIG_FILE="/etc/applauncherd.conf")
-add_definitions(-DLAUNCHER_LIBRARY="/usr/lib/applauncherd/libapplauncherd.so")
+add_definitions(-DLAUNCHER_LIBRARY="/usr/lib/libapplauncherd.so.0")
 
 link_libraries(${LIBDL})
 
