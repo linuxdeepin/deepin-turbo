@@ -14,8 +14,6 @@ set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterpluginregistry.cpp
 set(HEADERS appdata.h booster.h boosterfactory.h boosterpluginregistry.h
     connection.h daemon.h logger.h launcherlib.h singleinstance.h socketmanager.h)
 
-qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
-
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.
 link_libraries(${LIBDL} ${X11_LIBRARIES})
