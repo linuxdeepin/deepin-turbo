@@ -16,6 +16,7 @@ link_libraries("-L../launcherlib -lapplauncherd" ${LIBDL} ${QT_QTCORE_LIBRARY})
 
 # Set executable
 add_library(qtbooster MODULE ${SRC})
+add_dependencies(qtbooster applauncherd)
 
 # Add install rule
 install(TARGETS qtbooster DESTINATION /usr/lib/applauncherd/)

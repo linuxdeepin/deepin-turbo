@@ -28,7 +28,7 @@ add_library(qdeclarativebooster MODULE ${PLUGINSRC} ${MOC_SRC})
 set_target_properties(qdeclarativebooster PROPERTIES 
   COMPILE_FLAGS -fvisibility=hidden)
 target_link_libraries(qdeclarativebooster ${LIBDL} "-L. -lmdeclarativecache -L../launcherlib -lapplauncherd")
-add_dependencies(qdeclarativebooster mdeclarativecache)
+add_dependencies(qdeclarativebooster applauncherd mdeclarativecache)
 
 # Add install rule
 install(TARGETS qdeclarativebooster DESTINATION /usr/lib/applauncherd/)

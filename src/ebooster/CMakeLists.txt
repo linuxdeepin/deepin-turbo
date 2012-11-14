@@ -17,6 +17,7 @@ link_libraries("-L../launcherlib -lapplauncherd" ${LIBDL} ${QT_QTCORE_LIBRARY})
 
 # Set executable
 add_library(ebooster MODULE ${SRC} ${MOC_SRC})
+add_dependencies(ebooster applauncherd)
 
 # Add install rule
 install(TARGETS ebooster DESTINATION /usr/lib/applauncherd/)
