@@ -24,6 +24,7 @@ link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} "-L
 include(${QT_USE_FILE})
 
 add_executable(ut_dbooster ${SRC} ${MOC_SRC} )
+add_dependencies(ut_dbooster mdeclarativecache)
 
 # Install
 install(PROGRAMS ut_dbooster DESTINATION /usr/share/applauncherd-tests/)

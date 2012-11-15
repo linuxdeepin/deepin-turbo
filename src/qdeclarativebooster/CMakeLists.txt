@@ -22,6 +22,7 @@ if ($ENV{HARMATTAN})
   set_target_properties(mdeclarativecache PROPERTIES COMPILE_FLAGS -DHAVE_PATH_REINIT)
 endif ($ENV{HARMATTAN})
 target_link_libraries(mdeclarativecache ${LIBDL} ${QT_QTCORE_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} ${QT_QTGUI_LIBRARY} ${X11_LIBRARIES} "-L../launcherlib -lapplauncherd")
+add_dependencies(mdeclarativecache applauncherd)
 
 add_library(qdeclarativebooster MODULE ${PLUGINSRC})
 set_target_properties(qdeclarativebooster PROPERTIES 
