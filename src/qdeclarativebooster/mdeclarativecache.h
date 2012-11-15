@@ -42,7 +42,11 @@ public:
     virtual ~MDeclarativeCache() {};
 
     //! Populate cache with QApplication and QDeclarativeView
-    static void populate();
+    /*!
+     * Returns the cached QDeclarativeView instance, which can be used for booster-specific
+     * initialization.
+     */
+    static QDeclarativeView *populate();
 
     //! Returns QApplication instance from cache or creates a new one.
     /*!

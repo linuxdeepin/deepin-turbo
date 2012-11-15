@@ -250,13 +250,14 @@ QString MDeclarativeCachePrivate::applicationFilePath()
     }
 }
 
-void MDeclarativeCache::populate()
+QDeclarativeView *MDeclarativeCache::populate()
 {
     d_ptr->populate();
 
 #ifdef WITH_COVERAGE
     __gcov_flush();
 #endif
+    return d_ptr->qDeclarativeViewInstance;
 }
 
 QApplication* MDeclarativeCache::qApplication(int &argc, char **argv)
