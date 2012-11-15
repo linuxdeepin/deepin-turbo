@@ -32,8 +32,6 @@
 #include <X11/Xutil.h>
 #endif
 
-#include "coverage.h"
-
 MDeclarativeCachePrivate * const MDeclarativeCache::d_ptr = new MDeclarativeCachePrivate;
 const int MDeclarativeCachePrivate::ARGV_LIMIT = 32;
 
@@ -53,10 +51,6 @@ MDeclarativeCachePrivate::~MDeclarativeCachePrivate()
 {
     delete qDeclarativeViewInstance;
     delete[] initialArgv;
-
-#ifdef WITH_COVERAGE
-    __gcov_flush();
-#endif
 }
 
 void MDeclarativeCachePrivate::populate()
@@ -178,10 +172,6 @@ QApplication* MDeclarativeCachePrivate::qApplication(int &argc, char **argv)
 
     }
 
-#ifdef WITH_COVERAGE
-    __gcov_flush();
-#endif
-
 #ifdef HAVE_PATH_REINIT
     // Set the magic attribute so that paths are reinitialized
     qApplicationInstance->setAttribute(Qt::AA_LinuxReinitPathsFromArgv0, true);
@@ -223,10 +213,6 @@ QDeclarativeView* MDeclarativeCachePrivate::qDeclarativeView()
         returnValue = new QDeclarativeView();
     }
 
-#ifdef WITH_COVERAGE
-    __gcov_flush();
-#endif
-
     return returnValue;
 }
 
@@ -253,10 +239,6 @@ QString MDeclarativeCachePrivate::applicationFilePath()
 QDeclarativeView *MDeclarativeCache::populate()
 {
     d_ptr->populate();
-
-#ifdef WITH_COVERAGE
-    __gcov_flush();
-#endif
     return d_ptr->qDeclarativeViewInstance;
 }
 

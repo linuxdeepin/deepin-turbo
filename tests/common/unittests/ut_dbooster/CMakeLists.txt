@@ -1,15 +1,13 @@
 set(LAUNCHER ${CMAKE_HOME_DIRECTORY}/src/launcherlib)
 set(DBOOSTER ${CMAKE_HOME_DIRECTORY}/src/qdeclarativebooster)
-set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 
 # Set sources
 set(SRC ut_dbooster.cpp ${LAUNCHER}/appdata.cpp ${LAUNCHER}/booster.cpp
-${LAUNCHER}/connection.cpp ${COMMON}/eventhandler.cpp
-${LAUNCHER}/logger.cpp ${DBOOSTER}/qdeclarativebooster.cpp
+${LAUNCHER}/connection.cpp ${LAUNCHER}/logger.cpp ${DBOOSTER}/qdeclarativebooster.cpp
 ${LAUNCHER}/singleinstance.cpp ${LAUNCHER}/socketmanager.cpp)
 
 # Set moc headers
-set(MOC_HDRS ut_dbooster.h ${COMMON}/eventhandler.h)
+set(MOC_HDRS ut_dbooster.h)
 
 # Run moc
 qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
@@ -18,7 +16,7 @@ qt4_wrap_cpp(MOC_SRC ${MOC_HDRS})
 set(QT_USE_QTTEST TRUE)
 
 # Set include paths
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common ${LAUNCHER} ${DBOOSTER})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${LAUNCHER} ${CMAKE_HOME_DIRECTORY}/src/common ${DBOOSTER})
 
 link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} "-L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster -lmdeclarativecache" -ldl -lX11)
 

@@ -1,3 +1,6 @@
+#ifndef EVENTHANDLER_H
+#define EVENTHANDLER_H
+
 #include <QObject>
 #include <QSocketNotifier>
 #include <signal.h>
@@ -56,3 +59,5 @@ signals:
     void connectionAccepted();
     void connectionRejected();
 };
+
+#endif

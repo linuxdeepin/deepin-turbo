@@ -28,7 +28,7 @@ QT4_ADD_RESOURCES(RESOURCE_SRC main.qrc)
 # Enable Qt-support
 include(${QT_USE_FILE})
 
-link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} "-L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster ${booster_libs}")
+link_libraries(${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} "-L${CMAKE_SOURCE_DIR}/src/launcherlib -lapplauncherd -L${CMAKE_SOURCE_DIR}/src/qdeclarativebooster ${booster_libs}")
 add_executable(fala_qml ${SRC} ${RESOURCE_SRC})
 
 # Install

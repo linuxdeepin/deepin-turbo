@@ -1,7 +1,9 @@
 # Qt support
 include(${QT_USE_FILE})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_HOME_DIRECTORY}/src/common)
+set(COMMON ${CMAKE_HOME_DIRECTORY}/src/common)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON})
 
 # Hide all symbols except the ones explicitly exported in the code (like main())
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
@@ -12,7 +14,8 @@ set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterpluginregistry.cpp
         singleinstance.cpp socketmanager.cpp)
 
 set(HEADERS appdata.h booster.h boosterfactory.h boosterpluginregistry.h
-    connection.h daemon.h logger.h launcherlib.h singleinstance.h socketmanager.h)
+    connection.h daemon.h logger.h launcherlib.h singleinstance.h socketmanager.h
+    ${COMMON}/protocol.h)
 
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.

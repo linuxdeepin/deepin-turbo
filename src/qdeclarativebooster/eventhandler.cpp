@@ -1,7 +1,6 @@
 #include <QtConcurrentRun>
 #include <QApplication>
 
-#include "coverage.h"
 #include "eventhandler.h"
 #include "connection.h"
 #include "logger.h"
@@ -90,10 +89,6 @@ void EventHandler::hupSignalHandler(int)
 
 void EventHandler::handleSigHup()
 {
-#ifdef WITH_COVERAGE
-    __gcov_flush();
-#endif
-
     QApplication::quit();
     _exit(EXIT_SUCCESS);
 }
