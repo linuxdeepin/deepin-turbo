@@ -791,12 +791,18 @@ int main(int argc, char *argv[])
         return EXIT_STATUS_APPLICATION_NOT_FOUND;
     }
 
+    if (!app_type)
+    {
+        report(report_error, "Application type must be specified with --type.\n");
+        usage(1);
+    }
+
     // Translate 'qt' and 'm' types to 'q' for compatibility
     if (!strcmp(app_type, "qt") || !strcmp(app_type, "m"))
         app_type = "q";
 
     // Check if application type is unknown. Only accept one character types.
-    if (!app_type || !app_type[0] || app_type[1])
+    if (!app_type[0] || app_type[1])
     {
         report(report_error, "Application's type is unknown.\n");
         usage(1);
