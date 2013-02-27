@@ -41,6 +41,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
+#include <systemd/sd-daemon.h>
 
 #include "coverage.h"
 
@@ -60,7 +61,8 @@ Daemon::Daemon(int & argc, char * argv[]) :
     m_bootMode(false),
     m_socketManager(new SocketManager),
     m_singleInstance(new SingleInstance),
-    m_reExec(false)
+    m_reExec(false),
+    m_notifySystemd(false)
 {
     if (!Daemon::m_instance)
     {
@@ -193,6 +195,12 @@ void Daemon::run()
 
         // Fork each booster for the first time
         forkBoosters();
+    }
+
+    // Notify systemd that init is done
+    if (m_notifySystemd) {
+        Logger::logDebug("Daemon: initialization done. Notify systemd\n");
+        sd_notify(0, "READY=1");
     }
 
     // Main loop
@@ -721,6 +729,10 @@ void Daemon::parseArgs(const ArgVect & args)
         {
             m_reExec = true;
         }
+        else if ((*i) == "--systemd")
+        {
+            m_notifySystemd = true;
+        }
         else
         {
             if ((*i).find_first_not_of(' ') != string::npos)
@@ -743,6 +755,7 @@ void Daemon::usage(int status)
            "                   Boot mode can be activated also by sending SIGUSR2\n"
            "                   to the launcher.\n"
            "  -d, --daemon     Run as %s a daemon.\n"
+           "  --systemd        Notify systemd when initialization is done\n"
            "  --debug          Enable debug messages and log everything also to stdout.\n"
            "  -h, --help       Print this help.\n\n",
            PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER);

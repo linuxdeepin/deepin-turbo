@@ -240,6 +240,9 @@ private:
     //! True if re-execing
     bool m_reExec;
 
+    //! True if systemd needs to be notified
+    bool m_notifySystemd;
+
     //! Name of the state saving directory and file
     static const std::string m_stateDir;
     static const std::string m_stateFile;

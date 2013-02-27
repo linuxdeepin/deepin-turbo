@@ -19,7 +19,7 @@ set(HEADERS appdata.h booster.h boosterfactory.h boosterpluginregistry.h
 
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.
-link_libraries(${LIBDL} ${X11_LIBRARIES})
+link_libraries(${LIBDL} ${X11_LIBRARIES} "-L/lib -lsystemd-daemon")
 
 # Set executable
 add_library(applauncherd MODULE ${SRC} ${MOC_SRC})
