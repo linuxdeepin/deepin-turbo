@@ -1,0 +1,12 @@
+[Unit]
+Description=MTF app launcher daemon
+After=xorg.target
+Requires=dbus.socket xorg.target
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/applauncherd --systemd
+
+[Install]
+# For compatibility
+Alias=meegotouch-applauncherd.service
