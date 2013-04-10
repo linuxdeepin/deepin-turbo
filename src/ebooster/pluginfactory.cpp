@@ -17,28 +17,29 @@
 **
 ****************************************************************************/
 
-#include <QtCore>
 #include "ebooster.h"
+
+#define DECL_EXPORT __attribute__((visibility("default")))
 
 extern "C" 
 {
     // Create a new plugin instance.
-    Q_DECL_EXPORT void * create()
+    DECL_EXPORT void * create()
     {
         return new EBooster;
     }    
 
-    Q_DECL_EXPORT char type()
+    DECL_EXPORT char type()
     {
         return EBooster::type();
     }
 
-    Q_DECL_EXPORT const char * socketName()
+    DECL_EXPORT const char * socketName()
     {
         return EBooster::socketName().c_str();
     }
 
-    Q_DECL_EXPORT const char * temporaryProcessName()
+    DECL_EXPORT const char * temporaryProcessName()
     {
         return EBooster::temporaryProcessName().c_str();
     }

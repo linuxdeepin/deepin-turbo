@@ -1,6 +1,3 @@
-# Qt support
-include(${QT_USE_FILE})
-
 set(LAUNCHER "${CMAKE_HOME_DIRECTORY}/src/launcherlib")
 set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 
@@ -13,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 set(SRC ebooster.cpp pluginfactory.cpp)
 
 # Set libraries to be linked.
-link_libraries("-L../launcherlib -lapplauncherd" ${LIBDL} ${QT_QTCORE_LIBRARY})
+link_libraries("-L../launcherlib -lapplauncherd" ${LIBDL})
 
 # Set executable
 add_library(ebooster MODULE ${SRC} ${MOC_SRC})

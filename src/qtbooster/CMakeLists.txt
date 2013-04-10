@@ -1,5 +1,9 @@
-# Qt support
+# Find Qt4
+find_package(Qt4 4.6.0 REQUIRED)
 include(${QT_USE_FILE})
+if (${QTVERSION} VERSION_LESS 4.6.0)
+    message(FATAL_ERROR "You need Qt4.6, found ${QTVERSION}.")
+endif (${QTVERSION} VERSION_LESS 4.6.0)
 
 set(LAUNCHER "${CMAKE_HOME_DIRECTORY}/src/launcherlib")
 

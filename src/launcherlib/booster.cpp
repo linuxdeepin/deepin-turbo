@@ -37,11 +37,11 @@
 #include <stdexcept>
 #include <syslog.h>
 
-#ifdef Q_WS_X11
+#ifdef USE_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
-#endif //Q_WS_X11
+#endif //USE_X11
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -121,8 +121,11 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
             {
                 if (!pluginEntry->lockFunc(m_appData->appName().c_str()))
                 {
+#ifdef USE_X11
                     // Set XErrorHandler to handle possible errors from X
                     XErrorHandler oldHandler = XSetErrorHandler(Booster::handleXError);
+#endif
+
                     // Try to activate the window of the existing instance
                     if (!pluginEntry->activateExistingInstanceFunc(m_appData->appName().c_str()))
                     {
@@ -135,8 +138,10 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
                     }
                     m_connection->close();
  
+#ifdef USE_X11
                     // Return original XErrorHandler
                     XSetErrorHandler(oldHandler);
+#endif
 
                     // invoker requested to start an application that is already running
                     // booster is not needed this time, let's wait for the next connection from invoker
@@ -348,7 +353,7 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
                             const std::string &portraitSplash, const std::string &landscapeSplash,
                             const std::string &pixmapId)
 {
-#ifdef Q_WS_X11
+#ifdef USE_X11
 
     std::stringstream st;
     st << pid;
@@ -414,22 +419,22 @@ void Booster::requestSplash(const int pid, const std::string &wmclass,
         XCloseDisplay(dpy);
         XSetErrorHandler(oldHandler);
     }
-#else //Q_WS_X11
+#else //USE_X11
     // prevent compilation warnings
     (void) pid;                                                                                     
     (void) wmclass;
     (void) portraitSplash;
     (void) landscapeSplash;
     (void) pixmapId;
-#endif //Q_WS_X11
+#endif //USE_X11
 }
 
-#ifdef Q_WS_X11
+#ifdef USE_X11
 int Booster::handleXError(Display *, XErrorEvent *)
 {
     return 0;
 }
-#endif //Q_WS_X11
+#endif //USE_X11
 
 void Booster::setEnvironmentBeforeLaunch()
 {

@@ -1,6 +1,3 @@
-# Qt support
-include(${QT_USE_FILE})
-
 set(COMMON ${CMAKE_HOME_DIRECTORY}/src/common)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON})

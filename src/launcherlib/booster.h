@@ -21,7 +21,6 @@
 #define BOOSTER_H
 
 #include "launcherlib.h"
-#include <QX11Info>
 
 #include <cstdlib>
 #include <string>
@@ -30,9 +29,9 @@ using std::string;
 
 #include "appdata.h"
 
-#ifdef Q_WS_X11
+#ifdef USE_X11
 #include <X11/Xlib.h>
-#endif //Q_WS_X11
+#endif
 
 class Connection;
 class SocketManager;
@@ -140,7 +139,7 @@ public:
     //! Return true, if in boot mode.
     bool bootMode() const;
 
-#ifdef Q_WS_X11
+#ifdef USE_X11
     //! Error handler for Xlib calls
     static int handleXError(Display *display, XErrorEvent *event);
 #endif
