@@ -1,5 +1,0 @@
-Name: qt-boostable
-Description: make application boostable by applauncherd
-Version: 0.2.0
-Libs: -pie -rdynamic 
-Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden

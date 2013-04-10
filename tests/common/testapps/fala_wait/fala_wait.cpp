@@ -17,13 +17,11 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
-#include <QTimer>
 #include <iostream>
+#include <unistd.h>
 
-Q_DECL_EXPORT int main(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
-    QApplication app(argc, argv);
-    QTimer::singleShot(6000, &app, SLOT(quit()));
-    app.exec();
+    sleep(6);
+    return 0;
 }

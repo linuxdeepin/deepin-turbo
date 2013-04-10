@@ -1,6 +1,0 @@
-Name: qdeclarative-boostable
-Description: make application boostable by applauncherd
-Version: 0.2.0
-Libs: -pie -rdynamic -lmdeclarativecache
-Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I/usr/include/applauncherd
-

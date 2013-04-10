@@ -75,10 +75,3 @@ if ($ENV{DEBUG_BUILD})
 else ($ENV{DEBUG_BUILD})
     install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
 endif ($ENV{DEBUG_BUILD})
-
-# Install pkg-config and qmake feature files
-install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
-install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
-install(FILES data/pkgconfig/qdeclarative-boostable.pc DESTINATION /usr/lib/pkgconfig)
-install(FILES data/mkspecs/features/qdeclarative-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
-
