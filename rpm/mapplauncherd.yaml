@@ -75,6 +75,7 @@ SubPackages:
          Test scripts used for testing meegotouch-applauncherd.
       Requires:
           - "%{name}-testapps = %{version}-%{release}"
+          - mapplauncherd-qt4
       Files:
       - "%{_datadir}/applauncherd-M-art-tests/tests.xml"
       - "%{_datadir}/applauncherd-M-bug-tests/tests.xml"
