@@ -377,7 +377,7 @@ void Daemon::loadSingleInstancePlugin()
 
 void Daemon::loadBoosterPlugins()
 {
-    const char*        PATTERN = "lib*booster.so";
+    const char*        PATTERN = "lib*booster*.so";
     const unsigned int BUF_LEN = 256;
 
     if (strlen(PATTERN) + strlen(BOOSTER_PLUGIN_DIR) + 2 > BUF_LEN)
