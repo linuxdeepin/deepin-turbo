@@ -1,9 +1,8 @@
-# Qt support
-include(${QT_USE_FILE})
-
 set(COMMON ${CMAKE_HOME_DIRECTORY}/src/common)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON})
+
+add_definitions(-DUSE_X11)
 
 # Hide all symbols except the ones explicitly exported in the code (like main())
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")

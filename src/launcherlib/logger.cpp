@@ -31,6 +31,9 @@ bool Logger::m_debugMode = false;
 
 void Logger::openLog(const char * progName)
 {
+    if (!progName)
+        progName = PROG_NAME_LAUNCHER;
+
     if (Logger::m_isOpened)
     {
         Logger::closeLog();

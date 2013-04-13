@@ -18,13 +18,6 @@ set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 # Find libdl
 find_library(LIBDL NAMES dl)
 
-# Find Qt4
-find_package(Qt4 4.6.0 REQUIRED)
-include(${QT_USE_FILE})
-if (${QTVERSION} VERSION_LESS 4.6.0)
-    message(FATAL_ERROR "You need Qt4.6, found ${QTVERSION}.")
-endif (${QTVERSION} VERSION_LESS 4.6.0)
-
 if ($ENV{DEBUG_BUILD})
     add_definitions(-DDEBUG_BUILD)
 endif ($ENV{DEBUG_BUILD})
@@ -82,10 +75,3 @@ if ($ENV{DEBUG_BUILD})
 else ($ENV{DEBUG_BUILD})
     install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
 endif ($ENV{DEBUG_BUILD})
-
-# Install pkg-config and qmake feature files
-install(FILES data/pkgconfig/qt-boostable.pc DESTINATION /usr/lib/pkgconfig)
-install(FILES data/mkspecs/features/qt-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
-install(FILES data/pkgconfig/qdeclarative-boostable.pc DESTINATION /usr/lib/pkgconfig)
-install(FILES data/mkspecs/features/qdeclarative-boostable.prf DESTINATION /usr/share/qt4/mkspecs/features)
-

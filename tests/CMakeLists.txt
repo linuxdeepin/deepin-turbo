@@ -22,12 +22,6 @@ add_subdirectory(common/testapps/fala_status)
 # Sub build: common/testapps/fala_wait
 add_subdirectory(common/testapps/fala_wait)
 
-# Sub build: common/testapps/focustest
-add_subdirectory(common/testapps/focustest)
-
-# Sub build: common/testapps/testapp
-add_subdirectory(common/testapps/testapp)
-
 # Sub build: common/testapps/fala_gettime
 add_subdirectory(common/testapps/fala_gettime)
 
@@ -39,16 +33,4 @@ add_subdirectory(common/testapps/pixelchanged)
 
 # Sub build: common/testapps/fala_windowid
 add_subdirectory(common/testapps/fala_windowid)
-
-# Sub build: common/testapps/xsendevent
-add_subdirectory(common/testapps/xsendevent)
-
-# Sub build: common/testapps/fala_qml_helloworld
-add_subdirectory(common/testapps/fala_qml_helloworld)
-
-# Sub build: common/testapps/fala_windowless
-add_subdirectory(common/testapps/fala_windowless)
-
-# Sub build: common/testapps/fala_dbus
-add_subdirectory(common/testapps/fala_dbus)
 

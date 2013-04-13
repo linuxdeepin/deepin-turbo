@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=com.nokia.fala_testapp
-Exec=/usr/bin/fala_testapp -prestart
-

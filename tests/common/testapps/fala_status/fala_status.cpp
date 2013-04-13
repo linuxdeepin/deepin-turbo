@@ -17,19 +17,17 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
-#include <QTimer>
 #include <iostream>
+#include <unistd.h>
 
-Q_DECL_EXPORT int main(int argc, char ** argv)
+int main(int argc, char ** argv)
 {
-    QApplication app(argc, argv);
-    QTimer::singleShot(5, &app, SLOT(quit()));
     int usr_id = getuid();
     int grp_id = getgid();
 
     std::cerr << "uid=" << usr_id <<"\n";
     std::cerr << "gid=" << grp_id <<"\n";
-    app.exec();
+
+    usleep(5000);
     _exit(29);
 }

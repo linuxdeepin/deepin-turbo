@@ -19,16 +19,16 @@ Source1:    mapplauncherd.service
 Source100:  mapplauncherd.yaml
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-BuildRequires:  pkgconfig(QtCore)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(xextproto)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(systemd)
+BuildRequires:  pkgconfig(QtCore)
+BuildRequires:  pkgconfig(QtTest)
 BuildRequires:  cmake
 BuildRequires:  python
-BuildRequires:  desktop-file-utils
 Provides:   meegotouch-applauncherd > 3.0.3
 Obsoletes:   meegotouch-applauncherd <= 3.0.3
 
@@ -64,6 +64,7 @@ Summary:    Test scripts for launchable applications
 Group:      Development/Tools
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-testapps = %{version}-%{release}
+Requires:   mapplauncherd-qt4
 
 %description tests
 Test scripts used for testing meegotouch-applauncherd.
@@ -109,9 +110,6 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 # << install post
 
-desktop-file-install --delete-original       \
-  --dir %{buildroot}%{_datadir}/applications             \
-   %{buildroot}%{_datadir}/applications/*.desktop
 
 %post -p /sbin/ldconfig
 
@@ -122,10 +120,6 @@ desktop-file-install --delete-original       \
 %{_bindir}/invoker
 %{_libdir}/libapplauncherd.so*
 %{_libdir}/applauncherd/libebooster.so
-%{_libdir}/applauncherd/libqtbooster.so
-%{_libdir}/applauncherd/libqdeclarativebooster.so
-%{_libdir}/libmdeclarativecache.so.0
-%{_libdir}/libmdeclarativecache.so.0.1
 %{_bindir}/applauncherd.bin
 %{_bindir}/applauncherd
 %{_bindir}/single-instance
@@ -136,37 +130,18 @@ desktop-file-install --delete-original       \
 
 %files devel
 %defattr(-,root,root,-)
-%{_libdir}/pkgconfig/qdeclarative-boostable.pc
-%{_libdir}/pkgconfig/qt-boostable.pc
 %{_includedir}/applauncherd/*
-%{_datadir}/qt4/mkspecs/features/qt-boostable.prf
-%{_datadir}/qt4/mkspecs/features/qdeclarative-boostable.prf
-%{_libdir}/libmdeclarativecache.so
 # >> files devel
 # << files devel
 
 %files testapps
 %defattr(-,root,root,-)
-%{_bindir}/fala_dbus
-%{_bindir}/fala_focus
 %{_bindir}/fala_gettime_ms
 %{_bindir}/fala_pixelchanged
 %{_bindir}/fala_status
-%{_bindir}/fala_wl
-%{_bindir}/fala_wol
 %{_bindir}/fala_gettime
 %{_bindir}/fala_windowid
-%{_bindir}/fala_qml_helloworld
-%{_bindir}/fala_qml_helloworld1
-%{_bindir}/fala_qml_helloworld2
-%{_bindir}/fala_qml_wl
-%{_bindir}/fala_qml_wol
 %{_bindir}/fala_wait
-%{_bindir}/fala_windowless
-%{_bindir}/xsendevent
-%{_datadir}/dbus-1/services/com.nokia.fala_testapp.service
-%{_datadir}/fala_images/landscape.jpg
-%{_datadir}/fala_images/portrait.jpg
 # >> files testapps
 # << files testapps
 
@@ -182,9 +157,7 @@ desktop-file-install --delete-original       \
 %{_libdir}/applauncherd-tests/ut_daemon
 %{_libdir}/applauncherd-tests/ut_ebooster
 %{_libdir}/applauncherd-tests/ut_connection
-%{_libdir}/applauncherd-tests/ut_qtbooster
 %{_libdir}/applauncherd-tests/ut_socketmanager
-%{_libdir}/applauncherd-tests/ut_dbooster
 %{_libdir}/applauncherd-tests/libutplugin.so
 %{_libdir}/applauncherd-tests/libutwithcreate.so
 %{_libdir}/applauncherd-tests/libutwithcreatetype.so
@@ -218,12 +191,5 @@ desktop-file-install --delete-original       \
 %{_datadir}/applauncherd-M-testscripts/utils.py
 %{_datadir}/applauncherd-M-testscripts/utils.pyc
 %{_datadir}/applauncherd-M-testscripts/utils.pyo
-%{_datadir}/applauncherd-testscripts/view.qml
-%{_datadir}/applications/fala_wl.desktop
-%{_datadir}/applications/fala_wol.desktop
-%{_datadir}/applications/fala_qml_wol.desktop
-%{_datadir}/applications/fala_qml_wl.desktop
-%{_datadir}/dbus-1/services/com.nokia.fala_wl.service
-%{_datadir}/dbus-1/services/com.nokia.fala_wol.service
 # >> files tests
 # << files tests
