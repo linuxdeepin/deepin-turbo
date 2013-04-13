@@ -64,7 +64,7 @@ Summary:    Test scripts for launchable applications
 Group:      Development/Tools
 Requires:   %{name} = %{version}-%{release}
 Requires:   %{name}-testapps = %{version}-%{release}
-Requires:   mapplauncherd-qt4
+Requires:   mapplauncherd-qt
 
 %description tests
 Test scripts used for testing meegotouch-applauncherd.
