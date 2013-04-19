@@ -52,7 +52,7 @@ Daemon * Daemon::m_instance = NULL;
 int Daemon::m_lockFd = -1;
 const int Daemon::m_boosterSleepTime = 2;
 
-const std::string Daemon::m_stateDir = std::string(getenv("HOME"))+"/.applauncherd";
+const std::string Daemon::m_stateDir = std::string(getenv("XDG_RUNTIME_DIR"))+"/applauncherd";
 const std::string Daemon::m_stateFile = Daemon::m_stateDir + "/saved-state";
 
 Daemon::Daemon(int & argc, char * argv[]) :
@@ -117,7 +117,7 @@ bool Daemon::lock()
     fl.l_len = 1;
 
     std::stringstream lock_file;
-    lock_file << getenv("HOME") << "/applauncherd.lock";
+    lock_file << getenv("XDG_RUNTIME_DIR") << "/applauncherd.lock";
   
     if((m_lockFd = open(lock_file.str().c_str(), O_WRONLY | O_CREAT, 0666)) == -1)
         return false;

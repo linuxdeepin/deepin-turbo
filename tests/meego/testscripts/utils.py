@@ -28,7 +28,7 @@ def remove_applauncherd_runtime_files():
     Removes files that applauncherd leaves behind after it has been stopped
     """
 
-    files = ["%s/applauncherd.lock" % (os.environ['HOME'])]
+    files = ["%s/applauncherd.lock" % (os.environ['XDG_RUNTIME_DIR'])]
     files += glob.glob('/tmp/boost*')
 
     for f in files:
