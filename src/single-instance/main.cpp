@@ -40,7 +40,7 @@ extern "C" {
 namespace
 {
     int g_lockFd = -1;
-    const std::string LOCK_PATH_BASE(std::string(getenv("HOME"))+"/.single-instance-locks/");
+    const std::string LOCK_PATH_BASE(std::string(getenv("XDG_RUNTIME_DIR"))+"/single-instance-locks/");
     const std::string LOCK_FILE_NAME("instance.lock");
 }
 
@@ -264,7 +264,7 @@ extern "C"
      * \brief Try to acquire a lock file.
      *
      * Tries to acquire a lock currently at
-     * $HOME/.single-instance-locks/[binaryName]/instance.lock
+     * $XDG_RUNTIME_DIR/single-instance-locks/[binaryName]/instance.lock
      *
      * \param binaryName Full path to the binary.
      * \return true if succeeded, false on failure.

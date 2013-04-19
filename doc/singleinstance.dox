@@ -20,7 +20,7 @@ Exec=/usr/bin/invoker --single-instance --type=e /usr/bin/myApp
 \endverbatim
 
 As a result, a lock file 
-\c $HOME/.single-instance-locks/usr/bin/myApp/instance.lock is created. 
+\c $XDG_RUNTIME_DIR/single-instance-locks/usr/bin/myApp/instance.lock is created. 
 If applauncherd cannot acquire the lock, it tries to find the corresponding
 window and activates it. 
 
