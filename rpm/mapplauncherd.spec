@@ -15,7 +15,6 @@ Group:      System/Daemons
 License:    LGPLv2+
 URL:        https://github.com/nemomobile/mapplauncherd/
 Source0:    %{name}-%{version}.tar.bz2
-Source1:    mapplauncherd.service
 Source100:  mapplauncherd.yaml
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -95,12 +94,8 @@ rm -rf %{buildroot}
 # >> install pre
 # << install pre
 %make_install
-mkdir -p %{buildroot}%{_libdir}/systemd/user/
-cp -a %{SOURCE1} %{buildroot}%{_libdir}/systemd/user/
-
 
 # >> install post
-(cd %{buildroot}%{_libdir}/systemd/user; ln -s mapplauncherd.service meegotouch-applauncherd.service)
 
 # rpmlint complains about installing binaries in /usr/share, so
 # move them elsewhere and leave a symlink in place.
@@ -119,12 +114,9 @@ rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 %defattr(-,root,root,-)
 %{_bindir}/invoker
 %{_libdir}/libapplauncherd.so*
-%{_libdir}/applauncherd/libebooster.so
-%{_bindir}/applauncherd.bin
-%{_bindir}/applauncherd
+%{_libexecdir}/mapplauncherd/ebooster
+%{_libdir}/systemd/user/booster-e.service
 %{_bindir}/single-instance
-%{_libdir}/systemd/user/mapplauncherd.service
-%{_libdir}/systemd/user/meegotouch-applauncherd.service
 # >> files
 # << files
 
@@ -155,17 +147,11 @@ rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 %{_libdir}/applauncherd-tests/tests.xml
 %{_libdir}/applauncherd-tests/ut_booster
 %{_libdir}/applauncherd-tests/ut_daemon
-%{_libdir}/applauncherd-tests/ut_ebooster
 %{_libdir}/applauncherd-tests/ut_connection
 %{_libdir}/applauncherd-tests/ut_socketmanager
-%{_libdir}/applauncherd-tests/libutplugin.so
-%{_libdir}/applauncherd-tests/libutwithcreate.so
-%{_libdir}/applauncherd-tests/libutwithcreatetype.so
-%{_libdir}/applauncherd-tests/libutwithcreatetypesocketname.so
 %{_libdir}/applauncherd-tests/libutwithlock.so
 %{_libdir}/applauncherd-tests/libutwithlockunlock.so
 %{_libdir}/applauncherd-tests/ut_appdata
-%{_libdir}/applauncherd-tests/ut_boosterpluginregistry
 %{_libdir}/applauncherd-tests/ut_logger
 %{_libdir}/applauncherd-tests/ut_singleinstance
 %{_datadir}/applauncherd-M-testscripts/check_pipes.py

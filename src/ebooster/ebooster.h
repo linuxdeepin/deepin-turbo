@@ -26,39 +26,20 @@
     \class EBooster
     \brief EBooster is a "booster" that only exec()'s the given binary.
 
-    This can be used with e.g. splash screen to launch any application.
+    This can be used to launch any application.
  */
 class EBooster : public Booster
 {
 public:
 
-    //! \brief Constructor
     EBooster() {}
-
-    //! \brief Destructor
     virtual ~EBooster() {}
 
-    /*!
-     * \brief Return the socket name common to all EBooster objects.
-     * \return Path to the socket file.
-     */
-    static const string & socketName();
-
-    //! Return the process name to be used when booster is not
-    //! yet transformed into a running application
-    static const string & temporaryProcessName();
+    //! \reimp
+    virtual const string &boosterTemporaryProcessName() const;
 
     //! \reimp
-    virtual const string & boosterTemporaryProcessName() const;
-
-    //! \reimp
-    virtual char boosterType() const { return type(); }
-
-    /*!
-     * \brief Return a unique character ('e') represtenting the type of EBoosters.
-     * \return Type character.
-     */
-    static char type();
+    virtual char boosterType() const;
 
     //! \reimp
     virtual const string & socketId() const;

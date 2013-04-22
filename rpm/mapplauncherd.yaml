@@ -7,8 +7,6 @@ License: LGPLv2+
 URL: https://github.com/nemomobile/mapplauncherd/
 Sources:
     - "%{name}-%{version}.tar.bz2"
-ExtraSources:
-    - mapplauncherd.service;%{_libdir}/systemd/user/
 Description: |
     Application invoker and launcher daemon that speed up
     application startup time and share memory. Provides also
@@ -34,13 +32,9 @@ Builder: make
 Files:
     - "%{_bindir}/invoker"
     - "%{_libdir}/libapplauncherd.so*"
-    - "%{_libdir}/applauncherd/libebooster.so"
-    - "%{_bindir}/applauncherd.bin"
-    - "%{_bindir}/applauncherd"
+    - "%{_libexecdir}/mapplauncherd/ebooster"
+    - "%{_libdir}/systemd/user/booster-e.service"
     - "%{_bindir}/single-instance"
-    - "%{_libdir}/systemd/user/mapplauncherd.service"
-    # For compatibility
-    - "%{_libdir}/systemd/user/meegotouch-applauncherd.service"
 SubPackages:
     - Name: devel
       Group: Development/Tools
@@ -85,17 +79,11 @@ SubPackages:
       - "%{_libdir}/applauncherd-tests/tests.xml"
       - "%{_libdir}/applauncherd-tests/ut_booster"
       - "%{_libdir}/applauncherd-tests/ut_daemon"
-      - "%{_libdir}/applauncherd-tests/ut_ebooster"
       - "%{_libdir}/applauncherd-tests/ut_connection"
       - "%{_libdir}/applauncherd-tests/ut_socketmanager"
-      - "%{_libdir}/applauncherd-tests/libutplugin.so"
-      - "%{_libdir}/applauncherd-tests/libutwithcreate.so"
-      - "%{_libdir}/applauncherd-tests/libutwithcreatetype.so"
-      - "%{_libdir}/applauncherd-tests/libutwithcreatetypesocketname.so"
       - "%{_libdir}/applauncherd-tests/libutwithlock.so"
       - "%{_libdir}/applauncherd-tests/libutwithlockunlock.so"
       - "%{_libdir}/applauncherd-tests/ut_appdata"
-      - "%{_libdir}/applauncherd-tests/ut_boosterpluginregistry"
       - "%{_libdir}/applauncherd-tests/ut_logger"
       - "%{_libdir}/applauncherd-tests/ut_singleinstance"
       - "%{_datadir}/applauncherd-M-testscripts/check_pipes.py"

@@ -7,14 +7,15 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC ebooster.cpp pluginfactory.cpp)
+set(SRC ebooster.cpp)
 
 # Set libraries to be linked.
 link_libraries("-L../launcherlib -lapplauncherd" ${LIBDL})
 
 # Set executable
-add_library(ebooster MODULE ${SRC} ${MOC_SRC})
+add_executable(ebooster ${SRC} ${MOC_SRC})
 add_dependencies(ebooster applauncherd)
 
 # Add install rule
-install(TARGETS ebooster DESTINATION /usr/lib/applauncherd/)
+install(TARGETS ebooster DESTINATION /usr/libexec/mapplauncherd/)
+install(FILES booster-e.service DESTINATION /usr/lib/systemd/user/)

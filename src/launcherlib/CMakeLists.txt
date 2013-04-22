@@ -2,19 +2,20 @@ set(COMMON ${CMAKE_HOME_DIRECTORY}/src/common)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON})
 
+# Find X11
+include(FindPkgConfig)
+pkg_check_modules(X11 x11 REQUIRED)
 add_definitions(-DUSE_X11)
 
 # Hide all symbols except the ones explicitly exported in the code (like main())
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC appdata.cpp booster.cpp boosterfactory.cpp boosterpluginregistry.cpp
-        connection.cpp daemon.cpp logger.cpp main.cpp 
+set(SRC appdata.cpp booster.cpp connection.cpp daemon.cpp logger.cpp
         singleinstance.cpp socketmanager.cpp)
 
-set(HEADERS appdata.h booster.h boosterfactory.h boosterpluginregistry.h
-    connection.h daemon.h logger.h launcherlib.h singleinstance.h socketmanager.h
-    ${COMMON}/protocol.h)
+set(HEADERS appdata.h booster.h connection.h daemon.h logger.h launcherlib.h
+    singleinstance.h socketmanager.h ${COMMON}/protocol.h)
 
 # Set libraries to be linked. Shared libraries to be preloaded are not linked in anymore,
 # but dlopen():ed and listed in src/launcher/preload.h instead.

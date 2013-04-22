@@ -18,10 +18,11 @@
 ****************************************************************************/
 
 #include "ebooster.h"
+#include "launcherlib.h"
+#include "daemon.h"
 #include "logger.h"
 #include <errno.h>
 #include <string.h>
-#include "coverage.h"
 
 const string EBooster::m_socketId  = "/tmp/booste";
 const string EBooster::m_temporaryProcessName = "booster-e";
@@ -31,22 +32,12 @@ const string & EBooster::socketId() const
     return m_socketId;
 }
 
-const string & EBooster::socketName()
-{
-    return m_socketId;
-}
-
-const string & EBooster::temporaryProcessName()
+const string & EBooster::boosterTemporaryProcessName() const
 {
     return m_temporaryProcessName;
 }
 
-const string & EBooster::boosterTemporaryProcessName() const
-{
-    return temporaryProcessName();
-}
-
-char EBooster::type()
+char EBooster::boosterType() const
 {
     return 'e';
 }
@@ -79,3 +70,12 @@ int EBooster::launchProcess()
 
     return EXIT_FAILURE;
 }
+
+int main(int argc, char **argv)
+{
+    EBooster *booster = new EBooster;
+
+    Daemon d(argc, argv);
+    d.run(booster);
+}
+

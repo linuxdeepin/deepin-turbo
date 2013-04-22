@@ -24,11 +24,7 @@ endif ($ENV{DEBUG_BUILD})
 
 # Set the program name defines. Must be at this level due to unit tests.
 add_definitions(-DPROG_NAME_INVOKER="invoker")
-add_definitions(-DPROG_NAME_LAUNCHER="applauncherd")
 add_definitions(-DPROG_NAME_SINGLE_INSTANCE="single-instance")
-
-# applauncherd will find lib*booster.so from here
-add_definitions(-DBOOSTER_PLUGIN_DIR="/usr/lib/applauncherd")
 
 # applauncherd will try to load single-instance using this path
 add_definitions(-DSINGLE_INSTANCE_PATH="/usr/bin/single-instance")
@@ -69,9 +65,3 @@ install(DIRECTORY doc/implementation-documentation DESTINATION /usr/share/doc/ap
 install(DIRECTORY doc/user-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
 install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
 
-# Install startup script
-if ($ENV{DEBUG_BUILD})
-    install(PROGRAMS src/scripts/applauncherd-debug DESTINATION /usr/bin/ RENAME applauncherd)
-else ($ENV{DEBUG_BUILD})
-    install(PROGRAMS src/scripts/applauncherd DESTINATION /usr/bin/)
-endif ($ENV{DEBUG_BUILD})

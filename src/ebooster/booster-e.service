@@ -1,0 +1,8 @@
+[Unit]
+Description=Generic application launch booster
+After=xorg.target
+Requires=dbus.socket xorg.target
+
+[Service]
+Type=notify
+ExecStart=/usr/libexec/mapplauncherd/ebooster --systemd

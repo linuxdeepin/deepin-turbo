@@ -86,39 +86,13 @@ void Ut_Daemon::testReapZombies()
     QVERIFY(m_subject->m_children.size() == 0);
 }
 
-void Ut_Daemon::testSetPidToBooster()
-{
-    m_subject->setPidToBooster('a', 2);
-    m_subject->setPidToBooster('b', 1);
-
-    QVERIFY(m_subject->boosterTypeForPid(2) == 'a');
-    QVERIFY(m_subject->boosterPidForType('a') == 2);
-
-    QVERIFY(m_subject->boosterTypeForPid(1) == 'b');
-    QVERIFY(m_subject->boosterPidForType('b') == 1);
-
-    QVERIFY(m_subject->boosterTypeForPid(3) == 0);
-    QVERIFY(m_subject->boosterPidForType('c') == 0);
-}
-
-void Ut_Daemon::testLock()
-{
-    //negative testcase with already locked soket (it's locked by running applauncherd)
-    QVERIFY(Daemon::lock() == false);
-
-    //negative testcase with wrong lock file descriptor
-    Daemon::unlock();
-    m_subject->m_lockFd = -1;
-    QVERIFY(Daemon::lock() == false);
-}
-
 void Ut_Daemon::testForkBooster()
 {
     //negative testcase for unregistered booster type '0'
     pid_t pid = fork();
     if (pid == 0) { // child
         // Code only executed by child process
-        m_subject->forkBooster('0');
+        m_subject->forkBooster();
         QFAIL("Not exited on invalid booster type");
         _exit(0); //exit from child if something goes wrong
     } else if (pid < 0) { // failed to fork

@@ -44,8 +44,6 @@ private Q_SLOTS:
     void testParseArgs();
     void testVerifyInstance();
     void testReapZombies();
-    void testSetPidToBooster();
-    void testLock();
     void testForkBooster();
     void testReadFromBoosterSocket();
 

@@ -394,7 +394,7 @@ static void usage(int status)
 {
     printf("\nUsage: %s [options] [--type=TYPE] [file] [args]\n\n"
            "Launch applications compiled as a shared library (-shared) or\n"
-           "a position independent executable (-pie) through %s.\n\n"
+           "a position independent executable (-pie) through mapplauncherd.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
            "  q (or qt)              Launch a Qt application.\n"
@@ -423,7 +423,7 @@ static void usage(int status)
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=m /usr/bin/helloworld\n\n",
-           PROG_NAME_INVOKER, PROG_NAME_LAUNCHER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
+           PROG_NAME_INVOKER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
 }

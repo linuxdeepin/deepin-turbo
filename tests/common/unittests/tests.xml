@@ -34,10 +34,6 @@
           <step expected_result="0">/usr/share/applauncherd-tests/ut_booster</step>
       </case>
 
-      <case name="EBooster" type="Functional" description="Unit tests for EBooster class" level="Component" timeout="20">
-          <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_ebooster'</step>
-      </case>
-
       <environments>
           <scratchbox>true</scratchbox>
           <hardware>true</hardware>    
@@ -51,21 +47,6 @@
 
       <case name="Singleinstance" type="Functional" description="Unit tests for Singleinstance class" level="Component" timeout="20">
           <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_singleinstance'</step>
-      </case>
-
-      <environments>
-          <scratchbox>true</scratchbox>
-          <hardware>true</hardware>    
-      </environments>
-
-      <!--get>
-      </get-->
-    </set>
-
-    <set name="boosterpluginregistry-test" description="BoosterPluginRegistry unit tests" feature="AF BoosterPluginRegistry for Launcher daemon" requirement="1131430" >   
-
-      <case name="BoosterPluginRegistry" type="Functional" description="Unit tests for BoosterPluginRegistry class" level="Component" timeout="20">
-          <step expected_result="0">su - user -c 'source /tmp/session_bus_address.user &amp;&amp; DISPLAY=:0 /usr/share/applauncherd-tests/ut_boosterpluginregistry'</step>
       </case>
 
       <environments>

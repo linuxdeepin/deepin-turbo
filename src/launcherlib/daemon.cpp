@@ -21,8 +21,6 @@
 #include "logger.h"
 #include "connection.h"
 #include "booster.h"
-#include "boosterfactory.h"
-#include "boosterpluginregistry.h"
 #include "singleinstance.h"
 #include "socketmanager.h"
 
@@ -49,21 +47,71 @@
 extern char ** environ;
 
 Daemon * Daemon::m_instance = NULL;
-int Daemon::m_lockFd = -1;
 const int Daemon::m_boosterSleepTime = 2;
 
 const std::string Daemon::m_stateDir = std::string(getenv("XDG_RUNTIME_DIR"))+"/applauncherd";
 const std::string Daemon::m_stateFile = Daemon::m_stateDir + "/saved-state";
 
+static void sigChldHandler(int)
+{
+    char v = SIGCHLD;
+    write(Daemon::instance()->sigPipeFd(), &v, 1);
+}
+
+static void sigTermHandler(int)
+{
+    char v = SIGTERM;
+    write(Daemon::instance()->sigPipeFd(), &v, 1);
+}
+
+static void sigUsr1Handler(int)
+{
+    char v = SIGUSR1;
+    write(Daemon::instance()->sigPipeFd(), &v, 1);
+}
+
+static void sigUsr2Handler(int)
+{
+    char v = SIGUSR2;
+    write(Daemon::instance()->sigPipeFd(), &v, 1);
+}
+
+static void sigPipeHandler(int)
+{
+    char v = SIGPIPE;
+    write(Daemon::instance()->sigPipeFd(), &v, 1);
+}
+
+static void sigHupHandler(int)
+{
+    char v = SIGHUP;
+    write(Daemon::instance()->sigPipeFd(), &v, 1);
+}
+
 Daemon::Daemon(int & argc, char * argv[]) :
     m_daemon(false),
     m_debugMode(false),
     m_bootMode(false),
+    m_boosterPid(0),
     m_socketManager(new SocketManager),
     m_singleInstance(new SingleInstance),
     m_reExec(false),
-    m_notifySystemd(false)
+    m_notifySystemd(false),
+    m_booster(0)
 {
+    // Open the log
+    Logger::openLog(argc > 0 ? argv[0] : "booster");
+    Logger::logDebug("starting..");
+
+    // Install signal handlers. The original handlers are saved
+    // in the daemon instance so that they can be restored in boosters.
+    setUnixSignalHandler(SIGCHLD, sigChldHandler); // reap zombies
+    setUnixSignalHandler(SIGTERM, sigTermHandler); // exit launcher
+    setUnixSignalHandler(SIGUSR1, sigUsr1Handler); // enter normal mode from boot mode
+    setUnixSignalHandler(SIGUSR2, sigUsr2Handler); // enter boot mode (same as --boot-mode)
+    setUnixSignalHandler(SIGPIPE, sigPipeHandler); // broken invoker's pipe
+    setUnixSignalHandler(SIGHUP,  sigHupHandler);  // re-exec
+
     if (!Daemon::m_instance)
     {
         Daemon::m_instance = this;
@@ -107,77 +155,13 @@ Daemon * Daemon::instance()
     return Daemon::m_instance;
 }
 
-bool Daemon::lock()
+void Daemon::run(Booster *booster)
 {
-    struct flock fl;
+    m_booster = booster;
 
-    fl.l_type = F_WRLCK;
-    fl.l_whence = SEEK_SET;
-    fl.l_start = 0;
-    fl.l_len = 1;
-
-    std::stringstream lock_file;
-    lock_file << getenv("XDG_RUNTIME_DIR") << "/applauncherd.lock";
-  
-    if((m_lockFd = open(lock_file.str().c_str(), O_WRONLY | O_CREAT, 0666)) == -1)
-        return false;
-
-    if(fcntl(m_lockFd, F_SETLK, &fl) == -1)
-        return false;
-
-    // write pid into the lock file
-    std::stringstream ss;
-    ss << getpid();
-    write(m_lockFd, ss.str().c_str(), ss.str().length());
-
-    return true;
-}
-
-void Daemon::unlock()
-{
-    if (m_lockFd != -1)
-    {
-        close(m_lockFd);
-        m_lockFd = -1;
-    }
-}
-
-void Daemon::initBoosterSockets()
-{
-    const int numBoosters = BoosterPluginRegistry::pluginCount();
-    for (int i = 0; i < numBoosters; i++)
-    {
-        BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
-        if (plugin)
-        {
-            Logger::logDebug("Daemon: initing socket: %s", plugin->socketNameFunc());
-            m_socketManager->initSocket(plugin->socketNameFunc());
-        }
-    }
-}
-
-void Daemon::forkBoosters()
-{
-    const int numBoosters = BoosterPluginRegistry::pluginCount();
-    for (int i = 0; i < numBoosters; i++)
-    {
-        BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
-        if (plugin)
-        {
-            Logger::logDebug("Daemon: forking booster: '%c'", plugin->type);
-            forkBooster(plugin->type);
-        }
-    }
-}
-
-void Daemon::run()
-{
     // Make sure that LD_BIND_NOW does not prevent dynamic linker to
     // use lazy binding in later dlopen() calls.
     unsetenv("LD_BIND_NOW");
-
-    // dlopen() booster plugins
-    loadBoosterPlugins();
 
     // dlopen single-instance
     loadSingleInstancePlugin();
@@ -190,11 +174,13 @@ void Daemon::run()
     }
     else
     {
-        // Create sockets for each of the boosters
-        initBoosterSockets();
+        // Create socket for the booster
+        Logger::logDebug("Daemon: initing socket: %s", booster->socketId().c_str());
+        m_socketManager->initSocket(booster->socketId());
 
         // Fork each booster for the first time
-        forkBoosters();
+        Logger::logDebug("Daemon: forking booster: '%c'", booster->boosterType());
+        forkBooster();
     }
 
     // Notify systemd that init is done
@@ -313,15 +299,14 @@ void Daemon::readFromBoosterSocket(int fd)
         {
             // Store booster - invoker pid pair
             // Store booster - invoker socket pair
-            pid_t boosterPid = boosterPidForType(booster);
-            if (boosterPid)
+            if (m_boosterPid)
             {
                 cmsg = CMSG_FIRSTHDR(&msg);
                 int newFd;                 
                 memcpy(&newFd, CMSG_DATA(cmsg), sizeof(int));
                 Logger::logDebug("Daemon: socket file descriptor: %d\n", newFd);
-                m_boosterPidToInvokerPid[boosterPid] = invokerPid;
-                m_boosterPidToInvokerFd[boosterPid] = newFd;
+                m_boosterPidToInvokerPid[m_boosterPid] = invokerPid;
+                m_boosterPidToInvokerFd[m_boosterPid] = newFd;
             }
         }
     }
@@ -338,7 +323,7 @@ void Daemon::readFromBoosterSocket(int fd)
     // to start up before forking new booster. Not doing this would
     // slow down the start-up significantly on single core CPUs.
 
-    forkBooster(booster, delay);
+    forkBooster(delay);
 }
 
 void Daemon::killProcess(pid_t pid, int signal) const
@@ -375,66 +360,17 @@ void Daemon::loadSingleInstancePlugin()
     }
 }
 
-void Daemon::loadBoosterPlugins()
+void Daemon::forkBooster(int sleepTime)
 {
-    const char*        PATTERN = "lib*booster*.so";
-    const unsigned int BUF_LEN = 256;
-
-    if (strlen(PATTERN) + strlen(BOOSTER_PLUGIN_DIR) + 2 > BUF_LEN)
-    {
-        Logger::logError("Daemon: path to plugins too long");
-        return;
-    }
-
-    char buffer[BUF_LEN];
-    memset(buffer, 0, BUF_LEN);
-    strcpy(buffer, BOOSTER_PLUGIN_DIR);
-    strcat(buffer, "/");
-    strcat(buffer, PATTERN);
-
-    // get full path to all plugins
-    glob_t globbuf;
-    if (glob(buffer, 0, NULL, &globbuf) == 0)
-    {
-        for (__size_t i = 0; i < globbuf.gl_pathc; i++)
-        {
-            void *handle = dlopen(globbuf.gl_pathv[i], RTLD_NOW | RTLD_GLOBAL);
-            if (!handle)
-            {
-                Logger::logWarning("Daemon: dlopening booster failed: %s", dlerror());
-            }
-            else
-            {
-                char newType = BoosterPluginRegistry::validateAndRegisterPlugin(handle);
-                if (newType)
-                {
-                    Logger::logDebug("Daemon: Booster of type '%c' loaded.'", newType);
-                }
-                else
-                {
-                    Logger::logWarning("Daemon: Invalid booster plugin: '%s'", buffer);
-                }
-            }
-        }
-        globfree(&globbuf);
-    }
-    else
-    {
-        Logger::logError("Daemon: can't find booster plugins");
-    }
-}
-
-void Daemon::forkBooster(char type, int sleepTime)
-{
-    if (!BoosterPluginRegistry::pluginEntry(type)) {
-        Logger::logError("Daemon: Unknown booster type '%c'\n",type);
+    if (!m_booster) {
         // Critical error unknown booster type. Exiting applauncherd.
         _exit(EXIT_FAILURE);
     }
 
+    char type = m_booster->boosterType();
 
     // Invalidate current booster pid for the given type
-    setPidToBooster(type, 0);
+    m_boosterPid = 0;
 
     // Fork a new process
     pid_t newPid = fork();
@@ -456,12 +392,6 @@ void Daemon::forkBooster(char type, int sleepTime)
         // Close signal pipe
         close(m_sigPipeFd[0]);
         close(m_sigPipeFd[1]);
-
-        // Close unused sockets inherited from daemon
-        closeUnusedSockets(type);
-
-        // Close lock file, it's not needed in the booster
-        Daemon::unlock();
 
         // Close socket file descriptors
         FdMap::iterator i(m_boosterPidToInvokerFd.begin());
@@ -485,29 +415,20 @@ void Daemon::forkBooster(char type, int sleepTime)
 
         Logger::logDebug("Daemon: Running a new Booster of type '%c'", type);
 
-        // Create a new booster, initialize and run it
-        Booster * booster = BoosterFactory::create(type);
-        if (booster)
-        {
-            // Initialize and wait for commands from invoker
-            booster->initialize(m_initialArgc, m_initialArgv, m_boosterLauncherSocket[1],
-                                m_socketManager->findSocket(booster->socketId().c_str()),
-                                m_singleInstance, m_bootMode);
+        // Initialize and wait for commands from invoker
+        m_booster->initialize(m_initialArgc, m_initialArgv, m_boosterLauncherSocket[1],
+                              m_socketManager->findSocket(m_booster->socketId().c_str()),
+                              m_singleInstance, m_bootMode);
 
-            // Run the current Booster
-            int retval = booster->run(m_socketManager);
+        // Run the current Booster
+        int retval = m_booster->run(m_socketManager);
 
-            // Finish
-            delete booster;
+        // Finish
+        delete m_booster;
 
-            // _exit() instead of exit() to avoid situation when destructors
-            // for static objects may be run incorrectly
-            _exit(retval);
-        }
-        else
-        {
-            throw std::runtime_error(std::string("Daemon: Unknown booster type '") + type + "'");
-        }
+        // _exit() instead of exit() to avoid situation when destructors
+        // for static objects may be run incorrectly
+        _exit(retval);
     }
     else /* Parent process */
     {
@@ -516,7 +437,7 @@ void Daemon::forkBooster(char type, int sleepTime)
 
         // Set current process ID globally to the given booster type
         // so that we now which booster to restart when booster exits.
-        setPidToBooster(type, newPid);
+        m_boosterPid = newPid;
     }
 }
 
@@ -581,55 +502,14 @@ void Daemon::reapZombies()
             }
 
             // Check if pid belongs to a booster and restart the dead booster if needed
-            char type = boosterTypeForPid(pid);
-            if (type != 0)
+            if (pid == m_boosterPid)
             {
-                forkBooster(type, m_boosterSleepTime);
+                forkBooster(m_boosterSleepTime);
             }
         }
         else
         {
             i++;
-        }
-    }
-}
-
-void Daemon::setPidToBooster(char type, pid_t pid)
-{
-    m_boosterTypeToPid[type] = pid;
-}
-
-char Daemon::boosterTypeForPid(pid_t pid) const
-{
-    TypeMap::const_iterator i = m_boosterTypeToPid.begin();
-    while (i != m_boosterTypeToPid.end())
-    {
-        if (i->second == pid)
-        {
-            return i->first;
-        }
-
-        i++;
-    }
-
-    return 0;
-}
-
-pid_t Daemon::boosterPidForType(char type) const
-{
-    TypeMap::const_iterator i = m_boosterTypeToPid.find(type);
-    return i == m_boosterTypeToPid.end() ? 0 : i->second;
-}
-
-void Daemon::closeUnusedSockets(char type)
-{
-    const int numBoosters = BoosterPluginRegistry::pluginCount();
-    for (int i = 0; i < numBoosters; i++)
-    {
-        BoosterPluginEntry * plugin = BoosterPluginRegistry::pluginEntry(i);
-        if (plugin && (plugin->type != type))
-        {
-            m_socketManager->closeSocket(plugin->socketNameFunc());
         }
     }
 }
@@ -660,11 +540,6 @@ void Daemon::daemonize()
     {
         exit(EXIT_SUCCESS);
     }
-
-    // Check the lock
-    // Note: file locking must be done after forking, otherwise lock belongs to parent process
-    if(!Daemon::lock())
-        throw std::runtime_error(std::string(PROG_NAME_LAUNCHER) + " is already running\n");
 
     // Change the file mode mask
     umask(0);
@@ -723,7 +598,7 @@ void Daemon::parseArgs(const ArgVect & args)
         }
         else if ((*i) == "--help" || (*i) == "-h")
         {
-            usage(EXIT_SUCCESS);
+            usage(args[0].c_str(), EXIT_SUCCESS);
         }
         else if ((*i) == "--re-exec")
         {
@@ -736,13 +611,13 @@ void Daemon::parseArgs(const ArgVect & args)
         else
         {
             if ((*i).find_first_not_of(' ') != string::npos)
-               usage(EXIT_FAILURE);
+               usage(args[0].c_str(), EXIT_FAILURE);
         }
     }
 }
 
 // Prints the usage and exits with given status
-void Daemon::usage(int status)
+void Daemon::usage(const char *name, int status)
 {
     printf("\nUsage: %s [options]\n\n"
            "Start the application launcher daemon.\n\n"
@@ -758,7 +633,7 @@ void Daemon::usage(int status)
            "  --systemd        Notify systemd when initialization is done\n"
            "  --debug          Enable debug messages and log everything also to stdout.\n"
            "  -h, --help       Print this help.\n\n",
-           PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER, PROG_NAME_LAUNCHER);
+           name, name, name);
 
     exit(status);
 }
@@ -804,14 +679,10 @@ void Daemon::enterBootMode()
 
 void Daemon::killBoosters()
 {
-    TypeMap::iterator iter(m_boosterTypeToPid.begin());
-    while (iter != m_boosterTypeToPid.end())
-    {
-        killProcess(iter->second, SIGTERM);
-        iter++;
-    }
+    if (m_boosterPid)
+        killProcess(m_boosterPid, SIGTERM);
 
-    // NOTE!!: m_boosterTypeToPid must not be cleared
+    // NOTE!!: m_boosterPid must not be cleared
     // in order to automatically start new boosters.
 }
 
@@ -853,9 +724,7 @@ Daemon::~Daemon()
     delete m_socketManager;
     delete m_singleInstance;
 
-#ifdef WITH_COVERAGE
-    __gcov_flush();
-#endif
+    Logger::closeLog();
 }
 
 void Daemon::reExec()
@@ -915,18 +784,13 @@ void Daemon::reExec()
             ss << "booster-invoker-fd " << it->first << " " << it->second << std::endl;
         }
 
-        for(TypeMap::iterator it = m_boosterTypeToPid.begin(); it != m_boosterTypeToPid.end(); it++)
-        {
-            ss << "booster-type " << (it->first) << " " << it->second << std::endl;
-        }
+        ss << "booster-pid " << m_boosterPid << std::endl;
 
         ss << "launcher-socket " << m_boosterLauncherSocket[0] << " " << m_boosterLauncherSocket[1] << std::endl;
 
         ss << "sigpipe-fd " << m_sigPipeFd[0] << " " << m_sigPipeFd[1] << std::endl;
 
         ss << "boot-mode " << m_bootMode << std::endl;
-
-        ss << "lock-file " << m_lockFd << std::endl;
 
         SocketManager::SocketHash s = m_socketManager->getState();
         for(SocketManager::SocketHash::iterator it = s.begin(); it != s.end(); it++)
@@ -1043,15 +907,13 @@ void Daemon::restoreState()
                 Logger::logDebug("Daemon: restored m_boosterPidToInvokerFd[%d] = %d", arg1, arg2);
                 m_boosterPidToInvokerFd[arg1] = arg2;
             } 
-            else if (token == "booster-type")
+            else if (token == "booster-pid")
             {
-                std::string arg1;
-                int arg2;
+                int arg1;
                 ss >> arg1;
-                ss >> arg2;
-                Logger::logDebug("Daemon: restored m_boosterTypeToPid[%c] = %d", arg1[0], arg2);
+                Logger::logDebug("Daemon: restored m_boosterPid = %d", arg1);
 
-                m_boosterTypeToPid[arg1[0]] = arg2;
+                m_boosterPid = arg1;
             } 
             else if (token == "launcher-socket")
             {
@@ -1070,13 +932,6 @@ void Daemon::restoreState()
                 Logger::logDebug("Daemon: restored m_sigPipeFd[] = {%d, %d}", arg1, arg2);
                 m_sigPipeFd[0] = arg1;
                 m_sigPipeFd[1] = arg2;
-            } 
-            else if (token == "lock-file")
-            {
-                int arg1;
-                ss >> arg1;
-                Logger::logDebug("Daemon: restored m_lockFd = %d", arg1);
-                Daemon::m_lockFd = arg1;
             } 
             else if (token == "socket-hash")
             {

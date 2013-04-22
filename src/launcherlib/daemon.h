@@ -20,6 +20,8 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
+#include "launcherlib.h"
+
 #include <string>
 
 using std::string;
@@ -53,7 +55,7 @@ class SingleInstance;
  * application, listens connections from the invoker and forks Booster
  * processes.
  */
-class Daemon
+class DECL_EXPORT Daemon
 {
 public:
 
@@ -74,7 +76,7 @@ public:
     /*!
      * \brief Run main loop and fork Boosters.
      */
-    void run();
+    void run(Booster *booster);
 
     /*! \brief Return the one-and-only Daemon instance.
      * \return Pointer to the Daemon instance.
@@ -83,12 +85,6 @@ public:
 
     //! \brief Reapes children processes gone zombies (finished Boosters).
     void reapZombies();
-
-    //! Lock file to prevent launch of second instance
-    static bool lock();
-
-    //! Unlock file (lock is not needed in boosters)
-    static void unlock();
 
     /*!
      * Get fd to which signal handler writes the number
@@ -125,34 +121,13 @@ private:
     void forkKiller();
 
     //! Forks and initializes a new Booster
-    void forkBooster(char type, int sleepTime = 0);
-
-    //! Init sockects used to communicate with boosters
-    void initBoosterSockets();
-
-    //! Fork all registered boosters
-    void forkBoosters();
+    void forkBooster(int sleepTime = 0);
 
     //! Kill given pid with SIGKILL by default
     void killProcess(pid_t pid, int signal = SIGKILL) const;
 
-    //! Load (dlopen()) booster plugins
-    void loadBoosterPlugins();
-
     //! Load single-instance plugin
     void loadSingleInstancePlugin();
-
-    //! Assign given pid to given booster
-    void setPidToBooster(char type, pid_t pid);
-
-    //! Return booster type for given pid. Return 0 if fails.
-    char boosterTypeForPid(pid_t pid) const;
-
-    //! Return pid for given booster type. Return 0 if fails.
-    pid_t boosterPidForType(char type) const;
-
-    //! Close all sockets NOT used by the given booster type.
-    void closeUnusedSockets(char type);
 
     //! Read and process data from a booster pipe
     void readFromBoosterSocket(int fd);
@@ -167,7 +142,7 @@ private:
     void killBoosters();
 
     //! Prints the usage and exits with given status
-    void usage(int status);
+    void usage(const char *name, int status);
 
     //! Re-exec applauncherd.bin
     void reExec();
@@ -201,9 +176,8 @@ private:
     typedef map<pid_t, pid_t> FdMap;
     FdMap m_boosterPidToInvokerFd;
 
-    //! Mapping for booster type <-> pid
-    typedef map<char, pid_t> TypeMap;
-    TypeMap m_boosterTypeToPid;
+    //! Current booster pid
+    pid_t m_boosterPid;
 
     //! Socket pair used to tell the parent that a new booster is needed +
     //! some parameters.
@@ -220,9 +194,6 @@ private:
 
     //! Singleton Daemon instance
     static Daemon * m_instance;
-
-    //! File descriptor of the lock file
-    static int m_lockFd;
 
     //! Time to sleep before forking a new booster
     static const int m_boosterSleepTime;
@@ -242,6 +213,9 @@ private:
 
     //! True if systemd needs to be notified
     bool m_notifySystemd;
+
+    //! Booster instance
+    Booster * m_booster;
 
     //! Name of the state saving directory and file
     static const std::string m_stateDir;

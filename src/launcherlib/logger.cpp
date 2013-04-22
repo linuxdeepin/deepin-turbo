@@ -32,7 +32,7 @@ bool Logger::m_debugMode = false;
 void Logger::openLog(const char * progName)
 {
     if (!progName)
-        progName = PROG_NAME_LAUNCHER;
+        progName = "mapplauncherd";
 
     if (Logger::m_isOpened)
     {
