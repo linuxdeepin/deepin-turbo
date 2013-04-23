@@ -175,11 +175,11 @@ void Daemon::run(Booster *booster)
     else
     {
         // Create socket for the booster
-        Logger::logDebug("Daemon: initing socket: %s", booster->socketId().c_str());
-        m_socketManager->initSocket(booster->socketId());
+        Logger::logDebug("Daemon: initing socket: %s", booster->boosterType().c_str());
+        m_socketManager->initSocket(booster->boosterType());
 
         // Fork each booster for the first time
-        Logger::logDebug("Daemon: forking booster: '%c'", booster->boosterType());
+        Logger::logDebug("Daemon: forking booster: %s", booster->boosterType().c_str());
         forkBooster();
     }
 
@@ -268,23 +268,20 @@ void Daemon::run(Booster *booster)
 
 void Daemon::readFromBoosterSocket(int fd)
 {
-    char booster     = 0;
     pid_t invokerPid = 0;
     int delay        = 0;
     struct msghdr   msg;
     struct cmsghdr *cmsg;
-    struct iovec    iov[3];
+    struct iovec    iov[2];
     char buf[CMSG_SPACE(sizeof(int))];
 
-    iov[0].iov_base = &booster;
-    iov[0].iov_len  = sizeof(char);
-    iov[1].iov_base = &invokerPid;
-    iov[1].iov_len  = sizeof(pid_t);
-    iov[2].iov_base = &delay;
-    iov[2].iov_len  = sizeof(int);
+    iov[0].iov_base = &invokerPid;
+    iov[0].iov_len  = sizeof(pid_t);
+    iov[1].iov_base = &delay;
+    iov[1].iov_len  = sizeof(int);
 
     msg.msg_iov        = iov;
-    msg.msg_iovlen     = 3;
+    msg.msg_iovlen     = 2;
     msg.msg_name       = NULL;
     msg.msg_namelen    = 0;
     msg.msg_control    = buf;
@@ -292,7 +289,6 @@ void Daemon::readFromBoosterSocket(int fd)
 
     if (recvmsg(fd, &msg, 0) >= 0)
     {
-        Logger::logDebug("Daemon: booster type: %c\n", booster);
         Logger::logDebug("Daemon: invoker's pid: %d\n", invokerPid);
         Logger::logDebug("Daemon: respawn delay: %d \n", delay);
         if (invokerPid != 0)
@@ -316,8 +312,6 @@ void Daemon::readFromBoosterSocket(int fd)
         // Critical error communicating with booster. Exiting applauncherd.
         _exit(EXIT_FAILURE);
     }
-
-    // Fork a new booster of the given type
 
     // 2nd param guarantees some time for the just launched application
     // to start up before forking new booster. Not doing this would
@@ -367,9 +361,7 @@ void Daemon::forkBooster(int sleepTime)
         _exit(EXIT_FAILURE);
     }
 
-    char type = m_booster->boosterType();
-
-    // Invalidate current booster pid for the given type
+    // Invalidate current booster pid
     m_boosterPid = 0;
 
     // Fork a new process
@@ -413,11 +405,11 @@ void Daemon::forkBooster(int sleepTime)
         if (!m_bootMode && sleepTime)
             sleep(sleepTime);
 
-        Logger::logDebug("Daemon: Running a new Booster of type '%c'", type);
+        Logger::logDebug("Daemon: Running a new Booster of type '%s'", m_booster->boosterType().c_str());
 
         // Initialize and wait for commands from invoker
         m_booster->initialize(m_initialArgc, m_initialArgv, m_boosterLauncherSocket[1],
-                              m_socketManager->findSocket(m_booster->socketId().c_str()),
+                              m_socketManager->findSocket(m_booster->boosterType().c_str()),
                               m_singleInstance, m_bootMode);
 
         // Run the current Booster

@@ -39,10 +39,7 @@ public:
     virtual const string &boosterTemporaryProcessName() const;
 
     //! \reimp
-    virtual char boosterType() const;
-
-    //! \reimp
-    virtual const string & socketId() const;
+    virtual const string & boosterType() const;
 
 protected:
 
@@ -60,7 +57,7 @@ private:
     //! Disable assignment operator
     EBooster & operator= (const EBooster & r);
 
-    static const string m_socketId;
+    static const string m_boosterType;
 
     //! Process name to be used when booster is not
     //! yet transformed into a running application

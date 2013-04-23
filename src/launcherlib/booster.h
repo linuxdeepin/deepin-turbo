@@ -102,13 +102,14 @@ public:
                        int sourceArgc, const char** sourceArgv);
 
     /*!
-     * \brief Return booster type common to all instances.
-     * This is used in the simple communication between booster process.
-     * and the daemon. Override in the custom Booster.
+     * \brief Return unique booster name
      *
-     * \return A (unique) character representing the type of the Booster.
+     * The booster name is used as a parameter to invoker to launch processes
+     * with the given booster, and is used as the name for the booster socket.
+     *
+     * \return A (unique) string representing the type of the Booster.
      */
-    virtual char boosterType() const = 0;
+    virtual const string & boosterType() const = 0;
 
     /*! Return the process name to be used when booster is not
      *  yet transformed into a running application (e.g. "booster-m"
@@ -127,14 +128,6 @@ public:
 
     //! Get application data object
     AppData* appData() const;
-
-    /*!
-     * \brief Return the communication socket used by a Booster.
-     * This method returns the socket used between invoker and the Booster.
-     * (common to all Boosters of the type). Override in the custom Booster.
-     * \return Path to the socket file.
-     */
-    virtual const string & socketId() const = 0;
 
     //! Return true, if in boot mode.
     bool bootMode() const;

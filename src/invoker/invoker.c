@@ -178,7 +178,7 @@ static bool invoke_recv_ack(int fd)
 }
 
 // Inits a socket connection for the given application type
-static int invoker_init(char app_type)
+static int invoker_init(const char *app_type)
 {
     int fd;
     struct sockaddr_un sun;
@@ -191,11 +191,11 @@ static int invoker_init(char app_type)
     }
 
     sun.sun_family = AF_UNIX;
-    const int maxSize = sizeof(sun.sun_path) - 1;
+    int maxSize = sizeof(sun.sun_path) - 1;
  
     const char *runtimeDir = getenv("XDG_RUNTIME_DIR");
-    const char *subpath = "/mapplauncherd/booster-";
-    const int subpathLen = strlen(subpath) + 1;
+    const char *subpath = "/mapplauncherd/";
+    const int subpathLen = strlen(subpath);
 
     if (runtimeDir && *runtimeDir)
         strncpy(sun.sun_path, runtimeDir, maxSize - subpathLen);
@@ -205,16 +205,11 @@ static int invoker_init(char app_type)
     sun.sun_path[maxSize - subpathLen] = 0;
     strcat(sun.sun_path, subpath);
 
-    if (app_type >= 'a' && app_type <= 'z')
-    {
-        int len = strlen(sun.sun_path);
-        sun.sun_path[len++] = app_type;
-        sun.sun_path[len] = 0;
-    }
-    else
-    {
-        die(1, "Unknown type of application: %c\n", app_type);
-    }
+    maxSize -= strlen(sun.sun_path);
+    if (maxSize < strlen(app_type) || strchr(app_type, '/'))
+        die(1, "Invalid type of application: %s\n", app_type);
+
+    strcat(sun.sun_path, app_type);
 
     if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
     {
@@ -625,7 +620,7 @@ static void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
-                  char app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
+                  const char *app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
                   char *splash_file, char *landscape_splash_file, bool test_mode)
 {
     int status = 0;
@@ -808,16 +803,15 @@ int main(int argc, char *argv[])
         usage(1);
     }
 
-    // Translate 'qt' and 'm' types to 'q' for compatibility
-    if (!strcmp(app_type, "qt") || !strcmp(app_type, "m"))
-        app_type = "q";
-
-    // Check if application type is unknown. Only accept one character types.
-    if (!app_type[0] || app_type[1])
-    {
-        report(report_error, "Application's type is unknown.\n");
-        usage(1);
-    }
+    // Translate types for compatibility with older versions
+    if (!strcmp(app_type, "q") || !strcmp(app_type, "qt") || !strcmp(app_type, "m"))
+        app_type = "qt4";
+    else if (!strcmp(app_type, "d"))
+        app_type = "qml";
+    else if (!strcmp(app_type, "j"))
+        app_type = "silica";
+    else if (!strcmp(app_type, "e"))
+        app_type = "generic";
 
     if (pipe(g_signal_pipe) == -1)
     { 
@@ -827,7 +821,7 @@ int main(int argc, char *argv[])
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, *app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file, test_mode);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file, test_mode);
 
     // Sleep for delay before exiting
     if (delay)

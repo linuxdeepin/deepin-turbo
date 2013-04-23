@@ -187,7 +187,7 @@ void Booster::sendDataToParent()
 {
     // Number of data items to be sent to
     // the parent (launcher) process
-    const unsigned int NUM_DATA_ITEMS = 3;
+    const unsigned int NUM_DATA_ITEMS = 2;
 
     struct iovec    iov[NUM_DATA_ITEMS];
     struct msghdr   msg;
@@ -196,19 +196,15 @@ void Booster::sendDataToParent()
 
     // Signal the parent process that it can create a new
     // waiting booster process and close write end
-    const char booster = boosterType();
-    iov[0].iov_base = const_cast<char *>(&booster);
-    iov[0].iov_len  = sizeof(char);
-
     // Send to the parent process pid of invoker for tracking
     pid_t pid = invokersPid();
-    iov[1].iov_base = &pid;
-    iov[1].iov_len  = sizeof(pid_t);
+    iov[0].iov_base = &pid;
+    iov[0].iov_len  = sizeof(pid_t);
 
     // Send to the parent process booster respawn delay value
     int delay = m_appData->delay();
-    iov[2].iov_base = &delay;
-    iov[2].iov_len  = sizeof(int);
+    iov[1].iov_base = &delay;
+    iov[1].iov_len  = sizeof(int);
 
     msg.msg_iov     = iov;
     msg.msg_iovlen  = NUM_DATA_ITEMS;

@@ -24,22 +24,17 @@
 #include <errno.h>
 #include <string.h>
 
-const string EBooster::m_socketId  = "booster-e";
-const string EBooster::m_temporaryProcessName = "booster-e";
-
-const string & EBooster::socketId() const
-{
-    return m_socketId;
-}
+const string EBooster::m_boosterType  = "generic";
+const string EBooster::m_temporaryProcessName = "booster-generic";
 
 const string & EBooster::boosterTemporaryProcessName() const
 {
     return m_temporaryProcessName;
 }
 
-char EBooster::boosterType() const
+const string & EBooster::boosterType() const
 {
-    return 'e';
+    return m_boosterType;
 }
 
 bool EBooster::preload()

@@ -28,26 +28,25 @@ class MyBooster : public Booster
 {
 public:
     MyBooster();
-    char boosterType() const;
-    const std::string & socketId() const;
+    const std::string & boosterType() const;
     const std::string & boosterTemporaryProcessName() const;
 
 protected:
     bool preload();
 
 private:
-    const string m_socketId;
+    const string m_boosterType;
     const string m_temporaryProcessName;
 };
 
 MyBooster::MyBooster() :
-    m_socketId("/tmp/MyBooster"),
-    m_temporaryProcessName("x-booster")
+    m_boosterType("TestBooster"),
+    m_temporaryProcessName("test booster")
 {}
 
-char MyBooster::boosterType() const
+const std::string & MyBooster::boosterType() const
 {
-    return 'x';
+    return m_boosterType;
 }
 
 bool MyBooster::preload() 
@@ -58,11 +57,6 @@ bool MyBooster::preload()
 const std::string & MyBooster::boosterTemporaryProcessName() const
 {
     return m_temporaryProcessName;
-}
-
-const std::string & MyBooster::socketId() const
-{
-    return m_socketId;
 }
 
 void Ut_Booster::initTestCase()
