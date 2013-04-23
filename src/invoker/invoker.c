@@ -190,12 +190,23 @@ static int invoker_init(char app_type)
         return -1;
     }
 
-    sun.sun_family = AF_UNIX;  //AF_FILE;
-
+    sun.sun_family = AF_UNIX;
     const int maxSize = sizeof(sun.sun_path) - 1;
+ 
+    const char *runtimeDir = getenv("XDG_RUNTIME_DIR");
+    const char *subpath = "/mapplauncherd/booster-";
+    const int subpathLen = strlen(subpath) + 1;
+
+    if (runtimeDir && *runtimeDir)
+        strncpy(sun.sun_path, runtimeDir, maxSize - subpathLen);
+    else
+        strncpy(sun.sun_path, "/tmp", maxSize - subpathLen);
+
+    sun.sun_path[maxSize - subpathLen] = 0;
+    strcat(sun.sun_path, subpath);
+
     if (app_type >= 'a' && app_type <= 'z')
     {
-        strncpy(sun.sun_path, "/tmp/boost", maxSize - 1);
         int len = strlen(sun.sun_path);
         sun.sun_path[len++] = app_type;
         sun.sun_path[len] = 0;

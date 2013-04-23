@@ -36,6 +36,7 @@ using std::string;
 class DECL_EXPORT SocketManager
 {
 public:
+    SocketManager();
 
     /*! \brief Initialize a file socket.
      *  \param socketId Path to the socket file.
@@ -68,9 +69,18 @@ public:
     //! Add mapping of socketId to fd
     void addMapping(const string & socketId, int fd);
 
+    /*!
+     * Root path for booster sockets
+     */
+    string socketRootPath() const;
+
 private:
 
     SocketHash m_socketHash;
+
+    //! Root path for booster sockets
+    string m_socketRootPath;
+
 };
 
 #endif // SOCKETMANAGER_H

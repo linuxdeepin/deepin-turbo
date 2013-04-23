@@ -24,7 +24,7 @@
 #include <errno.h>
 #include <string.h>
 
-const string EBooster::m_socketId  = "/tmp/booste";
+const string EBooster::m_socketId  = "booster-e";
 const string EBooster::m_temporaryProcessName = "booster-e";
 
 const string & EBooster::socketId() const
