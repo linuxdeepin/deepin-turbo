@@ -36,9 +36,6 @@ public:
     virtual ~EBooster() {}
 
     //! \reimp
-    virtual const string &boosterTemporaryProcessName() const;
-
-    //! \reimp
     virtual const string & boosterType() const;
 
 protected:
@@ -58,10 +55,6 @@ private:
     EBooster & operator= (const EBooster & r);
 
     static const string m_boosterType;
-
-    //! Process name to be used when booster is not
-    //! yet transformed into a running application
-    static const string m_temporaryProcessName;
 
     //! wait for socket connection
     void accept();

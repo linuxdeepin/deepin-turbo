@@ -29,19 +29,16 @@ class MyBooster : public Booster
 public:
     MyBooster();
     const std::string & boosterType() const;
-    const std::string & boosterTemporaryProcessName() const;
 
 protected:
     bool preload();
 
 private:
     const string m_boosterType;
-    const string m_temporaryProcessName;
 };
 
 MyBooster::MyBooster() :
-    m_boosterType("TestBooster"),
-    m_temporaryProcessName("test booster")
+    m_boosterType("TestBooster")
 {}
 
 const std::string & MyBooster::boosterType() const
@@ -52,11 +49,6 @@ const std::string & MyBooster::boosterType() const
 bool MyBooster::preload() 
 {
     return true;
-}
-
-const std::string & MyBooster::boosterTemporaryProcessName() const
-{
-    return m_temporaryProcessName;
 }
 
 void Ut_Booster::initTestCase()
@@ -93,11 +85,11 @@ void Ut_Booster::testRenameProcess()
     char ** initialArgv = packTwoArgs("oldName", "                    ");
 
     // Rename process
-    const char * tempArgv[] = {m_subject->boosterTemporaryProcessName().c_str()};
+    const char * tempArgv[] = {"test booster"};
     m_subject->renameProcess(INIT_ARGC, initialArgv, 1, tempArgv);
 
     // Check that new name and arguments fit and are correct
-    QVERIFY(strcmp(initialArgv[0], m_subject->boosterTemporaryProcessName().c_str()) == 0);
+    QVERIFY(strcmp(initialArgv[0], "test booster") == 0);
 
     // Define and copy args because it's assumed that they are allocated in the heap
     // (AppData deletes the argv on exit)

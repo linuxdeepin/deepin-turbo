@@ -98,8 +98,11 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
     if (!m_bootMode)
         preload();
 
-    // Rename process to temporary booster process name, e.g. "booster-m"
-    const char * tempArgv[] = {boosterTemporaryProcessName().c_str()};
+    // Rename process to temporary booster process name
+    std::string temporaryProcessName = "booster [";
+    temporaryProcessName += boosterType();
+    temporaryProcessName += "]";
+    const char * tempArgv[] = {temporaryProcessName.c_str()};
     renameProcess(initialArgc, initialArgv, 1, tempArgv);
 
     // Restore priority

@@ -111,12 +111,6 @@ public:
      */
     virtual const string & boosterType() const = 0;
 
-    /*! Return the process name to be used when booster is not
-     *  yet transformed into a running application (e.g. "booster-m"
-     *  for MBooster)
-     */
-    virtual const string & boosterTemporaryProcessName() const = 0;
-
     //! Get invoker's pid
     pid_t invokersPid();
 

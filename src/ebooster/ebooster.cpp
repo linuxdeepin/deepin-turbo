@@ -25,12 +25,6 @@
 #include <string.h>
 
 const string EBooster::m_boosterType  = "generic";
-const string EBooster::m_temporaryProcessName = "booster-generic";
-
-const string & EBooster::boosterTemporaryProcessName() const
-{
-    return m_temporaryProcessName;
-}
 
 const string & EBooster::boosterType() const
 {
