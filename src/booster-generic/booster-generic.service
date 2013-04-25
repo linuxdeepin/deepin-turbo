@@ -5,4 +5,4 @@ Requires=dbus.socket xorg.target
 
 [Service]
 Type=notify
-ExecStart=/usr/libexec/mapplauncherd/ebooster --systemd
+ExecStart=/usr/libexec/mapplauncherd/booster-generic --systemd

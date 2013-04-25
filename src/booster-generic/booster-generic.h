@@ -17,8 +17,8 @@
 **
 ****************************************************************************/
 
-#ifndef EBOOSTER_H
-#define EBOOSTER_H
+#ifndef BOOSTER_GENERIC_H
+#define BOOSTER_GENERIC_H
 
 #include "booster.h"
 

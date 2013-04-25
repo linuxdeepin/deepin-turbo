@@ -7,15 +7,15 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 
 # Set sources
-set(SRC ebooster.cpp)
+set(SRC booster-generic.cpp)
 
 # Set libraries to be linked.
 link_libraries("-L../launcherlib -lapplauncherd" ${LIBDL})
 
 # Set executable
-add_executable(ebooster ${SRC} ${MOC_SRC})
-add_dependencies(ebooster applauncherd)
+add_executable(booster-generic ${SRC} ${MOC_SRC})
+add_dependencies(booster-generic applauncherd)
 
 # Add install rule
-install(TARGETS ebooster DESTINATION /usr/libexec/mapplauncherd/)
-install(FILES booster-e.service DESTINATION /usr/lib/systemd/user/)
+install(TARGETS booster-generic DESTINATION /usr/libexec/mapplauncherd/)
+install(FILES booster-generic.service DESTINATION /usr/lib/systemd/user/)

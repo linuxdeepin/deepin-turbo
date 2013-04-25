@@ -9,7 +9,7 @@ Name:       mapplauncherd
 # << macros
 
 Summary:    Application launcher for fast startup
-Version:    4.0.1
+Version:    4.1.0
 Release:    1
 Group:      System/Daemons
 License:    LGPLv2+
@@ -105,7 +105,7 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 
 mkdir %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants || true
-ln -s ../booster-e.service %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants/
+ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants/
 # << install post
 
 
@@ -119,9 +119,9 @@ ln -s ../booster-e.service %{buildroot}/usr/lib/systemd/user/mapplauncherd.targe
 %{_bindir}/single-instance
 %{_libdir}/libapplauncherd.so*
 %{_libdir}/systemd/user/mapplauncherd.target
-%{_libexecdir}/mapplauncherd/ebooster
-%{_libdir}/systemd/user/booster-e.service
-%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-e.service
+%{_libexecdir}/mapplauncherd/booster-generic
+%{_libdir}/systemd/user/booster-generic.service
+%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-generic.service
 # >> files
 # << files
 

@@ -17,7 +17,7 @@
 **
 ****************************************************************************/
 
-#include "ebooster.h"
+#include "booster-generic.h"
 #include "launcherlib.h"
 #include "daemon.h"
 #include "logger.h"
