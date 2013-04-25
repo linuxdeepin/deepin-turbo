@@ -103,6 +103,9 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 (cd %{buildroot}/usr/share; ln -s ../lib/applauncherd-tests)
 # Don't use %exclude, remove at install phase
 rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
+
+mkdir %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants || true
+ln -s ../booster-e.service %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants/
 # << install post
 
 
@@ -113,10 +116,12 @@ rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 %files
 %defattr(-,root,root,-)
 %{_bindir}/invoker
+%{_bindir}/single-instance
 %{_libdir}/libapplauncherd.so*
+%{_libdir}/systemd/user/mapplauncherd.target
 %{_libexecdir}/mapplauncherd/ebooster
 %{_libdir}/systemd/user/booster-e.service
-%{_bindir}/single-instance
+%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-e.service
 # >> files
 # << files
 

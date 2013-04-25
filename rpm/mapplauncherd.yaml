@@ -31,10 +31,13 @@ Obsoletes:
 Builder: make
 Files:
     - "%{_bindir}/invoker"
+    - "%{_bindir}/single-instance"
     - "%{_libdir}/libapplauncherd.so*"
+    - "%{_libdir}/systemd/user/mapplauncherd.target"
     - "%{_libexecdir}/mapplauncherd/ebooster"
     - "%{_libdir}/systemd/user/booster-e.service"
-    - "%{_bindir}/single-instance"
+    - "%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-e.service"
+
 SubPackages:
     - Name: devel
       Group: Development/Tools

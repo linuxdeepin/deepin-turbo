@@ -65,3 +65,5 @@ install(DIRECTORY doc/implementation-documentation DESTINATION /usr/share/doc/ap
 install(DIRECTORY doc/user-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
 install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
 
+# Install systemd target
+install(FILES data/mapplauncherd.target DESTINATION /usr/lib/systemd/user)
