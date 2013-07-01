@@ -24,6 +24,8 @@ PkgConfigBR:
 PkgBR:
     - cmake
     - python
+Requires:
+    - systemd-user-session-targets
 Provides:
     - meegotouch-applauncherd > 3.0.3
 Obsoletes:
@@ -37,6 +39,7 @@ Files:
     - "%{_libexecdir}/mapplauncherd/booster-generic"
     - "%{_libdir}/systemd/user/booster-generic.service"
     - "%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-generic.service"
+    - "%{_libdir}/systemd/user/user-session.target.wants/mapplauncherd.target"
 
 SubPackages:
     - Name: devel

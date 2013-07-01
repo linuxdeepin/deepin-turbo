@@ -1,7 +1,7 @@
 [Unit]
 Description=Generic application launch booster
-After=xorg.target
-Requires=dbus.socket xorg.target
+After=pre-user-session.target
+Requires=dbus.socket pre-user-session.target
 
 [Service]
 Type=notify

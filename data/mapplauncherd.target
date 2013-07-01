@@ -1,2 +1,4 @@
 [Unit]
 Description=Application launch boosters
+Requires=pre-user-session.target
+After=pre-user-session.target
