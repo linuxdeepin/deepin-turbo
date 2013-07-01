@@ -105,9 +105,7 @@ mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
 rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 
 mkdir -p %{buildroot}/usr/lib/systemd/user/user-session.target.wants || true
-ln -s ../mapplauncherd.target %{buildroot}/usr/lib/systemd/user/user-session.target.wants/
-mkdir -p %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants || true
-ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/mapplauncherd.target.wants/
+ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.target.wants/
 # << install post
 
 %post -p /sbin/ldconfig
@@ -119,11 +117,9 @@ ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/mapplauncherd
 %{_bindir}/invoker
 %{_bindir}/single-instance
 %{_libdir}/libapplauncherd.so*
-%{_libdir}/systemd/user/mapplauncherd.target
 %{_libexecdir}/mapplauncherd/booster-generic
 %{_libdir}/systemd/user/booster-generic.service
-%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-generic.service
-%{_libdir}/systemd/user/user-session.target.wants/mapplauncherd.target
+%{_libdir}/systemd/user/user-session.target.wants/booster-generic.service
 # >> files
 # << files
 

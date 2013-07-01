@@ -6,3 +6,6 @@ Requires=dbus.socket pre-user-session.target
 [Service]
 Type=notify
 ExecStart=/usr/libexec/mapplauncherd/booster-generic --systemd
+
+[Install]
+WantedBy=user-session.target

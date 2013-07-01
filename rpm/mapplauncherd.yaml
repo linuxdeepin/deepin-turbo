@@ -35,11 +35,9 @@ Files:
     - "%{_bindir}/invoker"
     - "%{_bindir}/single-instance"
     - "%{_libdir}/libapplauncherd.so*"
-    - "%{_libdir}/systemd/user/mapplauncherd.target"
     - "%{_libexecdir}/mapplauncherd/booster-generic"
     - "%{_libdir}/systemd/user/booster-generic.service"
-    - "%{_libdir}/systemd/user/mapplauncherd.target.wants/booster-generic.service"
-    - "%{_libdir}/systemd/user/user-session.target.wants/mapplauncherd.target"
+    - "%{_libdir}/systemd/user/user-session.target.wants/booster-generic.service"
 
 SubPackages:
     - Name: devel
