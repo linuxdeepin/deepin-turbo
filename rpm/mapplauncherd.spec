@@ -50,26 +50,6 @@ Development files for creating applications that can be launched
 using mapplauncherd.
 
 
-%package testapps
-Summary:    Test applications for launchable applications
-Group:      Development/Tools
-Requires:   %{name} = %{version}-%{release}
-
-%description testapps
-Test applications used for testing mapplauncherd.
-
-
-%package tests
-Summary:    Test scripts for launchable applications
-Group:      Development/Tools
-Requires:   %{name} = %{version}-%{release}
-Requires:   %{name}-testapps = %{version}-%{release}
-Requires:   mapplauncherd-qt
-
-%description tests
-Test scripts used for testing meegotouch-applauncherd.
-
-
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -97,10 +77,6 @@ rm -rf %{buildroot}
 
 # >> install post
 
-# rpmlint complains about installing binaries in /usr/share, so
-# move them elsewhere and leave a symlink in place.
-mv %{buildroot}/usr/share/applauncherd-tests %{buildroot}/usr/lib
-(cd %{buildroot}/usr/share; ln -s ../lib/applauncherd-tests)
 # Don't use %exclude, remove at install phase
 rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 
@@ -128,57 +104,3 @@ ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.
 %{_includedir}/applauncherd/*
 # >> files devel
 # << files devel
-
-%files testapps
-%defattr(-,root,root,-)
-%{_bindir}/fala_gettime_ms
-%{_bindir}/fala_pixelchanged
-%{_bindir}/fala_status
-%{_bindir}/fala_gettime
-%{_bindir}/fala_windowid
-%{_bindir}/fala_wait
-# >> files testapps
-# << files testapps
-
-%files tests
-%defattr(-,root,root,-)
-%{_datadir}/applauncherd-M-art-tests/tests.xml
-%{_datadir}/applauncherd-M-bug-tests/tests.xml
-%{_datadir}/applauncherd-M-functional-tests/tests.xml
-%{_datadir}/applauncherd-M-performance-tests/tests.xml
-%{_datadir}/applauncherd-tests
-%{_libdir}/applauncherd-tests/tests.xml
-%{_libdir}/applauncherd-tests/ut_booster
-%{_libdir}/applauncherd-tests/ut_daemon
-%{_libdir}/applauncherd-tests/ut_connection
-%{_libdir}/applauncherd-tests/ut_socketmanager
-%{_libdir}/applauncherd-tests/libutwithlock.so
-%{_libdir}/applauncherd-tests/libutwithlockunlock.so
-%{_libdir}/applauncherd-tests/ut_appdata
-%{_libdir}/applauncherd-tests/ut_logger
-%{_libdir}/applauncherd-tests/ut_singleinstance
-%{_datadir}/applauncherd-M-testscripts/check_pipes.py
-%{_datadir}/applauncherd-M-testscripts/check_pipes.pyc
-%{_datadir}/applauncherd-M-testscripts/check_pipes.pyo
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.py
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.pyc
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.pyo
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_m.sh
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.py
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.pyc
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.pyo
-%{_datadir}/applauncherd-M-testscripts/signal-forward/fala_sf_qt.sh
-%{_datadir}/applauncherd-M-testscripts/tc_theming.rb
-%{_datadir}/applauncherd-M-testscripts/test-func-launcher.py
-%{_datadir}/applauncherd-M-testscripts/test-func-launcher.pyc
-%{_datadir}/applauncherd-M-testscripts/test-func-launcher.pyo
-%{_datadir}/applauncherd-M-testscripts/ts_prestartapp.rb
-%{_datadir}/applauncherd-M-testscripts/fala_wid
-%{_datadir}/applauncherd-M-testscripts/fala_xres_wl
-%{_datadir}/applauncherd-M-testscripts/fala_xres_wol
-%{_datadir}/applauncherd-M-testscripts/test-perf.rb
-%{_datadir}/applauncherd-M-testscripts/utils.py
-%{_datadir}/applauncherd-M-testscripts/utils.pyc
-%{_datadir}/applauncherd-M-testscripts/utils.pyo
-# >> files tests
-# << files tests
