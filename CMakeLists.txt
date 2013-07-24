@@ -44,14 +44,6 @@ endif ($ENV{BUILD_COVERAGE})
 # Sub build: applauncherd
 add_subdirectory(src)
 
-# Build tests if BUILD_TESTS environment variable is set
-if ($ENV{BUILD_TESTS})
-    # Sub build: tests
-    # This will build the HelloWorld test library, unit tests, functional tests
-    # and performance tests
-    add_subdirectory(tests)
-endif ($ENV{BUILD_TESTS})
-
 # Target for documentation (make doc)
 find_program(Doxygen NAMES doxygen)
 if (EXISTS ${Doxygen})
