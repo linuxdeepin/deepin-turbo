@@ -27,6 +27,7 @@ BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(systemd)
 BuildRequires:  pkgconfig(QtCore)
 BuildRequires:  pkgconfig(QtTest)
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake
 BuildRequires:  python
 Provides:   meegotouch-applauncherd > 3.0.3

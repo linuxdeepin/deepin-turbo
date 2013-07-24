@@ -21,6 +21,7 @@ PkgConfigBR:
 # For tests only
     - QtCore
     - QtTest
+    - dbus-1
 PkgBR:
     - cmake
     - python

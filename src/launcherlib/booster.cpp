@@ -124,11 +124,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
             {
                 if (!pluginEntry->lockFunc(m_appData->appName().c_str()))
                 {
-#ifdef USE_X11
-                    // Set XErrorHandler to handle possible errors from X
-                    XErrorHandler oldHandler = XSetErrorHandler(Booster::handleXError);
-#endif
-
                     // Try to activate the window of the existing instance
                     if (!pluginEntry->activateExistingInstanceFunc(m_appData->appName().c_str()))
                     {
@@ -140,11 +135,6 @@ void Booster::initialize(int initialArgc, char ** initialArgv, int newBoosterLau
                         m_connection->sendExitValue(EXIT_SUCCESS);
                     }
                     m_connection->close();
- 
-#ifdef USE_X11
-                    // Return original XErrorHandler
-                    XSetErrorHandler(oldHandler);
-#endif
 
                     // invoker requested to start an application that is already running
                     // booster is not needed this time, let's wait for the next connection from invoker
