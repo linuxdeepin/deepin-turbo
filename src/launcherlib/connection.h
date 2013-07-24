@@ -129,12 +129,6 @@ private:
     //! Receive booster respawn delay
     bool receiveDelay();
 
-    //! Receive filename used as splash screen image
-    bool receiveSplash();
-
-    //! Receive filename used as landscape splash screen image
-    bool receiveLandscapeSplash();
-
     //! Send process pid
     bool sendPid(pid_t pid);
 
@@ -157,8 +151,6 @@ private:
     int m_curSocket;
 
     string   m_fileName;
-    string   m_splashFileName;
-    string   m_landscapeSplashFileName;
     uint32_t m_argc;
     const char **  m_argv;
     int      m_io[IO_DESCRIPTOR_COUNT];

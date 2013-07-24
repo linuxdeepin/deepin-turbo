@@ -12,15 +12,7 @@ Description: |
     application startup time and share memory. Provides also
     functionality to launch applications as single instances.
 PkgConfigBR:
-    - x11
-    - xtst
-    - xextproto
-    - xi
-    - xext
     - systemd
-# For tests only
-    - QtCore
-    - QtTest
     - dbus-1
 PkgBR:
     - cmake
