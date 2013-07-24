@@ -5,8 +5,7 @@ Applauncherd is a daemon that helps to launch applications faster by
 preloading dynamically linked libraries and caching stuff (MComponentCache). It also saves memory, because all launched
 applications share certain resources.
 
-Applauncherd also provides support for a splash screen and fast single
-instance launches.
+Applauncherd also provides support for fast single instance launches.
 
 Some technical details are explained below. 
 
@@ -42,8 +41,8 @@ binary via a socket connection.
 
 The application to be launched via applauncherd should be compiled as a
 shared library or a position independent executable (-pie) and it should
-always export main(). There's also a "booster" for all applications to
-be used with the splash screen. In that case exec() is used.
+always export main(). There's also a "booster" for all applications.
+In that case exec() is used.
 
 Technical details
 ==============================

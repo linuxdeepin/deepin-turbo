@@ -35,8 +35,6 @@ Connection::Connection(int socketFd, bool testMode) :
         m_fd(-1),
         m_curSocket(socketFd),
         m_fileName(""),
-        m_splashFileName(""),
-        m_landscapeSplashFileName(""),
         m_argc(0),
         m_argv(NULL),
         m_priority(0),
@@ -260,28 +258,6 @@ bool Connection::receiveExec()
     return true;
 }
 
-bool Connection::receiveSplash()
-{
-    const char* filename = recvStr();
-    if (!filename)
-        return false;
-
-    m_splashFileName = filename;
-    delete [] filename;
-    return true;
-}
-
-bool Connection::receiveLandscapeSplash()
-{
-    const char* filename = recvStr();
-    if (!filename)
-        return false;
-
-    m_landscapeSplashFileName = filename;
-    delete [] filename;
-    return true;
-}
-
 bool Connection::receivePriority()
 {
     recvMsg(&m_priority);
@@ -491,12 +467,12 @@ bool Connection::receiveActions()
             break;
 
         case INVOKER_MSG_SPLASH:
-            receiveSplash();
-            break;
+            Logger::logError("Connection: received a now-unsupported MSG_SPLASH\n");
+            return false;
 
         case INVOKER_MSG_LANDSCAPE_SPLASH:
-            receiveLandscapeSplash();
-            break;
+            Logger::logError("Connection: received a now-unsupported MSG_LANDSCAPE_SPLASH\n");
+            return false;
 
         case INVOKER_MSG_END:
             sendMsg(INVOKER_MSG_ACK);
@@ -539,8 +515,6 @@ bool Connection::receiveApplicationData(AppData* appData)
         appData->setDelay(m_delay);
         appData->setArgc(m_argc);
         appData->setArgv(m_argv);
-        appData->setSplashFileName(m_splashFileName);
-        appData->setLandscapeSplashFileName(m_landscapeSplashFileName);
         appData->setIODescriptors(vector<int>(m_io, m_io + IO_DESCRIPTOR_COUNT));
         appData->setIDs(m_uid, m_gid);
     }

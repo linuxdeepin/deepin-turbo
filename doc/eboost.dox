@@ -8,12 +8,7 @@ even if the application is not a library.
 
 \section eboosterpurpose Purpose of exec booster
 
-Applauncherd allows applications to show a splash screen. For instructions 
-on showing the splash screen in applications boosted using the other 
-boosters, see \ref splash "here". If you want to have a splash screen in an 
-application that cannot be boosted, use the exec booster. Thus, you can use 
-exec booster for launching a splash screen for any application. You can 
-also launch non-boosted applications as \ref singleinstance "single-instance" 
+You can launch non-boosted applications as \ref singleinstance "single-instance" 
 applications with the exec booster.
 
 \section runebooster Running an application with exec booster

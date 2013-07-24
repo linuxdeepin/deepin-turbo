@@ -105,10 +105,6 @@ destructors of MeeGo Touch classes executed after application's
 main(). This can cause crashes if the application has installed a
 custom debug message handler and does not uninstall it before exit.
 
-\section splashlimitations Splash screen
-
-Splash screen functionality needs support from the \c mcompositor window manager.
-
 \section wm_class_value WM_CLASS value
 
 If an application is started with m-booster but it creates its own

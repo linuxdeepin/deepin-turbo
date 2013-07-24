@@ -278,18 +278,6 @@ static void invoker_send_name(int fd, char *name)
     invoke_send_str(fd, name);
 }
 
-static void invoker_send_splash_file(int fd, char *filename)
-{
-    invoke_send_msg(fd, INVOKER_MSG_SPLASH);
-    invoke_send_str(fd, filename);
-}
-
-static void invoker_send_landscape_splash_file(int fd, char *filename)
-{
-    invoke_send_msg(fd, INVOKER_MSG_LANDSCAPE_SPLASH);
-    invoke_send_str(fd, filename);
-}
-
 static void invoker_send_exec(int fd, char *exec)
 {
     invoke_send_msg(fd, INVOKER_MSG_EXEC);
@@ -405,8 +393,7 @@ static void usage(int status)
            "launch anything. Possible values for TYPE:\n"
            "  q (or qt)              Launch a Qt application.\n"
            "  d                      Launch a Qt Declarative (QML) application.\n"
-           "  e                      Launch any application, even if it's not a library.\n"
-           "                         Can be used if only splash screen is wanted.\n\n"
+           "  e                      Launch any application, even if it's not a library.\n\n"
            "Options:\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
            "                         (default %d).\n"
@@ -420,10 +407,6 @@ static void usage(int status)
            "  -s, --single-instance  Launch the application as a single instance.\n"
            "                         The existing application window will be activated\n"
            "                         if already launched.\n"
-           "  -S, --splash FILE      Show splash screen from the FILE.\n"
-           "  -L, --splash-landscape LANDSCAPE-FILE\n"
-           "                         Show splash screen from the LANDSCAPE-FILE\n"
-           "                         in case the device is in landscape orientation.\n"
            "  -o, --daemon-mode      Notify invoker that the launched process is a daemon.\n"
            "                         This resets the oom_adj of the process.\n"
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
@@ -551,8 +534,7 @@ static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
 
 // "normal" invoke through a socket connection
 static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *prog_name,
-                         uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
-                         char *splash_file, char *landscape_splash_file)
+                         uint32_t magic_options, bool wait_term, unsigned int respawn_delay)
 {
     // Get process priority
     errno = 0;
@@ -571,10 +553,6 @@ static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *p
     invoker_send_prio(socket_fd, prog_prio);
     invoker_send_delay(socket_fd, respawn_delay);
     invoker_send_ids(socket_fd, getuid(), getgid());
-    if (( magic_options & INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN ) != 0)
-        invoker_send_splash_file(socket_fd, splash_file);
-    if (( magic_options & INVOKER_MSG_MAGIC_OPTION_LANDSCAPE_SPLASH_SCREEN ) != 0)
-        invoker_send_landscape_splash_file(socket_fd, landscape_splash_file);
     invoker_send_io(socket_fd);
     invoker_send_env(socket_fd);
     invoker_send_end(socket_fd);
@@ -621,7 +599,7 @@ static void invoke_fallback(char **prog_argv, char *prog_name, bool wait_term)
 // Invokes the given application
 static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                   const char *app_type, uint32_t magic_options, bool wait_term, unsigned int respawn_delay,
-                  char *splash_file, char *landscape_splash_file, bool test_mode)
+                  bool test_mode)
 {
     int status = 0;
     if (prog_name && prog_argv)
@@ -644,8 +622,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         else
         {
             status = invoke_remote(fd, prog_argc, prog_argv, prog_name,
-                                   magic_options, wait_term, respawn_delay,
-                                   splash_file, landscape_splash_file);
+                                   magic_options, wait_term, respawn_delay);
             close(fd);
         }
     }
@@ -663,8 +640,6 @@ int main(int argc, char *argv[])
     unsigned int  respawn_delay = RESPAWN_DELAY;
     char        **prog_argv     = NULL;
     char         *prog_name     = NULL;
-    char         *splash_file   = NULL;
-    char         *landscape_splash_file = NULL;
     struct stat   file_stat;
     bool test_mode = false;
 
@@ -754,13 +729,8 @@ int main(int argc, char *argv[])
             break;
 
         case 'S':
-            magic_options |= INVOKER_MSG_MAGIC_OPTION_SPLASH_SCREEN;
-            splash_file = optarg;
-            break;
-
         case 'L':
-            magic_options |= INVOKER_MSG_MAGIC_OPTION_LANDSCAPE_SPLASH_SCREEN;
-            landscape_splash_file = optarg;
+            // Removed splash support. Ignore.
             break;
 
         case '?':
@@ -821,7 +791,7 @@ int main(int argc, char *argv[])
 
     // Send commands to the launcher daemon
     info("Invoking execution: '%s'\n", prog_name);
-    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, splash_file, landscape_splash_file, test_mode);
+    int ret_val = invoke(prog_argc, prog_argv, prog_name, app_type, magic_options, wait_term, respawn_delay, test_mode);
 
     // Sleep for delay before exiting
     if (delay)

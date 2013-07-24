@@ -86,18 +86,6 @@ public:
     //! Return file name
     const string & fileName() const;
 
-    //! Set file name of the image shown as splash screen
-    void setSplashFileName(const string & fileName);
-
-    //! Return file name of the image shown as splash screen
-    const string & splashFileName() const;
-
-    //! Set file name of the image shown as landscape splash screen
-    void setLandscapeSplashFileName(const string & fileName);
-
-    //! Return file name of the image shown as landscape splash screen
-    const string & landscapeSplashFileName() const;
-
     //! Set priority
     void setPriority(int priority);
 
@@ -147,8 +135,6 @@ private:
     vector<int> m_ioDescriptors;
     gid_t       m_gid;
     uid_t       m_uid;
-    string      m_splashFileName;
-    string      m_landscapeSplashFileName;
 };
 
 #endif // APPDATA_H

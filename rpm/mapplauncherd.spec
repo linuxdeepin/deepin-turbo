@@ -19,14 +19,7 @@ Source100:  mapplauncherd.yaml
 Requires:   systemd-user-session-targets
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-BuildRequires:  pkgconfig(x11)
-BuildRequires:  pkgconfig(xtst)
-BuildRequires:  pkgconfig(xextproto)
-BuildRequires:  pkgconfig(xi)
-BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(systemd)
-BuildRequires:  pkgconfig(QtCore)
-BuildRequires:  pkgconfig(QtTest)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake
 BuildRequires:  python

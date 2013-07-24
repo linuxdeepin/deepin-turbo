@@ -7,19 +7,18 @@ applications launch faster and save memory through shared resources and
 application type specific initialisations. The \c invoker uses a
 socket connection to request application launch, and applications are
 forked from the daemon process so that they can share memory with the
-daemon (and each other) using copy-on-write.  The invoker also
-provides application specific splash screen support, and provides a
-single instance facility that allows only one instance of an
+daemon (and each other) using copy-on-write.  The invoker also provides
+a single instance facility that allows only one instance of an
 application to be running at a time.
 
 The following table shows what services are available for different kinds
 of applications.
 
 <table>
-<tr><th></th>		<th>boosting</th>	<th>splash</th>	<th>single instance</th></tr>
-<tr><td>QML</td>	<td>x</td>		<td>x</td>	<td>x</td></tr>
-<tr><td>Qt</td>		<td>x(1)</td>		<td>x</td>	<td>x</td></tr>
-<tr><td>other</td>	<td>-</td>		<td>x</td>	<td>x</td></tr>
+<tr><th></th>		<th>boosting</th>	<th>single instance</th></tr>
+<tr><td>QML</td>	<td>x</td>		<td>x</td></tr>
+<tr><td>Qt</td>		<td>x(1)</td>		<td>x</td></tr>
+<tr><td>other</td>	<td>-</td>		<td>x</td></tr>
 </table>
 
 (1) Only library preloading.
@@ -112,28 +111,17 @@ It is also a good idea to hide any unnecessary symbols in the
 application binary to speed up opening it in the booster. For instructions,
 see \ref qmlboost "Using the QML booster"
 
-\subsection gettingstartedebooster Splash screen and single instance
+\subsection gettingstartedebooster Single instance
 
-The \c invoker can be used to get a splash screen for the application
-and to implement single instance behaviour. If the \a exec \a booster
-is used, no modifications to the application source code are needed. 
-For more details, see \ref eboost "Using the exec booster" and
-\ref splash "Enabling a splash screen for an application".
-Note that the \a exec booster facilitates the use of the splash 
-screen and single instance. If you need to reduce application startup
-time significantly, use other boosters instead.
-
-Simply specify the name of the splash image on the invoker command line as
-follows.
+The \c invoker can be used to implement single instance behaviour.
+If the \a exec \a booster is used, no modifications to the application
+are needed. For more details, see \ref eboost "Using the exec booster".
+Note that the \a exec booster facilitates single instance launching.
+If you need to reduce application startup time significantly, use
+other boosters instead.
 
 \code 
-invoker --type=e --splash=/usr/share/images/myAppSplash.jpg /usr/bin/myApp
-\endcode
-
-To request single instance behaviour, use the following command line option:
-
-\code
-invoker --type=e --single-instance /usr/bin/myApp
+invoker --type=e /usr/bin/myApp
 \endcode
 
 This causes \c invoker to look for a running instance of the application using a 
@@ -142,21 +130,12 @@ it is brought to the foreground instead of launching a new instance of the
 application. See \ref singleinstance 
 "Enabling single instance support for an application" for more information.
 
-The options can also be combined, in which case the splash screen is
-only shown when a new instance of the application is started:
-
-\code 
-invoker --type=e --single-instance --splash=/usr/share/images/myAppSplash.jpg /usr/bin/myApp
-\endcode
-
 \section reference Further information
 
 - How to enable boosted startup for different types of applications: 
   - \subpage qmlboost "Using the QML booster"
   - \subpage qtboost "Using the Qt booster"
   - \subpage eboost "Using the exec booster"
-
-- \subpage splash "Enabling a splash screen for an application"
 
 - \subpage singleinstance "Enabling single instance support for an application"
 

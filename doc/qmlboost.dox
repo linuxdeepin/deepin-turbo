@@ -146,13 +146,12 @@ application to use the invoker command.
 
 \section qmlboostfinishingtouch 5. Finishing touches
 
-The invoker can also provide single instance behaviour and a splash
-screen for your application as follows. For more details, see 
-\ref singleinstance "Enabling single instance support for an application" 
-and \ref splash "Enabling a splash screen for an application".
+The invoker can also provide single instance behaviour for your application as
+follows. For more details, see 
+\ref singleinstance "Enabling single instance support for an application".
 
 \code
-/usr/bin/invoker --single-instance --splash=/usr/share/myApp/splash.jpg --type=d /usr/bin/myApp
+/usr/bin/invoker --single-instance --type=d /usr/bin/myApp
 \endcode
 
 */

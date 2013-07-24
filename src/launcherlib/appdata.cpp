@@ -32,9 +32,7 @@ AppData::AppData() :
     m_entry(NULL),
     m_ioDescriptors(),
     m_gid(0),
-    m_uid(0),
-    m_splashFileName(""),
-    m_landscapeSplashFileName("")
+    m_uid(0)
 {}
 
 void AppData::setOptions(uint32_t newOptions)
@@ -105,26 +103,6 @@ void AppData::setFileName(const string & newFileName)
 const string & AppData::fileName() const
 {
     return m_fileName;
-}
-
-void AppData::setSplashFileName(const string & fileName)
-{
-    m_splashFileName = fileName;
-}
-
-const string & AppData::splashFileName() const
-{
-    return m_splashFileName;
-}
-
-void AppData::setLandscapeSplashFileName(const string & fileName)
-{
-    m_landscapeSplashFileName = fileName;
-}
-
-const string & AppData::landscapeSplashFileName() const
-{
-    return m_landscapeSplashFileName;
 }
 
 void AppData::setPriority(int newPriority)
