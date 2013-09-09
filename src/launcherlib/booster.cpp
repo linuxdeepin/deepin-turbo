@@ -28,6 +28,7 @@
 #include <dlfcn.h>
 #include <cerrno>
 #include <unistd.h>
+#include <stdio.h>
 #include <sys/user.h>
 #include <sys/prctl.h>
 #include <sys/resource.h>
@@ -332,6 +333,53 @@ void Booster::renameProcess(int parentArgc, char** parentArgv,
     }
 }
 
+#define BOOSTER_APP_PRIVILEGES_LIST "/usr/share/mapplauncherd/privileges"
+int isPrivileged(AppData *appData)
+{
+    /*
+       Returns 1 if privileged, 0 if not privileged.
+       The privileges file has the following format:
+           /full/path/to/app,<permissions_list>
+       where the permissions_list is a string of characters
+       defining different categories of permissions
+           eg: p = people/contacts data
+       example:
+           /usr/bin/vcardconverter,p
+       Currently, permission means both read+write permission.
+    */
+
+    ssize_t readVal = 0;
+    size_t length = 0;
+    char *line = NULL;
+    FILE *stream = NULL;
+
+    stream = fopen(BOOSTER_APP_PRIVILEGES_LIST, "r");
+    if (stream == NULL)
+        return 0;
+
+    while (readVal = getline(&line, &length, stream) != -1) {
+        if (strstr(line, appData->fileName().c_str()) != NULL) {
+            /* For now, we just check for the existence of any permissions. */
+            char *statePtr = NULL;
+            char *tok = strtok_r(line, ",", &statePtr);
+            if (tok != NULL) {
+                tok = strtok_r(NULL, ",", &statePtr);
+                if (tok != NULL) {
+                    /* some permissions are defined for this application. */
+                    free(line);
+                    fclose(stream);
+                    return 1;
+                }
+            }
+        }
+        free(line);
+        line = NULL;
+    }
+
+    fclose(stream);
+    return 0;
+}
+
 void Booster::setEnvironmentBeforeLaunch()
 {
     // Possibly restore process priority
@@ -340,21 +388,28 @@ void Booster::setEnvironmentBeforeLaunch()
     if (!errno && cur_prio < m_appData->priority())
         setpriority(PRIO_PROCESS, 0, m_appData->priority());
 
-    // Set user ID and group ID of calling process if differing
-    // from the ones we got from invoker
+    // Currently, we only have two levels of privileges:
+    // privileged and non-privileged.
+    // Going forward, this could be improved to support
+    // a larger range of privileges via ACLs.
+    if (!isPrivileged(m_appData)) {
+        // The application is not privileged.  Drop any user or
+        // group ID inherited from the booster, and instead set
+        // the user ID and group ID of the calling process.
 
-    if (getuid() != m_appData->userId())
-        setuid(m_appData->userId());
+        if (getuid() != m_appData->userId())
+            setuid(m_appData->userId());
 
-    if (getgid() != m_appData->groupId())
-        setgid(m_appData->groupId());
+        if (getgid() != m_appData->groupId())
+            setgid(m_appData->groupId());
 
-    // Flip the effective group ID forth and back to a dedicated group
-    // id to generate an event for policy (re-)classification.
-    gid_t orig = getegid();
-      
-    setegid(m_boosted_gid);
-    setegid(orig);
+        // Flip the effective group ID forth and back to a dedicated group
+        // id to generate an event for policy (re-)classification.
+        gid_t orig = getegid();
+
+        setegid(m_boosted_gid);
+        setegid(orig);
+    }
 
     // Reset out-of-memory killer adjustment
     if (!m_appData->disableOutOfMemAdj())
