@@ -745,6 +745,10 @@ int main(int argc, char *argv[])
         prog_name = search_program(argv[optind]);
         prog_argc = argc - optind;
         prog_argv = &argv[optind];
+
+        // Force argv[0] of application to be the absolute path to allow the
+        // application to find out its installation directory from there
+        prog_argv[0] = prog_name;
     }
 
     // Check if application name isn't defined
