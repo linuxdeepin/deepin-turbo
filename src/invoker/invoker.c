@@ -391,9 +391,10 @@ static void usage(int status)
            "a position independent executable (-pie) through mapplauncherd.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
-           "  q (or qt)              Launch a Qt application.\n"
-           "  d                      Launch a Qt Declarative (QML) application.\n"
-           "  e                      Launch any application, even if it's not a library.\n\n"
+           "  qt5                    Launch a Qt 5 application.\n"
+           "  qtquick2               Launch a Qt Quick 2 (QML) application.\n"
+           "  silica-qt5             Launch a Sailfish Silica application.\n"
+           "  generic                Launch any application, even if it's not a library.\n\n"
            "Options:\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
            "                         (default %d).\n"
@@ -411,7 +412,7 @@ static void usage(int status)
            "                         This resets the oom_adj of the process.\n"
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
            "  -h, --help             Print this help.\n\n"
-           "Example: %s --type=m /usr/bin/helloworld\n\n",
+           "Example: %s --type=qt5 /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
@@ -772,16 +773,6 @@ int main(int argc, char *argv[])
         report(report_error, "Application type must be specified with --type.\n");
         usage(1);
     }
-
-    // Translate types for compatibility with older versions
-    if (!strcmp(app_type, "q") || !strcmp(app_type, "qt") || !strcmp(app_type, "m"))
-        app_type = "qt4";
-    else if (!strcmp(app_type, "d"))
-        app_type = "qml";
-    else if (!strcmp(app_type, "j"))
-        app_type = "silica";
-    else if (!strcmp(app_type, "e"))
-        app_type = "generic";
 
     if (pipe(g_signal_pipe) == -1)
     { 
