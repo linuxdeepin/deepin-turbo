@@ -548,8 +548,8 @@ static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *p
     // Connection with launcher process is established,
     // send the data.
     invoker_send_magic(socket_fd, magic_options);
-    invoker_send_name(socket_fd, prog_argv[0]);
-    invoker_send_exec(socket_fd, prog_name);
+    invoker_send_name(socket_fd, prog_name);
+    invoker_send_exec(socket_fd, prog_argv[0]);
     invoker_send_args(socket_fd, prog_argc, prog_argv);
     invoker_send_prio(socket_fd, prog_prio);
     invoker_send_delay(socket_fd, respawn_delay);
@@ -617,7 +617,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         int fd = invoker_init(app_type);
         if (fd == -1)
         {
-            invoke_fallback(prog_argv, prog_name, wait_term);
+            invoke_fallback(prog_argv, prog_argv[0], wait_term);
         }
         // "normal" invoke through a socket connetion
         else
@@ -770,6 +770,19 @@ int main(int argc, char *argv[])
     {
         report(report_error, "%s: not a file\n", prog_name);
         return EXIT_STATUS_APPLICATION_NOT_FOUND;
+    }
+
+    // If it's a launcher, append its first argument to the name
+    // (at this point, we have already checked if it exists and is a file)
+    if (strcmp(prog_name, "/usr/bin/sailfish-qml") == 0) {
+        if (prog_argc < 2) {
+            report(report_error, "%s: requires an argument\n", prog_name);
+            return EXIT_STATUS_APPLICATION_NOT_FOUND;
+        }
+
+        // Must not free() the existing prog_name, as it's pointing to prog_argv[0]
+        prog_name = (char *)malloc(strlen(prog_argv[0]) + strlen(prog_argv[1]) + 2);
+        sprintf(prog_name, "%s %s", prog_argv[0], prog_argv[1]);
     }
 
     if (!app_type)
