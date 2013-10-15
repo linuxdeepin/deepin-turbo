@@ -403,12 +403,14 @@ void Booster::setEnvironmentBeforeLaunch()
         if (getgid() != m_appData->groupId())
             setgid(m_appData->groupId());
 
-        // Flip the effective group ID forth and back to a dedicated group
+        // Flip the real group ID forth and back to a dedicated group
         // id to generate an event for policy (re-)classification.
-        gid_t orig = getegid();
+        // Using real ID instead of effective for dropping setgid
+        // from calling process (for example lipstick).
+        gid_t orig = getgid();
 
         setegid(m_boosted_gid);
-        setegid(orig);
+        setregid(orig, orig);
     }
 
     // Reset out-of-memory killer adjustment
