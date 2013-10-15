@@ -19,6 +19,8 @@ Source100:  mapplauncherd.yaml
 Requires:   systemd-user-session-targets
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
+Requires(pre):  shadow-utils
+BuildRequires:  pkgconfig(libshadowutils)
 BuildRequires:  pkgconfig(systemd)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake
@@ -78,6 +80,9 @@ mkdir -p %{buildroot}/usr/lib/systemd/user/user-session.target.wants || true
 ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.target.wants/
 # << install post
 
+%pre
+groupadd -rf privileged
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -87,7 +92,7 @@ ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.
 %{_bindir}/invoker
 %{_bindir}/single-instance
 %{_libdir}/libapplauncherd.so*
-%{_libexecdir}/mapplauncherd/booster-generic
+%attr(2755, root, privileged) %{_libexecdir}/mapplauncherd/booster-generic
 %{_libdir}/systemd/user/booster-generic.service
 %{_libdir}/systemd/user/user-session.target.wants/booster-generic.service
 # >> files
