@@ -410,7 +410,8 @@ void Booster::setEnvironmentBeforeLaunch()
         gid_t orig = getgid();
 
         setegid(m_boosted_gid);
-        setregid(orig, orig);
+        if (setregid(orig, orig) == -1) 
+            Logger::logError("Failed to set process gid to %d, %s", orig, strerror(errno));
     }
 
     // Reset out-of-memory killer adjustment
