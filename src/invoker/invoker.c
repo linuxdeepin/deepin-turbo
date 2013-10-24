@@ -408,8 +408,8 @@ static void usage(int status)
            "  -s, --single-instance  Launch the application as a single instance.\n"
            "                         The existing application window will be activated\n"
            "                         if already launched.\n"
-           "  -o, --daemon-mode      Notify invoker that the launched process is a daemon.\n"
-           "                         This resets the oom_adj of the process.\n"
+           "  -o, --keep-oom-score   Notify invoker that the launched process should inherit oom_score_adj\n"
+           "                         from the booster. The score is reset to 0 normally.\n"
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=qt5 /usr/bin/helloworld\n\n",
@@ -666,7 +666,8 @@ int main(int argc, char *argv[])
         {"global-syms",      no_argument,       NULL, 'G'},
         {"deep-syms",        no_argument,       NULL, 'D'},
         {"single-instance",  no_argument,       NULL, 's'},
-        {"daemon-mode",      no_argument,       NULL, 'o'},
+        {"keep-oom-score",   no_argument,       NULL, 'o'},
+        {"daemon-mode",      no_argument,       NULL, 'o'}, // Legacy alias
         {"test-mode",        no_argument,       NULL, 'T'},
         {"type",             required_argument, NULL, 't'},
         {"delay",            required_argument, NULL, 'd'},

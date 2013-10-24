@@ -573,7 +573,7 @@ AppData* Booster::appData() const
 
 void Booster::resetOomAdj()
 {
-    const char * PROC_OOM_ADJ_FILE = "/proc/self/oom_adj";
+    const char * PROC_OOM_ADJ_FILE = "/proc/self/oom_score_adj";
     int fd = open(PROC_OOM_ADJ_FILE, O_WRONLY);
     if (fd != -1)
     {
