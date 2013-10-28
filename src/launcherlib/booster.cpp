@@ -44,20 +44,6 @@
 
 #include "coverage.h"
 
-static const int FALLBACK_GID = 126;
-
-static gid_t getGroupId(const char *name, gid_t fallback)
-{
-    struct group group, *grpptr;
-    size_t size = sysconf(_SC_GETGR_R_SIZE_MAX);
-    char buf[size];
-
-    if (getgrnam_r(name, &group, buf, size, &grpptr) == 0 && grpptr != NULL)
-        return group.gr_gid;
-    else
-        return fallback;
-}
-
 Booster::Booster() :
     m_appData(new AppData),
     m_connection(NULL),
@@ -66,7 +52,6 @@ Booster::Booster() :
     m_spaceAvailable(0),
     m_bootMode(false)
 {
-    m_boosted_gid = getGroupId("boosted", FALLBACK_GID);
 }
 
 Booster::~Booster()
@@ -402,16 +387,6 @@ void Booster::setEnvironmentBeforeLaunch()
 
         if (getgid() != m_appData->groupId())
             setgid(m_appData->groupId());
-
-        // Flip the real group ID forth and back to a dedicated group
-        // id to generate an event for policy (re-)classification.
-        // Using real ID instead of effective for dropping setgid
-        // from calling process (for example lipstick).
-        gid_t orig = getgid();
-
-        setegid(m_boosted_gid);
-        if (setregid(orig, orig) == -1) 
-            Logger::logError("Failed to set process gid to %d, %s", orig, strerror(errno));
     }
 
     // Reset out-of-memory killer adjustment
