@@ -213,10 +213,6 @@ private:
     //! True, if being run in boot mode.
     bool m_bootMode;
 
-    //! Group ID to flip to and back to generate an event for policy
-    //! (re)classification.
-    gid_t m_boosted_gid;
-
 #ifdef UNIT_TEST
     friend class Ut_Booster;
 #endif
