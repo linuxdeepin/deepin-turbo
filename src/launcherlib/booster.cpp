@@ -389,13 +389,13 @@ void Booster::setEnvironmentBeforeLaunch()
             setgid(m_appData->groupId());
     }
 
-    // Reset out-of-memory killer adjustment
-    if (!m_appData->disableOutOfMemAdj())
-        resetOomAdj();
-
     // Make sure that boosted application can dump core. This must be
     // done after set[ug]id().
     prctl(PR_SET_DUMPABLE, 1);
+
+    // Reset out-of-memory killer adjustment
+    if (!m_appData->disableOutOfMemAdj())
+        resetOomAdj();
 
     // Duplicate I/O descriptors
     for (unsigned int i = 0; i < m_appData->ioDescriptors().size(); i++)
