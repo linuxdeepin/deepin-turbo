@@ -617,7 +617,20 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
         int fd = invoker_init(app_type);
         if (fd == -1)
         {
-            invoke_fallback(prog_argv, prog_argv[0], wait_term);
+            // if the attempt was to use the generic booster, and that failed,
+            // then give up and start unboosted. otherwise, make an attempt to
+            // use the generic booster before not boosting. this means single
+            // instance support (for instance) will still work.
+            if (strcmp(app_type, "generic") == 0)
+            {
+                warning("Can't try fall back to generic, already using it\n");
+                invoke_fallback(prog_argv, prog_argv[0], wait_term);
+            }
+            else
+            {
+                warning("Booster %s is not available. Falling back to generic.\n", app_type);
+                invoke(prog_argc, prog_argv, prog_argv[0], "generic", magic_options, wait_term, respawn_delay, test_mode);
+            }
         }
         // "normal" invoke through a socket connetion
         else
