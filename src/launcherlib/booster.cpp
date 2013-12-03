@@ -262,7 +262,14 @@ int Booster::run(SocketManager * socketManager)
 
         // Execute the binary
         Logger::logDebug("Booster: invoking '%s' ", m_appData->fileName().c_str());
-        return launchProcess();
+        try {
+            return launchProcess();
+        } catch (const std::runtime_error &e) {
+            Logger::logError("Booster: Failed to invoke: %s\n", e.what());
+            // Also log to the terminal so the error appears on the terminal too
+            fprintf(stderr, "Failed to invoke: %s\n", e.what());
+            return EXIT_FAILURE;
+        }
     }
     else
     {
