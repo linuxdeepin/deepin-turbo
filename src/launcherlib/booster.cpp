@@ -389,11 +389,13 @@ void Booster::setEnvironmentBeforeLaunch()
         // group ID inherited from the booster, and instead set
         // the user ID and group ID of the calling process.
 
-        if (getuid() != m_appData->userId())
+        if (geteuid() != m_appData->userId()) {
             setuid(m_appData->userId());
+        }
 
-        if (getgid() != m_appData->groupId())
+        if (getegid() != m_appData->groupId()) {
             setgid(m_appData->groupId());
+        }
     }
 
     // Make sure that boosted application can dump core. This must be
