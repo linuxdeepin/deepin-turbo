@@ -40,6 +40,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <systemd/sd-daemon.h>
+#include <unistd.h>
 
 #include "coverage.h"
 

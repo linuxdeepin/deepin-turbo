@@ -23,6 +23,7 @@
 #include "logger.h"
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 
 const string EBooster::m_boosterType  = "generic";
 

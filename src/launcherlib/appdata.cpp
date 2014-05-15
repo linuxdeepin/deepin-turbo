@@ -17,6 +17,7 @@
 **
 ****************************************************************************/
 
+#include <sys/types.h>
 #include "appdata.h"
 #include "protocol.h"
 #include <stdint.h>
