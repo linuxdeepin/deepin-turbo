@@ -668,9 +668,6 @@ int main(int argc, char *argv[])
             "Run invoker explicitly from e.g. a D-Bus service file instead.\n");
     }
 
-    // Stops parsing args as soon as a non-option argument is encountered
-    putenv("POSIXLY_CORRECT=1");
-
     // Options recognized
     struct option longopts[] = {
         {"help",             no_argument,       NULL, 'h'},
@@ -691,9 +688,10 @@ int main(int argc, char *argv[])
     };
 
     // Parse options
-    // TODO: Move to a function
+    // The use of + for POSIXLY_CORRECT behavior is a GNU extension, but avoids polluting
+    // the environment
     int opt;
-    while ((opt = getopt_long(argc, argv, "hcwnGDsoTd:t:r:S:L:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "+hcwnGDsoTd:t:r:S:L:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
