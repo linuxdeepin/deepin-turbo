@@ -38,6 +38,7 @@
 #include <limits.h>
 #include <getopt.h>
 #include <fcntl.h>
+#include <dbus/dbus.h>
 
 #include "report.h"
 #include "protocol.h"
@@ -69,6 +70,8 @@ static void sigs_init(void);
 
 //! Pipe used to safely catch Unix signals
 static int g_signal_pipe[2];
+
+static const char *g_desktop_file = NULL;
 
 // Forwards Unix signals from invoker to the invoked process
 static void sig_forwarder(int sig)
@@ -411,6 +414,7 @@ static void usage(int status)
            "  -o, --keep-oom-score   Notify invoker that the launched process should inherit oom_score_adj\n"
            "                         from the booster. The score is reset to 0 normally.\n"
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
+           "  -F, --desktop-file     Desktop file of the application.\n"
            "  -h, --help             Print this help.\n\n"
            "Example: %s --type=qt5 /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
@@ -440,6 +444,30 @@ static unsigned int get_delay(char *delay_arg, char *param_name,
     }
     
     return delay;
+}
+
+static void notify_app_lauch(const char *desktop_file)
+{
+    DBusConnection *connection;
+    DBusMessage *message;
+    DBusError error;
+
+    dbus_error_init (&error);
+    connection = dbus_bus_get(DBUS_BUS_SESSION, &error);
+
+    if (connection) {
+        message = dbus_message_new_method_call("org.nemomobile.lipstick", "/LauncherModel",
+                                               "org.nemomobile.lipstick.LauncherModel", "notifyLaunching");
+        dbus_message_append_args(message, DBUS_TYPE_STRING, &desktop_file, DBUS_TYPE_INVALID);
+
+        dbus_connection_send(connection, message, NULL);
+        dbus_message_unref(message);
+        dbus_connection_flush(connection);
+    } else {
+        info("Failed to connect to the DBus session bus: %s", error.message);
+        dbus_error_free(&error);
+        return 1;
+    }
 }
 
 static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
@@ -563,6 +591,9 @@ static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *p
         free(prog_name);
     }
 
+    if (g_desktop_file) {
+        notify_app_lauch(g_desktop_file);
+    }
     int exit_status = wait_for_launched_process_to_exit(socket_fd, wait_term);
     return exit_status;
 }
@@ -684,6 +715,7 @@ int main(int argc, char *argv[])
         {"respawn",          required_argument, NULL, 'r'},
         {"splash",           required_argument, NULL, 'S'},
         {"splash-landscape", required_argument, NULL, 'L'},
+        {"desktop-file",     required_argument, NULL, 'F'},
         {0, 0, 0, 0}
     };
 
@@ -691,7 +723,7 @@ int main(int argc, char *argv[])
     // The use of + for POSIXLY_CORRECT behavior is a GNU extension, but avoids polluting
     // the environment
     int opt;
-    while ((opt = getopt_long(argc, argv, "+hcwnGDsoTd:t:r:S:L:", longopts, NULL)) != -1)
+    while ((opt = getopt_long(argc, argv, "+hcwnGDsoTd:t:r:S:L:F:", longopts, NULL)) != -1)
     {
         switch(opt)
         {
@@ -744,6 +776,10 @@ int main(int argc, char *argv[])
         case 'S':
         case 'L':
             // Removed splash support. Ignore.
+            break;
+
+        case 'F':
+            g_desktop_file = optarg;
             break;
 
         case '?':
