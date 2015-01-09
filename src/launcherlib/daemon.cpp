@@ -409,9 +409,16 @@ void Daemon::forkBooster(int sleepTime)
         Logger::logDebug("Daemon: Running a new Booster of type '%s'", m_booster->boosterType().c_str());
 
         // Initialize and wait for commands from invoker
-        m_booster->initialize(m_initialArgc, m_initialArgv, m_boosterLauncherSocket[1],
-                              m_socketManager->findSocket(m_booster->boosterType().c_str()),
-                              m_singleInstance, m_bootMode);
+        try {
+            m_booster->initialize(m_initialArgc, m_initialArgv, m_boosterLauncherSocket[1],
+                                  m_socketManager->findSocket(m_booster->boosterType().c_str()),
+                                  m_singleInstance, m_bootMode);
+        } catch (const std::runtime_error &e) {
+            Logger::logError("Booster: Failed to initialize: %s\n", e.what());
+            fprintf(stderr, "Failed to initialize: %s\n", e.what());
+            delete m_booster;
+            _exit(EXIT_FAILURE);
+        }
 
         // Run the current Booster
         int retval = m_booster->run(m_socketManager);
