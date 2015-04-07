@@ -54,7 +54,7 @@ rm -rf %{buildroot}
 # Don't use %exclude, remove at install phase
 rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 
-mkdir -p %{buildroot}/usr/lib/systemd/user/user-session.target.wants || true
+mkdir -p %{buildroot}/usr/lib/systemd/user/user-session.target.wants
 ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.target.wants/
 
 %pre
