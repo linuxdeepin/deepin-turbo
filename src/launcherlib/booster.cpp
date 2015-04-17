@@ -38,6 +38,8 @@
 #include <stdexcept>
 #include <syslog.h>
 
+#include <fstream>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <grp.h>
@@ -325,11 +327,10 @@ void Booster::renameProcess(int parentArgc, char** parentArgv,
     }
 }
 
-#define BOOSTER_APP_PRIVILEGES_LIST "/usr/share/mapplauncherd/privileges"
-int isPrivileged(AppData *appData)
+static bool isPrivileged(AppData *appData)
 {
     /*
-       Returns 1 if privileged, 0 if not privileged.
+       Returns true if privileged, false if not privileged.
        The privileges file has the following format:
            /full/path/to/app,<permissions_list>
        where the permissions_list is a string of characters
@@ -338,38 +339,35 @@ int isPrivileged(AppData *appData)
        example:
            /usr/bin/vcardconverter,p
        Currently, permission means both read+write permission.
+       Comment lines start with # and are ignored.
     */
 
-    ssize_t readVal = 0;
-    size_t length = 0;
-    char *line = NULL;
-    FILE *stream = NULL;
+    const char *BOOSTER_APP_PRIVILEGES_LIST = "/usr/share/mapplauncherd/privileges";
 
-    stream = fopen(BOOSTER_APP_PRIVILEGES_LIST, "r");
-    if (stream == NULL)
-        return 0;
+    std::ifstream infile(BOOSTER_APP_PRIVILEGES_LIST);
+    if (infile) {
+        std::string line;
+        while (std::getline(infile, line)) {
+            if (line.find('#') == 0) {
+                // Comment line
+                continue;
+            }
 
-    while (readVal = getline(&line, &length, stream) != -1) {
-        if (strstr(line, appData->fileName().c_str()) != NULL) {
-            /* For now, we just check for the existence of any permissions. */
-            char *statePtr = NULL;
-            char *tok = strtok_r(line, ",", &statePtr);
-            if (tok != NULL) {
-                tok = strtok_r(NULL, ",", &statePtr);
-                if (tok != NULL) {
-                    /* some permissions are defined for this application. */
-                    free(line);
-                    fclose(stream);
-                    return 1;
+            size_t pos = line.find(',');
+            if (pos != std::string::npos) {
+                std::string filename = line.substr(0, pos);
+                std::string permissions = line.substr(pos+1);
+
+                // TODO: Actually do something with "permissions"
+
+                if (filename == appData->fileName()) {
+                    return true;
                 }
             }
         }
-        free(line);
-        line = NULL;
     }
 
-    fclose(stream);
-    return 0;
+    return false;
 }
 
 void Booster::setEnvironmentBeforeLaunch()
@@ -557,21 +555,15 @@ AppData* Booster::appData() const
 
 void Booster::resetOomAdj()
 {
-    const char * PROC_OOM_ADJ_FILE = "/proc/self/oom_score_adj";
-    int fd = open(PROC_OOM_ADJ_FILE, O_WRONLY);
-    if (fd != -1)
-    {
-        if (write(fd, "0", sizeof(char)) == -1)
-        {
-            Logger::logError("Couldn't write to '%s': %s", PROC_OOM_ADJ_FILE,
-                             strerror(errno));
-        }
+    const char *PROC_OOM_ADJ_FILE = "/proc/self/oom_score_adj";
 
-        close(fd);
-    }
-    else
-    {
-        Logger::logError("Couldn't open '%s' for write: %s", PROC_OOM_ADJ_FILE,
-                         strerror(errno));
+    std::ofstream oom_adj(PROC_OOM_ADJ_FILE);
+    if (oom_adj) {
+        oom_adj << '0';
+        if (oom_adj.fail()) {
+            Logger::logError("Couldn't write to '%s'", PROC_OOM_ADJ_FILE);
+        }
+    } else {
+        Logger::logError("Couldn't open '%s' for writing", PROC_OOM_ADJ_FILE);
     }
 }
