@@ -52,7 +52,7 @@ static const unsigned int MAX_EXIT_DELAY = 86400;
 
 // Delay before a new booster is started. This will
 // be sent to the launcher daemon.
-static const unsigned int RESPAWN_DELAY     = 3;
+static const unsigned int RESPAWN_DELAY     = 1;
 static const unsigned int MIN_RESPAWN_DELAY = 0;
 static const unsigned int MAX_RESPAWN_DELAY = 10;
 
