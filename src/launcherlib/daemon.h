@@ -144,12 +144,6 @@ private:
     //! Prints the usage and exits with given status
     void usage(const char *name, int status);
 
-    //! Re-exec applauncherd.bin
-    void reExec();
-
-    //! Restore state.
-    void restoreState();
-
     //! Daemonize flag (--fork). Daemon forks if true.
     bool m_daemon;
 
@@ -207,9 +201,6 @@ private:
     //! Original unix signal handlers are saved here
     typedef map<int, sighandler_t> SigHandlerMap;
     SigHandlerMap m_originalSigHandlers;
-
-    //! True if re-execing
-    bool m_reExec;
 
     //! True if systemd needs to be notified
     bool m_notifySystemd;

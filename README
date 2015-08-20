@@ -2,12 +2,12 @@ What is applauncherd?
 ==============================
 
 Applauncherd is a daemon that helps to launch applications faster by
-preloading dynamically linked libraries and caching stuff (MComponentCache). It also saves memory, because all launched
-applications share certain resources.
+preloading dynamically linked libraries and caching stuff.
+It also saves memory, because all launched applications share certain resources.
 
 Applauncherd also provides support for fast single instance launches.
 
-Some technical details are explained below. 
+Some technical details are explained below.
 
 Install applauncherd-doc for the Doxygen-based user documentation.
 See INSTALL on how to build applauncherd and the documentation.
@@ -23,17 +23,15 @@ Building
 Technical overview
 ==============================
 
-The applauncherd daemon is started by UpStart as part of XSession, that
-is, at the same level as the desktop (MeeGo Touch homescreen).
-Applauncherd forks the will-be-application process, "booster", before
-knowing which application is going to be launched next. There can be
+Booster daemons (written using the provided library) are started as part of the
+user session. The booster is responsible for forking the will-be-application
+before knowing which application is going to be launched next. There can be
 different kinds of boosters optimized for different kinds of
-applications, e.g. Qt or QML. 
+applications, e.g. Qt or QML.
 
-In the current architecture boosters are loaded as plugins. Applauncherd
-searches for plugin libraries in /usr/lib/applaucherd/lib*booster.so and
-forks a new process for each booster to wait for launch commands from the
-user.
+In the current architecture boosters are implemented as seperate processes,
+using the provided support library. Each booster process waits for launch
+commands.
 
 The user uses the launcher always through a special invoker program. The
 invoker (/usr/bin/invoker) tells booster process to load an application
@@ -47,21 +45,12 @@ In that case exec() is used.
 Technical details
 ==============================
 
-Before loading, booster process changes its security credentials so that
-the code in the application binary will be executed with the correct credentials. Loading the binary is done with dlopen(), and therefore the
+Loading the binary is done with dlopen(), and therefore the
 application needs to be compiled and linked as a shared library or a
 position independent executable. The booster process also sets the
 environment variables. Finally, it finds the main function in the
 application binary with dlsym() and calls the main() with the command
-line arguments given by the invoker. 
-
-The launcher itself is a library that is loaded by a small C-program (/usr/bin/applauncherd.bin). Idea behind this is to avoid linking the
-launcher binary to any libraries. This allows us to fully control how
-(with which flags) the preloaded libraries are opened with dlopen(). 
-
-Each application type (currently Qt or QtDeclarative) has its own booster
-process. When booster launches the application by calling the "main()"
-function, applauncherd will create new booster process of that type.
+line arguments given by the invoker.
 
 Booster processes do some initializations that cannot be shared among
 other processes and therefore have to be done after forking. This allows,
@@ -72,6 +61,12 @@ launched.
 
 Contributors
 ==============================
+
+People who have contributed to mapplauncherd:
+
+Robin Burchell
+John Brooks
+Thomas Perl
 
 People who have contributed to meegotouch-applauncherd:
 
