@@ -189,7 +189,7 @@ static int invoker_init(const char *app_type)
     fd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (fd < 0)
     {
-        error("Failed to open invoker socket.\n");
+        error("Failed to open invoker socket for type %s.\n", app_type);
         return -1;
     }
 
@@ -216,7 +216,7 @@ static int invoker_init(const char *app_type)
 
     if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
     {
-        error("Failed to initiate connect on the socket.\n");
+        error("Failed to initiate connect on the socket for type %s.\n", app_type);
         return -1;
     }
 
@@ -398,6 +398,8 @@ static void usage(int status)
            "  qtquick2               Launch a Qt Quick 2 (QML) application.\n"
            "  silica-qt5             Launch a Sailfish Silica application.\n"
            "  generic                Launch any application, even if it's not a library.\n\n"
+           "The TYPE may also be a comma delimited list of boosters to try. The first available\n"
+           "booster will be used.\n\n"
            "Options:\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
            "                         (default %d).\n"
@@ -643,11 +645,27 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             info("Invoker test mode is not enabled.\n");
         }
 
-        // This is a fallback if connection with the launcher
-        // process is broken       
-        int fd = invoker_init(app_type);
+        // The app can be launched with a comma delimited list of boosters to attempt.
+
+        char *app_type_list = strdup(app_type);
+        char *saveptr = NULL;
+        char *token;
+
+        int fd = -1;
+        for (token = strtok_r(app_type_list, ",", &saveptr); fd == -1 && token != NULL; token = strtok_r(NULL, ",", &saveptr))
+        {
+            app_type = token;
+            if (app_type != app_type_list) {
+                info("Trying fallback type %s.\n", app_type);
+            }
+            fd = invoker_init(app_type);
+        }
+
         if (fd == -1)
         {
+            // This is a fallback if connection with the launcher
+            // process is broken
+
             // if the attempt was to use the generic booster, and that failed,
             // then give up and start unboosted. otherwise, make an attempt to
             // use the generic booster before not boosting. this means single
@@ -670,6 +688,8 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
                                    magic_options, wait_term, respawn_delay);
             close(fd);
         }
+
+        free(app_type_list);
     }
     
     return status;
