@@ -37,6 +37,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <syslog.h>
+#include <dirent.h>
 
 #include <fstream>
 
@@ -327,7 +328,7 @@ void Booster::renameProcess(int parentArgc, char** parentArgv,
     }
 }
 
-static bool isPrivileged(AppData *appData)
+static bool isPrivileged(AppData *appData, const char *path)
 {
     /*
        Returns true if privileged, false if not privileged.
@@ -342,9 +343,7 @@ static bool isPrivileged(AppData *appData)
        Comment lines start with # and are ignored.
     */
 
-    const char *BOOSTER_APP_PRIVILEGES_LIST = "/usr/share/mapplauncherd/privileges";
-
-    std::ifstream infile(BOOSTER_APP_PRIVILEGES_LIST);
+    std::ifstream infile(path);
     if (infile) {
         std::string line;
         while (std::getline(infile, line)) {
@@ -368,6 +367,38 @@ static bool isPrivileged(AppData *appData)
     }
 
     return false;
+}
+
+static bool isPrivileged(AppData *appData)
+{
+    /*
+        Return true if privileged, false if not privileged.
+
+        This function checks the standard paths to find privileges definition file.
+        First it will check
+            /usr/share/mapplauncherd/privileges
+        And then, any file in
+            /usr/share/mapplauncherd/privileges.d/
+     */
+    static const char *BOOSTER_APP_PRIVILEGES_LIST = "/usr/share/mapplauncherd/privileges";
+    static const char *BOOSTER_APP_PRIVILEGES_DIR = "/usr/share/mapplauncherd/privileges.d";
+    if (isPrivileged(appData, BOOSTER_APP_PRIVILEGES_LIST))
+        return true;
+
+    DIR *privilegesDir = opendir(BOOSTER_APP_PRIVILEGES_DIR);
+    if (!privilegesDir)
+        return false;
+
+    bool privileged = false;
+    dirent *dir = NULL;
+    while ((dir = readdir(privilegesDir)) && !privileged) {
+        std::string privilegesFile (BOOSTER_APP_PRIVILEGES_DIR);
+        privilegesFile += "/";
+        privilegesFile += dir->d_name;
+        privileged = isPrivileged(appData, privilegesFile.c_str());
+    }
+    closedir(privilegesDir);
+    return privileged;
 }
 
 void Booster::setEnvironmentBeforeLaunch()
