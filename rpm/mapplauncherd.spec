@@ -4,7 +4,7 @@ Version:    4.1.23
 Release:    1
 Group:      System/Daemons
 License:    LGPLv2+
-URL:        https://github.com/nemomobile/mapplauncherd/
+URL:        https://git.merproject.org/mer-core/mapplauncherd
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   systemd-user-session-targets
 Requires(post): /sbin/ldconfig
@@ -57,6 +57,8 @@ rm -f %{buildroot}/usr/share/fala_images/fala_qml_helloworld
 mkdir -p %{buildroot}/usr/lib/systemd/user/user-session.target.wants
 ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.target.wants/
 
+mkdir -p %{buildroot}%{_datadir}/mapplauncherd/privileges.d
+
 %pre
 groupadd -rf privileged
 
@@ -66,6 +68,8 @@ groupadd -rf privileged
 
 %files
 %defattr(-,root,root,-)
+%dir %{_datadir}/mapplauncherd
+%dir %{_datadir}/mapplauncherd/privileges.d
 %{_bindir}/invoker
 %{_bindir}/single-instance
 %{_libdir}/libapplauncherd.so*
