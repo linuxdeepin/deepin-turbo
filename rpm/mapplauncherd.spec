@@ -1,6 +1,6 @@
 Name:       mapplauncherd
 Summary:    Application launcher for fast startup
-Version:    4.1.23
+Version:    4.1.24
 Release:    1
 Group:      System/Daemons
 License:    LGPLv2+
