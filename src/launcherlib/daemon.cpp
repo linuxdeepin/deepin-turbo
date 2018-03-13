@@ -137,12 +137,6 @@ Daemon::Daemon(int & argc, char * argv[]) :
     {
         throw std::runtime_error("Daemon: Creating a pipe for Unix signals failed!\n");
     }
-
-    // Daemonize if desired
-    if (m_daemon)
-    {
-        daemonize();
-    }
 }
 
 Daemon * Daemon::instance()
@@ -165,9 +159,17 @@ void Daemon::run(Booster *booster)
     Logger::logDebug("Daemon: initing socket: %s", booster->boosterType().c_str());
     m_socketManager->initSocket(booster->boosterType());
 
+    // Daemonize if desired
+    if (m_daemon)
+    {
+        daemonize();
+    }
+
     // Fork each booster for the first time
     Logger::logDebug("Daemon: forking booster: %s", booster->boosterType().c_str());
     forkBooster();
+
+
 
     // Notify systemd that init is done
     if (m_notifySystemd) {
@@ -217,10 +219,24 @@ void Daemon::run(Booster *booster)
                     reapZombies();
                     break;
 
-                case SIGTERM:
+                case SIGTERM: {
                     Logger::logDebug("Daemon: SIGTERM received.");
+
+                    const std::string pidFilePath = m_socketManager->socketRootPath() + m_booster->boosterType() + ".pid";
+                    FILE * const pidFile = fopen(pidFilePath.c_str(), "r");
+                    if (pidFile)
+                    {
+                        pid_t filePid;
+                        if (fscanf(pidFile, "%d\n", &filePid) == 1 && filePid == getpid())
+                        {
+                            unlink(pidFilePath.c_str());
+                        }
+                        fclose(pidFile);
+                    }
+
                     exit(EXIT_SUCCESS);
                     break;
+                }
 
                 case SIGUSR1:
                     Logger::logDebug("Daemon: SIGUSR1 received.");
@@ -397,6 +413,8 @@ void Daemon::forkBooster(int sleepTime)
             _exit(EXIT_FAILURE);
         }
 
+        m_instance = NULL;
+
         // Run the current Booster
         int retval = m_booster->run(m_socketManager);
 
@@ -515,6 +533,14 @@ void Daemon::daemonize()
     // If we got a good PID, then we can exit the parent process.
     if (pid > 0)
     {
+        const std::string pidFilePath = m_socketManager->socketRootPath() + m_booster->boosterType() + ".pid";
+        FILE * const pidFile = fopen(pidFilePath.c_str(), "w");
+        if (pidFile)
+        {
+            fprintf(pidFile, "%d\n", pid);
+            fclose(pidFile);
+        }
+
         exit(EXIT_SUCCESS);
     }
 
