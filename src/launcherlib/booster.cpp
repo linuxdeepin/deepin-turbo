@@ -38,9 +38,11 @@
 #include <stdexcept>
 #include <syslog.h>
 #include <dirent.h>
+#include <algorithm>
 
 #include <fstream>
 
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <grp.h>
@@ -401,6 +403,96 @@ static bool isPrivileged(AppData *appData)
     return privileged;
 }
 
+struct NotCharacter {
+    char c;
+
+    NotCharacter(const char &c) : c(c) {}
+    bool operator()(const char &c) const { return c != this->c; }
+};
+
+static bool mkdirRecursive(const int dirfd, const std::string &path) {
+    static const mode_t MODE = 0775;
+
+    struct stat st;
+
+    std::string relative;
+    std::string::const_iterator begin, next;
+
+    for (std::string::const_iterator i = path.begin(); i != path.end(); i = next) {
+        begin = std::find_if(i, path.end(), NotCharacter('/'));
+        next = std::find(begin, path.end(), '/');
+        relative.append(begin, next);
+        relative.append(1, '/');
+
+        if (fstatat(dirfd, relative.c_str(), &st, 0)) {
+            if (mkdirat(dirfd, relative.c_str(), MODE) && errno != EEXIST) {
+                return false;
+            }
+        } else if (!S_ISDIR(st.st_mode)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static void setCgroup(const std::string &exePath) {
+    static const char *BOOSTER_CGROUP_TREE = "/sys/fs/cgroup/booster";
+    static const char *CGROUP_PROCS = "cgroup.procs";
+    static const char *PROC_PID = "0";
+
+    int fd = -1;
+    DIR *dir = NULL;
+    char *cpath = NULL;
+    std::string path;
+
+    dir = opendir(BOOSTER_CGROUP_TREE);
+    if (!dir) {
+        Logger::logDebug("No named booster cgroup hierarchy '%s'", BOOSTER_CGROUP_TREE);
+        goto early;
+    }
+
+    cpath = realpath(exePath.c_str(), NULL);
+    if (!cpath) {
+        Logger::logDebug("Cannot resolve exe path '%s'", exePath.c_str());
+        goto early;
+    }
+
+    path = cpath;
+    if (!mkdirRecursive(dirfd(dir), path)) {
+        Logger::logDebug("Cannot create cgroup '%s'", path.c_str());
+        goto early;
+    }
+
+    path.erase(path.begin(), std::find_if(path.begin(), path.end(), NotCharacter('/')));
+    path = path + '/' + CGROUP_PROCS;
+    fd = openat(dirfd(dir), path.c_str(), O_WRONLY);
+    if (fd < 0) {
+        Logger::logDebug("Cannot open '%s' for writing", path.c_str());
+        goto early;
+    }
+
+    if (write(fd, PROC_PID, strlen(PROC_PID)) < 0) {
+        Logger::logDebug("Cannot move itself to cgroup before launch");
+        goto early;
+    }
+
+early:
+    if (dir) {
+        closedir(dir);
+    }
+
+    if (cpath) {
+        free(cpath);
+    }
+
+    if (fd >= 0) {
+        close(fd);
+    }
+
+    return;
+}
+
 void Booster::setEnvironmentBeforeLaunch()
 {
     // Possibly restore process priority
@@ -408,6 +500,8 @@ void Booster::setEnvironmentBeforeLaunch()
     const int cur_prio = getpriority(PRIO_PROCESS, 0);
     if (!errno && cur_prio < m_appData->priority())
         setpriority(PRIO_PROCESS, 0, m_appData->priority());
+
+    setCgroup(m_appData->fileName());
 
     // Currently, we only have two levels of privileges:
     // privileged and non-privileged.
