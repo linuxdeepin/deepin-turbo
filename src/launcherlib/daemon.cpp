@@ -522,7 +522,10 @@ void Daemon::daemonize()
     // If we got a good PID, then we can exit the parent process.
     if (pid > 0)
     {
-        exit(EXIT_SUCCESS);
+        // Wait for the child fork to exit to ensure the PID has been written before a caller
+        // is notified of the exit.
+        waitpid(pid, NULL, 0);
+        _exit(EXIT_SUCCESS);
     }
 
     // Fork off the parent process: second fork
@@ -541,7 +544,7 @@ void Daemon::daemonize()
             fclose(pidFile);
         }
 
-        exit(EXIT_SUCCESS);
+        _exit(EXIT_SUCCESS);
     }
 
     // Change the file mode mask
