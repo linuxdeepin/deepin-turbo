@@ -6,6 +6,7 @@ Group:      System/Daemons
 License:    LGPLv2+
 URL:        https://git.merproject.org/mer-core/mapplauncherd
 Source0:    %{name}-%{version}.tar.bz2
+Source1:    booster-cgroup-mount.service
 Requires:   systemd-user-session-targets
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -35,6 +36,14 @@ Obsoletes:  meegotouch-applauncherd-devel <= 3.0.3
 Development files for creating applications that can be launched
 using mapplauncherd.
 
+%package cgroup
+Summary:    Service files for booster cgroup mount
+Group:      System/Daemons
+Requires:   %{name} = %{version}-%{release}
+
+%description cgroup
+Scripts and services files for application launcher to mount
+booster cgroup at startup.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -59,6 +68,12 @@ ln -s ../booster-generic.service %{buildroot}/usr/lib/systemd/user/user-session.
 
 mkdir -p %{buildroot}%{_datadir}/mapplauncherd/privileges.d
 
+install -D -m 0755 %{SOURCE1} %{buildroot}/lib/systemd/system/booster-cgroup-mount.service
+mkdir -p %{buildroot}/lib/systemd/system/multi-user.target.wants
+ln -s ../booster-cgroup-mount.service %{buildroot}/lib/systemd/system/multi-user.target.wants/
+
+install -D -m 0755 scripts/booster-cgroup-mount %{buildroot}/usr/lib/startup/booster-cgroup-mount
+
 %pre
 groupadd -rf privileged
 
@@ -80,3 +95,9 @@ groupadd -rf privileged
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/applauncherd/*
+
+%files cgroup
+/lib/systemd/system/booster-cgroup-mount.service
+/lib/systemd/system/multi-user.target.wants/booster-cgroup-mount.service
+%dir %{_libdir}/startup
+%{_libdir}/startup/booster-cgroup-mount
