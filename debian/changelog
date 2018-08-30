@@ -1,0 +1,5 @@
+deepin-turbo (1.0-1) unstable; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Packages <zs@deepin.com>  Thu, 30 Aug 2018 15:36:22 +0800
