@@ -23,7 +23,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -fPIC")
 link_libraries(${DBUS_LDFLAGS})
 
 # Set target
-add_executable(single-instance ${SRC})
+add_executable(deepin-turbo-single-instance ${SRC})
 
 # Add install rule
-install(PROGRAMS single-instance DESTINATION /usr/bin/)
+install(PROGRAMS deepin-turbo-single-instance DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

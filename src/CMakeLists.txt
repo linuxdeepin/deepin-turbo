@@ -5,7 +5,7 @@ add_subdirectory(invoker)
 add_subdirectory(launcherlib)
 
 # Sub build: generic booster plugin
-add_subdirectory(booster-generic)
+#add_subdirectory(booster-generic)
 
 # Sub build: single-instance binary / library
 add_subdirectory(single-instance)

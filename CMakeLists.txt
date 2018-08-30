@@ -1,4 +1,4 @@
-project(Applauncherd)
+project(deepin-turbo)
 
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(VERSION 2.6)
@@ -23,11 +23,11 @@ if ($ENV{DEBUG_BUILD})
 endif ($ENV{DEBUG_BUILD})
 
 # Set the program name defines. Must be at this level due to unit tests.
-add_definitions(-DPROG_NAME_INVOKER="invoker")
-add_definitions(-DPROG_NAME_SINGLE_INSTANCE="single-instance")
+add_definitions(-DPROG_NAME_INVOKER="deepin-turbo-invoker")
+add_definitions(-DPROG_NAME_SINGLE_INSTANCE="deepin-turbo-single-instance")
 
 # applauncherd will try to load single-instance using this path
-add_definitions(-DSINGLE_INSTANCE_PATH="/usr/bin/single-instance")
+add_definitions(-DSINGLE_INSTANCE_PATH="${CMAKE_INSTALL_PREFIX}/bin/deepin-turbo-single-instance")
 
 # Disable debug logging, only error and warning messages get logged
 # Currently effective only for invoker. Launcher part recognizes --debug
@@ -45,14 +45,14 @@ endif ($ENV{BUILD_COVERAGE})
 add_subdirectory(src)
 
 # Target for documentation (make doc)
-find_program(Doxygen NAMES doxygen)
-if (EXISTS ${Doxygen})
-    add_custom_target(doc COMMAND cd doc && ${Doxygen} doxygen-impldoc.conf COMMAND cd doc && ${Doxygen} doxygen-userdoc.conf COMMAND cd doc && ${Doxygen} doxygen-mdeclarativecache.conf)
-else (EXISTS ${Doxygen})
-    message(STATUS "Doxygen not found: you're not able to build documentation.")
-endif (EXISTS ${Doxygen})
+#find_program(Doxygen NAMES doxygen)
+#if (EXISTS ${Doxygen})
+#    add_custom_target(doc COMMAND cd doc && ${Doxygen} doxygen-impldoc.conf COMMAND cd doc && ${Doxygen} doxygen-userdoc.conf COMMAND cd doc && ${Doxygen} doxygen-mdeclarativecache.conf)
+#else (EXISTS ${Doxygen})
+#    message(STATUS "Doxygen not found: you're not able to build documentation.")
+#endif (EXISTS ${Doxygen})
 
 # Install html documentation
-install(DIRECTORY doc/implementation-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
-install(DIRECTORY doc/user-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
-install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION /usr/share/doc/applauncherd OPTIONAL)
+install(DIRECTORY doc/implementation-documentation DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/deepin-turbo OPTIONAL)
+install(DIRECTORY doc/user-documentation DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/deepin-turbo OPTIONAL)
+install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/deepin-turbo OPTIONAL)

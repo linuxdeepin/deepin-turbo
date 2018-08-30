@@ -11,14 +11,14 @@ set(SRC invokelib.c invoker.c ${COMMON}/report.c search.c)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${DBUS_INCLUDE_DIRS} ${COMMON})
 
 # Set precompiler flags
-add_definitions(-DPROG_NAME_INVOKER="invoker")
+add_definitions(-DPROG_NAME_INVOKER="deepin-turbo-invoker")
 
 # Set target
-add_executable(invoker ${SRC})
+add_executable(deepin-turbo-invoker ${SRC})
 
-target_link_libraries(invoker ${DBUS_LDFLAGS})
+target_link_libraries(deepin-turbo-invoker ${DBUS_LDFLAGS})
 
 # Add install rule
-install(PROGRAMS invoker DESTINATION /usr/bin/)
+install(PROGRAMS deepin-turbo-invoker DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 
 

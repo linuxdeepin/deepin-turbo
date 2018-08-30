@@ -17,10 +17,14 @@ set(HEADERS appdata.h booster.h connection.h daemon.h logger.h launcherlib.h
 link_libraries(${LIBDL} "-L/lib -lsystemd")
 
 # Set executable
-add_library(applauncherd MODULE ${SRC} ${MOC_SRC})
-set_target_properties(applauncherd PROPERTIES VERSION 0.1 SOVERSION 0)
+add_library(deepin-turbo MODULE ${SRC} ${MOC_SRC})
+set_target_properties(deepin-turbo PROPERTIES VERSION 0.1 SOVERSION 0)
+
+if (NOT CMAKE_INSTALL_LIBDIR)
+    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/locale/lib)
+endif()
 
 # Add install rule
-install(TARGETS applauncherd DESTINATION /usr/lib)
-install(FILES ${HEADERS} DESTINATION /usr/include/applauncherd
+install(TARGETS deepin-turbo DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/deepin-turbo
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
