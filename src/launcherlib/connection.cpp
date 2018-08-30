@@ -152,7 +152,7 @@ const char * Connection::recvStr()
         // Get the size.
         uint32_t size = 0;
 
-        const uint32_t STR_LEN_MAX = 4096;
+        const uint32_t STR_LEN_MAX = 65536;
         bool res = recvMsg(&size);
         if (!res || size == 0 || size > STR_LEN_MAX)
         {
