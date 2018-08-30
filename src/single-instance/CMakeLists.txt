@@ -26,4 +26,4 @@ link_libraries(${DBUS_LDFLAGS})
 add_executable(deepin-turbo-single-instance ${SRC})
 
 # Add install rule
-install(PROGRAMS deepin-turbo-single-instance DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS deepin-turbo-single-instance DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)

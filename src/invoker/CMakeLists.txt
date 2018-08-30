@@ -19,6 +19,6 @@ add_executable(deepin-turbo-invoker ${SRC})
 target_link_libraries(deepin-turbo-invoker ${DBUS_LDFLAGS})
 
 # Add install rule
-install(PROGRAMS deepin-turbo-invoker DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS deepin-turbo-invoker DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 
 

@@ -21,7 +21,7 @@ add_library(deepin-turbo MODULE ${SRC} ${MOC_SRC})
 set_target_properties(deepin-turbo PROPERTIES VERSION 0.1 SOVERSION 0)
 
 if (NOT CMAKE_INSTALL_LIBDIR)
-    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/locale/lib)
+    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
 
 # Add install rule
