@@ -52,7 +52,8 @@ bool QWBooster::preload()
                           | Qt::WindowTransparentForInput
                           | Qt::WindowDoesNotAcceptFocus);
     widget.setFixedSize(1, 1);
-    widget.show();
+    widget.createWinId();
+//    widget.show();
 
     return true;
 }
