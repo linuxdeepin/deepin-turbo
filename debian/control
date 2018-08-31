@@ -1,4 +1,5 @@
 Source: deepin-turbo
+Section: devel
 Priority: extra
 Maintainer: Deepin Packages Builder <packages@deepin.com> 
 Build-Depends: debhelper (>= 9.0.0),
@@ -12,6 +13,7 @@ Build-Depends: debhelper (>= 9.0.0),
 Standards-Version: 3.9.5
 
 Package: deepin-turbo
+Section: libs
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
@@ -22,6 +24,7 @@ Description:  Application launcher for fast startup
  functionality to launch applications as single instances.
 
 Package: deepin-turbo-dev
+Section: libdevel
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
@@ -31,6 +34,7 @@ Description: Development files for launchable applications
   using deepin-turbo.
 
 Package: deepin-turbo-booster
+Section: devel
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
