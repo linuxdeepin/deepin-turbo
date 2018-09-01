@@ -32,7 +32,7 @@ bool Logger::m_debugMode = false;
 void Logger::openLog(const char * progName)
 {
     if (!progName)
-        progName = "mapplauncherd";
+        progName = "deepin-turbo";
 
     if (Logger::m_isOpened)
     {
