@@ -22,6 +22,7 @@
 
 #include <QApplication>
 #include <QWidget>
+#include <QImageReader>
 
 const string QWBooster::m_boosterType  = "dtkwidget";
 
@@ -45,6 +46,7 @@ void QWBooster::initialize(int initialArgc, char **initialArgv, int boosterLaunc
 bool QWBooster::preload()
 {
     // 初始化QWidget，减少程序启动后第一次显示QWidget时的时间占用
+    // 在龙芯和申威上，时间主要消耗在xcb插件中加载glx相关库（libdri600等）
     QWidget widget;
 
     widget.setWindowFlags(Qt::BypassWindowManagerHint
@@ -54,6 +56,9 @@ bool QWBooster::preload()
     widget.setFixedSize(1, 1);
     widget.createWinId();
 //    widget.show();
+
+    // 初始化图片解码插件，在龙芯和申威上，Qt程序冷加载图片解码插件几乎耗时1s
+    Q_UNUSED(QImageReader::supportedImageFormats());
 
     return true;
 }
