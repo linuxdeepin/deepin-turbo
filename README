@@ -1,5 +1,4 @@
-deepin-turbo
-==============================
+# deepin-turbo
 
 deepin-trubo is a deepin project that derives from Applauncherd.
 
@@ -9,8 +8,7 @@ we built a booster type called dtkwidget-booster in this project to support laun
 
 
 
-Building
-==============================
+# Building
 
     mkdir build; cd build
     cmake ..
@@ -18,8 +16,7 @@ Building
 
 
 
-Technical overview
-==============================
+# Technical overview
 
 Booster daemons (written using the provided library) are started as part of the user session. The booster is responsible for forking the will-be-application before knowing which application is going to be launched next. There can be different kinds of boosters optimized for different kinds of
 applications, e.g. Qt or QML.
@@ -32,8 +29,7 @@ The application to be launched via applauncherd should be compiled as a shared l
 
 
 
-Technical details
-==============================
+# Technical details
 
 Loading the binary is done with dlopen(), and therefore the application needs to be compiled and linked as a shared library or a position independent executable. The booster process also sets the environment variables. Finally, it finds the main function in the application binary with dlsym() and calls the main() with the command line arguments given by the invoker.
 
@@ -49,8 +45,7 @@ name of the application. Then the booster process waits for a connection from th
 
 
 
-Contributors
-==============================
+# Contributors
 
 People who have contributed to mapplauncherd:
 
