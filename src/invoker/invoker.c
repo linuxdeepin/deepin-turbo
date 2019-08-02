@@ -468,7 +468,7 @@ static void notify_app_lauch(const char *desktop_file)
     } else {
         info("Failed to connect to the DBus session bus: %s", error.message);
         dbus_error_free(&error);
-        return 1;
+        return;
     }
 }
 
