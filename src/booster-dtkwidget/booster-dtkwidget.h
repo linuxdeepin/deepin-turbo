@@ -36,7 +36,7 @@ public:
     virtual ~QWBooster() {}
 
     //! \reimp
-    virtual const string & boosterType() const;
+    virtual const string & boosterType() const override;
 
     //! \reimp
     void initialize(int initialArgc, char ** initialArgv, int boosterLauncherSocket,
@@ -46,7 +46,7 @@ public:
 protected:
 
     //! \reimp
-    virtual bool preload();
+    virtual bool preload() override;
 
 private:
 
