@@ -17,7 +17,7 @@ set(HEADERS appdata.h booster.h connection.h daemon.h logger.h launcherlib.h
 link_libraries(${LIBDL} "-L/lib -lsystemd")
 
 # Set executable
-add_library(deepin-turbo MODULE ${SRC} ${MOC_SRC})
+add_library(deepin-turbo SHARED ${SRC} ${MOC_SRC})
 set_target_properties(deepin-turbo PROPERTIES VERSION 0.1 SOVERSION 0)
 
 if (NOT CMAKE_INSTALL_LIBDIR)

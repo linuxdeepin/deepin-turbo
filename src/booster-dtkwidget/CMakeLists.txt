@@ -23,18 +23,15 @@ SET(CMAKE_BUILD_RPATH ${CMAKE_BINARY_DIR}/src/launcherlib)
 find_package(Qt5Widgets CONFIG REQUIRED)
 
 set(LINK_LIBS
+    deepin-turbo
     Qt5::Widgets
     )
 
 # Set sources
 set(SRC booster-dtkwidget.cpp)
 
-# Set libraries to be linked.
-link_libraries("-L../launcherlib -ldeepin-turbo")
-
 # Set executable
 add_executable(booster-dtkwidget ${SRC} ${MOC_SRC})
-add_dependencies(booster-dtkwidget deepin-turbo)
 
 target_link_libraries(booster-dtkwidget
     ${LINK_LIBS}
