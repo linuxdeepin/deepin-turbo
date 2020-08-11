@@ -34,9 +34,6 @@ const string & QWBooster::boosterType() const
 void QWBooster::initialize(int initialArgc, char **initialArgv, int boosterLauncherSocket,
                            int socketFd, SingleInstance *singleInstance, bool bootMode)
 {
-    qputenv("DXCB_FAKE_PLATFORM_NAME_XCB", "true");
-    qputenv("QT_QPA_PLATFORM", "dxcb");
-
     static int argc = initialArgc;
     Q_UNUSED(new QApplication(argc, initialArgv));
 
