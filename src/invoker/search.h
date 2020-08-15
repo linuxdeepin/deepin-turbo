@@ -20,7 +20,15 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 char *search_program(const char *progname);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

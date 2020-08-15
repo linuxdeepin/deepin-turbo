@@ -13,3 +13,5 @@ add_subdirectory(booster-dtkwidget)
 # Sub build: single-instance binary / library
 add_subdirectory(single-instance)
 
+# Sub build: desktop booster plugin
+add_subdirectory(booster-desktop)
