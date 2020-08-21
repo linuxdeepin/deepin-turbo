@@ -16,8 +16,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER} ${INVOKER}
 # Set executable
 add_executable(booster-desktop ${SRC})
 
+# Find the QtWidgets library
+find_package(Qt5Widgets CONFIG REQUIRED)
+
 target_link_libraries(booster-desktop
     ${LINK_LIBS}
+    Qt5::Widgets
 )
 
 # Add install rule

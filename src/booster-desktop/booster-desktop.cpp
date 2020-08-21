@@ -23,6 +23,10 @@
 #include "daemon.h"
 #include "search.h"
 
+#include <QApplication>
+#include <QWidget>
+#include <QImageReader>
+
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -86,8 +90,31 @@ int DesktopBooster::run(SocketManager * socketManager) {
     return Booster::run(socketManager);
 }
 
+void DesktopBooster::initialize(int initialArgc, char **initialArgv, int boosterLauncherSocket, int socketFd, SingleInstance *singleInstance, bool bootMode)
+{
+    static int argc = initialArgc;
+    Q_UNUSED(new QApplication(argc, initialArgv));
+
+    Booster::initialize(initialArgc, initialArgv, boosterLauncherSocket, socketFd, singleInstance, bootMode);
+}
+
 bool DesktopBooster::preload()
 {
+    // 初始化QWidget，减少程序启动后第一次显示QWidget时的时间占用
+    // 在龙芯和申威上，时间主要消耗在xcb插件中加载glx相关库（libdri600等）
+    QWidget widget;
+
+    widget.setWindowFlags(Qt::BypassWindowManagerHint
+                          | Qt::WindowStaysOnBottomHint
+                          | Qt::WindowTransparentForInput
+                          | Qt::WindowDoesNotAcceptFocus);
+    widget.setFixedSize(1, 1);
+    widget.createWinId();
+//    widget.show();
+
+    // 初始化图片解码插件，在龙芯和申威上，Qt程序冷加载图片解码插件几乎耗时1s
+    Q_UNUSED(QImageReader::supportedImageFormats());
+
     return true;
 }
 

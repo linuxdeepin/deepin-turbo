@@ -34,6 +34,9 @@ public:
     virtual const string & boosterType() const override;
 
     virtual int run(SocketManager * socketManager) override;
+    void initialize(int initialArgc, char ** initialArgv, int boosterLauncherSocket,
+                    int socketFd, SingleInstance * singleInstance,
+                    bool bootMode) override;
 
 protected:
     //! \reimp
