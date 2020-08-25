@@ -27,3 +27,4 @@ target_link_libraries(booster-desktop
 # Add install rule
 install(TARGETS booster-desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/deepin-turbo/)
 install(FILES deepin-turbo-booster-desktop.service DESTINATION /usr/lib/systemd/user/)
+install(FILES desktop.conf DESTINATION /usr/lib/binfmt.d)
