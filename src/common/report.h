@@ -26,6 +26,10 @@
 #define ATTR_NORET
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum report_output {
   report_console,
   report_syslog,
@@ -54,6 +58,10 @@ extern void report(enum report_type type, const char *msg, ...);
 #define error(msg, ...) report(report_error, msg, ##__VA_ARGS__)
 
 extern void ATTR_NORET die(int status, const char *msg, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

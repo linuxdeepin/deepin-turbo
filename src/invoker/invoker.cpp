@@ -38,7 +38,12 @@
 #include <limits.h>
 #include <getopt.h>
 #include <fcntl.h>
-#include <dbus/dbus.h>
+
+#include <cstring>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
 
 #include "report.h"
 #include "protocol.h"
@@ -394,9 +399,8 @@ static void usage(int status)
            "a position independent executable (-pie) through mapplauncherd.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
-           "  qt5                    Launch a Qt 5 application.\n"
-           "  qtquick2               Launch a Qt Quick 2 (QML) application.\n"
-           "  silica-qt5             Launch a Sailfish Silica application.\n"
+           "  auto                   Auto detect the application type by linked librarys.\n"
+           "  dtkwidget              Launch a dtkwidget application.\n"
            "  generic                Launch any application, even if it's not a library.\n\n"
            "The TYPE may also be a comma delimited list of boosters to try. The first available\n"
            "booster will be used.\n\n"
@@ -418,7 +422,7 @@ static void usage(int status)
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
            "  -F, --desktop-file     Desktop file of the application.\n"
            "  -h, --help             Print this help.\n\n"
-           "Example: %s --type=qt5 /usr/bin/helloworld\n\n",
+           "Example: %s --type=auto /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
@@ -446,30 +450,6 @@ static unsigned int get_delay(char *delay_arg, char *param_name,
     }
     
     return delay;
-}
-
-static void notify_app_lauch(const char *desktop_file)
-{
-    DBusConnection *connection;
-    DBusMessage *message;
-    DBusError error;
-
-    dbus_error_init (&error);
-    connection = dbus_bus_get(DBUS_BUS_SESSION, &error);
-
-    if (connection) {
-        message = dbus_message_new_method_call("org.nemomobile.lipstick", "/LauncherModel",
-                                               "org.nemomobile.lipstick.LauncherModel", "notifyLaunching");
-        dbus_message_append_args(message, DBUS_TYPE_STRING, &desktop_file, DBUS_TYPE_INVALID);
-
-        dbus_connection_send(connection, message, NULL);
-        dbus_message_unref(message);
-        dbus_connection_flush(connection);
-    } else {
-        info("Failed to connect to the DBus session bus: %s", error.message);
-        dbus_error_free(&error);
-        return;
-    }
 }
 
 static int wait_for_launched_process_to_exit(int socket_fd, bool wait_term)
@@ -579,7 +559,7 @@ static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *p
     // send the data.
     invoker_send_magic(socket_fd, magic_options);
     invoker_send_name(socket_fd, prog_name);
-    invoker_send_exec(socket_fd, prog_argv[0]);
+    invoker_send_exec(socket_fd, prog_name);
     invoker_send_args(socket_fd, prog_argc, prog_argv);
     invoker_send_prio(socket_fd, prog_prio);
     invoker_send_delay(socket_fd, respawn_delay);
@@ -593,9 +573,6 @@ static int invoke_remote(int socket_fd, int prog_argc, char **prog_argv, char *p
         free(prog_name);
     }
 
-    if (g_desktop_file) {
-        notify_app_lauch(g_desktop_file);
-    }
     int exit_status = wait_for_launched_process_to_exit(socket_fd, wait_term);
     return exit_status;
 }
@@ -673,12 +650,12 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
             if (strcmp(app_type, "generic") == 0)
             {
                 warning("Can't try fall back to generic, already using it\n");
-                invoke_fallback(prog_argv, prog_argv[0], wait_term);
+                invoke_fallback(prog_argv, prog_name, wait_term);
             }
             else
             {
                 warning("Booster %s is not available. Falling back to generic.\n", app_type);
-                invoke(prog_argc, prog_argv, prog_argv[0], "generic", magic_options, wait_term, respawn_delay, test_mode);
+                invoke(prog_argc, prog_argv, prog_name, "generic", magic_options, wait_term, respawn_delay, test_mode);
             }
         }
         // "normal" invoke through a socket connetion
@@ -735,7 +712,7 @@ int main(int argc, char *argv[])
         {"respawn",          required_argument, NULL, 'r'},
         {"splash",           required_argument, NULL, 'S'},
         {"splash-landscape", required_argument, NULL, 'L'},
-        {"desktop-file",     required_argument, NULL, 'F'},
+        {"desktop-file",     no_argument,       NULL, 'F'},
         {0, 0, 0, 0}
     };
 
@@ -799,7 +776,7 @@ int main(int argc, char *argv[])
             break;
 
         case 'F':
-            g_desktop_file = optarg;
+            g_desktop_file = argv[optind];
             break;
 
         case '?':
@@ -810,13 +787,108 @@ int main(int argc, char *argv[])
     // Option processing stops as soon as application name is encountered
     if (optind < argc)
     {
-        prog_name = search_program(argv[optind]);
         prog_argc = argc - optind;
         prog_argv = &argv[optind];
 
-        // Force argv[0] of application to be the absolute path to allow the
-        // application to find out its installation directory from there
-        prog_argv[0] = prog_name;
+        if (g_desktop_file) {
+            std::ifstream infile;
+            infile.open(g_desktop_file, std::ios::binary);
+
+            std::string line;
+            std::string exec;
+
+            while (std::getline(infile, line)) {
+                if (!std::strncmp(line.c_str(), "Exec=", 5)) {
+                    exec = std::move(line);
+                    break;
+                }
+            }
+
+            // remove Exec=
+            exec = exec.substr(5);
+
+            // the progress arguments is contains option arg(start with "-")
+            bool contains_command = false;
+            for (int i = 1; i < prog_argc; ++i) {
+                if (prog_argv[i][0] == '-') {
+                    contains_command = true;
+                    break;
+                }
+            }
+
+            std::string progress;
+
+            if (!contains_command) {
+                int psize = 10;
+                int new_pargc = 0;
+                char **new_pargv = new char*[psize];
+
+                std::istringstream iss(exec);
+                iss >> progress;
+
+                std::string tmp;
+                while (std::getline(iss, tmp, ' ')) {
+                    if (tmp.empty())
+                        continue;
+
+                    if (tmp[0] == '%' && tmp.size() == 2) {
+                        switch (tmp[1]) {
+                        case 'f': // ###(zccrs): ensure argument list is a single file
+                        case 'F':
+                        case 'u': // ###(zccrs): ensure argument list is a single url, and ensure locale file start width "file:://"
+                        case 'U':
+                            // replace placeholder
+                            for (int i = 1; i < prog_argc; ++i) {
+                                if (++new_pargc >= psize) {
+                                    // ###(zccrs): process the '%' escape character
+                                    char **tmp_prog = new char*[psize + 10];
+                                    memccpy(tmp_prog, new_pargv, sizeof(new_pargv), psize);
+                                    psize += 10;
+                                    delete new_pargv;
+                                    new_pargv = tmp_prog;
+                                }
+
+                                new_pargv[new_pargc] = prog_argv[i];
+                            }
+                            break;
+                        // ###(zccrs): %i %c %k, from freedesktop desktop entry spec.
+                        case 'i':
+                        case 'c':
+                        case 'k':
+                        default:
+                            break;
+                        }
+                    } else {
+                        if (++new_pargc >= psize) {
+                            char **tmp_prog = new char*[psize + 10];
+                            memccpy(tmp_prog, new_pargv, sizeof(new_pargv), psize);
+                            psize += 10;
+                            delete new_pargv;
+                            new_pargv = tmp_prog;
+                        }
+
+                        const char *tmp_arg = tmp.c_str();
+                        new_pargv[new_pargc] = new char[tmp.size() + 1];
+                        strcpy(new_pargv[new_pargc], tmp_arg);
+                    }
+                }
+
+                prog_argc = new_pargc + 1;
+                prog_argv = new_pargv;
+                // reset the desktop file path
+                prog_argv[0] = argv[optind];
+            } else {
+                std::istringstream iss(exec);
+                iss >> progress;
+            }
+
+            prog_name = search_program(progress.c_str());
+        } else {
+            prog_name = search_program(argv[optind]);
+            // Force argv[0] of application to be the absolute path to allow the
+            // application to find out its installation directory from there
+            prog_argv[0] = prog_name;
+        }
     }
 
     // Check if application name isn't defined
@@ -851,6 +923,40 @@ int main(int argc, char *argv[])
         // Must not free() the existing prog_name, as it's pointing to prog_argv[0]
         prog_name = (char *)malloc(strlen(prog_argv[0]) + strlen(prog_argv[1]) + 2);
         sprintf(prog_name, "%s %s", prog_argv[0], prog_argv[1]);
+    }
+
+    // Auto detect the application type
+    if (!app_type || strcmp(app_type, "auto") == 0) {
+        char cmd[1024];
+        sprintf(cmd, "ldd %s", prog_name);
+        FILE *ldd = popen(cmd, "r");
+
+        // reset
+        app_type = NULL;
+
+        if (ldd) {
+            while (!feof(ldd)) {
+                char *buffer = NULL;
+                size_t len = 0;
+                if (getline(&buffer, &len, ldd) <= 0) {
+                    break;
+                }
+
+                if (strstr(buffer, "libdtkwidget.so")) {
+                    // dtkwidget app
+                    app_type = "dtkwidget";
+                    break;
+                }
+
+                free(buffer);
+            }
+
+            pclose(ldd);
+        }
+
+        // fallback
+        if (!app_type)
+            app_type = "generic";
     }
 
     if (!app_type)

@@ -1,11 +1,7 @@
 set(COMMON "${CMAKE_HOME_DIRECTORY}/src/common")
 
-# Find dbus
-include(FindPkgConfig)
-pkg_check_modules(DBUS dbus-1 REQUIRED)
-
 # Set sources
-set(SRC invokelib.c invoker.c ${COMMON}/report.c search.c)
+set(SRC invokelib.cpp invoker.cpp ${COMMON}/report.c search.c)
 
 # Set include dirs
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${DBUS_INCLUDE_DIRS} ${COMMON})
