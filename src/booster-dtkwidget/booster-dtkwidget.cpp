@@ -20,7 +20,7 @@
 #include "booster-dtkwidget.h"
 #include "daemon.h"
 
-#include <QApplication>
+#include <DApplication>
 #include <QWidget>
 #include <QImageReader>
 
@@ -35,7 +35,7 @@ void QWBooster::initialize(int initialArgc, char **initialArgv, int boosterLaunc
                            int socketFd, SingleInstance *singleInstance, bool bootMode)
 {
     static int argc = initialArgc;
-    Q_UNUSED(new QApplication(argc, initialArgv));
+    Q_UNUSED(new DTK_WIDGET_NAMESPACE::DApplication(argc, initialArgv));
 
     Booster::initialize(initialArgc, initialArgv, boosterLauncherSocket, socketFd, singleInstance, bootMode);
 }

@@ -399,11 +399,11 @@ static void usage(int status)
            "a position independent executable (-pie) through mapplauncherd.\n\n"
            "TYPE chooses the type of booster used. Qt-booster may be used to\n"
            "launch anything. Possible values for TYPE:\n"
-           "  auto                   Auto detect the application type by linked librarys.\n"
            "  dtkwidget              Launch a dtkwidget application.\n"
            "  generic                Launch any application, even if it's not a library.\n\n"
            "The TYPE may also be a comma delimited list of boosters to try. The first available\n"
-           "booster will be used.\n\n"
+           "booster will be used. If it is a desktop file, try get the type from desktop file"
+           "'X-Deepin-TurboType' item.\n\n"
            "Options:\n"
            "  -d, --delay SECS       After invoking sleep for SECS seconds\n"
            "                         (default %d).\n"
@@ -422,7 +422,7 @@ static void usage(int status)
            "  -T, --test-mode        Invoker test mode. Also control file in root home should be in place.\n"
            "  -F, --desktop-file     Desktop file of the application.\n"
            "  -h, --help             Print this help.\n\n"
-           "Example: %s --type=auto /usr/bin/helloworld\n\n",
+           "Example: %s --type=dtkwidget /usr/bin/helloworld\n\n",
            PROG_NAME_INVOKER, EXIT_DELAY, RESPAWN_DELAY, MAX_RESPAWN_DELAY, PROG_NAME_INVOKER);
 
     exit(status);
@@ -675,6 +675,7 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
 int main(int argc, char *argv[])
 {
     const char   *app_type      = NULL;
+    std::string  turboType;
     int           prog_argc     = 0;
     uint32_t      magic_options = 0;
     bool          wait_term     = true;
@@ -798,14 +799,20 @@ int main(int argc, char *argv[])
             std::string exec;
 
             while (std::getline(infile, line)) {
-                if (!std::strncmp(line.c_str(), "Exec=", 5)) {
-                    exec = std::move(line);
-                    break;
-                }
-            }
+                if (std::strncmp(line.c_str(), "Exec=", 5) == 0) {
+                    exec = std::move(line).substr(5);
 
-            // remove Exec=
-            exec = exec.substr(5);
+                    // 如果不进行X-Deepin-TurboType字段的检测
+                    if (app_type)
+                        break;
+                } else if (!app_type && std::strncmp(line.c_str(), "X-Deepin-TurboType=", 19) == 0) {
+                    turboType = std::move(line).substr(19);
+                }
+
+                // 需要的数据都已经获取到时就返回
+                if (!exec.empty() && !turboType.empty())
+                    break;
+            }
 
             // the progress arguments is contains option arg(start with "-")
             bool contains_command = false;
@@ -925,38 +932,9 @@ int main(int argc, char *argv[])
         sprintf(prog_name, "%s %s", prog_argv[0], prog_argv[1]);
     }
 
-    // Auto detect the application type
-    if (!app_type || strcmp(app_type, "auto") == 0) {
-        char cmd[1024];
-        sprintf(cmd, "ldd %s", prog_name);
-        FILE *ldd = popen(cmd, "r");
-
-        // reset
-        app_type = NULL;
-
-        if (ldd) {
-            while (!feof(ldd)) {
-                char *buffer = NULL;
-                size_t len = 0;
-                if (getline(&buffer, &len, ldd) <= 0) {
-                    break;
-                }
-
-                if (strstr(buffer, "libdtkwidget.so")) {
-                    // dtkwidget app
-                    app_type = "dtkwidget";
-                    break;
-                }
-
-                free(buffer);
-            }
-
-            pclose(ldd);
-        }
-
-        // fallback
-        if (!app_type)
-            app_type = "generic";
+    if (!app_type && !turboType.empty()) {
+        // 使用从desktop文件获取的应用类型
+        app_type = turboType.c_str();
     }
 
     if (!app_type)
