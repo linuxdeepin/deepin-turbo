@@ -15,3 +15,6 @@ add_subdirectory(single-instance)
 
 # Sub build: desktop booster plugin
 add_subdirectory(booster-desktop)
+
+# Sub build: Deepin Tool Kit declarative booster plugin
+add_subdirectory(booster-dtkdeclarative)

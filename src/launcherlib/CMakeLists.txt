@@ -3,7 +3,10 @@ set(COMMON ${CMAKE_HOME_DIRECTORY}/src/common)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON})
 
 # Hide all symbols except the ones explicitly exported in the code (like main())
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+# 在x86架构下通过 readelf -l 查看 elf 文件时可以看到 GNU_STACK 的标记，且 Flags 为非可执行 RW。
+# 在MIPS架构下使用 readelf -l 是无法查看到 GUN_STACK 的标志的，需要显示的使用 -z noexecstack
+# 或者 -z execstack 来增加该标志，当增加 -z execstack 显示的 Flags 为 RWE,当增加 -z noexecstack 后显示 Flags 为 RW。
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -z noexecstack")
 
 # Set sources
 set(SRC appdata.cpp booster.cpp connection.cpp daemon.cpp logger.cpp
