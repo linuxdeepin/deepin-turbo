@@ -889,7 +889,17 @@ int main(int argc, char *argv[])
                 iss >> progress;
             }
 
-            prog_name = search_program(progress.c_str());
+            const char *dtkqml_booster = "dtkqml";
+            bool is_dtkqml = (0 == std::strncmp(progress.c_str(), dtkqml_booster, std::strlen(dtkqml_booster)));
+            if (is_dtkqml) {
+                prog_name = strdup(progress.c_str());
+                if (!prog_name)
+                {
+                    die(1, "allocating prog_name buffer");
+                }
+            } else {
+                prog_name = search_program(progress.c_str());
+            }
         } else {
             prog_name = search_program(argv[optind]);
             // Force argv[0] of application to be the absolute path to allow the

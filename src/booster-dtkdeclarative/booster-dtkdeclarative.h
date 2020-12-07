@@ -59,6 +59,9 @@ public:
 protected:
 
     //! \reimp
+        int launchProcess() override;
+
+    //! \reimp
     virtual bool preload() override;
 
 private:

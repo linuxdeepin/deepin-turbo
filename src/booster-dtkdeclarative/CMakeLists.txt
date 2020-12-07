@@ -10,14 +10,18 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${COMMON} ${LAUNCHER})
-
-# Find the QtWidgets library
 find_package(Qt5Quick CONFIG REQUIRED)
+find_package(DtkDeclarative CONFIG REQUIRED)
+
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${COMMON} ${LAUNCHER}
+    )
 
 set(LINK_LIBS
     deepin-turbo
     Qt5::Quick
+    ${DtkDeclarative_LIBRARIES}
     )
 
 # Set sources

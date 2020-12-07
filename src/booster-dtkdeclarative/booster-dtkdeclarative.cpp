@@ -19,10 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "booster-dtkdeclarative.h"
-#include "daemon.h"
+#include <QString>
+#include <syslog.h>
 
-const string DeclarativeBooster::m_boosterType  = "dtkdeclarative";
+#include "daemon.h"
+#include "booster-dtkdeclarative.h"
+
+#include <DAppLoader>
+
+DQUICK_USE_NAMESPACE
+
+const string DeclarativeBooster::m_boosterType  = "dtkqml";
 
 const string & DeclarativeBooster::boosterType() const
 {
@@ -37,6 +44,25 @@ void DeclarativeBooster::initialize(int initialArgc, char **initialArgv, int boo
     m_engine.reset(new QQmlApplicationEngine());
 
     Booster::initialize(initialArgc, initialArgv, boosterLauncherSocket, socketFd, singleInstance, bootMode);
+}
+
+int DeclarativeBooster::launchProcess()
+{
+    setEnvironmentBeforeLaunch();
+
+    // make booster specific initializations unless booster is in boot mode
+    if (!bootMode())
+        preinit();
+
+    // Close syslog
+    closelog();
+
+    string appName = m_appData->fileName();
+
+    appName = appName.substr(appName.find_last_of("/") + 1);
+    DAppLoader appLoader(QString::fromStdString(appName));
+
+    return appLoader.exec(m_app.data(), m_engine.data());
 }
 
 bool DeclarativeBooster::preload()
