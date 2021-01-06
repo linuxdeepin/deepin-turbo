@@ -21,6 +21,8 @@
 #include "daemon.h"
 
 #include <DApplication>
+#include <DWindowManagerHelper>
+
 #include <QWidget>
 #include <QImageReader>
 
@@ -53,6 +55,10 @@ bool QWBooster::preload()
     widget.setFixedSize(1, 1);
     widget.createWinId();
 //    widget.show();
+
+    // 当创建窗口时会初始化窗口的class name, 但是此时还未加载实际的程序, 缓存的class name
+    // 无用, 因此要清理缓存的数据, 避免加载程序后的正常窗口的wm class name错误
+    DTK_GUI_NAMESPACE::DWindowManagerHelper::setWmClassName(QByteArray());
 
     // 初始化图片解码插件，在龙芯和申威上，Qt程序冷加载图片解码插件几乎耗时1s
     Q_UNUSED(QImageReader::supportedImageFormats());
