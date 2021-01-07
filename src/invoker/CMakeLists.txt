@@ -17,4 +17,10 @@ target_link_libraries(deepin-turbo-invoker ${DBUS_LDFLAGS})
 # Add install rule
 install(TARGETS deepin-turbo-invoker DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 
-
+set(PROG_FILE ${CMAKE_INSTALL_PREFIX}/bin/deepin-turbo-invoker)
+configure_file(binfmt.conf.in binfmt.conf)
+install_files(
+    "/lib/binfmt.d"
+    FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/binfmt.conf
+)

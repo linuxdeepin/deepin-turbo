@@ -689,12 +689,11 @@ int main(int argc, char *argv[])
     // wait-term parameter by default
     magic_options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
 
-    // Called with a different name (old way of using invoker) ?
-    if (!strstr(argv[0], PROG_NAME_INVOKER) )
+    // 用于支持binfmt调用直接启动desktop文件, 看文件是否是 .desktop 结尾
+    const char *desktop_suffix = ".desktop";
+    if (argc == 2 && strcmp(argv[1] + strlen(argv[1]) - strlen(desktop_suffix), desktop_suffix) == 0)
     {
-        die(1,
-            "Incorrect use of invoker, don't use symlinks. "
-            "Run invoker explicitly from e.g. a D-Bus service file instead.\n");
+        g_desktop_file = argv[1];
     }
 
     // Options recognized

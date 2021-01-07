@@ -18,5 +18,3 @@ add_subdirectory(single-instance)
 
 # Sub build: Deepin Tool Kit declarative booster plugin
 add_subdirectory(booster-dtkdeclarative)
-
-install(FILES binfmt/desktop.conf DESTINATION /usr/lib/binfmt.d)
