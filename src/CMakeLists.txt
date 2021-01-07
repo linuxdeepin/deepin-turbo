@@ -14,7 +14,9 @@ add_subdirectory(booster-dtkwidget)
 add_subdirectory(single-instance)
 
 # Sub build: desktop booster plugin
-add_subdirectory(booster-desktop)
+#add_subdirectory(booster-desktop)
 
 # Sub build: Deepin Tool Kit declarative booster plugin
 add_subdirectory(booster-dtkdeclarative)
+
+install(FILES binfmt/desktop.conf DESTINATION /usr/lib/binfmt.d)
