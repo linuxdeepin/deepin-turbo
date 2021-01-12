@@ -27,6 +27,7 @@
 using std::map;
 using std::string;
 
+BEGIN_NAMESPACE
 /*!
  * \class SocketManager
  *
@@ -82,5 +83,6 @@ private:
     string m_socketRootPath;
 
 };
+END_NAMESPACE
 
 #endif // SOCKETMANAGER_H

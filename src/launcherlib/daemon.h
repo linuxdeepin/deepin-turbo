@@ -42,6 +42,7 @@ using std::map;
 #include <signal.h>
 #include <sys/socket.h>
 
+BEGIN_NAMESPACE
 class Booster;
 class SocketManager;
 class SingleInstance;
@@ -216,5 +217,6 @@ private:
     friend class Ut_Daemon;
 #endif
 };
+END_NAMESPACE
 
 #endif // DAEMON_H

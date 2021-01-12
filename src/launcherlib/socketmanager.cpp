@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <sstream>
 
+BEGIN_NAMESPACE
 SocketManager::SocketManager()
 {
     const char *runtimeDir = getenv("XDG_RUNTIME_DIR");
@@ -167,4 +168,4 @@ string SocketManager::socketRootPath() const
 {
     return m_socketRootPath;
 }
-
+END_NAMESPACE

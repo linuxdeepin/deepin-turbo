@@ -34,6 +34,7 @@ using std::vector;
 
 typedef int (*entry_t)(int, char **);
 
+BEGIN_NAMESPACE
 //! Structure for application data read from the invoker
 class DECL_EXPORT AppData
 {
@@ -137,5 +138,6 @@ private:
     gid_t       m_gid;
     uid_t       m_uid;
 };
+END_NAMESPACE
 
 #endif // APPDATA_H

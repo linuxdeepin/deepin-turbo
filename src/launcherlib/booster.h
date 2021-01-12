@@ -29,6 +29,7 @@ using std::string;
 
 #include "appdata.h"
 
+BEGIN_NAMESPACE
 class Connection;
 class SocketManager;
 class SingleInstance;
@@ -217,5 +218,6 @@ private:
     friend class Ut_Booster;
 #endif
 };
+END_NAMESPACE
 
 #endif // BOOSTER_H

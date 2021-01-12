@@ -33,6 +33,7 @@
 
 DQUICK_USE_NAMESPACE
 
+BEGIN_NAMESPACE
 const string DeclarativeBooster::m_boosterType  = "dtkqml";
 
 const string & DeclarativeBooster::boosterType() const
@@ -89,11 +90,14 @@ bool DeclarativeBooster::preload()
 
     return true;
 }
+END_NAMESPACE
 
 int main(int argc, char **argv)
 {
-    DeclarativeBooster *booster = new DeclarativeBooster;
+    // 要保证DeclarativeBooster的析构函数能被
+    // 正常执行
+    DeepinTurbo::DeclarativeBooster booster;
 
-    Daemon d(argc, argv);
-    d.run(booster);
+    DeepinTurbo::Daemon d(argc, argv);
+    d.run(&booster);
 }

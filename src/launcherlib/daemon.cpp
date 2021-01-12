@@ -44,6 +44,7 @@
 
 #include "coverage.h"
 
+BEGIN_NAMESPACE
 // Environment
 extern char ** environ;
 
@@ -728,4 +729,4 @@ Daemon::~Daemon()
 
     Logger::closeLog();
 }
-
+END_NAMESPACE

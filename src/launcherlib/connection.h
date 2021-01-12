@@ -31,6 +31,7 @@ using std::string;
 
 #define IO_DESCRIPTOR_COUNT 3
 
+BEGIN_NAMESPACE
 /*!
  * \class Connection.
  * \brief Wrapper class for the connection between invoker and launcher.
@@ -165,5 +166,6 @@ private:
     friend class Ut_Connection;
 #endif
 };
+END_NAMESPACE
 
 #endif //CONNECTION_H

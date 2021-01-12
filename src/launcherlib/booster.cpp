@@ -49,6 +49,7 @@
 
 #include "coverage.h"
 
+BEGIN_NAMESPACE
 Booster::Booster() :
     m_appData(new AppData),
     m_connection(NULL),
@@ -692,3 +693,4 @@ void Booster::resetOomAdj()
         Logger::logError("Couldn't open '%s' for writing", PROC_OOM_ADJ_FILE);
     }
 }
+END_NAMESPACE

@@ -22,6 +22,7 @@
 
 #include "booster.h"
 
+BEGIN_NAMESPACE
 /*!
     \class QWBooster
     \brief QWBooster is a "booster" that only exec()'s the given binary.
@@ -65,5 +66,6 @@ private:
     friend class Ut_QWBooster;
 #endif
 };
+END_NAMESPACE
 
 #endif // QWBooster_H

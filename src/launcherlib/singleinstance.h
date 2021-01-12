@@ -34,6 +34,7 @@ typedef void (*unlock_func_t)();
 // Function pointer type for activateExistingInstance(const char * binaryName)
 typedef bool (*activate_func_t)(const char *);
 
+BEGIN_NAMESPACE
 //! Single instance plugin entry
 struct SingleInstancePluginEntry
 {
@@ -71,5 +72,6 @@ private:
     //! The plugin entry
     shared_ptr<SingleInstancePluginEntry> m_pluginEntry;
 };
+END_NAMESPACE
 
 #endif // SINGLEINSTANCE_H

@@ -23,6 +23,7 @@
 #include "launcherlib.h"
 #include <cstdarg>
 
+BEGIN_NAMESPACE
 /*!
  * \class Logger
  * \brief Logging utility class
@@ -99,6 +100,7 @@ private:
     friend class Ut_Logger;
 #endif
 };
+END_NAMESPACE
 
 #endif // LOGGER_H
 

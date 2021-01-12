@@ -20,6 +20,7 @@
 #include "singleinstance.h"
 #include <dlfcn.h>
 
+BEGIN_NAMESPACE
 bool SingleInstance::validateAndRegisterPlugin(void * handle)
 {
     // Check if lock() is there
@@ -77,3 +78,4 @@ void SingleInstance::closePlugin()
         m_pluginEntry.reset();
     }
 }
+END_NAMESPACE

@@ -29,6 +29,7 @@
 
 #include "booster.h"
 
+BEGIN_NAMESPACE
 /*!
     \class DeclarativeBooster
     \brief DeclarativeBooster is a "booster" that only exec()'s the given binary.
@@ -73,5 +74,6 @@ private:
     //! wait for socket connection
     void accept();
 };
+END_NAMESPACE
 
 #endif // BOOSTER_DECLARATIVE_H

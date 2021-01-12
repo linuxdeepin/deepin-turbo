@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+BEGIN_NAMESPACE
 AppData::AppData() :
     m_options(0),
     m_argc(0),
@@ -165,3 +166,4 @@ gid_t AppData::groupId() const
 AppData::~AppData()
 {
 }
+END_NAMESPACE

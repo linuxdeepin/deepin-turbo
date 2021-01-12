@@ -26,6 +26,7 @@
 
 #include "coverage.h"
 
+BEGIN_NAMESPACE
 bool Logger::m_isOpened  = false;
 bool Logger::m_debugMode = false;
 
@@ -110,4 +111,4 @@ void Logger::setDebugMode(bool enable)
 {
     Logger::m_debugMode = enable;
 }
-
+END_NAMESPACE

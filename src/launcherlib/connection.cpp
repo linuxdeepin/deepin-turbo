@@ -30,6 +30,7 @@
 #include <stdexcept>
 #include <sys/syslog.h>
 
+BEGIN_NAMESPACE
 Connection::Connection(int socketFd, bool testMode) :
         m_testMode(testMode),
         m_fd(-1),
@@ -545,3 +546,4 @@ pid_t Connection::peerPid()
     return cr.pid;
 
 }
+END_NAMESPACE

@@ -26,6 +26,7 @@
 #include <QWidget>
 #include <QImageReader>
 
+BEGIN_NAMESPACE
 const string QWBooster::m_boosterType  = "dtkwidget";
 
 const string & QWBooster::boosterType() const
@@ -67,12 +68,12 @@ bool QWBooster::preload()
 
     return true;
 }
+END_NAMESPACE
 
 int main(int argc, char **argv)
 {
-    QWBooster *booster = new QWBooster;
+    DeepinTurbo::QWBooster booster;
 
-    Daemon d(argc, argv);
-    d.run(booster);
+    DeepinTurbo::Daemon d(argc, argv);
+    d.run(&booster);
 }
-
