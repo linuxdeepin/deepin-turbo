@@ -44,6 +44,8 @@ void DeclarativeBooster::initialize(int initialArgc, char **initialArgv, int boo
                            int socketFd, SingleInstance *singleInstance, bool bootMode)
 {
     static int argc = initialArgc;
+    // 默认开启高分辨率图标支持
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     m_app.reset(new QGuiApplication(argc, initialArgv));
     m_engine.reset(new QQmlApplicationEngine());
 

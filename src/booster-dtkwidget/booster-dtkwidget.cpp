@@ -37,6 +37,8 @@ void QWBooster::initialize(int initialArgc, char **initialArgv, int boosterLaunc
                            int socketFd, SingleInstance *singleInstance, bool bootMode)
 {
     static int argc = initialArgc;
+    // 默认开启高分辨率图标支持
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     Q_UNUSED(new DTK_WIDGET_NAMESPACE::DApplication(argc, initialArgv));
 
     Booster::initialize(initialArgc, initialArgv, boosterLauncherSocket, socketFd, singleInstance, bootMode);
