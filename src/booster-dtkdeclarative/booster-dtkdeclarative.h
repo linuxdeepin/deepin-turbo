@@ -66,10 +66,7 @@ protected:
     virtual bool preload() override;
 
 private:
-
     static const string m_boosterType;
-    QScopedPointer<QGuiApplication> m_app;
-    QScopedPointer<QQmlApplicationEngine> m_engine;
 
     //! wait for socket connection
     void accept();

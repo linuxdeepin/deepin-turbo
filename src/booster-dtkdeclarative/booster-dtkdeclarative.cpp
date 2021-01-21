@@ -44,12 +44,8 @@ const string & DeclarativeBooster::boosterType() const
 void DeclarativeBooster::initialize(int initialArgc, char **initialArgv, int boosterLauncherSocket,
                            int socketFd, SingleInstance *singleInstance, bool bootMode)
 {
-    static int argc = initialArgc;
-    // 默认开启高分辨率图标支持
-    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    m_app.reset(new QGuiApplication(argc, initialArgv));
-    m_engine.reset(new QQmlApplicationEngine());
-
+    auto app = new QGuiApplication(initialArgc, initialArgv);
+    Q_UNUSED(app) // delete in DeclarativeBooster::preload
     Booster::initialize(initialArgc, initialArgv, boosterLauncherSocket, socketFd, singleInstance, bootMode);
 }
 
@@ -69,21 +65,32 @@ int DeclarativeBooster::launchProcess()
     appName = appName.substr(appName.find_last_of("/") + 1);
     DAppLoader appLoader(QString::fromStdString(appName));
 
-    return appLoader.exec(m_app.data(), m_engine.data());
+    // 默认开启高分辨率图标支持
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    int argc = m_appData->argc();
+    char **argv = const_cast<char**>(m_appData->argv());
+    QScopedPointer<QGuiApplication> app(appLoader.createApplication(argc, argv));
+    QQmlApplicationEngine engine;
+
+    return appLoader.exec(app.data(), &engine);
 }
 
 bool DeclarativeBooster::preload()
 {
+    // 销毁在initialize中创建的QGuiApplication对象
+    // 这个对象仅是为了preload中创建窗口使用，preload之后应当销毁它
+    QScopedPointer<QGuiApplication> appClearer(qGuiApp);
+    Q_UNUSED(appClearer)
     // 初始化一些必要的数据, 为后面加载的正常程序组好缓存
     QQuickView window;
     QQmlComponent component(window.engine());
-    component.setData("import QtQuick.Controls 2.4\nButton { }", QUrl());
-    component.create(window.rootContext());
-    window.create();
+    component.setData("import QtQuick.Controls 2.4\nApplicationWindow { }", QUrl());
 
-    // 当创建窗口时会初始化窗口的class name, 但是此时还未加载实际的程序, 缓存的class name
-    // 无用, 因此要清理缓存的数据, 避免加载程序后的正常窗口的wm class name错误
-    DTK_GUI_NAMESPACE::DWindowManagerHelper::setWmClassName(QByteArray());
+    if (!component.create(window.rootContext())) {
+        qWarning() << component.errorString();
+    }
+
+    window.create();
 
     // 初始化图片解码插件，在龙芯和申威上，Qt程序冷加载图片解码插件几乎耗时1s
     Q_UNUSED(QImageReader::supportedImageFormats());
