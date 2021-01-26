@@ -101,10 +101,9 @@ END_NAMESPACE
 
 int main(int argc, char **argv)
 {
-    // 要保证DeclarativeBooster的析构函数能被
-    // 正常执行
-    DeepinTurbo::DeclarativeBooster booster;
+    // NOTE(lxz): booster will delete in daemon fork function
+    DeepinTurbo::DeclarativeBooster* booster = new DeepinTurbo::DeclarativeBooster;
 
     DeepinTurbo::Daemon d(argc, argv);
-    d.run(&booster);
+    d.run(booster);
 }

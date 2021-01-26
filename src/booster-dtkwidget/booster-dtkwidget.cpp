@@ -72,8 +72,9 @@ END_NAMESPACE
 
 int main(int argc, char **argv)
 {
-    DeepinTurbo::QWBooster booster;
+    // NOTE(lxz): booster will delete in daemon fork function
+    DeepinTurbo::QWBooster* booster = new DeepinTurbo::QWBooster;
 
     DeepinTurbo::Daemon d(argc, argv);
-    d.run(&booster);
+    d.run(booster);
 }
