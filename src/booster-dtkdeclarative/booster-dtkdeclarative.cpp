@@ -77,19 +77,16 @@ int DeclarativeBooster::launchProcess()
 
 bool DeclarativeBooster::preload()
 {
+    // 此处销毁了 QGuiApplication 对象会存在一个问题：
+    // 目前的做法是通过 DAppLoader 类型去解析插件类型，之后再通过 createApplication() 创建 QGuiApplication 对象；
+    // 如果 qml 应用在插件的构造函数中(也就是在使用createApplication之前)去连接(connect)信号和槽，就去出现问题。
+
     // 销毁在initialize中创建的QGuiApplication对象
     // 这个对象仅是为了preload中创建窗口使用，preload之后应当销毁它
     QScopedPointer<QGuiApplication> appClearer(qGuiApp);
     Q_UNUSED(appClearer)
-    // 初始化一些必要的数据, 为后面加载的正常程序组好缓存
+
     QQuickView window;
-    QQmlComponent component(window.engine());
-    component.setData("import QtQuick.Controls 2.4\nApplicationWindow { }", QUrl());
-
-    if (!component.create(window.rootContext())) {
-        qWarning() << component.errorString();
-    }
-
     window.create();
 
     // 初始化图片解码插件，在龙芯和申威上，Qt程序冷加载图片解码插件几乎耗时1s
