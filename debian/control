@@ -1,7 +1,7 @@
 Source: deepin-turbo
 Section: devel
 Priority: extra
-Maintainer: Deepin Packages Builder <packages@deepin.com> 
+Maintainer: Deepin Packages Builder <packages@deepin.com>
 Build-Depends: debhelper (>= 9.0.0),
                cmake,
                pkg-config,
@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 9.0.0),
                dbus,
                libsystemd-dev,
                qtbase5-dev,
-               libdtkwidget-dev,
+               libdtkwidget5.5-dev,
                qtdeclarative5-dev,
                libdtkdeclarative-dev,
                dh-systemd
