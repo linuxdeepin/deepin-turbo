@@ -1,43 +1,63 @@
 Source: deepin-turbo
 Section: devel
 Priority: extra
-Maintainer: Deepin Packages Builder <packages@deepin.com> 
-Build-Depends: debhelper (>= 9.0.0),
-               cmake,
-               pkg-config,
-               python,
-               libdbus-1-dev,
-               dbus,
-               libsystemd-dev,
-               qtbase5-dev,
-               libdtkwidget-dev
+Maintainer: Deepin Packages Builder <packages@deepin.com>
+Build-Depends:
+ cmake,
+ dbus,
+ debhelper (>= 9.0.0),
+ libdbus-1-dev,
+ libdtkwidget5.5-dev,
+ libsystemd-dev,
+ pkg-config,
+ python,
+ qtbase5-dev,
 Standards-Version: 3.9.5
 
 Package: deepin-turbo
-Section: libs
 Architecture: any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Description:  Application launcher for fast startup
+#Multi-Arch: same
+Pre-Depends:
+ ${misc:Pre-Depends},
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: Application launcher for fast startup
  Application invoker and launcher daemon that speed up
  application startup time and share memory. Provides also
  functionality to launch applications as single instances.
+ .
+ This package contains the shared libraries.
 
 Package: deepin-turbo-dev
-Section: libdevel
 Architecture: any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}, deepin-turbo
+#Multi-Arch: same
+Pre-Depends:
+ ${misc:Pre-Depends},
+Depends:
+ deepin-turbo(=${binary:Version}),
+ ${misc:Depends},
+ ${shlibs:Depends},
 Description: Development files for launchable applications
-  evelopment files for creating applications that can be launched
-  using deepin-turbo.
+ evelopment files for creating applications that can be launched
+ using deepin-turbo.
+ .
+ This package contains the header files and static libraries of deepin-turbo
 
 Package: deepin-turbo-booster
 Section: devel
 Architecture: any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}, deepin-turbo
-Description:  DTK application booster binary for deepin-turbo
+#Multi-Arch: same
+Pre-Depends:
+ ${misc:Pre-Depends},
+Depends:
+ deepin-turbo,
+ ${misc:Depends},
+ ${shlibs:Depends},
+Description: DTK application booster binary for deepin-turbo
+ Application invoker and launcher daemon that speed up
+ application startup time and share memory. Provides also
+ functionality to launch applications as single instances.
+ .
+ This package contains the shared libraries.
+ 

@@ -9,6 +9,12 @@ cmake_policy(VERSION 2.6)
 
 # Default C++-flags. Sub-builds might alter these.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -g -O3 -Wl,--as-needed")
+
+if (${CMAKE_SYSTEM_PROCESSOR} MATCHES "mips64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ftree-vectorize -march=loongson3a -mhard-float -mno-micromips -mno-mips16 -flax-vector-conversions -mloongson-ext2 -mloongson-mmi -Wl,--as-needed")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-z,noexecstack")
+endif ()
+
 # Default C-flags. Sub-builds might alter these.
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -Wextra -g -O3")
 

@@ -21,12 +21,12 @@ SET(CMAKE_BUILD_RPATH ${CMAKE_BINARY_DIR}/src/launcherlib)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets CONFIG REQUIRED)
-find_package(DtkWidget CONFIG REQUIRED)
+find_package(DtkWidget5.5 CONFIG REQUIRED)
 
 set(LINK_LIBS
     deepin-turbo
     Qt5::Widgets
-    ${DtkWidget_LIBRARIES}
+    ${DtkWidget5.5_LIBRARIES}
     )
 
 # Set sources
