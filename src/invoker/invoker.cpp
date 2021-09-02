@@ -672,6 +672,15 @@ static int invoke(int prog_argc, char **prog_argv, char *prog_name,
     return status;
 }
 
+// 扩容二维数组，长度+10，复制数据到新数组
+#define D_GROW_ARRAY2(u_size, pptr)  do {\
+    char **tmp_arr = new char*[u_size + 10];\
+    memcpy(tmp_arr, pptr, sizeof(pptr[0]) * u_size);\
+    u_size += 10;\
+    delete []pptr;\
+    pptr = tmp_arr;\
+}while(false)
+
 int main(int argc, char *argv[])
 {
     const char   *app_type      = NULL;
@@ -825,8 +834,8 @@ int main(int argc, char *argv[])
             std::string progress;
 
             if (!contains_command) {
-                int psize = 10;
-                int new_pargc = 0;
+                uint psize = 10;
+                uint new_pargc = 0;
                 char **new_pargv = new char*[psize];
 
                 std::istringstream iss(exec);
@@ -837,6 +846,7 @@ int main(int argc, char *argv[])
                     if (tmp.empty())
                         continue;
 
+                    // ###(zccrs): process the '%' escape character
                     if (tmp[0] == '%' && tmp.size() == 2) {
                         switch (tmp[1]) {
                         case 'f': // ###(zccrs): ensure argument list is a single file
@@ -845,14 +855,8 @@ int main(int argc, char *argv[])
                         case 'U':
                             // replace placeholder
                             for (int i = 1; i < prog_argc; ++i) {
-                                if (++new_pargc >= psize) {
-                                    // ###(zccrs): process the '%' escape character
-                                    char **tmp_prog = new char*[psize + 10];
-                                    memccpy(tmp_prog, new_pargv, sizeof(new_pargv), psize);
-                                    psize += 10;
-                                    delete new_pargv;
-                                    new_pargv = tmp_prog;
-                                }
+                                if (++new_pargc >= psize)
+                                    D_GROW_ARRAY2(psize, new_pargv);
 
                                 new_pargv[new_pargc] = prog_argv[i];
                             }
@@ -865,13 +869,8 @@ int main(int argc, char *argv[])
                             break;
                         }
                     } else {
-                        if (++new_pargc >= psize) {
-                            char **tmp_prog = new char*[psize + 10];
-                            memccpy(tmp_prog, new_pargv, sizeof(new_pargv), psize);
-                            psize += 10;
-                            delete new_pargv;
-                            new_pargv = tmp_prog;
-                        }
+                        if (++new_pargc >= psize)
+                            D_GROW_ARRAY2(psize, new_pargv);
 
                         const char *tmp_arg = tmp.c_str();
                         new_pargv[new_pargc] = new char[tmp.size() + 1];
