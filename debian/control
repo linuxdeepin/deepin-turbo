@@ -7,7 +7,7 @@ Build-Depends:
  dbus,
  debhelper (>= 9.0.0),
  libdbus-1-dev,
- libdtkwidget5.5-dev,
+ libdtkwidget-dev,
  libsystemd-dev,
  pkg-config,
  python,
