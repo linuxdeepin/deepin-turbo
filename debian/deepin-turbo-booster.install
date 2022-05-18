@@ -1,3 +1,2 @@
 usr/lib/binfmt.d/*.conf
 usr/lib/deepin-turbo/*
-usr/lib/systemd/user/*.service

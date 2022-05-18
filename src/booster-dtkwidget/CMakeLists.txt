@@ -41,4 +41,4 @@ target_link_libraries(booster-dtkwidget
 
 # Add install rule
 install(TARGETS booster-dtkwidget DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/deepin-turbo/)
-install(FILES deepin-turbo-booster-dtkwidget.service DESTINATION /usr/lib/systemd/user/)
+#install(FILES deepin-turbo-booster-dtkwidget.service DESTINATION /usr/lib/systemd/user/)
