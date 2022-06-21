@@ -11,7 +11,7 @@ makedepends=('cmake' 'git')
 groups=('deepin')
 provides=('deepin-turbo')
 conflicts=('deepin-turbo')
-source=("$pkgname-$pkgver::source.tar.gz")
+source=('source.tar.gz')
 sha512sums=('SKIP')
 pkgver() {
     cd $pkgbase
@@ -19,16 +19,16 @@ pkgver() {
 }
 
 prepare() {
-    cd $pkgname-$pkgver
+    cd $deepin_source_name
 }
 
 build() {
-  cd $pkgname-$pkgver
+  cd $deepin_source_name
   cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_BUILD_TYPE=Release .
   make
 }
 
 package() {
-  cd $pkgname-$pkgver
+  cd $deepin_source_name
   make DESTDIR="$pkgdir" install
 }
