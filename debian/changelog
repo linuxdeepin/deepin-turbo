@@ -1,5 +1,5 @@
-deepin-turbo (1.0-1) unstable; urgency=medium
+deepin-turbo (0.0.6.2) unstable; urgency=medium
 
-  * Initial release. 
+  * update
 
- -- Packages <zs@deepin.com>  Thu, 30 Aug 2018 15:36:22 +0800
+ -- Deepin Packages Builder <packages@deepin.com>  Wed, 20 Oct 2021 14:53:37 +0800
