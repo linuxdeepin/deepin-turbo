@@ -15,9 +15,9 @@ add_executable(deepin-turbo-invoker ${SRC})
 target_link_libraries(deepin-turbo-invoker ${DBUS_LDFLAGS})
 
 # Add install rule
-install(TARGETS deepin-turbo-invoker DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+install(TARGETS deepin-turbo-invoker DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-set(PROG_FILE ${CMAKE_INSTALL_PREFIX}/bin/deepin-turbo-invoker)
+set(PROG_FILE ${CMAKE_INSTALL_BINDIR}/deepin-turbo-invoker)
 configure_file(binfmt.conf.in binfmt.conf)
 install_files(
     "/lib/binfmt.d"

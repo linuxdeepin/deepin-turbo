@@ -7,6 +7,11 @@ cmake_policy(VERSION 2.6)
 # NOTE: For verbose build use VERBOSE=1
 #
 
+include(GNUInstallDirs)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX /usr)
+endif ()
+
 # Default C++-flags. Sub-builds might alter these.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -g -O3 -Wl,--as-needed")
 # Default C-flags. Sub-builds might alter these.
@@ -27,7 +32,7 @@ add_definitions(-DPROG_NAME_INVOKER="deepin-turbo-invoker")
 add_definitions(-DPROG_NAME_SINGLE_INSTANCE="deepin-turbo-single-instance")
 
 # applauncherd will try to load single-instance using this path
-add_definitions(-DSINGLE_INSTANCE_PATH="${CMAKE_INSTALL_PREFIX}/bin/deepin-turbo-single-instance")
+add_definitions(-DSINGLE_INSTANCE_PATH="${CMAKE_INSTALL_BINDIR}/deepin-turbo-single-instance")
 
 # Disable debug logging, only error and warning messages get logged
 # Currently effective only for invoker. Launcher part recognizes --debug
@@ -53,6 +58,6 @@ add_subdirectory(src)
 #endif (EXISTS ${Doxygen})
 
 # Install html documentation
-install(DIRECTORY doc/implementation-documentation DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/deepin-turbo OPTIONAL)
-install(DIRECTORY doc/user-documentation DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/deepin-turbo OPTIONAL)
-install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/deepin-turbo OPTIONAL)
+install(DIRECTORY doc/implementation-documentation DESTINATION ${CMAKE_INSTALL_DOCDIR}/deepin-turbo OPTIONAL)
+install(DIRECTORY doc/user-documentation DESTINATION ${CMAKE_INSTALL_DOCDIR}/deepin-turbo OPTIONAL)
+install(DIRECTORY doc/mdeclarativecache-documentation DESTINATION ${CMAKE_INSTALL_DOCDIR}/deepin-turbo OPTIONAL)

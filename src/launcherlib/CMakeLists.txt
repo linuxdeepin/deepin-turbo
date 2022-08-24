@@ -23,11 +23,7 @@ link_libraries(${LIBDL} "-L/lib -lsystemd")
 add_library(deepin-turbo SHARED ${SRC} ${MOC_SRC})
 set_target_properties(deepin-turbo PROPERTIES VERSION 0.1 SOVERSION 0)
 
-if (NOT CMAKE_INSTALL_LIBDIR)
-    set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/lib)
-endif()
-
 # Add install rule
 install(TARGETS deepin-turbo DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/deepin-turbo
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/deepin-turbo
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)

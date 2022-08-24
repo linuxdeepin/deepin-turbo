@@ -35,5 +35,5 @@ target_link_libraries(booster-dtkdeclarative
     )
 
 # Add install rule
-install(TARGETS booster-dtkdeclarative DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/deepin-turbo/)
-install(FILES deepin-turbo-booster-dtkdeclarative.service DESTINATION /usr/lib/systemd/user/)
+install(TARGETS booster-dtkdeclarative DESTINATION lib/deepin-turbo/)
+install(FILES deepin-turbo-booster-dtkdeclarative.service DESTINATION lib/systemd/user/)

@@ -17,5 +17,5 @@ add_executable(booster-generic ${SRC} ${MOC_SRC})
 add_dependencies(booster-generic applauncherd)
 
 # Add install rule
-install(TARGETS booster-generic DESTINATION /usr/libexec/mapplauncherd/)
-install(FILES booster-generic.service DESTINATION /usr/lib/systemd/user/)
+install(TARGETS booster-generic DESTINATION ${CMAKE_INSTALL_LIBEXECDIR}/mapplauncherd/)
+install(FILES booster-generic.service DESTINATION lib/systemd/user/)
