@@ -11,8 +11,7 @@ Build-Depends: debhelper (>= 9.0.0),
                qtbase5-dev,
                libdtkwidget-dev,
                qtdeclarative5-dev,
-               libdtkdeclarative-dev,
-               dh-systemd
+               libdtkdeclarative-dev
 Standards-Version: 3.9.5
 
 Package: deepin-turbo
