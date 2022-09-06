@@ -1,22 +1,20 @@
 # deepin-turbo
 
-deepin-trubo is a deepin project that derives from Applauncherd.
+deepin-turbo is a deepin project that derives from Applauncherd.
 
 Applauncherd is a daemon that helps to launch applications faster by preloading dynamically linked libraries and caching stuff. It also saves memory, because all launched applications share certain resources.
 
 we built a booster type called dtkwidget-booster in this project to support launching dtk-based Apps faster.
 
-
-
-# Building
-
-    mkdir build; cd build
+## Build from source code
+```bash
+    mkdir build
+    cd build
     cmake ..
     make -j`nproc`
+```
 
-
-
-# Technical overview
+## Technical overview
 
 Booster daemons (written using the provided library) are started as part of the user session. The booster is responsible for forking the will-be-application before knowing which application is going to be launched next. There can be different kinds of boosters optimized for different kinds of
 applications, e.g. Qt or QML.
@@ -29,7 +27,7 @@ The application to be launched via applauncherd should be compiled as a shared l
 
 
 
-# Technical details
+## Technical details
 
 Loading the binary is done with dlopen(), and therefore the application needs to be compiled and linked as a shared library or a position independent executable. The booster process also sets the environment variables. Finally, it finds the main function in the application binary with dlsym() and calls the main() with the command line arguments given by the invoker.
 
@@ -38,14 +36,14 @@ name of the application. Then the booster process waits for a connection from th
 
 
 
-# Maintainers
+## Maintainers
 
 - [@zccrs](https://github.com/zccrs)
 - [@hualet](https://github.com/hualet)
 
 
 
-# Contributors
+## Contributors
 
 People who have contributed to mapplauncherd:
 
@@ -69,3 +67,21 @@ Some parts of the code is based on the maemo-launcher by:
 Guillem Jover
 Michael Natterer
 
+## Getting help
+
+Any usage issues can ask for help via
+
+* [Gitter](https://gitter.im/orgs/linuxdeepin/rooms)
+* [IRC channel](https://webchat.freenode.net/?channels=deepin)
+* [WiKi](https://wiki.deepin.org)
+* [Forum](https://bbs.deepin.org)
+* [Developer Center](https://github.com/linuxdeepin/deepin-turbo) 
+
+## Getting involved
+
+We encourage you to report issues and contribute changes
+
+- [**Contribution guide for developers**](https://github.com/linuxdeepin/developer-center/wiki/Contribution-Guidelines-for-Developers-en) 
+
+## License
+deepin-turbo is licensed under [LGPL-2.1-or-later](LICENSE).
