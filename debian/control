@@ -5,7 +5,6 @@ Maintainer: Deepin Packages Builder <packages@deepin.com>
 Build-Depends: debhelper (>= 9.0.0),
                cmake,
                pkg-config,
-               python,
                libdbus-1-dev,
                dbus,
                libsystemd-dev,
