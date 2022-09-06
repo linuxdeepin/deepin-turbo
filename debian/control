@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 9.0.0),
                dbus,
                libsystemd-dev,
                qtbase5-dev,
-               libdtkwidget5.5-dev,
+               libdtkwidget-dev,
                qtdeclarative5-dev,
                libdtkdeclarative-dev,
                dh-systemd
