@@ -69,10 +69,8 @@ int DeclarativeBooster::launchProcess()
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     int argc = m_appData->argc();
     char **argv = const_cast<char**>(m_appData->argv());
-    QScopedPointer<QGuiApplication> app(appLoader.createApplication(argc, argv));
-    QQmlApplicationEngine engine;
 
-    return appLoader.exec(app.data(), &engine);
+    return appLoader.exec(argc, argv);
 }
 
 bool DeclarativeBooster::preload()
