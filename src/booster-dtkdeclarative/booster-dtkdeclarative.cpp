@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2020 - 2022 UnionTech Software Technology Co., Ltd.
 //
-// SPDX-License-Identifier: LGPL-2.1-or-later
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include <QString>
 #include <syslog.h>

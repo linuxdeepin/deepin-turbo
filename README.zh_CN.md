@@ -55,4 +55,4 @@ Michael Natterer
 - [开发者代码贡献指南](https://github.com/linuxdeepin/developer-center/wiki/Contribution-Guidelines-for-Developers) 
 
 ## 开源许可证
-deepin-turbo 在 [LGPL-2.1-or-later](LICENSE) 下发布。
+deepin-turbo 在 [GPL-3.0-or-later](LICENSE) 下发布。

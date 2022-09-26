@@ -36,12 +36,12 @@ License: CC0-1.0
 # docs
 Files: doc/*
 Copyright: UnionTech Software Technology Co., Ltd.
-License: LGPL-2.1-or-later
+License: GPL-3.0-or-later
 
 # scripts
 Files: scripts/*
 Copyright: UnionTech Software Technology Co., Ltd.
-License: LGPL-2.1-or-later
+License: GPL-3.0-or-later
 
 Files: src/launcherlib/* src/common/* src/invoker/* src/booster-dtkwidget/* src/booster-generic/* src/single-instance/*
 Copyright: Nokia Corporation and/or its subsidiary(-ies).
